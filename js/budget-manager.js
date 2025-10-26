@@ -366,12 +366,12 @@ class BudgetManager {
 
     getStatusIcon(level) {
         const icons = {
-            good: '✅',
-            warning: '⚠️',
-            critical: '🚨',
-            exceeded: '❌'
+            good: '',
+            warning: '',
+            critical: '',
+            exceeded: ''
         };
-        return icons[level] || '❓';
+        return icons[level] || '';
     }
 
     editBudget(budgetId) {
