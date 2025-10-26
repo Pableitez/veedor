@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veedor — Autenticación</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-gradient);
+        }
+        
+        .auth-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(20px);
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .auth-tab.active {
+            background: var(--primary);
+            color: var(--text-white);
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .auth-submit {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .auth-error {
+            background: var(--error);
+            color: var(--text-white);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .auth-success {
+            background: var(--success);
+            color: var(--text-white);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showTab('login')">Iniciar Sesión</button>
+                <button class="auth-tab" onclick="showTab('register')">Registrarse</button>
+            </div>
+            
+            <!-- Formulario de Inicio de Sesión -->
+            <form id="login-form" class="auth-form active">
+                <div id="login-error" class="auth-error" style="display: none;"></div>
+                <div id="login-success" class="auth-success" style="display: none;"></div>
+                
+                <div class="form-group">
+                    <label for="login-email">Correo Electrónico</label>
+                    <input type="email" id="login-email" class="input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" class="input" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-submit">Iniciar Sesión</button>
+                
+                <div class="forgot-password">
+                    <a href="#" onclick="showForgotPassword()">¿Olvidaste tu contraseña?</a>
+                </div>
+            </form>
+            
+            <!-- Formulario de Registro -->
+            <form id="register-form" class="auth-form">
+                <div id="register-error" class="auth-error" style="display: none;"></div>
+                <div id="register-success" class="auth-success" style="display: none;"></div>
+                
+                <div class="form-group">
+                    <label for="register-name">Nombre Completo</label>
+                    <input type="text" id="register-name" class="input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email">Correo Electrónico</label>
+                    <input type="email" id="register-email" class="input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Contraseña</label>
+                    <input type="password" id="register-password" class="input" required minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-confirm">Confirmar Contraseña</label>
+                    <input type="password" id="register-confirm" class="input" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-submit">Crear Cuenta</button>
+            </form>
+            
+            <!-- Formulario de Recuperación de Contraseña -->
+            <form id="forgot-form" class="auth-form">
+                <div id="forgot-error" class="auth-error" style="display: none;"></div>
+                <div id="forgot-success" class="auth-success" style="display: none;"></div>
+                
+                <div class="form-group">
+                    <label for="forgot-email">Correo Electrónico</label>
+                    <input type="email" id="forgot-email" class="input" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-submit">Enviar Enlace de Recuperación</button>
+                
+                <div class="forgot-password">
+                    <a href="#" onclick="showTab('login')">Volver al inicio de sesión</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { AuthService } from './js/supabase-client.js';
+        
+        // Variables globales
+        let currentTab = 'login';
+        
+        // Función para cambiar pestañas
+        window.showTab = function(tab) {
+            // Ocultar todos los formularios
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            // Ocultar todos los errores y éxitos
+            document.querySelectorAll('.auth-error, .auth-success').forEach(element => {
+                element.style.display = 'none';
+            });
+            
+            // Mostrar formulario seleccionado
+            document.getElementById(tab + '-form').classList.add('active');
+            
+            // Actualizar pestañas activas
+            document.querySelectorAll('.auth-tab').forEach(tabElement => {
+                tabElement.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentTab = tab;
+        };
+        
+        // Función para mostrar recuperación de contraseña
+        window.showForgotPassword = function() {
+            showTab('forgot');
+        };
+        
+        // Event listeners para formularios
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            const { data, error } = await AuthService.signIn(email, password);
+            
+            if (error) {
+                showError('login-error', error.message);
+            } else {
+                showSuccess('login-success', 'Inicio de sesión exitoso. Redirigiendo...');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            }
+        });
+        
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm').value;
+            
+            if (password !== confirmPassword) {
+                showError('register-error', 'Las contraseñas no coinciden');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError('register-error', 'La contraseña debe tener al menos 6 caracteres');
+                return;
+            }
+            
+            const { data, error } = await AuthService.signUp(email, password, name);
+            
+            if (error) {
+                showError('register-error', error.message);
+            } else {
+                showSuccess('register-success', 'Cuenta creada exitosamente. Verifica tu correo electrónico.');
+            }
+        });
+        
+        document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgot-email').value;
+            
+            // Aquí implementarías la función de recuperación de contraseña
+            showSuccess('forgot-success', 'Si el correo existe, recibirás un enlace de recuperación.');
+        });
+        
+        // Funciones auxiliares
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function showSuccess(elementId, message) {
+            const successElement = document.getElementById(elementId);
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+        }
+        
+        // Verificar si ya está autenticado
+        window.addEventListener('load', async () => {
+            const { user } = await AuthService.getCurrentUser();
+            if (user) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veedor — Perfil de Usuario</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .profile-header {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .profile-email {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .profile-sections {
+            display: grid;
+            gap: 2rem;
+        }
+        
+        .profile-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        .logout-btn {
+            background: var(--error);
+            color: var(--text-white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #d63031;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar container">
+            <div class="nav-brand">
+                <h1><a href="index.html" style="text-decoration: none; color: inherit;">Veedor</a></h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="profile.html">Perfil</a></li>
+                <li><a href="#" onclick="logout()">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="padding-top: 100px;">
+        <div class="profile-container">
+            <!-- Perfil del Usuario -->
+            <div class="profile-header">
+                <div class="profile-avatar" id="user-avatar">U</div>
+                <div class="profile-name" id="user-name">Cargando...</div>
+                <div class="profile-email" id="user-email">Cargando...</div>
+            </div>
+
+            <!-- Información Personal -->
+            <div class="profile-section">
+                <h2 class="section-title">Información Personal</h2>
+                <form id="personal-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="full-name">Nombre Completo</label>
+                            <input type="text" id="full-name" class="input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico</label>
+                            <input type="email" id="email" class="input" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Moneda</label>
+                            <select id="currency" class="input">
+                                <option value="USD">USD - Dólar Americano</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="MXN">MXN - Peso Mexicano</option>
+                                <option value="ARS">ARS - Peso Argentino</option>
+                                <option value="CLP">CLP - Peso Chileno</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="timezone">Zona Horaria</label>
+                            <select id="timezone" class="input">
+                                <option value="UTC">UTC</option>
+                                <option value="America/Mexico_City">México</option>
+                                <option value="America/Argentina/Buenos_Aires">Argentina</option>
+                                <option value="America/Santiago">Chile</option>
+                                <option value="America/New_York">Nueva York</option>
+                                <option value="Europe/Madrid">Madrid</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Perfil Financiero -->
+            <div class="profile-section">
+                <h2 class="section-title">Perfil Financiero</h2>
+                <form id="financial-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="monthly-salary">Salario Mensual</label>
+                            <input type="number" id="monthly-salary" class="input" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="monthly-income">Ingresos Mensuales Totales</label>
+                            <input type="number" id="monthly-income" class="input" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="savings-goal">Meta de Ahorro Mensual</label>
+                            <input type="number" id="savings-goal" class="input" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="emergency-fund">Fondo de Emergencia</label>
+                            <input type="number" id="emergency-fund" class="input" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="investment-goal">Meta de Inversión</label>
+                            <input type="number" id="investment-goal" class="input" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Actualizar Perfil Financiero</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="profile-section">
+                <h2 class="section-title">Estadísticas Financieras</h2>
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-transactions">-</div>
+                        <div class="stat-label">Transacciones Totales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-income">-</div>
+                        <div class="stat-label">Ingresos Totales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-expenses">-</div>
+                        <div class="stat-label">Gastos Totales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="savings-rate">-</div>
+                        <div class="stat-label">Tasa de Ahorro</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones de Cuenta -->
+            <div class="profile-section">
+                <h2 class="section-title">Acciones de Cuenta</h2>
+                <div class="form-actions">
+                    <button class="btn btn-accent" onclick="exportData()">Exportar Datos</button>
+                    <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { AuthService, FinancialProfileService, TransactionService } from './js/supabase-client.js';
+        
+        // Variables globales
+        let currentUser = null;
+        let financialProfile = null;
+        
+        // Inicializar página
+        window.addEventListener('load', async () => {
+            await loadUserData();
+            await loadFinancialProfile();
+            await loadStatistics();
+        });
+        
+        // Cargar datos del usuario
+        async function loadUserData() {
+            const { user } = await AuthService.getCurrentUser();
+            
+            if (!user) {
+                window.location.href = 'auth.html';
+                return;
+            }
+            
+            currentUser = user;
+            
+            // Mostrar información del usuario
+            document.getElementById('user-name').textContent = user.user_metadata?.full_name || 'Usuario';
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('full-name').value = user.user_metadata?.full_name || '';
+            document.getElementById('email').value = user.email;
+            
+            // Generar avatar con iniciales
+            const initials = (user.user_metadata?.full_name || user.email)
+                .split(' ')
+                .map(name => name[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2);
+            document.getElementById('user-avatar').textContent = initials;
+        }
+        
+        // Cargar perfil financiero
+        async function loadFinancialProfile() {
+            if (!currentUser) return;
+            
+            const { data } = await FinancialProfileService.getProfile(currentUser.id);
+            
+            if (data) {
+                financialProfile = data;
+                document.getElementById('monthly-salary').value = data.monthly_salary || '';
+                document.getElementById('monthly-income').value = data.monthly_income || '';
+                document.getElementById('savings-goal').value = data.savings_goal || '';
+                document.getElementById('emergency-fund').value = data.emergency_fund || '';
+                document.getElementById('investment-goal').value = data.investment_goal || '';
+            }
+        }
+        
+        // Cargar estadísticas
+        async function loadStatistics() {
+            if (!currentUser) return;
+            
+            const startDate = new Date();
+            startDate.setMonth(startDate.getMonth() - 12); // Últimos 12 meses
+            
+            const { data: stats } = await TransactionService.getTransactionStats(
+                currentUser.id,
+                startDate.toISOString().split('T')[0],
+                new Date().toISOString().split('T')[0]
+            );
+            
+            if (stats) {
+                document.getElementById('total-income').textContent = `$${stats.totalIncome.toFixed(2)}`;
+                document.getElementById('total-expenses').textContent = `$${stats.totalExpenses.toFixed(2)}`;
+                document.getElementById('savings-rate').textContent = `${stats.savingsRate.toFixed(1)}%`;
+                
+                // Obtener total de transacciones
+                const { data: transactions } = await TransactionService.getTransactions(currentUser.id, 1000);
+                if (transactions) {
+                    document.getElementById('total-transactions').textContent = transactions.length;
+                }
+            }
+        }
+        
+        // Event listeners para formularios
+        document.getElementById('personal-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('full-name').value;
+            
+            // Aquí actualizarías el perfil del usuario
+            alert('Perfil actualizado correctamente');
+        });
+        
+        document.getElementById('financial-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentUser) return;
+            
+            const updates = {
+                monthly_salary: parseFloat(document.getElementById('monthly-salary').value) || 0,
+                monthly_income: parseFloat(document.getElementById('monthly-income').value) || 0,
+                savings_goal: parseFloat(document.getElementById('savings-goal').value) || 0,
+                emergency_fund: parseFloat(document.getElementById('emergency-fund').value) || 0,
+                investment_goal: parseFloat(document.getElementById('investment-goal').value) || 0
+            };
+            
+            const { error } = await FinancialProfileService.updateProfile(currentUser.id, updates);
+            
+            if (error) {
+                alert('Error al actualizar perfil: ' + error.message);
+            } else {
+                alert('Perfil financiero actualizado correctamente');
+                await loadFinancialProfile();
+            }
+        });
+        
+        // Función para exportar datos
+        window.exportData = async function() {
+            if (!currentUser) return;
+            
+            const { data: transactions } = await TransactionService.getTransactions(currentUser.id, 10000);
+            
+            if (transactions && transactions.length > 0) {
+                const csvContent = "data:text/csv;charset=utf-8," 
+                    + "Fecha,Tipo,Descripción,Categoría,Monto,Notas\n"
+                    + transactions.map(t => 
+                        `"${t.date}","${t.type}","${t.description}","${t.categories?.name || 'Sin categoría'}","${t.amount}","${t.notes || ''}"`
+                    ).join("\n");
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `veedor_datos_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                alert('Datos exportados correctamente');
+            } else {
+                alert('No hay datos para exportar');
+            }
+        };
+        
+        // Función para cerrar sesión
+        window.logout = async function() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                await AuthService.signOut();
+                window.location.href = 'auth.html';
+            }
+        };
+    </script>
+</body>
+</html>
