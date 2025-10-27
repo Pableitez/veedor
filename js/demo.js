@@ -3122,6 +3122,413 @@ function toggleTheme() {
     }
 }
 
+// Función para probar las gráficas en demo.html
+function testDemoCharts() {
+    console.log('=== PROBANDO GRÁFICAS EN DEMO.HTML ===');
+    
+    // Verificar que Chart.js esté disponible
+    if (typeof Chart !== 'undefined') {
+        console.log('✅ Chart.js disponible');
+    } else {
+        console.error('❌ Chart.js NO disponible');
+    }
+    
+    // Verificar que los canvas existan
+    const canvas1 = document.getElementById('overviewCategoryChart');
+    const canvas2 = document.getElementById('overviewTrendsChart');
+    const canvas3 = document.getElementById('overviewIncomeExpensesChart');
+    
+    console.log('Canvas encontrados:');
+    console.log('- overviewCategoryChart:', canvas1 ? '✅' : '❌');
+    console.log('- overviewTrendsChart:', canvas2 ? '✅' : '❌');
+    console.log('- overviewIncomeExpensesChart:', canvas3 ? '✅' : '❌');
+    
+    // Verificar que el dashboard manager esté disponible
+    if (window.dashboardManager) {
+        console.log('✅ DashboardManager disponible');
+        
+        // Intentar crear las gráficas
+        try {
+            window.dashboardManager.updateOverviewCharts();
+            console.log('✅ Gráficas creadas exitosamente');
+        } catch (error) {
+            console.error('❌ Error creando gráficas:', error);
+        }
+    } else {
+        console.error('❌ DashboardManager NO disponible');
+    }
+    
+    // Verificar datos de transacciones
+    const transactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
+    console.log('Transacciones cargadas:', transactions.length);
+    
+    if (transactions.length === 0) {
+        console.log('⚠️ No hay transacciones, generando datos de demo...');
+        generateSpectacularDemoData();
+    }
+}
+
+// Función para probar el mensaje de debug
+function testDebugMessage() {
+    console.log('=== PROBANDO MENSAJE DE DEBUG ===');
+    
+    // Crear mensaje de debug en la parte superior
+    const debugContainer = document.getElementById('debug-message');
+    if (!debugContainer) {
+        // Crear el contenedor si no existe
+        const overviewTab = document.getElementById('overview');
+        if (overviewTab) {
+            const debugDiv = document.createElement('div');
+            debugDiv.id = 'debug-message';
+            debugDiv.style.cssText = `
+                background: linear-gradient(135deg, #ff4444, #cc0000);
+                color: white;
+                padding: 15px;
+                margin: 10px 0;
+                border-radius: 8px;
+                border: 2px solid #ff6666;
+                box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+                font-family: monospace;
+                font-size: 14px;
+                z-index: 1000;
+                position: relative;
+            `;
+            
+            debugDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">🚨</span>
+                    <div>
+                        <strong>DEBUG ACTIVO - DEMO.HTML</strong><br>
+                        Chart.js: ${typeof Chart !== 'undefined' ? '✅ Disponible' : '❌ No disponible'}<br>
+                        DashboardManager: ${window.dashboardManager ? '✅ Disponible' : '❌ No disponible'}<br>
+                        Transacciones: ${JSON.parse(localStorage.getItem('veedorTransactions') || '[]').length}<br>
+                        Canvas encontrados: ${document.querySelectorAll('canvas').length}
+                    </div>
+                </div>
+            `;
+            
+            overviewTab.insertBefore(debugDiv, overviewTab.firstChild);
+            console.log('✅ Mensaje de debug creado');
+        } else {
+            console.error('❌ No se encontró el tab overview');
+        }
+    } else {
+        console.log('✅ Mensaje de debug ya existe');
+    }
+}
+
+// Función para probar las gráficas en demo.html usando DashboardManager
+function testDemoChartsWithDashboardManager() {
+    console.log('=== PROBANDO GRÁFICAS CON DASHBOARD MANAGER ===');
+    
+    // Verificar que Chart.js esté disponible
+    if (typeof Chart !== 'undefined') {
+        console.log('✅ Chart.js disponible');
+    } else {
+        console.error('❌ Chart.js NO disponible');
+    }
+    
+    // Verificar que DashboardManager esté disponible
+    if (window.dashboardManager) {
+        console.log('✅ DashboardManager disponible');
+        
+        // Verificar que los canvas existan
+        const canvas1 = document.getElementById('overviewCategoryChart');
+        const canvas2 = document.getElementById('overviewTrendsChart');
+        const canvas3 = document.getElementById('overviewIncomeExpensesChart');
+        
+        console.log('Canvas encontrados:');
+        console.log('- overviewCategoryChart:', canvas1 ? '✅' : '❌');
+        console.log('- overviewTrendsChart:', canvas2 ? '✅' : '❌');
+        console.log('- overviewIncomeExpensesChart:', canvas3 ? '✅' : '❌');
+        
+        // Intentar crear las gráficas
+        try {
+            window.dashboardManager.updateOverviewCharts();
+            console.log('✅ Gráficas creadas exitosamente');
+        } catch (error) {
+            console.error('❌ Error creando gráficas:', error);
+        }
+    } else {
+        console.error('❌ DashboardManager NO disponible');
+        
+        // Intentar crear DashboardManager
+        if (typeof DashboardManager !== 'undefined') {
+            console.log('Creando DashboardManager...');
+            window.dashboardManager = new DashboardManager();
+            console.log('✅ DashboardManager creado');
+            
+            // Intentar crear las gráficas después de crear el manager
+            setTimeout(() => {
+                try {
+                    window.dashboardManager.updateOverviewCharts();
+                    console.log('✅ Gráficas creadas después de crear DashboardManager');
+                } catch (error) {
+                    console.error('❌ Error creando gráficas después de crear DashboardManager:', error);
+                }
+            }, 100);
+        } else {
+            console.error('❌ DashboardManager no está definido');
+        }
+    }
+    
+    // Verificar datos de transacciones
+    const transactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
+    console.log('Transacciones cargadas:', transactions.length);
+    
+    if (transactions.length === 0) {
+        console.log('⚠️ No hay transacciones, generando datos de demo...');
+        if (typeof generateSpectacularDemoData === 'function') {
+            generateSpectacularDemoData();
+        } else {
+            console.log('⚠️ generateSpectacularDemoData no está disponible');
+        }
+    }
+}
+
+// Función mejorada para probar las gráficas y debug
+function testChartsAndDebug() {
+    console.log('=== INICIANDO PRUEBA COMPLETA DE GRÁFICAS Y DEBUG ===');
+    
+    // 1. Mostrar mensaje de debug primero
+    testDebugMessage();
+    
+    // 2. Esperar un poco y luego probar las gráficas
+    setTimeout(() => {
+        console.log('--- Probando gráficas después de debug ---');
+        testDemoChartsWithDashboardManager();
+    }, 500);
+    
+    // 3. Verificar estado general del sistema
+    setTimeout(() => {
+        console.log('--- Estado final del sistema ---');
+        console.log('Chart.js disponible:', typeof Chart !== 'undefined');
+        console.log('DashboardManager disponible:', !!window.dashboardManager);
+        console.log('Canvas encontrados:', document.querySelectorAll('canvas').length);
+        console.log('Transacciones:', JSON.parse(localStorage.getItem('veedorTransactions') || '[]').length);
+        
+        // Verificar si las gráficas se crearon
+        const charts = [
+            'overviewCategoryChart',
+            'overviewTrendsChart', 
+            'overviewIncomeExpensesChart'
+        ];
+        
+        charts.forEach(chartName => {
+            const chart = window[chartName];
+            console.log(`${chartName}:`, chart ? '✅ Creada' : '❌ No creada');
+        });
+    }, 1000);
+}
+
+// Función para inicializar demo con datos (limpia, sin debug)
+function initializeDemoWithData() {
+    console.log('Inicializando demo con datos...');
+    
+    // Verificar si ya hay datos
+    const existingTransactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
+    
+    if (existingTransactions.length === 0) {
+        // Generar datos de demo si la función está disponible
+        if (typeof generateSpectacularDemoData === 'function') {
+            generateSpectacularDemoData();
+        } else {
+            createBasicDemoData();
+        }
+    }
+    
+    // Inicializar dashboard manager si no existe
+    if (!window.dashboardManager && typeof DashboardManager !== 'undefined') {
+        window.dashboardManager = new DashboardManager();
+    }
+    
+    // Actualizar el dashboard después de un breve delay
+    setTimeout(() => {
+        if (window.dashboardManager) {
+            window.dashboardManager.loadData();
+            window.dashboardManager.updateFinancialSummary();
+            window.dashboardManager.loadOverviewTab();
+        }
+    }, 500);
+}
+
+// Función para crear datos básicos de demo
+function createBasicDemoData() {
+    const demoTransactions = [
+        {
+            id: 'demo-1',
+            type: 'income',
+            amount: 3000,
+            category: 'Salario',
+            description: 'Salario mensual',
+            date: new Date().toISOString().split('T')[0]
+        },
+        {
+            id: 'demo-2',
+            type: 'expense',
+            amount: 800,
+            category: 'Vivienda',
+            description: 'Alquiler',
+            date: new Date().toISOString().split('T')[0]
+        },
+        {
+            id: 'demo-3',
+            type: 'expense',
+            amount: 300,
+            category: 'Alimentación',
+            description: 'Supermercado',
+            date: new Date().toISOString().split('T')[0]
+        },
+        {
+            id: 'demo-4',
+            type: 'expense',
+            amount: 150,
+            category: 'Transporte',
+            description: 'Gasolina',
+            date: new Date().toISOString().split('T')[0]
+        }
+    ];
+    
+    localStorage.setItem('veedorTransactions', JSON.stringify(demoTransactions));
+    console.log('✅ Datos básicos de demo creados');
+}
+
+// Inicializar automáticamente cuando se carga la página
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        initializeDemoWithData();
+    }, 100);
+});
+
+// También inicializar cuando la ventana se carga completamente
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        if (typeof Chart !== 'undefined' && window.dashboardManager) {
+            initializeCharts();
+        }
+    }, 200);
+});
+
+// Función de prueba completa para verificar todo
+function testCompleteDemo() {
+    console.log('=== PRUEBA COMPLETA DEL DEMO ===');
+    
+    // 1. Verificar datos
+    const transactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
+    console.log('📊 Transacciones:', transactions.length);
+    
+    // 2. Verificar elementos HTML
+    const elements = [
+        '.balance-amount',
+        '.income-amount', 
+        '.expenses-amount',
+        '.savings-amount',
+        '#overviewCategoryChart',
+        '#overviewTrendsChart',
+        '#overviewIncomeExpensesChart'
+    ];
+    
+    elements.forEach(selector => {
+        const element = document.querySelector(selector);
+        console.log(`${selector}:`, element ? '✅' : '❌');
+    });
+    
+    // 3. Verificar librerías
+    console.log('Chart.js:', typeof Chart !== 'undefined' ? '✅' : '❌');
+    console.log('DashboardManager:', !!window.dashboardManager ? '✅' : '❌');
+    
+    // 4. Mostrar mensaje de debug en la parte superior
+    showDebugMessageAtTop();
+    
+    // 5. Intentar crear gráficas
+    setTimeout(() => {
+        if (window.dashboardManager && typeof Chart !== 'undefined') {
+            console.log('🎨 Creando gráficas...');
+            try {
+                window.dashboardManager.updateOverviewCharts();
+                console.log('✅ Gráficas creadas exitosamente');
+            } catch (error) {
+                console.error('❌ Error creando gráficas:', error);
+            }
+        }
+    }, 500);
+}
+
+// Función mejorada para mostrar mensaje de debug en la parte superior de las gráficas
+function showDebugMessageAtTop() {
+    console.log('=== MOSTRANDO MENSAJE DE DEBUG EN LA PARTE SUPERIOR ===');
+    
+    // Crear mensaje de debug en la parte superior de las gráficas
+    const chartsSection = document.querySelector('.charts-section');
+    if (chartsSection) {
+        // Verificar si ya existe el mensaje
+        let debugDiv = document.getElementById('debug-message-top');
+        
+        if (!debugDiv) {
+            debugDiv = document.createElement('div');
+            debugDiv.id = 'debug-message-top';
+            debugDiv.style.cssText = `
+                background: linear-gradient(135deg, #ff4444, #cc0000);
+                color: white;
+                padding: 20px;
+                margin: 0 0 20px 0;
+                border-radius: 12px;
+                border: 3px solid #ff6666;
+                box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
+                font-family: 'Courier New', monospace;
+                font-size: 16px;
+                z-index: 1000;
+                position: relative;
+                text-align: center;
+                animation: pulse 2s infinite;
+            `;
+            
+            // Agregar animación CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.02); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            chartsSection.insertBefore(debugDiv, chartsSection.firstChild);
+            console.log('✅ Mensaje de debug creado en la parte superior');
+        }
+        
+        // Actualizar contenido del mensaje
+        const transactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
+        const canvasCount = document.querySelectorAll('canvas').length;
+        
+        debugDiv.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <span style="font-size: 24px;">🚨</span>
+                <div style="text-align: center;">
+                    <div style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">
+                        🎯 GRÁFICAS PRINCIPALES ACTIVAS
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 14px;">
+                        <div>📊 Chart.js: ${typeof Chart !== 'undefined' ? '✅ Disponible' : '❌ No disponible'}</div>
+                        <div>⚙️ DashboardManager: ${window.dashboardManager ? '✅ Disponible' : '❌ No disponible'}</div>
+                        <div>💾 Transacciones: ${transactions.length}</div>
+                        <div>🎨 Canvas: ${canvasCount}</div>
+                    </div>
+                </div>
+                <span style="font-size: 24px;">🚨</span>
+            </div>
+        `;
+        
+        console.log('✅ Mensaje de debug actualizado');
+    } else {
+        console.error('❌ No se encontró la sección de gráficas');
+    }
+}
+
+// Hacer la función global
+window.showDebugMessageAtTop = showDebugMessageAtTop;
+
 function loadTheme() {
     const savedTheme = localStorage.getItem('veedor-theme');
     if (savedTheme) {

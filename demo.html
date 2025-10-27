@@ -2536,6 +2536,239 @@
             }
         }
         
+        /* Sección de Gráficas Principales */
+        .charts-section {
+            margin-bottom: var(--space-xl);
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+        }
+
+        .charts-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .charts-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .charts-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+            
+            .charts-section {
+                padding: var(--space-md);
+                margin-bottom: var(--space-lg);
+            }
+            
+            .chart-container-large {
+                height: 250px;
+            }
+            
+            .chart-card {
+                padding: var(--space-sm);
+            }
+            
+            .charts-header h3 {
+                font-size: 1.3rem;
+            }
+            
+            .chart-header h4 {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .charts-section {
+                padding: var(--space-sm);
+            }
+            
+            .chart-container-large {
+                height: 200px;
+            }
+            
+            .charts-header h3 {
+                font-size: 1.2rem;
+            }
+            
+            .chart-header h4 {
+                font-size: 0.9rem;
+            }
+            
+            .chart-subtitle {
+                font-size: 0.8rem;
+            }
+        }
+
+        .chart-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            transition: var(--transition-normal);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+
+        .chart-card.primary {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-primary));
+        }
+
+        .chart-header {
+            margin-bottom: var(--space-md);
+            text-align: center;
+        }
+
+        .chart-header h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .chart-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .chart-container-large {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-container-large canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* Sección de Insights */
+        .insights-section {
+            margin-bottom: var(--space-xl);
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .insights-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .insights-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .insights-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .insight-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            transition: var(--transition-normal);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-sm);
+        }
+
+        .insight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+
+        .insight-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .insight-content {
+            flex: 1;
+        }
+
+        .insight-content h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .insight-content p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+            line-height: 1.4;
+        }
+
+        .insight-action {
+            margin-top: var(--space-xs);
+        }
+
+        @media (max-width: 768px) {
+            .insights-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-sm);
+            }
+            
+            .insights-section {
+                padding: var(--space-md);
+            }
+            
+            .insight-card {
+                padding: var(--space-sm);
+            }
+            
+            .insights-header h3 {
+                font-size: 1.2rem;
+            }
+        }
+        
         /* Estilos para insights de amortización */
         .amortization-insights {
             margin-top: var(--space-lg);
@@ -3346,6 +3579,89 @@
             </div>
 
             <div class="dashboard-content">
+                <!-- Charts Section - PRINCIPAL -->
+                <div class="charts-section">
+                    <div class="charts-header">
+                        <h3>Análisis Visual de tus Finanzas</h3>
+                        <p>Visualiza tus patrones de gasto y tendencias financieras</p>
+                    </div>
+                    
+                    <div class="charts-grid">
+                        <div class="chart-card primary">
+                            <div class="chart-header">
+                                <h4>Gastos por Categoría</h4>
+                                <span class="chart-subtitle">Distribución del mes actual</span>
+                            </div>
+                            <div class="chart-container-large">
+                                <canvas id="overviewCategoryChart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card primary">
+                            <div class="chart-header">
+                                <h4>Tendencias Mensuales</h4>
+                                <span class="chart-subtitle">Últimos 6 meses</span>
+                            </div>
+                            <div class="chart-container-large">
+                                <canvas id="overviewTrendsChart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card primary">
+                            <div class="chart-header">
+                                <h4>Resumen Financiero</h4>
+                                <span class="chart-subtitle">Ingresos vs Gastos</span>
+                            </div>
+                            <div class="chart-container-large">
+                                <canvas id="overviewIncomeExpensesChart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insights Financieros -->
+                <div class="insights-section">
+                    <div class="insights-header">
+                        <h3>Insights Inteligentes</h3>
+                        <p>Análisis automático de tus patrones financieros</p>
+                    </div>
+                    
+                    <div class="insights-grid">
+                        <div class="insight-card">
+                            <div class="insight-icon">●</div>
+                            <div class="insight-content">
+                                <h4>Patrón de Gastos</h4>
+                                <p>Tu mayor gasto este mes es en <strong>Alimentación</strong> con €468.50</p>
+                                <div class="insight-action">
+                                    <button class="btn btn-sm btn-outline">Optimizar</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-card">
+                            <div class="insight-icon">▲</div>
+                            <div class="insight-content">
+                                <h4>Tendencia Positiva</h4>
+                                <p>Has aumentado tus ingresos un <strong>8.5%</strong> respecto al mes anterior</p>
+                                <div class="insight-action">
+                                    <button class="btn btn-sm btn-outline">Ver detalles</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-card">
+                            <div class="insight-icon">★</div>
+                            <div class="insight-content">
+                                <h4>Objetivo de Ahorro</h4>
+                                <p>Estás ahorrando el <strong>37.2%</strong> de tus ingresos. Excelente!</p>
+                                <div class="insight-action">
+                                    <button class="btn btn-sm btn-outline">Configurar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Financial Summary -->
                 <div class="financial-summary">
                     <div class="summary-card">
@@ -3462,6 +3778,29 @@
                                 <div class="card-header">
                                     <h3>Gastos por Categoría</h3>
                                     <button class="btn btn-sm btn-outline" onclick="showTab('analytics')">Ver análisis</button>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="overviewCategoryChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="overview-card">
+                                <div class="card-header">
+                                    <h3>Tendencias Mensuales</h3>
+                                    <button class="btn btn-sm btn-outline" onclick="showTab('analytics')">Ver análisis</button>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="overviewTrendsChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="overview-card">
+                                <div class="card-header">
+                                    <h3>Resumen Financiero</h3>
+                                    <button class="btn btn-sm btn-outline" onclick="showTab('analytics')">Ver análisis</button>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="overviewIncomeExpensesChart" width="400" height="200"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -3916,6 +4255,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/demo.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/demo-clean.js"></script>
+    <script src="js/dashboard-clean.js"></script>
 </body>
 </html>

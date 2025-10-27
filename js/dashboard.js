@@ -24,6 +24,18 @@ class DashboardManager {
         this.updateFinancialSummary();
         this.generateAlerts();
         this.generateTips();
+        
+        // Cargar gráficas después de que Chart.js esté disponible
+        this.waitForChartJS();
+    }
+    
+    waitForChartJS() {
+        if (typeof Chart !== 'undefined') {
+            this.updateOverviewCharts();
+        } else {
+            // Esperar a que Chart.js se cargue
+            setTimeout(() => this.waitForChartJS(), 100);
+        }
     }
 
     loadData() {
@@ -177,6 +189,103 @@ class DashboardManager {
     loadOverviewTab() {
         this.updateRecentTransactions();
         this.updateCategoryChart();
+        
+        // Actualizar gráficas con Chart.js si está disponible
+        if (typeof Chart !== 'undefined') {
+            this.updateOverviewCharts();
+        } else {
+            // Esperar a que Chart.js se cargue
+            setTimeout(() => {
+                if (typeof Chart !== 'undefined') {
+                    this.updateOverviewCharts();
+                }
+            }, 200);
+        }
+    }
+    
+    showDebugMessage() {
+        // Crear mensaje de debug en la parte superior del dashboard
+        const debugContainer = document.getElementById('debug-message');
+        if (!debugContainer) {
+            // Crear el contenedor si no existe
+            const overviewTab = document.getElementById('overview');
+            if (overviewTab) {
+                const debugDiv = document.createElement('div');
+                debugDiv.id = 'debug-message';
+                debugDiv.style.cssText = `
+                    background: linear-gradient(135deg, #ff4444, #cc0000);
+                    color: white;
+                    padding: 20px;
+                    margin: 20px;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(255, 68, 68, 0.3);
+                    border: 2px solid #ff6666;
+                    position: relative;
+                    z-index: 1000;
+                `;
+                
+                debugDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <span style="font-size: 24px;">🚨</span>
+                        <h3 style="margin: 0; font-size: 18px; font-weight: bold;">DEBUG: Dashboard Iniciado</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                            <strong>Chart.js:</strong> ${typeof Chart !== 'undefined' ? '✅ Disponible' : '❌ No disponible'}
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                            <strong>DashboardManager:</strong> ${window.dashboardManager ? '✅ Inicializado' : '❌ No inicializado'}
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                            <strong>Transacciones:</strong> ${this.transactions ? this.transactions.length : 0} registros
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                            <strong>Canvas encontrados:</strong> ${this.checkCanvasElements()}
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                        <strong>Estado:</strong> Dashboard cargado correctamente - Gráficas inicializándose...
+                    </div>
+                `;
+                
+                // Insertar al inicio del overview tab
+                overviewTab.insertBefore(debugDiv, overviewTab.firstChild);
+            }
+        } else {
+            // Actualizar el mensaje existente
+            debugContainer.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <span style="font-size: 24px;">🚨</span>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: bold;">DEBUG: Dashboard Actualizado</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>Chart.js:</strong> ${typeof Chart !== 'undefined' ? '✅ Disponible' : '❌ No disponible'}
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>DashboardManager:</strong> ${window.dashboardManager ? '✅ Inicializado' : '❌ No inicializado'}
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>Transacciones:</strong> ${this.transactions ? this.transactions.length : 0} registros
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>Canvas encontrados:</strong> ${this.checkCanvasElements()}
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                    <strong>Estado:</strong> Dashboard actualizado - Gráficas renderizándose...
+                </div>
+            `;
+        }
+    }
+    
+    checkCanvasElements() {
+        const canvas1 = document.getElementById('overviewCategoryChart');
+        const canvas2 = document.getElementById('overviewTrendsChart');
+        const canvas3 = document.getElementById('overviewIncomeExpensesChart');
+        
+        const found = [canvas1, canvas2, canvas3].filter(canvas => canvas).length;
+        return `${found}/3 encontrados`;
     }
 
     loadTransactionsTab() {
@@ -210,30 +319,30 @@ class DashboardManager {
         // Recalcular para asegurar datos actuales
         this.calculateFinancialData();
         
-        const totalBalanceEl = document.getElementById('total-balance');
-        const monthlyIncomeEl = document.getElementById('monthly-income');
-        const monthlyExpensesEl = document.getElementById('monthly-expenses');
-        const monthlySavingsEl = document.getElementById('monthly-savings');
+        const totalBalanceEl = document.querySelector('.balance-amount');
+        const monthlyIncomeEl = document.querySelector('.income-amount');
+        const monthlyExpensesEl = document.querySelector('.expenses-amount');
+        const monthlySavingsEl = document.querySelector('.savings-amount');
         
         if (totalBalanceEl) {
             totalBalanceEl.textContent = `€${this.financialData.totalBalance.toFixed(2)}`;
             console.log('Balance total actualizado:', totalBalanceEl.textContent);
         } else {
-            console.error('Elemento total-balance no encontrado');
+            console.error('Elemento .balance-amount no encontrado');
         }
         
         if (monthlyIncomeEl) {
             monthlyIncomeEl.textContent = `€${this.financialData.monthlyIncome.toFixed(2)}`;
             console.log('Ingresos mensuales actualizados:', monthlyIncomeEl.textContent);
         } else {
-            console.error('Elemento monthly-income no encontrado');
+            console.error('Elemento .income-amount no encontrado');
         }
         
         if (monthlyExpensesEl) {
             monthlyExpensesEl.textContent = `€${this.financialData.monthlyExpenses.toFixed(2)}`;
             console.log('Gastos mensuales actualizados:', monthlyExpensesEl.textContent);
         } else {
-            console.error('Elemento monthly-expenses no encontrado');
+            console.error('Elemento .expenses-amount no encontrado');
         }
         
         if (monthlySavingsEl) {
@@ -242,7 +351,7 @@ class DashboardManager {
             monthlySavingsEl.textContent = `€${monthlySavings.toFixed(2)}`;
             console.log('Ahorro mensual actualizado:', monthlySavingsEl.textContent);
         } else {
-            console.error('Elemento monthly-savings no encontrado');
+            console.error('Elemento .savings-amount no encontrado');
         }
         
         // Actualizar métricas adicionales del resumen
@@ -396,6 +505,371 @@ class DashboardManager {
             ctx.font = '10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText(category.substring(0, 8), x + barWidth / 2, canvas.height - 5);
+        });
+    }
+
+    updateOverviewCharts() {
+        // Crear gráficas principales para el dashboard
+        this.createOverviewCategoryChart();
+        this.createOverviewTrendsChart();
+        this.createOverviewIncomeExpensesChart();
+    }
+    
+    updateDebugMessage() {
+        const debugContainer = document.getElementById('debug-message');
+        if (debugContainer) {
+            debugContainer.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <span style="font-size: 24px;">✅</span>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: bold;">DEBUG: Gráficas Cargadas</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>Chart.js:</strong> ${typeof Chart !== 'undefined' ? '✅ Disponible' : '❌ No disponible'}
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>DashboardManager:</strong> ${window.dashboardManager ? '✅ Inicializado' : '❌ No inicializado'}
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>Transacciones:</strong> ${this.transactions ? this.transactions.length : 0} registros
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>Canvas encontrados:</strong> ${this.checkCanvasElements()}
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                    <strong>Estado:</strong> ✅ Todas las gráficas renderizadas correctamente
+                </div>
+            `;
+            
+            // Cambiar el estilo a verde para indicar éxito
+            debugContainer.style.cssText = `
+                background: linear-gradient(135deg, #00aa44, #008833);
+                color: white;
+                padding: 20px;
+                margin: 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 170, 68, 0.3);
+                border: 2px solid #00cc55;
+                position: relative;
+                z-index: 1000;
+            `;
+        }
+    }
+
+    createOverviewCategoryChart() {
+        const canvas = document.getElementById('overviewCategoryChart');
+        if (!canvas || typeof Chart === 'undefined') return;
+
+        // Destruir gráfico existente si existe
+        if (window.overviewCategoryChart && typeof window.overviewCategoryChart.destroy === 'function') {
+            window.overviewCategoryChart.destroy();
+        }
+
+        // Calcular gastos por categoría del mes actual
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        
+        const categoryData = {};
+        this.transactions
+            .filter(t => t.type === 'expense' && 
+                new Date(t.date).getMonth() === currentMonth && 
+                new Date(t.date).getFullYear() === currentYear)
+            .forEach(transaction => {
+                categoryData[transaction.category] = (categoryData[transaction.category] || 0) + transaction.amount;
+            });
+
+        const categories = Object.keys(categoryData);
+        const amounts = Object.values(categoryData);
+
+        if (amounts.length === 0) return;
+
+        // Colores profesionales
+        const colors = [
+            '#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', 
+            '#EF4444', '#06B6D4', '#84CC16', '#F97316'
+        ];
+
+        window.overviewCategoryChart = new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                labels: categories.map(cat => getCategoryName(cat)),
+                datasets: [{
+                    data: amounts,
+                    backgroundColor: colors.slice(0, categories.length),
+                    borderWidth: 0,
+                    hoverBorderWidth: 3,
+                    hoverBorderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                const total = amounts.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: €${context.parsed.toFixed(2)} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    duration: 1200,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    }
+
+    createOverviewTrendsChart() {
+        const canvas = document.getElementById('overviewTrendsChart');
+        if (!canvas || typeof Chart === 'undefined') return;
+
+        // Destruir gráfico existente si existe
+        if (window.overviewTrendsChart && typeof window.overviewTrendsChart.destroy === 'function') {
+            window.overviewTrendsChart.destroy();
+        }
+
+        // Obtener datos de los últimos 6 meses
+        const months = [];
+        const incomeData = [];
+        const expenseData = [];
+
+        for (let i = 5; i >= 0; i--) {
+            const date = new Date();
+            date.setMonth(date.getMonth() - i);
+            const monthName = date.toLocaleDateString('es-ES', { month: 'short' });
+            months.push(monthName);
+
+            const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+            const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+            const monthTransactions = this.transactions.filter(t => {
+                const transactionDate = new Date(t.date);
+                return transactionDate >= monthStart && transactionDate <= monthEnd;
+            });
+
+            const income = monthTransactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const expenses = monthTransactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            incomeData.push(income);
+            expenseData.push(expenses);
+        }
+
+        window.overviewTrendsChart = new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Ingresos',
+                        data: incomeData,
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#10B981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    },
+                    {
+                        label: 'Gastos',
+                        data: expenseData,
+                        borderColor: '#EF4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#EF4444',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: €${context.parsed.y.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '€' + value.toFixed(0);
+                            },
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1200,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    }
+
+    createOverviewIncomeExpensesChart() {
+        const canvas = document.getElementById('overviewIncomeExpensesChart');
+        if (!canvas || typeof Chart === 'undefined') return;
+
+        // Destruir gráfico existente si existe
+        if (window.overviewIncomeExpensesChart && typeof window.overviewIncomeExpensesChart.destroy === 'function') {
+            window.overviewIncomeExpensesChart.destroy();
+        }
+
+        // Calcular totales del mes actual
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        
+        const monthlyIncome = this.transactions
+            .filter(t => t.type === 'income' && 
+                new Date(t.date).getMonth() === currentMonth && 
+                new Date(t.date).getFullYear() === currentYear)
+            .reduce((sum, t) => sum + t.amount, 0);
+        
+        const monthlyExpenses = this.transactions
+            .filter(t => t.type === 'expense' && 
+                new Date(t.date).getMonth() === currentMonth && 
+                new Date(t.date).getFullYear() === currentYear)
+            .reduce((sum, t) => sum + t.amount, 0);
+
+        const savings = monthlyIncome - monthlyExpenses;
+
+        window.overviewIncomeExpensesChart = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: ['Ingresos', 'Gastos', 'Ahorro'],
+                datasets: [{
+                    data: [monthlyIncome, monthlyExpenses, Math.max(0, savings)],
+                    backgroundColor: ['#10B981', '#EF4444', '#8B5CF6'],
+                    borderWidth: 0,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: €${context.parsed.x.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '€' + value.toFixed(0);
+                            },
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1200,
+                    easing: 'easeOutQuart'
+                }
+            }
         });
     }
 
