@@ -433,24 +433,24 @@ a:hover {
 }
 
 /* ========================================
-   BOTONES DE NAVEGACIÓN UNIFICADOS
+   BOTONES DE NAVEGACIÓN ESTILO REVOLUT
    ======================================== */
 .nav-btn {
     background: transparent;
-    border: 2px solid var(--border-color);
+    border: none;
     color: var(--text-primary);
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: var(--space-sm) var(--space-lg);
-    border-radius: var(--radius-md);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 40px;
-    min-width: 120px;
+    min-height: 36px;
+    min-width: auto;
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -491,43 +491,41 @@ a:hover {
 
 .nav-btn:hover {
     background: var(--bg-secondary);
-    border-color: var(--accent);
     color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    transform: none;
+    box-shadow: none;
 }
 
-/* Botón primario (Acceder) */
+/* Botón primario (Acceder) - Estilo Revolut */
 .nav-btn-primary {
     background: var(--accent);
     color: var(--text-white);
-    border-color: var(--accent);
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
-    font-weight: 700;
+    border: none;
+    font-weight: 600;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-md);
 }
 
 .nav-btn-primary:hover {
     background: var(--accent-light);
-    border-color: var(--accent-light);
     color: var(--text-white);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    transform: none;
+    box-shadow: none;
 }
 
-/* Botón secundario (Cerrar Sesión) */
+/* Botón secundario (Cerrar Sesión) - Estilo Revolut */
 .nav-btn-secondary {
     background: var(--error);
     color: var(--text-white);
-    border-color: var(--error);
-    font-weight: 600;
+    border: none;
+    font-weight: 500;
 }
 
 .nav-btn-secondary:hover {
     background: var(--error-light);
-    border-color: var(--error-light);
     color: var(--text-white);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    transform: none;
+    box-shadow: none;
 }
 
 /* ========================================
@@ -543,16 +541,15 @@ a:hover {
     align-items: center;
     gap: var(--space-xs);
     padding-right: var(--space-sm);
-    background: var(--bg-secondary);
-    border-color: var(--accent);
-    color: var(--accent);
-    font-weight: 600;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 .nav-btn-dropdown:hover {
-    background: var(--accent);
-    color: var(--text-white);
-    border-color: var(--accent);
+    background: var(--bg-secondary);
+    color: var(--accent);
 }
 
 .dropdown-arrow {
@@ -569,16 +566,16 @@ a:hover {
     top: 100%;
     right: 0;
     background: var(--bg-primary);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     z-index: 1000;
-    min-width: 200px;
+    min-width: 160px;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    padding: var(--space-sm) 0;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+    padding: var(--space-xs) 0;
     margin-top: var(--space-xs);
 }
 
@@ -591,15 +588,15 @@ a:hover {
 .nav-btn-dropdown-item {
     width: 100%;
     border: none;
-    border-radius: var(--radius-sm);
-    padding: var(--space-md) var(--space-lg);
-    margin: var(--space-xs) var(--space-sm);
+    border-radius: 0;
+    padding: var(--space-sm) var(--space-md);
+    margin: 0;
     min-width: auto;
     text-align: left;
     background: transparent;
     border-bottom: none;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    font-weight: 400;
+    transition: all 0.15s ease;
 }
 
 .nav-btn-dropdown-item:last-child {
@@ -608,8 +605,8 @@ a:hover {
 
 .nav-btn-dropdown-item:hover {
     background: var(--bg-secondary);
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    transform: none;
+    box-shadow: none;
     color: var(--accent);
 }
 
