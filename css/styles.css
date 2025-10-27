@@ -3848,11 +3848,12 @@ a:hover {
     align-items: center;
     padding: 1rem 1.5rem 0.75rem;
     border-bottom: 1px solid var(--border-color);
-    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(139, 92, 246, 0.05) 100%);
+    background: var(--card-bg);
     border-radius: 16px 16px 0 0;
     position: sticky;
     top: 0;
     z-index: 10;
+    backdrop-filter: blur(10px);
 }
 
 /* Responsive Header */
@@ -4366,7 +4367,7 @@ a:hover {
    SCROLLBAR UNIFICADO CON PALETA DE COLORES
    ======================================== */
 
-/* Scrollbar para Webkit (Chrome, Safari, Edge) */
+/* Scrollbar para Webkit (Chrome, Safari, Edge) - SIN FLECHAS */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -4391,13 +4392,23 @@ a:hover {
     background: var(--bg-secondary);
 }
 
+/* Quitar flechas de dirección */
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+    display: none;
+}
+
 /* Scrollbar para Firefox */
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--accent) var(--bg-secondary);
 }
 
-/* Scrollbar específico para modales */
+/* Scrollbar específico para modales - SIN FLECHAS */
 .auth-modal::-webkit-scrollbar {
     width: 6px;
 }
@@ -4414,4 +4425,14 @@ a:hover {
 
 .auth-modal::-webkit-scrollbar-thumb:hover {
     background: var(--accent-light);
+}
+
+/* Quitar flechas de dirección en modales */
+.auth-modal::-webkit-scrollbar-button {
+    display: none;
+}
+
+.auth-modal::-webkit-scrollbar-button:start:decrement,
+.auth-modal::-webkit-scrollbar-button:end:increment {
+    display: none;
 }
