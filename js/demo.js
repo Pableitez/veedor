@@ -812,6 +812,7 @@ class VeedorFinanceCenter {
                     <div class="budget-actions">
                         <button class="btn btn-sm btn-outline" onclick="veedorFinance.editBudget('${budget.id}')">Editar</button>
                         <button class="btn btn-sm btn-primary" onclick="veedorFinance.addToBudget('${budget.id}')">Añadir</button>
+                        <button class="btn btn-sm btn-danger" onclick="veedorFinance.deleteBudget('${budget.id}')">Eliminar</button>
                     </div>
                 </div>
             `;
@@ -1565,8 +1566,65 @@ class VeedorFinanceCenter {
     }
 
     // ========================================
-    // MODALES PROFESIONALES
+    // CALCULADORA FINANCIERA AVANZADA
     // ========================================
+    
+    calculateAmortization(principal, annualRate, years, paymentFrequency = 12) {
+        const monthlyRate = annualRate / 100 / paymentFrequency;
+        const totalPayments = years * paymentFrequency;
+        
+        // Cálculo de cuota mensual usando fórmula de amortización francesa
+        const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / 
+                              (Math.pow(1 + monthlyRate, totalPayments) - 1);
+        
+        const schedule = [];
+        let remainingBalance = principal;
+        
+        for (let i = 1; i <= totalPayments; i++) {
+            const interestPayment = remainingBalance * monthlyRate;
+            const principalPayment = monthlyPayment - interestPayment;
+            remainingBalance -= principalPayment;
+            
+            schedule.push({
+                payment: i,
+                monthlyPayment: monthlyPayment,
+                principalPayment: principalPayment,
+                interestPayment: interestPayment,
+                remainingBalance: Math.max(0, remainingBalance)
+            });
+        }
+        
+        return {
+            monthlyPayment: monthlyPayment,
+            totalPayments: totalPayments,
+            totalInterest: schedule.reduce((sum, payment) => sum + payment.interestPayment, 0),
+            schedule: schedule
+        };
+    }
+    
+    calculateTAE(nominalRate, fees, principal, years) {
+        // Cálculo simplificado de TAE
+        const totalFees = fees || 0;
+        const effectiveRate = ((nominalRate / 100) + (totalFees / principal)) * 100;
+        return effectiveRate;
+    }
+    
+    calculateLoanDetails(principal, nominalRate, years, fees = 0, paymentFrequency = 12) {
+        const amortization = this.calculateAmortization(principal, nominalRate, years, paymentFrequency);
+        const tae = this.calculateTAE(nominalRate, fees, principal, years);
+        
+        return {
+            principal: principal,
+            nominalRate: nominalRate,
+            tae: tae,
+            monthlyPayment: amortization.monthlyPayment,
+            totalInterest: amortization.totalInterest,
+            totalCost: principal + amortization.totalInterest + fees,
+            years: years,
+            paymentFrequency: paymentFrequency,
+            amortization: amortization
+        };
+    }
     showAddTransactionModal() {
         const modal = this.createModal('Nueva Transacción', this.getTransactionFormHTML());
         document.body.appendChild(modal);
@@ -1988,6 +2046,22 @@ class VeedorFinanceCenter {
             this.updateDashboard();
             this.updateTabContent(this.currentTab);
             this.showSuccess('Presupuesto actualizado correctamente');
+        }
+    }
+
+    deleteBudget(id) {
+        const budget = this.budgets.find(b => b.id === id);
+        if (!budget) return;
+
+        const category = this.categories.find(c => c.id === budget.category);
+        const budgetName = category?.name || budget.category;
+
+        if (confirm(`¿Estás seguro de que quieres eliminar el presupuesto de "${budgetName}"?`)) {
+            this.budgets = this.budgets.filter(b => b.id !== id);
+            this.saveToStorage();
+            this.updateDashboard();
+            this.updateTabContent(this.currentTab);
+            this.showMessage('Presupuesto eliminado correctamente', 'success');
         }
     }
 
@@ -3079,6 +3153,24 @@ function logout() {
                         <label for="liability-payment">Pago Mensual (€)</label>
                         <input type="number" id="liability-payment" step="0.01" value="${liability ? liability.monthlyPayment || '' : ''}">
                     </div>
+                    <div class="form-group">
+                        <label for="liability-rate">Tipo de Interés Anual (%)</label>
+                        <input type="number" id="liability-rate" step="0.01" value="${liability ? liability.interestRate || '' : ''}" placeholder="Ej: 3.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="liability-years">Años de Duración</label>
+                        <input type="number" id="liability-years" value="${liability ? liability.years || '' : ''}" placeholder="Ej: 25">
+                    </div>
+                    <div class="form-group">
+                        <label for="liability-fees">Comisiones Iniciales (€)</label>
+                        <input type="number" id="liability-fees" step="0.01" value="${liability ? liability.fees || '' : ''}" placeholder="Ej: 1500">
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn-outline" onclick="calculateAmortization()">Calcular Amortización</button>
+                    </div>
+                    <div id="amortization-results" class="amortization-results" style="display: none;">
+                        <!-- Se llena dinámicamente -->
+                    </div>
                     <div class="form-actions">
                         <button type="button" class="btn-outline" onclick="this.closest('.modal').remove()">Cancelar</button>
                         <button type="submit" class="btn-primary">${liability ? 'Actualizar' : 'Crear'}</button>
@@ -3089,9 +3181,55 @@ function logout() {
         return modal;
     }
 
-    function saveAsset(event, assetId) {
-        event.preventDefault();
+    function calculateAmortization() {
         if (!veedorFinance) return;
+        
+        const principal = parseFloat(document.getElementById('liability-amount').value);
+        const rate = parseFloat(document.getElementById('liability-rate').value);
+        const years = parseInt(document.getElementById('liability-years').value);
+        const fees = parseFloat(document.getElementById('liability-fees').value) || 0;
+        
+        if (!principal || !rate || !years) {
+            alert('Por favor, completa todos los campos requeridos para el cálculo.');
+            return;
+        }
+        
+        const loanDetails = veedorFinance.calculateLoanDetails(principal, rate, years, fees);
+        const resultsDiv = document.getElementById('amortization-results');
+        
+        resultsDiv.innerHTML = `
+            <div class="amortization-summary">
+                <h4>Resumen del Préstamo</h4>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="label">Cuota Mensual:</span>
+                        <span class="value">€${loanDetails.monthlyPayment.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">TIN:</span>
+                        <span class="value">${loanDetails.nominalRate.toFixed(2)}%</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">TAE:</span>
+                        <span class="value">${loanDetails.tae.toFixed(2)}%</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Intereses Totales:</span>
+                        <span class="value">€${loanDetails.totalInterest.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Coste Total:</span>
+                        <span class="value">€${loanDetails.totalCost.toFixed(2)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Actualizar el campo de pago mensual automáticamente
+        document.getElementById('liability-payment').value = loanDetails.monthlyPayment.toFixed(2);
+        
+        resultsDiv.style.display = 'block';
+    }
 
         const formData = {
             name: document.getElementById('asset-name').value,

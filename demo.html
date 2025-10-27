@@ -1788,10 +1788,60 @@
             transition: var(--transition-normal);
         }
         
-        .envelope-btn:hover {
-            background: var(--accent);
+        /* Estilos para calculadora de amortización */
+        .amortization-results {
+            margin-top: var(--space-lg);
+            padding: var(--space-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+        
+        .amortization-summary h4 {
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-sm);
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-sm);
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+        
+        .summary-item .label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .summary-item .value {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .btn-danger {
+            background: var(--error);
             color: white;
-            border-color: var(--accent);
+            border: 1px solid var(--error);
+        }
+        
+        .btn-danger:hover {
+            background: #d32f2f;
+            border-color: #d32f2f;
+            transform: translateY(-1px);
         }
         
         .envelope-icon {
