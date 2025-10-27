@@ -1580,16 +1580,12 @@ function showAuth() {
     console.log('authOverlay encontrado:', authOverlay);
     
     if (authOverlay) {
-        console.log('Añadiendo clase show...');
+        console.log('Mostrando modal...');
         authOverlay.classList.add('show');
-        // Forzar visibilidad temporalmente para debug
-        authOverlay.style.visibility = 'visible';
-        authOverlay.style.opacity = '1';
         document.body.style.overflow = 'hidden';
         
-        // Ajustar modal según zoom
+        // Inicializar validaciones
         setTimeout(() => {
-            adjustModalForZoom();
             initAuthValidations();
         }, 100);
         
@@ -1604,9 +1600,6 @@ function hideAuth() {
     const authOverlay = document.getElementById('auth-overlay');
     if (authOverlay) {
         authOverlay.classList.remove('show');
-        // Limpiar estilos inline de debug
-        authOverlay.style.visibility = '';
-        authOverlay.style.opacity = '';
         document.body.style.overflow = 'auto';
         console.log('Modal de autenticación cerrado');
     }
@@ -2014,59 +2007,7 @@ function hideFieldError(input, errorElement) {
     input.parentElement.classList.add('success');
 }
 
-// Detectar zoom del navegador y ajustar modal
-function detectZoom() {
-    // Método más preciso para detectar zoom
-    const ratio = window.devicePixelRatio || 1;
-    const screen = window.screen;
-    const availWidth = screen.availWidth;
-    const availHeight = screen.availHeight;
-    
-    // Calcular zoom aproximado usando múltiples métodos
-    const method1 = Math.round((window.outerWidth / window.innerWidth) * 100);
-    const method2 = Math.round((screen.width / window.innerWidth) * 100);
-    
-    // Usar el método más confiable
-    const zoom = Math.round((method1 + method2) / 2);
-    
-    console.log('Zoom detectado:', zoom + '%');
-    return zoom;
-}
-
-// Ajustar modal según zoom
-function adjustModalForZoom() {
-    const zoom = detectZoom();
-    const modal = document.querySelector('.auth-modal');
-    
-    if (modal) {
-        // Calcular altura máxima más conservadora
-        let maxHeight;
-        
-        if (zoom >= 150) {
-            // Zoom muy alto - altura muy reducida
-            maxHeight = 'calc(100vh - 2rem)';
-        } else if (zoom >= 125) {
-            // Zoom alto - altura reducida
-            maxHeight = 'calc(100vh - 1.5rem)';
-        } else if (zoom >= 110) {
-            // Zoom ligeramente alto
-            maxHeight = 'calc(100vh - 1.25rem)';
-        } else if (zoom <= 75) {
-            // Zoom bajo - altura aumentada
-            maxHeight = 'calc(100vh - 0.5rem)';
-        } else {
-            // Zoom normal (100%)
-            maxHeight = 'calc(100vh - 1rem)';
-        }
-        
-        modal.style.maxHeight = maxHeight;
-        console.log('Altura máxima ajustada a:', maxHeight);
-    }
-}
-
-// Escuchar cambios de zoom
-window.addEventListener('resize', adjustModalForZoom);
-window.addEventListener('load', adjustModalForZoom);
+// Funciones de zoom eliminadas - usando CSS puro para responsividad
 
 // Social Login Functions
 function loginWithGmail() {
