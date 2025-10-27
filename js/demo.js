@@ -3197,6 +3197,17 @@ function logout() {
         const loanDetails = veedorFinance.calculateLoanDetails(principal, rate, years, fees);
         const resultsDiv = document.getElementById('amortization-results');
         
+        // Crear tabla de amortización para los primeros 12 meses
+        const amortizationTable = loanDetails.amortization.schedule.slice(0, 12).map(payment => `
+            <tr>
+                <td>${payment.payment}</td>
+                <td>€${payment.monthlyPayment.toFixed(2)}</td>
+                <td>€${payment.principalPayment.toFixed(2)}</td>
+                <td>€${payment.interestPayment.toFixed(2)}</td>
+                <td>€${payment.remainingBalance.toFixed(2)}</td>
+            </tr>
+        `).join('');
+        
         resultsDiv.innerHTML = `
             <div class="amortization-summary">
                 <h4>Resumen del Préstamo</h4>
@@ -3221,6 +3232,29 @@ function logout() {
                         <span class="label">Coste Total:</span>
                         <span class="value">€${loanDetails.totalCost.toFixed(2)}</span>
                     </div>
+                </div>
+            </div>
+            
+            <div class="amortization-table-container">
+                <h4>Cuadro de Amortización (Primeros 12 meses)</h4>
+                <div class="table-wrapper">
+                    <table class="amortization-table">
+                        <thead>
+                            <tr>
+                                <th>Mes</th>
+                                <th>Cuota</th>
+                                <th>Capital</th>
+                                <th>Intereses</th>
+                                <th>Saldo Restante</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${amortizationTable}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-note">
+                    <small>Mostrando los primeros 12 meses. Total de ${loanDetails.totalPayments} cuotas.</small>
                 </div>
             </div>
         `;

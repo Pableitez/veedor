@@ -1844,6 +1844,62 @@
             transform: translateY(-1px);
         }
         
+        /* Estilos para tabla de amortización */
+        .amortization-table-container {
+            margin-top: var(--space-lg);
+        }
+        
+        .amortization-table-container h4 {
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+        
+        .amortization-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-primary);
+        }
+        
+        .amortization-table th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: var(--space-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        
+        .amortization-table td {
+            padding: var(--space-sm);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+        }
+        
+        .amortization-table tbody tr:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .amortization-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .table-note {
+            margin-top: var(--space-sm);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        
         .envelope-icon {
             font-size: 1.2rem;
             opacity: 0.7;
@@ -2539,9 +2595,9 @@
                     <div class="net-worth-header">
                         <h3>Patrimonio Neto</h3>
                         <div class="net-worth-actions">
-                            <button class="btn-outline" onclick="showAddAssetModal()" data-tooltip="Añadir activo">+ Activo</button>
-                            <button class="btn-outline" onclick="showAddLiabilityModal()" data-tooltip="Añadir pasivo">+ Pasivo</button>
-                            <button class="btn-outline" onclick="showNetWorthSettings()" data-tooltip="Configurar patrimonio">Configurar</button>
+                            <button class="btn-outline" onclick="showAddAssetModal()">+ Activo</button>
+                            <button class="btn-outline" onclick="showAddLiabilityModal()">+ Pasivo</button>
+                            <button class="btn-outline" onclick="showNetWorthSettings()">Configurar</button>
                         </div>
                     </div>
                     <div class="net-worth-value" id="net-worth-value">€45,230.00</div>
@@ -2550,25 +2606,25 @@
                         <div class="net-worth-item">
                             <span class="net-worth-label">Activos</span>
                             <span class="net-worth-amount positive" id="total-assets">€52,180.00</span>
-                            <button class="btn-outline" onclick="showAssetsList()" data-tooltip="Ver lista de activos">Ver Lista</button>
+                            <button class="btn-outline" onclick="showAssetsList()">Ver Lista</button>
                         </div>
                         <div class="net-worth-item">
                             <span class="net-worth-label">Pasivos</span>
                             <span class="net-worth-amount negative" id="total-liabilities">€6,950.00</span>
-                            <button class="btn-outline" onclick="showLiabilitiesList()" data-tooltip="Ver lista de pasivos">Ver Lista</button>
+                            <button class="btn-outline" onclick="showLiabilitiesList()">Ver Lista</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Dashboard Navigation -->
                 <div class="dashboard-nav">
-                    <button class="nav-tab active" data-tab="overview" data-tooltip="Vista general (Alt+1)">Resumen</button>
-                    <button class="nav-tab" data-tab="transactions" data-tooltip="Historial de movimientos (Alt+2)">Transacciones</button>
-                    <button class="nav-tab" data-tab="budgets" data-tooltip="Control de gastos (Alt+3)">Límites de Gasto</button>
-                    <button class="nav-tab" data-tab="envelopes" data-tooltip="Asignación de dinero (Alt+4)">Sobres de Dinero</button>
-                    <button class="nav-tab" data-tab="assets" data-tooltip="Activos y pasivos (Alt+5)">Patrimonio</button>
-                    <button class="nav-tab" data-tab="goals" data-tooltip="Metas de ahorro (Alt+6)">Objetivos</button>
-                    <button class="nav-tab" data-tab="analytics" data-tooltip="Estadísticas detalladas (Alt+7)">Análisis</button>
+                    <button class="nav-tab active" data-tab="overview">Resumen</button>
+                    <button class="nav-tab" data-tab="transactions">Transacciones</button>
+                    <button class="nav-tab" data-tab="budgets">Límites de Gasto</button>
+                    <button class="nav-tab" data-tab="envelopes">Sobres de Dinero</button>
+                    <button class="nav-tab" data-tab="assets">Patrimonio</button>
+                    <button class="nav-tab" data-tab="goals">Objetivos</button>
+                    <button class="nav-tab" data-tab="analytics">Análisis</button>
                 </div>
 
                 <!-- Dashboard Tabs Content -->
