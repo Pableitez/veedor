@@ -1319,7 +1319,7 @@ function handleNewTransaction(event) {
     updateTransactionSummary();
     
     // Cerrar modal
-    closeModal('transaction-modal');
+    hideAddTransaction();
     
     // Mostrar notificación
     alert('Transacción agregada correctamente');
@@ -1344,6 +1344,8 @@ window.deleteBudget = deleteBudget;
 window.editGoal = editGoal;
 window.deleteGoal = deleteGoal;
 window.handleNewTransaction = handleNewTransaction;
+window.hideAddTransaction = hideAddTransaction;
+window.showAddTransaction = showAddTransaction;
 window.showAddBudget = showAddBudget;
 window.showAddGoal = showAddGoal;
 window.openDemo = openDemo;
@@ -1377,8 +1379,7 @@ async function initAuth() {
         showUserMenu();
         loadUserData();
         loadDevData(); // Cargar datos de ejemplo
-        // No mostrar dashboard automáticamente en modo desarrollo
-        // showDashboard();
+        showDashboard();
         return;
     }
 
@@ -1747,9 +1748,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar carrusel
     initCarousel();
     
-    // Configurar eventos de modales unificados
-    setupModalEvents();
-    
     // Login
     document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1845,71 +1843,45 @@ function showSuccess(elementId, message) {
     }, 3000);
 }
 
+// Modal functions
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modal')) {
+        closeModal(event.target.id);
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const openModal = document.querySelector('.modal[style*="flex"]');
+        if (openModal) {
+            closeModal(openModal.id);
+        }
+    }
+});
+
 // Hacer funciones globales
 window.showAuth = showAuth;
 window.showAuthTab = showAuthTab;
 window.showForgotPassword = showForgotPassword;
-window.showProfile = showProfile;
-window.logout = logout;
-
-// ========================================
-// SISTEMA UNIFICADO DE MODALES
-// ========================================
-
-// Función universal para abrir cualquier modal
-function openModal(modalId) {
-    console.log('Abriendo modal:', modalId);
-    
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden'; // Prevenir scroll del body
-        
-        // Animar entrada
-        setTimeout(() => {
-            modal.style.opacity = '1';
-        }, 10);
-    }
-}
-
-// Función universal para cerrar cualquier modal
-function closeModal(modalId) {
-    console.log('Cerrando modal:', modalId);
-    
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.opacity = '0';
-        
-        setTimeout(() => {
-            modal.classList.remove('show');
-            document.body.style.overflow = ''; // Restaurar scroll del body
-        }, 300);
-    }
-}
-
-// Configurar eventos para todos los modales
-function setupModalEvents() {
-    // Cerrar modal al hacer clic fuera del contenido
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                const modalId = modal.id;
-                closeModal(modalId);
-            }
-        });
-    });
-    
-    // Cerrar con tecla Escape
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            const openModal = document.querySelector('.modal.show');
-            if (openModal) {
-                closeModal(openModal.id);
-            }
-        }
-    });
-}
-
-// Hacer funciones globales
 window.openModal = openModal;
 window.closeModal = closeModal;
+window.showProfile = showProfile;
+window.logout = logout;
