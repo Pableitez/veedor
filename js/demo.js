@@ -3343,6 +3343,17 @@ function logout() {
         const remainingYears = Math.floor(remainingPayments / 12);
         const remainingMonths = remainingPayments % 12;
         
+        // Calcular insights inteligentes
+        const currentPayment = totalPayments - remainingPayments;
+        const progressPercentage = (currentPayment / totalPayments) * 100;
+        const remainingInterest = loanDetails.amortization.schedule
+            .filter(p => p.remainingBalance > 0)
+            .reduce((sum, p) => sum + p.interestPayment, 0);
+        const paidInterest = totalInterestPaid - remainingInterest;
+        
+        // Generar recomendaciones inteligentes
+        const insights = generateAmortizationInsights(progressPercentage, remainingInterest, remainingPayments, totalPayments, rate);
+        
         resultsDiv.innerHTML = `
             <div class="amortization-summary">
                 <h4>Resumen del Préstamo</h4>
@@ -3382,10 +3393,55 @@ function logout() {
                 </div>
             </div>
             
+            <div class="amortization-insights">
+                <h4>Análisis Inteligente</h4>
+                <div class="progress-indicator">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span class="progress-label">Progreso del Préstamo:</span>
+                        <span class="progress-value">${progressPercentage.toFixed(1)}% (${currentPayment}/${totalPayments} cuotas)</span>
+                    </div>
+                </div>
+                
+                <div class="insights-grid">
+                    <div class="insight-card ${insights.timing.priority}">
+                        <div class="insight-icon">${insights.timing.icon}</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Momento del Préstamo</div>
+                            <div class="insight-description">${insights.timing.description}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-card ${insights.recommendation.priority}">
+                        <div class="insight-icon">${insights.recommendation.icon}</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Recomendación</div>
+                            <div class="insight-description">${insights.recommendation.description}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-card ${insights.savings.priority}">
+                        <div class="insight-icon">${insights.savings.icon}</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Ahorro Potencial</div>
+                            <div class="insight-description">${insights.savings.description}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="amortization-chart-container">
                 <h4>Evolución del Préstamo</h4>
                 <div class="chart-wrapper">
                     <canvas id="amortizationChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-insights">
+                    <div class="chart-marker" style="left: ${progressPercentage}%">
+                        <div class="marker-dot"></div>
+                        <div class="marker-label">Tu posición actual</div>
+                    </div>
                 </div>
             </div>
             
@@ -3421,6 +3477,94 @@ function logout() {
         createAmortizationChart(loanDetails.amortization.schedule);
         
         resultsDiv.style.display = 'block';
+    }
+    
+    function generateAmortizationInsights(progressPercentage, remainingInterest, remainingPayments, totalPayments, rate) {
+        // Determinar momento del préstamo
+        let timing = {};
+        if (progressPercentage < 20) {
+            timing = {
+                priority: 'high',
+                icon: '🚀',
+                description: 'Inicio del préstamo. La mayoría de la cuota va a intereses. Es el momento MÁS favorable para amortizar.'
+            };
+        } else if (progressPercentage < 50) {
+            timing = {
+                priority: 'medium',
+                icon: '⚖️',
+                description: 'Mitad del préstamo. Balance entre intereses y capital. Buen momento para amortizar si tienes liquidez.'
+            };
+        } else if (progressPercentage < 80) {
+            timing = {
+                priority: 'low',
+                icon: '📉',
+                description: 'Final del préstamo. La mayoría va a capital. Amortizar tiene menos impacto financiero.'
+            };
+        } else {
+            timing = {
+                priority: 'low',
+                icon: '🏁',
+                description: 'Casi terminado. Amortizar no compensa económicamente. Mejor mantener el plan actual.'
+            };
+        }
+        
+        // Generar recomendación específica
+        let recommendation = {};
+        const monthlyInterest = remainingInterest / remainingPayments;
+        const annualInterest = monthlyInterest * 12;
+        
+        if (progressPercentage < 30 && rate > 4) {
+            recommendation = {
+                priority: 'high',
+                icon: '💡',
+                description: `AMORTIZAR AHORA. Con ${rate}% TIN, puedes ahorrar €${remainingInterest.toFixed(0)} en intereses.`
+            };
+        } else if (progressPercentage < 50 && rate > 3) {
+            recommendation = {
+                priority: 'medium',
+                icon: '⚡',
+                description: `Considera amortizar. Ahorro potencial de €${remainingInterest.toFixed(0)}. Evalúa tu liquidez.`
+            };
+        } else if (progressPercentage < 70) {
+            recommendation = {
+                priority: 'low',
+                icon: '🤔',
+                description: 'Amortizar tiene impacto moderado. Solo si tienes exceso de liquidez sin mejor inversión.'
+            };
+        } else {
+            recommendation = {
+                priority: 'low',
+                icon: '✅',
+                description: 'Mantén el plan actual. Amortizar no compensa económicamente en esta fase.'
+            };
+        }
+        
+        // Calcular ahorro potencial
+        let savings = {};
+        const potentialSavings = remainingInterest;
+        const savingsPercentage = (potentialSavings / (remainingInterest + remainingPayments * 1000)) * 100;
+        
+        if (potentialSavings > 10000) {
+            savings = {
+                priority: 'high',
+                icon: '💰',
+                description: `Ahorro ALTO: €${potentialSavings.toFixed(0)}. Amortizar puede ser muy rentable.`
+            };
+        } else if (potentialSavings > 5000) {
+            savings = {
+                priority: 'medium',
+                icon: '💵',
+                description: `Ahorro MODERADO: €${potentialSavings.toFixed(0)}. Evalúa otras opciones de inversión.`
+            };
+        } else {
+            savings = {
+                priority: 'low',
+                icon: '💸',
+                description: `Ahorro LIMITADO: €${potentialSavings.toFixed(0)}. Mejor mantener el préstamo actual.`
+            };
+        }
+        
+        return { timing, recommendation, savings };
     }
     
     function createAmortizationChart(schedule) {
@@ -3568,6 +3712,16 @@ function logout() {
         const remainingYears = Math.floor(remainingPayments / 12);
         const remainingMonths = remainingPayments % 12;
         
+        // Calcular insights inteligentes
+        const currentPayment = totalPayments - remainingPayments;
+        const progressPercentage = (currentPayment / totalPayments) * 100;
+        const remainingInterest = loanDetails.amortization.schedule
+            .filter(p => p.remainingBalance > 0)
+            .reduce((sum, p) => sum + p.interestPayment, 0);
+        
+        // Generar recomendaciones inteligentes
+        const insights = generateAmortizationInsights(progressPercentage, remainingInterest, remainingPayments, totalPayments, rate);
+        
         resultsDiv.innerHTML = `
             <div class="amortization-summary">
                 <h4>Resumen del Préstamo</h4>
@@ -3607,10 +3761,55 @@ function logout() {
                 </div>
             </div>
             
+            <div class="amortization-insights">
+                <h4>Análisis Inteligente</h4>
+                <div class="progress-indicator">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span class="progress-label">Progreso del Préstamo:</span>
+                        <span class="progress-value">${progressPercentage.toFixed(1)}% (${currentPayment}/${totalPayments} cuotas)</span>
+                    </div>
+                </div>
+                
+                <div class="insights-grid">
+                    <div class="insight-card ${insights.timing.priority}">
+                        <div class="insight-icon">${insights.timing.icon}</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Momento del Préstamo</div>
+                            <div class="insight-description">${insights.timing.description}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-card ${insights.recommendation.priority}">
+                        <div class="insight-icon">${insights.recommendation.icon}</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Recomendación</div>
+                            <div class="insight-description">${insights.recommendation.description}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-card ${insights.savings.priority}">
+                        <div class="insight-icon">${insights.savings.icon}</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Ahorro Potencial</div>
+                            <div class="insight-description">${insights.savings.description}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="amortization-chart-container">
                 <h4>Evolución del Préstamo</h4>
                 <div class="chart-wrapper">
                     <canvas id="liabilityAmortizationChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-insights">
+                    <div class="chart-marker" style="left: ${progressPercentage}%">
+                        <div class="marker-dot"></div>
+                        <div class="marker-label">Tu posición actual</div>
+                    </div>
                 </div>
             </div>
             
