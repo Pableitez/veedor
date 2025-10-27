@@ -21,6 +21,18 @@
     --button-secondary: #8B5CF6;
     --button-gradient: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
     
+    /* === PALETA ESPECÍFICA PARA MODALES === */
+    --modal-primary: #6366f1;
+    --modal-primary-hover: #4f46e5;
+    --modal-primary-light: #818cf8;
+    --modal-secondary: #6b7280;
+    --modal-secondary-hover: #4b5563;
+    --modal-success: #059669;
+    --modal-error: #dc2626;
+    --modal-warning: #d97706;
+    --modal-accent: #8b5cf6;
+    --modal-accent-hover: #7c3aed;
+    
     /* === SISTEMA DE BOTONES === */
     --btn-padding-sm: var(--space-sm) var(--space-md);
     --btn-padding-md: var(--space-md) var(--space-lg);
@@ -3204,23 +3216,25 @@ a:hover {
 }
 
 .form-actions .btn-secondary {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    background: var(--modal-secondary);
+    color: #ffffff;
+    border: 1px solid var(--modal-secondary);
 }
 
 .form-actions .btn-secondary:hover {
-    background: var(--hover-secondary);
+    background: var(--modal-secondary-hover);
+    color: #ffffff;
     transform: translateY(-1px);
 }
 
 .form-actions .btn-primary {
-    background: var(--accent);
-    color: white;
+    background: var(--modal-primary);
+    color: #ffffff;
 }
 
 .form-actions .btn-primary:hover {
-    background: var(--accent-light);
+    background: var(--modal-primary-hover);
+    color: #ffffff;
     transform: translateY(-1px);
 }
 
@@ -3931,8 +3945,8 @@ a:hover {
 }
 
 .auth-tab.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
+    color: var(--modal-accent);
+    border-bottom-color: var(--modal-accent);
     background: rgba(139, 92, 246, 0.05);
 }
 
@@ -3980,7 +3994,7 @@ a:hover {
 
 .auth-form .form-group input:focus {
     outline: none;
-    border-color: var(--accent);
+    border-color: var(--modal-accent);
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
@@ -4008,7 +4022,7 @@ a:hover {
     width: 100%;
     margin-bottom: 12px;
     padding: 10px 16px;
-    background: var(--accent);
+    background: var(--modal-accent);
     color: white;
     border: none;
     border-radius: 10px;
@@ -4019,7 +4033,7 @@ a:hover {
 }
 
 .auth-submit:hover {
-    background: var(--accent-light);
+    background: var(--modal-accent-hover);
     transform: translateY(-1px);
 }
 
@@ -4036,7 +4050,7 @@ a:hover {
 }
 
 .auth-footer a {
-    color: var(--accent);
+    color: var(--modal-accent);
     text-decoration: none;
     font-size: 0.85rem;
 }
@@ -4047,7 +4061,7 @@ a:hover {
 
 /* Auth Messages */
 .auth-error {
-    background: var(--error);
+    background: var(--modal-error);
     color: white;
     padding: 12px 16px;
     border-radius: 8px;
@@ -4056,7 +4070,7 @@ a:hover {
 }
 
 .auth-success {
-    background: var(--success);
+    background: var(--modal-success);
     color: white;
     padding: 12px 16px;
     border-radius: 8px;
@@ -4183,7 +4197,7 @@ a:hover {
 }
 
 [data-theme="dark"] .auth-tab.active {
-    color: var(--accent);
+    color: var(--modal-accent);
     background: rgba(139, 92, 246, 0.1);
 }
 
@@ -4278,7 +4292,7 @@ a:hover {
 }
 
 [data-theme="light"] .auth-tab.active {
-    color: var(--accent);
+    color: var(--modal-accent);
     background: rgba(139, 92, 246, 0.08);
 }
 
