@@ -1947,6 +1947,27 @@ function setupNotionIntegration() {
     // Para sincronizar notas y documentos con el dashboard financiero
 }
 
+// Download App Functions
+function downloadApp(platform) {
+    if (platform === 'ios') {
+        console.log('Redirigiendo a App Store...');
+        showNotification('Redirigiendo a App Store...', 'info');
+        // Aquí se pondría el enlace real a la App Store
+        // window.open('https://apps.apple.com/app/veedor/idXXXXXXXX', '_blank');
+        setTimeout(() => {
+            showNotification('Próximamente disponible en App Store', 'info');
+        }, 1500);
+    } else if (platform === 'android') {
+        console.log('Redirigiendo a Google Play...');
+        showNotification('Redirigiendo a Google Play...', 'info');
+        // Aquí se pondría el enlace real a Google Play
+        // window.open('https://play.google.com/store/apps/details?id=com.veedor.app', '_blank');
+        setTimeout(() => {
+            showNotification('Próximamente disponible en Google Play', 'info');
+        }, 1500);
+    }
+}
+
 // Hacer funciones globales
 window.showAuth = showAuth;
 window.showAuthTab = showAuthTab;
@@ -1955,3 +1976,4 @@ window.showProfile = showProfile;
 window.logout = logout;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithNotion = loginWithNotion;
+window.downloadApp = downloadApp;
