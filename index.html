@@ -1165,9 +1165,9 @@
                     <div class="footer-section">
                         <h4>Legal</h4>
                         <ul>
-                            <li><a href="#" onclick="openLegalModal('privacy-modal'); return false;">Política de Privacidad</a></li>
-                            <li><a href="#" onclick="openLegalModal('terms-modal'); return false;">Términos y Condiciones</a></li>
-                            <li><a href="#" onclick="openLegalModal('cookies-modal'); return false;">Política de Cookies</a></li>
+                            <li><a href="#" onclick="openModal('privacy-modal'); return false;">Política de Privacidad</a></li>
+                            <li><a href="#" onclick="openModal('terms-modal'); return false;">Términos y Condiciones</a></li>
+                            <li><a href="#" onclick="openModal('cookies-modal'); return false;">Política de Cookies</a></li>
                         </ul>
                     </div>
                 </div>
@@ -1178,13 +1178,13 @@
         </footer>
 
         <!-- Legal Modals -->
-        <div id="privacy-modal" class="legal-modal">
-            <div class="legal-modal-content">
-                <div class="legal-modal-header">
+        <div id="privacy-modal" class="modal">
+            <div class="modal-content large">
+                <div class="modal-header">
                     <h2>Política de Privacidad</h2>
-                    <button class="close-btn" onclick="closeLegalModal('privacy-modal')">&times;</button>
+                    <button class="close-btn" onclick="closeModal('privacy-modal')">&times;</button>
                 </div>
-                <div class="legal-modal-body">
+                <div class="modal-body">
                     <p class="last-updated">Última actualización: 1 de enero de 2025</p>
 
                     <section>
@@ -1251,13 +1251,13 @@
             </div>
         </div>
 
-        <div id="terms-modal" class="legal-modal">
-            <div class="legal-modal-content">
-                <div class="legal-modal-header">
+        <div id="terms-modal" class="modal">
+            <div class="modal-content large">
+                <div class="modal-header">
                     <h2>Términos y Condiciones</h2>
-                    <button class="close-btn" onclick="closeLegalModal('terms-modal')">&times;</button>
+                    <button class="close-btn" onclick="closeModal('terms-modal')">&times;</button>
                 </div>
-                <div class="legal-modal-body">
+                <div class="modal-body">
                     <p class="last-updated">Última actualización: 1 de enero de 2025</p>
 
                     <section>
@@ -1307,13 +1307,13 @@
             </div>
         </div>
 
-        <div id="cookies-modal" class="legal-modal">
-            <div class="legal-modal-content">
-                <div class="legal-modal-header">
+        <div id="cookies-modal" class="modal">
+            <div class="modal-content large">
+                <div class="modal-header">
                     <h2>Política de Cookies</h2>
-                    <button class="close-btn" onclick="closeLegalModal('cookies-modal')">&times;</button>
+                    <button class="close-btn" onclick="closeModal('cookies-modal')">&times;</button>
                 </div>
-                <div class="legal-modal-body">
+                <div class="modal-body">
                     <p class="last-updated">Última actualización: 1 de enero de 2025</p>
 
                     <section>
@@ -1739,9 +1739,9 @@
                 <div class="footer-section">
                     <h4>Legal</h4>
                     <ul>
-                        <li><a href="#" onclick="openLegalModal('privacy-modal'); return false;">Política de Privacidad</a></li>
-                        <li><a href="#" onclick="openLegalModal('terms-modal'); return false;">Términos y Condiciones</a></li>
-                        <li><a href="#" onclick="openLegalModal('cookies-modal'); return false;">Política de Cookies</a></li>
+                        <li><a href="#" onclick="openModal('privacy-modal'); return false;">Política de Privacidad</a></li>
+                        <li><a href="#" onclick="openModal('terms-modal'); return false;">Términos y Condiciones</a></li>
+                        <li><a href="#" onclick="openModal('cookies-modal'); return false;">Política de Cookies</a></li>
                     </ul>
                 </div>
             </div>
