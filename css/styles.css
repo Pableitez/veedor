@@ -11,8 +11,6 @@
     --primary-dark: #0056CC;
     --primary-light: #4A9EFF;
     --secondary: #6B7280;
-    --accent: #EF4444;
-    --accent-light: #F87171;
     
     /* === COLORES TECH PARA HOVER Y BOTONES === */
     --hover-primary: #8B5CF6;
@@ -148,8 +146,6 @@
     --primary-dark: #0056CC;
     --primary-light: #4A9EFF;
     --secondary: #6B7280;
-    --accent: #EF4444;
-    --accent-light: #F87171;
     
     /* === COLORES TECH PARA HOVER Y BOTONES === */
     --hover-primary: #8B5CF6;
@@ -415,34 +411,7 @@ a:hover {
         left: 0;
     }
     
-    .nav-btn {
-        width: 100%;
-        max-width: 300px;
-        text-align: center;
-        padding: var(--space-lg) var(--space-xl);
-        font-size: 1.1rem;
-        border-radius: var(--radius-lg);
-        min-height: 48px;
-        font-weight: 600;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .nav-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
-    }
-    
-    .nav-btn-primary {
-        background: var(--accent);
-        color: var(--text-white);
-        border-color: var(--accent);
-        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
-    }
-    
-    .nav-btn-primary:hover {
-        background: var(--accent-light);
-        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
-    }
+    /* Estilos móviles para nav-btn se manejan en la definición principal */
     
     .user-profile {
         flex-direction: column;
@@ -485,6 +454,39 @@ a:hover {
     position: relative;
     overflow: hidden;
     white-space: nowrap;
+}
+
+/* Estilos móviles para nav-btn */
+@media (max-width: 768px) {
+    .nav-btn {
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+        padding: var(--space-lg) var(--space-xl);
+        font-size: 1.1rem;
+        border-radius: var(--radius-lg);
+        min-height: 48px;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        min-width: auto;
+    }
+    
+    .nav-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+    }
+    
+    .nav-btn-primary {
+        background: var(--accent);
+        color: var(--text-white);
+        border-color: var(--accent);
+        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+    }
+    
+    .nav-btn-primary:hover {
+        background: var(--accent-light);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+    }
 }
 
 .nav-btn:hover {
@@ -1685,12 +1687,7 @@ a:hover {
         gap: var(--space-lg);
     }
     
-    .nav-btn {
-        width: 100%;
-        justify-content: center;
-        min-width: auto;
-        padding: var(--space-md) var(--space-lg);
-    }
+    /* Estilos responsive para nav-btn se manejan en la definición principal */
     
     .progress-visual {
         max-width: 100%;
