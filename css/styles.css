@@ -3035,16 +3035,17 @@ a:hover {
 
 .modal-content {
     background: var(--card-bg);
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 0;
-    max-width: 500px;
+    max-width: 450px;
     width: 90%;
-    max-height: 90vh;
+    max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transform: scale(0.9);
-    transition: transform 0.3s ease;
-    border: 1px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .modal.show .modal-content {
@@ -3055,25 +3056,67 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
-    border-radius: 12px 12px 0 0;
+    border-radius: 16px 16px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .modal-body {
-    padding: 1.5rem;
-    max-height: 70vh;
+    padding: 1.25rem 1.5rem;
+    max-height: 60vh;
     overflow-y: auto;
 }
 
 .modal-body p {
-    margin-bottom: 1rem;
-    line-height: 1.6;
+    margin-bottom: 0.875rem;
+    line-height: 1.5;
     color: var(--text-primary);
+    font-size: 0.95rem;
 }
 
-.modal-body strong {
+.legal-section {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.legal-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.legal-section h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+}
+
+.legal-section p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--text-secondary);
+}
+
+.legal-contact {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.legal-contact p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.legal-contact strong {
     color: var(--accent);
     font-weight: 600;
 }
@@ -3081,14 +3124,14 @@ a:hover {
 .close-btn {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     cursor: pointer;
     color: var(--text-secondary);
-    padding: 0.5rem;
+    padding: 0.25rem;
     border-radius: 6px;
     transition: all 0.2s ease;
-    width: 40px;
-    height: 40px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3097,6 +3140,7 @@ a:hover {
 .close-btn:hover {
     background: var(--hover-bg);
     color: var(--text-primary);
+    transform: scale(1.1);
 }
 
 .modal-form {
