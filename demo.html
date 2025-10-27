@@ -2004,771 +2004,6 @@
             justify-content: flex-end;
         }
         
-        /* Estilos para ranking inteligente */
-        .analysis-rank {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-right: var(--space-md);
-            min-width: 40px;
-            text-align: center;
-        }
-        
-        .analysis-content {
-            flex: 1;
-        }
-        
-        .analysis-metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: var(--space-sm);
-            margin-top: var(--space-sm);
-        }
-        
-        .metric {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: var(--space-xs);
-            background: var(--bg-secondary);
-            border-radius: var(--radius-sm);
-        }
-        
-        .metric-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 2px;
-        }
-        
-        .metric-value {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .analysis-icon {
-            font-size: 2rem;
-            margin-left: var(--space-md);
-            flex-shrink: 0;
-        }
-        
-        .metric.affordable {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-        
-        .metric.not-affordable {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-        
-        .metric.affordable .metric-value {
-            color: #22c55e;
-        }
-        
-        .metric.not-affordable .metric-value {
-            color: #ef4444;
-        }
-        
-        /* Estilos para insights en sección de activos/pasivos */
-        .amortization-insights-section {
-            margin: var(--space-lg) 0;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-lg);
-        }
-        
-        .insights-header {
-            text-align: center;
-            margin-bottom: var(--space-lg);
-        }
-        
-        .insights-header h4 {
-            color: var(--text-primary);
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: var(--space-sm);
-        }
-        
-        .insights-header p {
-            color: var(--text-secondary);
-            margin-bottom: var(--space-md);
-        }
-        
-        .insights-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: var(--space-md);
-        }
-        
-        .liability-insight-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            transition: all 0.2s ease;
-        }
-        
-        .liability-insight-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .liability-insight-card.high {
-            border-left: 4px solid var(--error);
-        }
-        
-        .liability-insight-card.medium {
-            border-left: 4px solid var(--accent);
-        }
-        
-        .liability-insight-card.low {
-            border-left: 4px solid var(--text-secondary);
-        }
-        
-        .liability-insight-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: var(--space-sm);
-        }
-        
-        .liability-insight-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .liability-insight-icon {
-            font-size: 1.5rem;
-        }
-        
-        .liability-insight-description {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.4;
-            margin-bottom: var(--space-sm);
-        }
-        
-        .liability-insight-metrics {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-xs);
-            margin-bottom: var(--space-sm);
-        }
-        
-        .liability-metric {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--space-xs);
-            background: var(--bg-primary);
-            border-radius: var(--radius-sm);
-        }
-        
-        .liability-metric-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        
-        .liability-metric-value {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .liability-insight-action {
-            display: flex;
-            justify-content: flex-end;
-        }
-        
-        .liability-insight-action .btn-outline {
-            font-size: 0.8rem;
-            padding: var(--space-xs) var(--space-sm);
-        }
-        
-        .insights-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: var(--space-md);
-            margin-bottom: var(--space-lg);
-        }
-        
-        .summary-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            text-align: center;
-        }
-        
-        .summary-title {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-xs);
-        }
-        
-        .summary-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-        
-        .liability-insights-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: var(--space-md);
-        }
-        
-        .insights-footer {
-            text-align: center;
-            margin-top: var(--space-lg);
-            padding-top: var(--space-md);
-            border-top: 1px solid var(--border-color);
-        }
-        
-        .insights-footer p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        
-        .btn-link {
-            background: none;
-            border: none;
-            color: var(--accent);
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: inherit;
-        }
-        
-        .btn-link:hover {
-            color: var(--error);
-        }
-        
-        /* Estilos para análisis automático y simulador */
-        .automatic-analysis {
-            margin: var(--space-lg) 0;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-lg);
-        }
-        
-        .automatic-analysis h4 {
-            color: var(--text-primary);
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: var(--space-md);
-        }
-        
-        .automatic-analysis-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-        }
-        
-        .analysis-insight {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--space-sm);
-            margin-bottom: var(--space-md);
-        }
-        
-        .analysis-insight .insight-icon {
-            font-size: 1.5rem;
-            color: var(--accent);
-        }
-        
-        .analysis-insight .insight-content {
-            flex: 1;
-        }
-        
-        .analysis-insight .insight-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--space-xs);
-        }
-        
-        .analysis-insight .insight-description {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-        
-        .analysis-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: var(--space-sm);
-        }
-        
-        .stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--space-xs);
-            background: var(--bg-primary);
-            border-radius: var(--radius-sm);
-        }
-        
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        
-        .stat-value {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .interactive-simulator {
-            margin: var(--space-lg) 0;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-lg);
-        }
-        
-        .interactive-simulator h4 {
-            color: var(--text-primary);
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: var(--space-sm);
-        }
-        
-        .interactive-simulator p {
-            color: var(--text-secondary);
-            margin-bottom: var(--space-md);
-        }
-        
-        .simulator-controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--space-md);
-            margin-bottom: var(--space-lg);
-        }
-        
-        .simulator-input {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-xs);
-        }
-        
-        .simulator-input label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        
-        .simulator-input input,
-        .simulator-input select {
-            padding: var(--space-sm);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 0.9rem;
-        }
-        
-        .simulator-input input:focus,
-        .simulator-input select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        
-        .simulation-results {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-lg);
-        }
-        
-        .simulation-results h5 {
-            color: var(--text-primary);
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: var(--space-md);
-        }
-        
-        .simulation-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: var(--space-md);
-            margin-bottom: var(--space-lg);
-        }
-        
-        .sim-summary-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            text-align: center;
-        }
-        
-        .sim-summary-title {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-xs);
-        }
-        
-        .sim-summary-value {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-        
-        .simulation-details {
-            margin-bottom: var(--space-lg);
-        }
-        
-        .simulation-details h6 {
-            color: var(--text-primary);
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: var(--space-sm);
-        }
-        
-        .simulation-item {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: var(--space-sm);
-            margin-bottom: var(--space-xs);
-        }
-        
-        .sim-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-xs);
-        }
-        
-        .sim-item-name {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .sim-item-amount {
-            font-weight: 700;
-            color: var(--accent);
-        }
-        
-        .sim-item-details {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        
-        .simulation-insights h6 {
-            color: var(--text-primary);
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: var(--space-sm);
-        }
-        
-        .simulation-insights ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .simulation-insights li {
-            background: var(--bg-secondary);
-            border-left: 3px solid var(--accent);
-            padding: var(--space-sm);
-            margin-bottom: var(--space-xs);
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        
-        .error {
-            color: var(--error);
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: var(--space-sm);
-            border-radius: var(--radius-sm);
-            text-align: center;
-        }
-
-        /* ========================================
-           ESTILOS PARA GRÁFICAS DE ANÁLISIS
-           ======================================== */
-        .analytics-charts {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--space-lg);
-            margin-top: var(--space-lg);
-        }
-
-        .chart-container {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: var(--space-lg);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .chart-container h4 {
-            margin: 0 0 var(--space-md) 0;
-            color: var(--text-primary);
-            font-size: 1.1rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .chart-container canvas {
-            max-height: 300px;
-        }
-
-        @media (max-width: 768px) {
-            .analytics-charts {
-                grid-template-columns: 1fr;
-                gap: var(--space-md);
-            }
-            
-            .chart-container {
-                padding: var(--space-md);
-            }
-            
-            .chart-container canvas {
-                max-height: 250px;
-            }
-        }
-        
-        /* Sección de Gráficas Principales */
-        .charts-section {
-            margin-bottom: var(--space-xl);
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-md);
-        }
-
-        .charts-header {
-            text-align: center;
-            margin-bottom: var(--space-lg);
-        }
-
-        .charts-header h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: var(--space-xs);
-        }
-
-        .charts-header p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: var(--space-lg);
-        }
-
-        @media (max-width: 768px) {
-            .charts-grid {
-                grid-template-columns: 1fr;
-                gap: var(--space-md);
-            }
-            
-            .charts-section {
-                padding: var(--space-md);
-                margin-bottom: var(--space-lg);
-            }
-            
-            .chart-container-large {
-                height: 250px;
-            }
-            
-            .chart-card {
-                padding: var(--space-sm);
-            }
-            
-            .charts-header h3 {
-                font-size: 1.3rem;
-            }
-            
-            .chart-header h4 {
-                font-size: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .charts-section {
-                padding: var(--space-sm);
-            }
-            
-            .chart-container-large {
-                height: 200px;
-            }
-            
-            .charts-header h3 {
-                font-size: 1.2rem;
-            }
-            
-            .chart-header h4 {
-                font-size: 0.9rem;
-            }
-            
-            .chart-subtitle {
-                font-size: 0.8rem;
-            }
-        }
-
-        .chart-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            transition: var(--transition-normal);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .chart-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--accent);
-        }
-
-        .chart-card.primary {
-            border-color: var(--accent);
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-primary));
-        }
-
-        .chart-header {
-            margin-bottom: var(--space-md);
-            text-align: center;
-        }
-
-        .chart-header h4 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--space-xs);
-        }
-
-        .chart-subtitle {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-
-        .chart-container-large {
-            position: relative;
-            height: 300px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .chart-container-large canvas {
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        /* Sección de Insights */
-        .insights-section {
-            margin-bottom: var(--space-xl);
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .insights-header {
-            text-align: center;
-            margin-bottom: var(--space-lg);
-        }
-
-        .insights-header h3 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--space-xs);
-        }
-
-        .insights-header p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        .insights-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--space-md);
-        }
-
-        .insight-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            transition: var(--transition-normal);
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            align-items: flex-start;
-            gap: var(--space-sm);
-        }
-
-        .insight-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--accent);
-        }
-
-        .insight-icon {
-            font-size: 1.5rem;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .insight-content {
-            flex: 1;
-        }
-
-        .insight-content h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--space-xs);
-        }
-
-        .insight-content p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-sm);
-            line-height: 1.4;
-        }
-
-        .insight-action {
-            margin-top: var(--space-xs);
-        }
-
-        @media (max-width: 768px) {
-            .insights-grid {
-                grid-template-columns: 1fr;
-                gap: var(--space-sm);
-            }
-            
-            .insights-section {
-                padding: var(--space-md);
-            }
-            
-            .insight-card {
-                padding: var(--space-sm);
-            }
-            
-            .insights-header h3 {
-                font-size: 1.2rem;
-            }
-        }
-        
         /* Estilos para insights de amortización */
         .amortization-insights {
             margin-top: var(--space-lg);
@@ -2900,6 +2135,202 @@
             text-align: center;
             margin-top: 4px;
             white-space: nowrap;
+        }
+        
+        /* Estilos para comparación de pasivos */
+        .liability-comparison {
+            margin-top: var(--space-lg);
+            padding: var(--space-md);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+        }
+        
+        .liability-comparison h4 {
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .comparison-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            flex-wrap: wrap;
+        }
+        
+        .comparison-controls label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .comparison-controls input {
+            padding: var(--space-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            width: 150px;
+        }
+        
+        .strategy-results {
+            margin-top: var(--space-md);
+        }
+        
+        .strategy-summary {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .strategy-summary h5 {
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-sm);
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .stat-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .recommendations-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        
+        .recommendation-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            transition: all 0.2s ease;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .recommendation-card.priority-high {
+            border-left: 4px solid var(--error);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(220, 38, 38, 0.05) 100%);
+        }
+        
+        .recommendation-card.priority-medium {
+            border-left: 4px solid var(--accent);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(59, 130, 246, 0.05) 100%);
+        }
+        
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+        
+        .recommendation-priority {
+            background: var(--error);
+            color: white;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .recommendation-card.priority-medium .recommendation-priority {
+            background: var(--accent);
+        }
+        
+        .recommendation-liability {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .recommendation-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-sm);
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-xs);
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+        }
+        
+        .detail-item .label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .detail-item .value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .strategy-message {
+            text-align: center;
+            padding: var(--space-lg);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+        
+        .strategy-message h5 {
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+        }
+        
+        .strategy-message p {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .strategy-note {
+            margin-top: var(--space-md);
+            padding: var(--space-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .strategy-note p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
         }
         
         .envelope-icon {
@@ -3579,89 +3010,6 @@
             </div>
 
             <div class="dashboard-content">
-                <!-- Charts Section - PRINCIPAL -->
-                <div class="charts-section">
-                    <div class="charts-header">
-                        <h3>Análisis Visual de tus Finanzas</h3>
-                        <p>Visualiza tus patrones de gasto y tendencias financieras</p>
-                    </div>
-                    
-                    <div class="charts-grid">
-                        <div class="chart-card primary">
-                            <div class="chart-header">
-                                <h4>Gastos por Categoría</h4>
-                                <span class="chart-subtitle">Distribución del mes actual</span>
-                            </div>
-                            <div class="chart-container-large">
-                                <canvas id="overviewCategoryChart" width="400" height="300"></canvas>
-                            </div>
-                        </div>
-                        
-                        <div class="chart-card primary">
-                            <div class="chart-header">
-                                <h4>Tendencias Mensuales</h4>
-                                <span class="chart-subtitle">Últimos 6 meses</span>
-                            </div>
-                            <div class="chart-container-large">
-                                <canvas id="overviewTrendsChart" width="400" height="300"></canvas>
-                            </div>
-                        </div>
-                        
-                        <div class="chart-card primary">
-                            <div class="chart-header">
-                                <h4>Resumen Financiero</h4>
-                                <span class="chart-subtitle">Ingresos vs Gastos</span>
-                            </div>
-                            <div class="chart-container-large">
-                                <canvas id="overviewIncomeExpensesChart" width="400" height="300"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Insights Financieros -->
-                <div class="insights-section">
-                    <div class="insights-header">
-                        <h3>Insights Inteligentes</h3>
-                        <p>Análisis automático de tus patrones financieros</p>
-                    </div>
-                    
-                    <div class="insights-grid">
-                        <div class="insight-card">
-                            <div class="insight-icon">●</div>
-                            <div class="insight-content">
-                                <h4>Patrón de Gastos</h4>
-                                <p>Tu mayor gasto este mes es en <strong>Alimentación</strong> con €468.50</p>
-                                <div class="insight-action">
-                                    <button class="btn btn-sm btn-outline">Optimizar</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="insight-card">
-                            <div class="insight-icon">▲</div>
-                            <div class="insight-content">
-                                <h4>Tendencia Positiva</h4>
-                                <p>Has aumentado tus ingresos un <strong>8.5%</strong> respecto al mes anterior</p>
-                                <div class="insight-action">
-                                    <button class="btn btn-sm btn-outline">Ver detalles</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="insight-card">
-                            <div class="insight-icon">★</div>
-                            <div class="insight-content">
-                                <h4>Objetivo de Ahorro</h4>
-                                <p>Estás ahorrando el <strong>37.2%</strong> de tus ingresos. Excelente!</p>
-                                <div class="insight-action">
-                                    <button class="btn btn-sm btn-outline">Configurar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Financial Summary -->
                 <div class="financial-summary">
                     <div class="summary-card">
@@ -3779,29 +3127,6 @@
                                     <h3>Gastos por Categoría</h3>
                                     <button class="btn btn-sm btn-outline" onclick="showTab('analytics')">Ver análisis</button>
                                 </div>
-                                <div class="chart-container">
-                                    <p>Las gráficas se muestran en la sección superior</p>
-                                </div>
-                            </div>
-                            
-                            <div class="overview-card">
-                                <div class="card-header">
-                                    <h3>Tendencias Mensuales</h3>
-                                    <button class="btn btn-sm btn-outline" onclick="showTab('analytics')">Ver análisis</button>
-                                </div>
-                                <div class="chart-container">
-                                    <p>Las gráficas se muestran en la sección superior</p>
-                                </div>
-                            </div>
-                            
-                            <div class="overview-card">
-                                <div class="card-header">
-                                    <h3>Resumen Financiero</h3>
-                                    <button class="btn btn-sm btn-outline" onclick="showTab('analytics')">Ver análisis</button>
-                                </div>
-                                <div class="chart-container">
-                                    <p>Las gráficas se muestran en la sección superior</p>
-                                </div>
                             </div>
                         </div>
                         
@@ -3891,21 +3216,6 @@
                                 <div class="assets-controls">
                                     <button class="btn-primary" onclick="showAddAssetModal()">+ Nuevo Activo</button>
                                     <button class="btn-outline" onclick="showAddLiabilityModal()">+ Nuevo Pasivo</button>
-                                </div>
-                            </div>
-                            
-                            <!-- Insights Inteligentes de Amortización -->
-                            <div class="amortization-insights-section">
-                                <div class="insights-header">
-                                    <h4>Análisis Inteligente de Amortización</h4>
-                                    <p>Descubre qué pasivo amortizar primero para maximizar tu ahorro</p>
-                                    <button class="btn-outline" onclick="showSavingsConfiguration()">
-                                        Configurar Ahorro Disponible
-                                    </button>
-                                </div>
-                                
-                                <div class="insights-content" id="liability-insights">
-                                    <!-- Se llenará dinámicamente con JavaScript -->
                                 </div>
                             </div>
                             
@@ -4255,6 +3565,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/veedor-ultra-simple.js"></script>
+    <script src="js/demo.js"></script>
 </body>
 </html>

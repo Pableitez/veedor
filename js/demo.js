@@ -46,10 +46,6 @@ class VeedorFinanceCenter {
         this.setupThemeToggle();
         this.setupKeyboardShortcuts();
         this.setupAccessibility();
-        // Asegurar que los insights se muestren
-        setTimeout(() => {
-            this.updateLiabilityInsights();
-        }, 100);
     }
 
     initializeTabs() {
@@ -117,54 +113,12 @@ class VeedorFinanceCenter {
             ];
         }
 
-        // Generar pasivos de demo CON DATOS FINANCIEROS COMPLETOS
+        // Generar pasivos de demo
         if (!this.liabilities || this.liabilities.length === 0) {
             this.liabilities = [
-                { 
-                    id: 1, 
-                    name: 'Hipoteca', 
-                    amount: 180000.00, 
-                    type: 'mortgage', 
-                    institution: 'BBVA', 
-                    monthlyPayment: 850.00,
-                    interestRate: 4.5, // TIN
-                    tae: 4.8, // TAE
-                    years: 25,
-                    fees: 2000,
-                    earlyCancellationFee: 1.5,
-                    maintenanceFee: 0,
-                    insuranceFee: 0
-                },
-                { 
-                    id: 2, 
-                    name: 'Préstamo Coche', 
-                    amount: 12000.00, 
-                    type: 'loan', 
-                    institution: 'Santander', 
-                    monthlyPayment: 280.00,
-                    interestRate: 6.2, // TIN
-                    tae: 6.8, // TAE
-                    years: 5,
-                    fees: 500,
-                    earlyCancellationFee: 2.0,
-                    maintenanceFee: 0,
-                    insuranceFee: 0
-                },
-                { 
-                    id: 3, 
-                    name: 'Préstamo Personal', 
-                    amount: 8000.00, 
-                    type: 'loan', 
-                    institution: 'CaixaBank', 
-                    monthlyPayment: 180.00,
-                    interestRate: 7.5, // TIN
-                    tae: 8.2, // TAE
-                    years: 4,
-                    fees: 300,
-                    earlyCancellationFee: 1.0,
-                    maintenanceFee: 0,
-                    insuranceFee: 0
-                }
+                { id: 1, name: 'Hipoteca', amount: 180000.00, type: 'mortgage', institution: 'BBVA', monthlyPayment: 850.00 },
+                { id: 2, name: 'Préstamo Coche', amount: 12000.00, type: 'loan', institution: 'Santander', monthlyPayment: 280.00 },
+                { id: 3, name: 'Tarjeta Crédito', amount: 1200.00, type: 'credit', institution: 'BBVA', monthlyPayment: 50.00 }
             ];
         }
     }
@@ -405,13 +359,6 @@ class VeedorFinanceCenter {
         // Actualizar contenido específico del tab
         this.updateTabContent(tabName);
         
-        // Si es la pestaña de analytics, forzar actualización de gráficas
-        if (tabName === 'analytics') {
-            setTimeout(() => {
-                this.updateAnalyticsTrends();
-            }, 100);
-        }
-        
         // Actualizar URL sin recargar
         history.pushState(null, null, `#${tabName}`);
         
@@ -574,43 +521,18 @@ class VeedorFinanceCenter {
         
         container.innerHTML = `
             <div class="analysis-header">
-                <h3>Ranking de Amortización Inteligente</h3>
-                <p>Ordenado por prioridad de amortización basada en múltiples factores</p>
-                <button class="btn-outline" onclick="showSavingsConfiguration()" style="margin-top: var(--space-sm);">
-                    Configurar Ahorro Disponible
-                </button>
+                <h3>Análisis de Amortización</h3>
+                <p>Recomendaciones para optimizar tus pasivos</p>
             </div>
             <div class="analysis-list">
-                ${analysis.map((item, index) => `
+                ${analysis.map(item => `
                     <div class="analysis-item ${item.priority}">
-                        <div class="analysis-rank">#${index + 1}</div>
-                        <div class="analysis-content">
-                            <div class="analysis-title">${item.recommendation.title}</div>
-                            <div class="analysis-description">${item.recommendation.description}</div>
-                            <div class="analysis-metrics">
-                                <div class="metric">
-                                    <span class="metric-label">Score:</span>
-                                    <span class="metric-value">${item.priorityScore.toFixed(1)}/100</span>
-                                </div>
-                                <div class="metric">
-                                    <span class="metric-label">Progreso:</span>
-                                    <span class="metric-value">${item.progress.toFixed(1)}%</span>
-                                </div>
-                                <div class="metric">
-                                    <span class="metric-label">TIN:</span>
-                                    <span class="metric-value">${item.rate}%</span>
-                                </div>
-                                <div class="metric">
-                                    <span class="metric-label">Cuota:</span>
-                                    <span class="metric-value">€${item.monthlyPayment.toFixed(0)}</span>
-                                </div>
-                                <div class="metric ${item.affordable ? 'affordable' : 'not-affordable'}">
-                                    <span class="metric-label">Asequible:</span>
-                                    <span class="metric-value">${item.affordable ? 'Sí' : 'No'}</span>
-                                </div>
-                            </div>
+                        <div class="analysis-title">${item.title}</div>
+                        <div class="analysis-description">${item.description}</div>
+                        <div class="analysis-savings">Ahorro potencial: €${item.savings.toFixed(2)}</div>
+                        <div class="analysis-action">
+                            <button class="btn-outline" onclick="showLiabilityAmortization(${item.liabilityId})">Ver Detalles</button>
                         </div>
-                        <div class="analysis-icon">${item.recommendation.icon}</div>
                     </div>
                 `).join('')}
             </div>
@@ -619,8 +541,6 @@ class VeedorFinanceCenter {
     
     calculateAmortizationAnalysis() {
         const analysis = [];
-        const savingsConfig = getSavingsConfiguration();
-        const availableSavings = savingsConfig ? savingsConfig.amount : 0;
         
         this.liabilities.forEach(liability => {
             if (!liability.interestRate || !liability.years) return;
@@ -630,112 +550,56 @@ class VeedorFinanceCenter {
             const years = liability.years;
             const fees = liability.fees || 0;
             
-            // Calcular detalles del préstamo
+            // Calcular coste total del préstamo
             const loanDetails = this.calculateLoanDetails(principal, rate, years, fees);
-            const remainingPayments = loanDetails.amortization.schedule.filter(p => p.remainingBalance > 0).length;
-            const totalPayments = loanDetails.amortization.schedule.length;
-            const progressPercentage = ((totalPayments - remainingPayments) / totalPayments) * 100;
+            const totalCost = loanDetails.totalCost;
             
+            // Calcular ahorro potencial por amortización anticipada
+            const earlyCancellationFee = liability.earlyCancellationFee || 0;
+            const remainingPayments = loanDetails.amortization.schedule.filter(p => p.remainingBalance > 0).length;
             const remainingInterest = loanDetails.amortization.schedule
                 .filter(p => p.remainingBalance > 0)
                 .reduce((sum, p) => sum + p.interestPayment, 0);
             
-            // Calcular score de prioridad más sofisticado
-            let priorityScore = 0;
+            const cancellationCost = (principal * earlyCancellationFee / 100);
+            const potentialSavings = remainingInterest - cancellationCost;
             
-            // Factor 1: Progreso del préstamo (menos progreso = más prioridad)
-            const progressFactor = (100 - progressPercentage) / 100;
-            priorityScore += progressFactor * 40;
-            
-            // Factor 2: Tasa de interés (mayor tasa = más prioridad)
-            const rateFactor = Math.min(rate / 6, 1); // Normalizar hasta 6%
-            priorityScore += rateFactor * 30;
-            
-            // Factor 3: Ahorro potencial (mayor ahorro = más prioridad)
-            const savingsFactor = Math.min(remainingInterest / 20000, 1); // Normalizar hasta €20k
-            priorityScore += savingsFactor * 20;
-            
-            // Factor 4: Cuota mensual (mayor cuota = más prioridad)
-            const paymentFactor = Math.min(loanDetails.monthlyPayment / 2000, 1); // Normalizar hasta €2000
-            priorityScore += paymentFactor * 10;
-            
-            // Factor 5: Viabilidad con ahorro disponible
-            let viabilityBonus = 0;
-            if (availableSavings > 0) {
-                const affordabilityRatio = Math.min(principal / availableSavings, 1);
-                if (affordabilityRatio <= 1) {
-                    viabilityBonus = (1 - affordabilityRatio) * 20; // Bonus si es asequible
-                }
-            }
-            priorityScore += viabilityBonus;
-            
-            // Determinar prioridad basada en el score
+            // Determinar prioridad
             let priority = 'low';
-            if (priorityScore > 70) priority = 'high';
-            else if (priorityScore > 40) priority = 'medium';
+            let title = '';
+            let description = '';
             
-            // Generar recomendación específica considerando el ahorro disponible
-            const recommendation = this.generateLiabilityRecommendation(progressPercentage, rate, remainingInterest, priorityScore, liability.name, availableSavings, principal);
+            if (potentialSavings > 5000) {
+                priority = 'high';
+                title = `Amortizar ${liability.name}`;
+                description = `Alto potencial de ahorro. Puedes ahorrar €${potentialSavings.toFixed(2)} amortizando anticipadamente.`;
+            } else if (potentialSavings > 1000) {
+                priority = 'medium';
+                title = `Considerar ${liability.name}`;
+                description = `Ahorro moderado de €${potentialSavings.toFixed(2)}. Evalúa si compensa la comisión de cancelación.`;
+            } else if (potentialSavings > 0) {
+                priority = 'low';
+                title = `Mantener ${liability.name}`;
+                description = `Ahorro limitado de €${potentialSavings.toFixed(2)}. Mejor mantener el préstamo actual.`;
+            } else {
+                priority = 'low';
+                title = `No amortizar ${liability.name}`;
+                description = `La comisión de cancelación supera el ahorro en intereses.`;
+            }
             
             analysis.push({
-                id: liability.id,
-                name: liability.name,
-                amount: principal,
-                rate: rate,
-                progress: progressPercentage,
-                remainingInterest: remainingInterest,
-                priority: priority,
-                priorityScore: priorityScore,
-                monthlyPayment: loanDetails.monthlyPayment,
-                savings: remainingInterest,
-                recommendation: recommendation,
-                affordable: availableSavings >= principal,
-                affordabilityRatio: availableSavings > 0 ? Math.min(principal / availableSavings, 1) : 1
+                liabilityId: liability.id,
+                title,
+                description,
+                savings: potentialSavings,
+                priority,
+                totalCost,
+                remainingPayments
             });
         });
         
-        return analysis.sort((a, b) => b.priorityScore - a.priorityScore);
-    }
-    
-    generateLiabilityRecommendation(progress, rate, remainingInterest, score, name, availableSavings = 0, principal = 0) {
-        const affordable = availableSavings >= principal;
-        const affordabilityRatio = availableSavings > 0 ? Math.min(principal / availableSavings, 1) : 1;
-        
-        if (score > 70) {
-            if (affordable) {
-                return {
-                    icon: '★',
-                    title: `AMORTIZAR ${name.toUpperCase()} PRIMERO`,
-                    description: `Prioridad máxima. Ahorro de €${remainingInterest.toFixed(0)} con ${rate}% TIN. Asequible con tu ahorro.`
-                };
-            } else {
-                return {
-                    icon: '★',
-                    title: `AMORTIZAR ${name.toUpperCase()} PRIMERO`,
-                    description: `Prioridad máxima. Ahorro de €${remainingInterest.toFixed(0)} con ${rate}% TIN. Necesitas €${(principal - availableSavings).toFixed(0)} más.`
-                };
-            }
-        } else if (score > 40) {
-            if (affordable) {
-                return {
-                    icon: '▲',
-                    title: `Considerar ${name}`,
-                    description: `Buena opción. Ahorro de €${remainingInterest.toFixed(0)}. Asequible con tu ahorro actual.`
-                };
-            } else {
-                return {
-                    icon: '▲',
-                    title: `Considerar ${name}`,
-                    description: `Buena opción. Ahorro de €${remainingInterest.toFixed(0)}. Necesitas €${(principal - availableSavings).toFixed(0)} más.`
-                };
-            }
-        } else {
-            return {
-                icon: '◊',
-                title: `Baja prioridad - ${name}`,
-                description: `Impacto limitado. Solo si tienes exceso de liquidez.`
-            };
-        }
+        // Ordenar por ahorro potencial descendente
+        return analysis.sort((a, b) => b.savings - a.savings);
     }
 
     updateInsightsCenter() {
@@ -1325,294 +1189,31 @@ class VeedorFinanceCenter {
     }
 
     updateAnalyticsTrends() {
-        console.log('updateAnalyticsTrends called');
+        const trends = this.calculateDetailedTrends();
+        const totals = this.calculateTotals();
         const container = document.querySelector('#analytics .analytics-trends');
-        console.log('Container found:', container);
         if (!container) return;
 
-        console.log('Chart available:', typeof Chart !== 'undefined');
-        
-        // Mostrar mensaje de debug visible
         container.innerHTML = `
-            <div style="background: red; color: white; padding: 20px; margin: 20px; border-radius: 8px;">
-                <h3>DEBUG: updateAnalyticsTrends ejecutándose</h3>
-                <p>Chart.js disponible: ${typeof Chart !== 'undefined' ? 'SÍ' : 'NO'}</p>
-                <p>Container encontrado: ${container ? 'SÍ' : 'NO'}</p>
-            </div>
-            <div class="analytics-charts">
-                <div class="chart-container">
-                    <h4>Evolución del Patrimonio Neto</h4>
-                    <canvas id="netWorthChart" width="400" height="200"></canvas>
+            <div class="trends-summary">
+                <div class="trend-summary-item">
+                    <span class="trend-label">Transacciones Este Mes</span>
+                    <span class="trend-value">${this.transactions.length}</span>
                 </div>
-                <div class="chart-container">
-                    <h4>Tendencias de Ahorro</h4>
-                    <canvas id="savingsTrendChart" width="400" height="200"></canvas>
+                <div class="trend-summary-item">
+                    <span class="trend-label">Días Restantes</span>
+                    <span class="trend-value">${trends.daysRemaining}</span>
+                </div>
+                <div class="trend-summary-item">
+                    <span class="trend-label">Gasto Promedio Diario</span>
+                    <span class="trend-value">€${trends.dailyAverage.toFixed(2)}</span>
+                </div>
+                <div class="trend-summary-item">
+                    <span class="trend-label">Categoría Principal</span>
+                    <span class="trend-value">${trends.mostVariableCategory}</span>
                 </div>
             </div>
         `;
-
-        // Esperar a que Chart.js esté disponible
-        if (typeof Chart !== 'undefined') {
-            console.log('Creating charts...');
-            this.createNetWorthChart();
-            this.createSavingsTrendChart();
-        } else {
-            // Si Chart.js no está disponible, mostrar mensaje
-            container.innerHTML = `
-                <div class="error">
-                    Error: Chart.js no está disponible. Las gráficas no se pueden mostrar.
-                </div>
-            `;
-        }
-    }
-
-    createNetWorthChart() {
-        console.log('createNetWorthChart called');
-        const ctx = document.getElementById('netWorthChart');
-        console.log('Canvas element:', ctx);
-        if (!ctx) return;
-
-        // Limpiar gráfica existente si existe
-        if (window.netWorthChartInstance) {
-            window.netWorthChartInstance.destroy();
-        }
-
-        // Generar datos históricos simulados
-        const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-        const currentMonth = new Date().getMonth();
-        const netWorthData = [];
-        
-        // Calcular patrimonio neto actual
-        const currentNetWorth = this.calculateCurrentNetWorth();
-        
-        // Generar datos históricos con tendencia creciente
-        for (let i = 0; i < 12; i++) {
-            const monthIndex = (currentMonth - 11 + i + 12) % 12;
-            const baseAmount = currentNetWorth * 0.7; // Empezar desde 70% del valor actual
-            const growthFactor = 1 + (i * 0.025); // Crecimiento del 2.5% mensual
-            const randomVariation = 0.95 + Math.random() * 0.1; // ±5% de variación
-            netWorthData.push(Math.round(baseAmount * growthFactor * randomVariation));
-        }
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'Patrimonio Neto (€)',
-                    data: netWorthData,
-                    borderColor: 'rgb(147, 51, 234)',
-                    backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: 'rgb(147, 51, 234)',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        ticks: {
-                            callback: function(value) {
-                                return '€' + value.toLocaleString();
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    }
-                },
-                elements: {
-                    point: {
-                        hoverRadius: 8
-                    }
-                }
-            }
-        });
-
-        // Guardar instancia para poder destruirla después
-        window.netWorthChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'Patrimonio Neto (€)',
-                    data: netWorthData,
-                    borderColor: 'rgb(147, 51, 234)',
-                    backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: 'rgb(147, 51, 234)',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        ticks: {
-                            callback: function(value) {
-                                return '€' + value.toLocaleString();
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    }
-                },
-                elements: {
-                    point: {
-                        hoverRadius: 8
-                    }
-                }
-            }
-        });
-    }
-
-    createSavingsTrendChart() {
-        const ctx = document.getElementById('savingsTrendChart');
-        if (!ctx) return;
-
-        // Limpiar gráfica existente si existe
-        if (window.savingsTrendChartInstance) {
-            window.savingsTrendChartInstance.destroy();
-        }
-
-        // Generar datos de ahorro mensual
-        const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-        const savingsData = [];
-        const incomeData = [];
-        const expenseData = [];
-        
-        // Calcular datos actuales
-        const totals = this.calculateTotals();
-        const currentIncome = totals.income;
-        const currentExpenses = totals.expenses;
-        const currentSavings = totals.balance;
-        
-        // Generar datos históricos
-        for (let i = 0; i < 12; i++) {
-            const monthIndex = (new Date().getMonth() - 11 + i + 12) % 12;
-            const incomeVariation = 0.9 + Math.random() * 0.2; // ±10% variación
-            const expenseVariation = 0.85 + Math.random() * 0.3; // ±15% variación
-            
-            const monthlyIncome = Math.round(currentIncome * incomeVariation);
-            const monthlyExpenses = Math.round(currentExpenses * expenseVariation);
-            const monthlySavings = monthlyIncome - monthlyExpenses;
-            
-            incomeData.push(monthlyIncome);
-            expenseData.push(monthlyExpenses);
-            savingsData.push(monthlySavings);
-        }
-
-        // Guardar instancia para poder destruirla después
-        window.savingsTrendChartInstance = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: months,
-                datasets: [
-                    {
-                        label: 'Ingresos',
-                        data: incomeData,
-                        backgroundColor: 'rgba(34, 197, 94, 0.7)',
-                        borderColor: 'rgb(34, 197, 94)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Gastos',
-                        data: expenseData,
-                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
-                        borderColor: 'rgb(239, 68, 68)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Ahorro',
-                        data: savingsData,
-                        backgroundColor: 'rgba(147, 51, 234, 0.7)',
-                        borderColor: 'rgb(147, 51, 234)',
-                        borderWidth: 1,
-                        type: 'line',
-                        fill: false,
-                        tension: 0.4,
-                        pointRadius: 4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: 'rgb(255, 255, 255)',
-                            font: {
-                                size: 12
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '€' + value.toLocaleString();
-                            },
-                            color: 'rgb(255, 255, 255)'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: 'rgb(255, 255, 255)'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    calculateCurrentNetWorth() {
-        const totalAssets = this.assets.reduce((sum, asset) => sum + asset.amount, 0);
-        const totalLiabilities = this.liabilities.reduce((sum, liability) => sum + liability.amount, 0);
-        return totalAssets - totalLiabilities;
     }
 
     // ========================================
@@ -3122,413 +2723,6 @@ function toggleTheme() {
     }
 }
 
-// Función para probar las gráficas en demo.html
-function testDemoCharts() {
-    console.log('=== PROBANDO GRÁFICAS EN DEMO.HTML ===');
-    
-    // Verificar que Chart.js esté disponible
-    if (typeof Chart !== 'undefined') {
-        console.log('✅ Chart.js disponible');
-    } else {
-        console.error('❌ Chart.js NO disponible');
-    }
-    
-    // Verificar que los canvas existan
-    const canvas1 = document.getElementById('overviewCategoryChart');
-    const canvas2 = document.getElementById('overviewTrendsChart');
-    const canvas3 = document.getElementById('overviewIncomeExpensesChart');
-    
-    console.log('Canvas encontrados:');
-    console.log('- overviewCategoryChart:', canvas1 ? '✅' : '❌');
-    console.log('- overviewTrendsChart:', canvas2 ? '✅' : '❌');
-    console.log('- overviewIncomeExpensesChart:', canvas3 ? '✅' : '❌');
-    
-    // Verificar que el dashboard manager esté disponible
-    if (window.dashboardManager) {
-        console.log('✅ DashboardManager disponible');
-        
-        // Intentar crear las gráficas
-        try {
-            window.dashboardManager.updateOverviewCharts();
-            console.log('✅ Gráficas creadas exitosamente');
-        } catch (error) {
-            console.error('❌ Error creando gráficas:', error);
-        }
-    } else {
-        console.error('❌ DashboardManager NO disponible');
-    }
-    
-    // Verificar datos de transacciones
-    const transactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
-    console.log('Transacciones cargadas:', transactions.length);
-    
-    if (transactions.length === 0) {
-        console.log('⚠️ No hay transacciones, generando datos de demo...');
-        generateSpectacularDemoData();
-    }
-}
-
-// Función para probar el mensaje de debug
-function testDebugMessage() {
-    console.log('=== PROBANDO MENSAJE DE DEBUG ===');
-    
-    // Crear mensaje de debug en la parte superior
-    const debugContainer = document.getElementById('debug-message');
-    if (!debugContainer) {
-        // Crear el contenedor si no existe
-        const overviewTab = document.getElementById('overview');
-        if (overviewTab) {
-            const debugDiv = document.createElement('div');
-            debugDiv.id = 'debug-message';
-            debugDiv.style.cssText = `
-                background: linear-gradient(135deg, #ff4444, #cc0000);
-                color: white;
-                padding: 15px;
-                margin: 10px 0;
-                border-radius: 8px;
-                border: 2px solid #ff6666;
-                box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
-                font-family: monospace;
-                font-size: 14px;
-                z-index: 1000;
-                position: relative;
-            `;
-            
-            debugDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">🚨</span>
-                    <div>
-                        <strong>DEBUG ACTIVO - DEMO.HTML</strong><br>
-                        Chart.js: ${typeof Chart !== 'undefined' ? '✅ Disponible' : '❌ No disponible'}<br>
-                        DashboardManager: ${window.dashboardManager ? '✅ Disponible' : '❌ No disponible'}<br>
-                        Transacciones: ${JSON.parse(localStorage.getItem('veedorTransactions') || '[]').length}<br>
-                        Canvas encontrados: ${document.querySelectorAll('canvas').length}
-                    </div>
-                </div>
-            `;
-            
-            overviewTab.insertBefore(debugDiv, overviewTab.firstChild);
-            console.log('✅ Mensaje de debug creado');
-        } else {
-            console.error('❌ No se encontró el tab overview');
-        }
-    } else {
-        console.log('✅ Mensaje de debug ya existe');
-    }
-}
-
-// Función para probar las gráficas en demo.html usando DashboardManager
-function testDemoChartsWithDashboardManager() {
-    console.log('=== PROBANDO GRÁFICAS CON DASHBOARD MANAGER ===');
-    
-    // Verificar que Chart.js esté disponible
-    if (typeof Chart !== 'undefined') {
-        console.log('✅ Chart.js disponible');
-    } else {
-        console.error('❌ Chart.js NO disponible');
-    }
-    
-    // Verificar que DashboardManager esté disponible
-    if (window.dashboardManager) {
-        console.log('✅ DashboardManager disponible');
-        
-        // Verificar que los canvas existan
-        const canvas1 = document.getElementById('overviewCategoryChart');
-        const canvas2 = document.getElementById('overviewTrendsChart');
-        const canvas3 = document.getElementById('overviewIncomeExpensesChart');
-        
-        console.log('Canvas encontrados:');
-        console.log('- overviewCategoryChart:', canvas1 ? '✅' : '❌');
-        console.log('- overviewTrendsChart:', canvas2 ? '✅' : '❌');
-        console.log('- overviewIncomeExpensesChart:', canvas3 ? '✅' : '❌');
-        
-        // Intentar crear las gráficas
-        try {
-            window.dashboardManager.updateOverviewCharts();
-            console.log('✅ Gráficas creadas exitosamente');
-        } catch (error) {
-            console.error('❌ Error creando gráficas:', error);
-        }
-    } else {
-        console.error('❌ DashboardManager NO disponible');
-        
-        // Intentar crear DashboardManager
-        if (typeof DashboardManager !== 'undefined') {
-            console.log('Creando DashboardManager...');
-            window.dashboardManager = new DashboardManager();
-            console.log('✅ DashboardManager creado');
-            
-            // Intentar crear las gráficas después de crear el manager
-            setTimeout(() => {
-                try {
-                    window.dashboardManager.updateOverviewCharts();
-                    console.log('✅ Gráficas creadas después de crear DashboardManager');
-                } catch (error) {
-                    console.error('❌ Error creando gráficas después de crear DashboardManager:', error);
-                }
-            }, 100);
-        } else {
-            console.error('❌ DashboardManager no está definido');
-        }
-    }
-    
-    // Verificar datos de transacciones
-    const transactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
-    console.log('Transacciones cargadas:', transactions.length);
-    
-    if (transactions.length === 0) {
-        console.log('⚠️ No hay transacciones, generando datos de demo...');
-        if (typeof generateSpectacularDemoData === 'function') {
-            generateSpectacularDemoData();
-        } else {
-            console.log('⚠️ generateSpectacularDemoData no está disponible');
-        }
-    }
-}
-
-// Función mejorada para probar las gráficas y debug
-function testChartsAndDebug() {
-    console.log('=== INICIANDO PRUEBA COMPLETA DE GRÁFICAS Y DEBUG ===');
-    
-    // 1. Mostrar mensaje de debug primero
-    testDebugMessage();
-    
-    // 2. Esperar un poco y luego probar las gráficas
-    setTimeout(() => {
-        console.log('--- Probando gráficas después de debug ---');
-        testDemoChartsWithDashboardManager();
-    }, 500);
-    
-    // 3. Verificar estado general del sistema
-    setTimeout(() => {
-        console.log('--- Estado final del sistema ---');
-        console.log('Chart.js disponible:', typeof Chart !== 'undefined');
-        console.log('DashboardManager disponible:', !!window.dashboardManager);
-        console.log('Canvas encontrados:', document.querySelectorAll('canvas').length);
-        console.log('Transacciones:', JSON.parse(localStorage.getItem('veedorTransactions') || '[]').length);
-        
-        // Verificar si las gráficas se crearon
-        const charts = [
-            'overviewCategoryChart',
-            'overviewTrendsChart', 
-            'overviewIncomeExpensesChart'
-        ];
-        
-        charts.forEach(chartName => {
-            const chart = window[chartName];
-            console.log(`${chartName}:`, chart ? '✅ Creada' : '❌ No creada');
-        });
-    }, 1000);
-}
-
-// Función para inicializar demo con datos (limpia, sin debug)
-function initializeDemoWithData() {
-    console.log('Inicializando demo con datos...');
-    
-    // Verificar si ya hay datos
-    const existingTransactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
-    
-    if (existingTransactions.length === 0) {
-        // Generar datos de demo si la función está disponible
-        if (typeof generateSpectacularDemoData === 'function') {
-            generateSpectacularDemoData();
-        } else {
-            createBasicDemoData();
-        }
-    }
-    
-    // Inicializar dashboard manager si no existe
-    if (!window.dashboardManager && typeof DashboardManager !== 'undefined') {
-        window.dashboardManager = new DashboardManager();
-    }
-    
-    // Actualizar el dashboard después de un breve delay
-    setTimeout(() => {
-        if (window.dashboardManager) {
-            window.dashboardManager.loadData();
-            window.dashboardManager.updateFinancialSummary();
-            window.dashboardManager.loadOverviewTab();
-        }
-    }, 500);
-}
-
-// Función para crear datos básicos de demo
-function createBasicDemoData() {
-    const demoTransactions = [
-        {
-            id: 'demo-1',
-            type: 'income',
-            amount: 3000,
-            category: 'Salario',
-            description: 'Salario mensual',
-            date: new Date().toISOString().split('T')[0]
-        },
-        {
-            id: 'demo-2',
-            type: 'expense',
-            amount: 800,
-            category: 'Vivienda',
-            description: 'Alquiler',
-            date: new Date().toISOString().split('T')[0]
-        },
-        {
-            id: 'demo-3',
-            type: 'expense',
-            amount: 300,
-            category: 'Alimentación',
-            description: 'Supermercado',
-            date: new Date().toISOString().split('T')[0]
-        },
-        {
-            id: 'demo-4',
-            type: 'expense',
-            amount: 150,
-            category: 'Transporte',
-            description: 'Gasolina',
-            date: new Date().toISOString().split('T')[0]
-        }
-    ];
-    
-    localStorage.setItem('veedorTransactions', JSON.stringify(demoTransactions));
-    console.log('✅ Datos básicos de demo creados');
-}
-
-// Inicializar automáticamente cuando se carga la página
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        initializeDemoWithData();
-    }, 100);
-});
-
-// También inicializar cuando la ventana se carga completamente
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        if (typeof Chart !== 'undefined' && window.dashboardManager) {
-            initializeCharts();
-        }
-    }, 200);
-});
-
-// Función de prueba completa para verificar todo
-function testCompleteDemo() {
-    console.log('=== PRUEBA COMPLETA DEL DEMO ===');
-    
-    // 1. Verificar datos
-    const transactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
-    console.log('📊 Transacciones:', transactions.length);
-    
-    // 2. Verificar elementos HTML
-    const elements = [
-        '.balance-amount',
-        '.income-amount', 
-        '.expenses-amount',
-        '.savings-amount',
-        '#overviewCategoryChart',
-        '#overviewTrendsChart',
-        '#overviewIncomeExpensesChart'
-    ];
-    
-    elements.forEach(selector => {
-        const element = document.querySelector(selector);
-        console.log(`${selector}:`, element ? '✅' : '❌');
-    });
-    
-    // 3. Verificar librerías
-    console.log('Chart.js:', typeof Chart !== 'undefined' ? '✅' : '❌');
-    console.log('DashboardManager:', !!window.dashboardManager ? '✅' : '❌');
-    
-    // 4. Mostrar mensaje de debug en la parte superior
-    showDebugMessageAtTop();
-    
-    // 5. Intentar crear gráficas
-    setTimeout(() => {
-        if (window.dashboardManager && typeof Chart !== 'undefined') {
-            console.log('🎨 Creando gráficas...');
-            try {
-                window.dashboardManager.updateOverviewCharts();
-                console.log('✅ Gráficas creadas exitosamente');
-            } catch (error) {
-                console.error('❌ Error creando gráficas:', error);
-            }
-        }
-    }, 500);
-}
-
-// Función mejorada para mostrar mensaje de debug en la parte superior de las gráficas
-function showDebugMessageAtTop() {
-    console.log('=== MOSTRANDO MENSAJE DE DEBUG EN LA PARTE SUPERIOR ===');
-    
-    // Crear mensaje de debug en la parte superior de las gráficas
-    const chartsSection = document.querySelector('.charts-section');
-    if (chartsSection) {
-        // Verificar si ya existe el mensaje
-        let debugDiv = document.getElementById('debug-message-top');
-        
-        if (!debugDiv) {
-            debugDiv = document.createElement('div');
-            debugDiv.id = 'debug-message-top';
-            debugDiv.style.cssText = `
-                background: linear-gradient(135deg, #ff4444, #cc0000);
-                color: white;
-                padding: 20px;
-                margin: 0 0 20px 0;
-                border-radius: 12px;
-                border: 3px solid #ff6666;
-                box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
-                font-family: 'Courier New', monospace;
-                font-size: 16px;
-                z-index: 1000;
-                position: relative;
-                text-align: center;
-                animation: pulse 2s infinite;
-            `;
-            
-            // Agregar animación CSS
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes pulse {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.02); }
-                    100% { transform: scale(1); }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            chartsSection.insertBefore(debugDiv, chartsSection.firstChild);
-            console.log('✅ Mensaje de debug creado en la parte superior');
-        }
-        
-        // Actualizar contenido del mensaje
-        const transactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
-        const canvasCount = document.querySelectorAll('canvas').length;
-        
-        debugDiv.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                <span style="font-size: 24px;">🚨</span>
-                <div style="text-align: center;">
-                    <div style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">
-                        🎯 GRÁFICAS PRINCIPALES ACTIVAS
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 14px;">
-                        <div>📊 Chart.js: ${typeof Chart !== 'undefined' ? '✅ Disponible' : '❌ No disponible'}</div>
-                        <div>⚙️ DashboardManager: ${window.dashboardManager ? '✅ Disponible' : '❌ No disponible'}</div>
-                        <div>💾 Transacciones: ${transactions.length}</div>
-                        <div>🎨 Canvas: ${canvasCount}</div>
-                    </div>
-                </div>
-                <span style="font-size: 24px;">🚨</span>
-            </div>
-        `;
-        
-        console.log('✅ Mensaje de debug actualizado');
-    } else {
-        console.error('❌ No se encontró la sección de gráficas');
-    }
-}
-
-// Hacer la función global
-window.showDebugMessageAtTop = showDebugMessageAtTop;
-
 function loadTheme() {
     const savedTheme = localStorage.getItem('veedor-theme');
     if (savedTheme) {
@@ -4236,6 +3430,16 @@ function logout() {
                         </div>
                     </div>
                 </div>
+                
+                <div class="liability-comparison">
+                    <h4>Comparación con Otros Pasivos</h4>
+                    <div class="comparison-controls">
+                        <label for="available-savings">Ahorro Disponible (€):</label>
+                        <input type="number" id="available-savings" placeholder="Ej: 50000" min="0" step="1000">
+                        <button onclick="analyzeOptimalAmortization()" class="btn-primary">Analizar Estrategia Óptima</button>
+                    </div>
+                    <div id="optimal-strategy-results" class="strategy-results" style="display: none;"></div>
+                </div>
             </div>
             
             <div class="amortization-chart-container">
@@ -4285,86 +3489,6 @@ function logout() {
         resultsDiv.style.display = 'block';
     }
     
-    function showSavingsConfiguration() {
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Configuración de Ahorro Disponible</h3>
-                    <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p>Indica cuánto dinero tienes disponible para amortizar préstamos. Esto nos ayudará a darte recomendaciones más precisas.</p>
-                    <div class="form-group">
-                        <label for="available-savings">Ahorro disponible (€):</label>
-                        <input type="number" id="available-savings" placeholder="Ej: 15000" min="0" step="100">
-                    </div>
-                    <div class="form-group">
-                        <label for="savings-priority">Prioridad de uso:</label>
-                        <select id="savings-priority">
-                            <option value="amortization">Solo para amortizar préstamos</option>
-                            <option value="mixed">Amortizar + inversiones</option>
-                            <option value="emergency">Mantener como fondo de emergencia</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="risk-tolerance">Tolerancia al riesgo:</label>
-                        <select id="risk-tolerance">
-                            <option value="conservative">Conservador (solo amortizar)</option>
-                            <option value="moderate">Moderado (amortizar + inversiones seguras)</option>
-                            <option value="aggressive">Agresivo (buscar mejores rendimientos)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
-                    <button class="btn-primary" onclick="saveSavingsConfiguration()">Guardar Configuración</button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        modal.style.display = 'flex';
-        
-        // Cargar configuración existente
-        const savedSavings = localStorage.getItem('veedor-savings-config');
-        if (savedSavings) {
-            const config = JSON.parse(savedSavings);
-            document.getElementById('available-savings').value = config.amount || '';
-            document.getElementById('savings-priority').value = config.priority || 'amortization';
-            document.getElementById('risk-tolerance').value = config.riskTolerance || 'conservative';
-        }
-    }
-    
-    function saveSavingsConfiguration() {
-        const amount = parseFloat(document.getElementById('available-savings').value) || 0;
-        const priority = document.getElementById('savings-priority').value;
-        const riskTolerance = document.getElementById('risk-tolerance').value;
-        
-        const config = {
-            amount: amount,
-            priority: priority,
-            riskTolerance: riskTolerance,
-            lastUpdated: new Date().toISOString()
-        };
-        
-        localStorage.setItem('veedor-savings-config', JSON.stringify(config));
-        
-        // Actualizar el análisis con la nueva configuración
-        if (window.veedorFinance) {
-            window.veedorFinance.updateAmortizationAnalysis();
-        }
-        
-        closeModal();
-        showMessage('Configuración de ahorro guardada correctamente', 'success');
-    }
-    
-    function getSavingsConfiguration() {
-        const savedSavings = localStorage.getItem('veedor-savings-config');
-        return savedSavings ? JSON.parse(savedSavings) : null;
-    }
-    
     function generateAmortizationInsights(progressPercentage, remainingInterest, remainingPayments, totalPayments, rate) {
         // Determinar momento del préstamo
         let timing = {};
@@ -4402,19 +3526,19 @@ function logout() {
         if (progressPercentage < 30 && rate > 4) {
             recommendation = {
                 priority: 'high',
-                icon: '★',
+                icon: '!',
                 description: `AMORTIZAR AHORA. Con ${rate}% TIN, puedes ahorrar €${remainingInterest.toFixed(0)} en intereses.`
             };
         } else if (progressPercentage < 50 && rate > 3) {
             recommendation = {
                 priority: 'medium',
-                icon: '▲',
+                icon: '?',
                 description: `Considera amortizar. Ahorro potencial de €${remainingInterest.toFixed(0)}. Evalúa tu liquidez.`
             };
         } else if (progressPercentage < 70) {
             recommendation = {
                 priority: 'low',
-                icon: '◊',
+                icon: '~',
                 description: 'Amortizar tiene impacto moderado. Solo si tienes exceso de liquidez sin mejor inversión.'
             };
         } else {
@@ -4439,18 +3563,224 @@ function logout() {
         } else if (potentialSavings > 5000) {
             savings = {
                 priority: 'medium',
-                icon: '$',
+                icon: '€',
                 description: `Ahorro MODERADO: €${potentialSavings.toFixed(0)}. Evalúa otras opciones de inversión.`
             };
         } else {
             savings = {
                 priority: 'low',
-                icon: '¢',
+                icon: '€',
                 description: `Ahorro LIMITADO: €${potentialSavings.toFixed(0)}. Mejor mantener el préstamo actual.`
             };
         }
         
         return { timing, recommendation, savings };
+    }
+    
+    function analyzeOptimalAmortization() {
+        if (!veedorFinance) return;
+        
+        const availableSavings = parseFloat(document.getElementById('available-savings').value);
+        if (!availableSavings || availableSavings <= 0) {
+            alert('Por favor, introduce tu ahorro disponible para el análisis.');
+            return;
+        }
+        
+        // Analizar todos los pasivos
+        const liabilityAnalysis = veedorFinance.liabilities.map(liability => {
+            const principal = liability.amount;
+            const rate = liability.interestRate || 3.5;
+            const years = liability.years || 25;
+            const fees = liability.fees || 0;
+            
+            // Calcular detalles del préstamo
+            const loanDetails = veedorFinance.calculateLoanDetails(principal, rate, years, fees);
+            const totalPayments = loanDetails.amortization.schedule.length;
+            const remainingPayments = loanDetails.amortization.schedule.filter(p => p.remainingBalance > 0).length;
+            const progressPercentage = ((totalPayments - remainingPayments) / totalPayments) * 100;
+            
+            // Calcular intereses restantes
+            const remainingInterest = loanDetails.amortization.schedule
+                .filter(p => p.remainingBalance > 0)
+                .reduce((sum, p) => sum + p.interestPayment, 0);
+            
+            // Calcular score de prioridad (mayor score = mayor prioridad)
+            let priorityScore = 0;
+            
+            // Factor 1: TIN alto (peso 40%)
+            priorityScore += (rate / 10) * 40;
+            
+            // Factor 2: Progreso bajo (peso 30%)
+            priorityScore += ((100 - progressPercentage) / 100) * 30;
+            
+            // Factor 3: Intereses restantes altos (peso 20%)
+            priorityScore += Math.min((remainingInterest / 50000) * 20, 20);
+            
+            // Factor 4: Monto del préstamo (peso 10%)
+            priorityScore += Math.min((principal / 500000) * 10, 10);
+            
+            return {
+                id: liability.id,
+                name: liability.name,
+                principal: principal,
+                rate: rate,
+                progressPercentage: progressPercentage,
+                remainingInterest: remainingInterest,
+                monthlyPayment: loanDetails.monthlyPayment,
+                priorityScore: priorityScore,
+                loanDetails: loanDetails
+            };
+        });
+        
+        // Ordenar por score de prioridad (mayor a menor)
+        liabilityAnalysis.sort((a, b) => b.priorityScore - a.priorityScore);
+        
+        // Generar estrategia óptima
+        const strategy = generateOptimalStrategy(liabilityAnalysis, availableSavings);
+        
+        // Mostrar resultados
+        displayOptimalStrategy(strategy, availableSavings);
+    }
+    
+    function generateOptimalStrategy(liabilityAnalysis, availableSavings) {
+        const strategy = {
+            recommendations: [],
+            totalSavings: 0,
+            remainingSavings: availableSavings,
+            phases: []
+        };
+        
+        let currentSavings = availableSavings;
+        let phaseNumber = 1;
+        
+        for (const liability of liabilityAnalysis) {
+            if (currentSavings <= 0) break;
+            
+            const maxAmortization = Math.min(currentSavings, liability.remainingInterest);
+            const amortizationPercentage = (maxAmortization / liability.remainingInterest) * 100;
+            
+            if (amortizationPercentage >= 10) { // Solo considerar si puede amortizar al menos 10%
+                const savings = maxAmortization;
+                const newMonthlyPayment = calculateNewMonthlyPayment(
+                    liability.loanDetails, 
+                    maxAmortization
+                );
+                
+                strategy.recommendations.push({
+                    liability: liability,
+                    amortizationAmount: maxAmortization,
+                    amortizationPercentage: amortizationPercentage,
+                    savings: savings,
+                    newMonthlyPayment: newMonthlyPayment,
+                    priority: phaseNumber
+                });
+                
+                strategy.totalSavings += savings;
+                currentSavings -= maxAmortization;
+                
+                strategy.phases.push({
+                    phase: phaseNumber,
+                    liability: liability.name,
+                    amount: maxAmortization,
+                    savings: savings,
+                    remainingSavings: currentSavings
+                });
+                
+                phaseNumber++;
+            }
+        }
+        
+        return strategy;
+    }
+    
+    function calculateNewMonthlyPayment(loanDetails, amortizationAmount) {
+        // Simplificación: reducir el capital pendiente
+        const newPrincipal = loanDetails.amortization.schedule[0].remainingBalance - amortizationAmount;
+        const rate = loanDetails.amortization.schedule[0].interestPayment / loanDetails.amortization.schedule[0].remainingBalance * 12;
+        const remainingPayments = loanDetails.amortization.schedule.filter(p => p.remainingBalance > 0).length;
+        
+        if (remainingPayments <= 0) return 0;
+        
+        const monthlyRate = rate / 12 / 100;
+        const newMonthlyPayment = newPrincipal * (monthlyRate * Math.pow(1 + monthlyRate, remainingPayments)) / 
+                                 (Math.pow(1 + monthlyRate, remainingPayments) - 1);
+        
+        return newMonthlyPayment;
+    }
+    
+    function displayOptimalStrategy(strategy, availableSavings) {
+        const resultsDiv = document.getElementById('optimal-strategy-results');
+        
+        if (strategy.recommendations.length === 0) {
+            resultsDiv.innerHTML = `
+                <div class="strategy-message">
+                    <h5>Sin Recomendaciones</h5>
+                    <p>Con tu ahorro disponible de €${availableSavings.toFixed(0)}, no se recomienda amortizar ningún pasivo en este momento.</p>
+                    <p>Considera aumentar tu ahorro o evaluar otras opciones de inversión.</p>
+                </div>
+            `;
+        } else {
+            const recommendationsHtml = strategy.recommendations.map((rec, index) => `
+                <div class="recommendation-card ${index === 0 ? 'priority-high' : 'priority-medium'}">
+                    <div class="recommendation-header">
+                        <div class="recommendation-priority">PRIORIDAD ${rec.priority}</div>
+                        <div class="recommendation-liability">${rec.liability.name}</div>
+                    </div>
+                    <div class="recommendation-details">
+                        <div class="detail-item">
+                            <span class="label">TIN:</span>
+                            <span class="value">${rec.liability.rate.toFixed(2)}%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Progreso:</span>
+                            <span class="value">${rec.liability.progressPercentage.toFixed(1)}%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Amortizar:</span>
+                            <span class="value">€${rec.amortizationAmount.toFixed(0)} (${rec.amortizationPercentage.toFixed(1)}%)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Ahorro:</span>
+                            <span class="value">€${rec.savings.toFixed(0)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Nueva Cuota:</span>
+                            <span class="value">€${rec.newMonthlyPayment.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            resultsDiv.innerHTML = `
+                <div class="strategy-summary">
+                    <h5>Estrategia Óptima de Amortización</h5>
+                    <div class="summary-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Ahorro Total:</span>
+                            <span class="stat-value">€${strategy.totalSavings.toFixed(0)}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Ahorro Restante:</span>
+                            <span class="stat-value">€${strategy.remainingSavings.toFixed(0)}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Pasivos Optimizados:</span>
+                            <span class="stat-value">${strategy.recommendations.length}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recommendations-list">
+                    ${recommendationsHtml}
+                </div>
+                
+                <div class="strategy-note">
+                    <p><strong>Nota:</strong> Esta estrategia prioriza los pasivos con mayor TIN y menor progreso para maximizar el ahorro en intereses.</p>
+                </div>
+            `;
+        }
+        
+        resultsDiv.style.display = 'block';
     }
     
     function createAmortizationChart(schedule) {
@@ -5232,288 +4562,7 @@ VeedorFinanceCenter.prototype.showMessage = function(message, type = 'info') {
 VeedorFinanceCenter.prototype.updateAssets = function() {
     this.updateAssetsList();
     this.updateLiabilitiesList();
-    this.updateLiabilityInsights();
 };
-
-VeedorFinanceCenter.prototype.updateLiabilityInsights = function() {
-    const container = document.querySelector('#liability-insights');
-    if (!container) return;
-    
-    const analysis = this.calculateAmortizationAnalysis();
-    const savingsConfig = getSavingsConfiguration();
-    const availableSavings = savingsConfig ? savingsConfig.amount : 0;
-    
-    if (analysis.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-title">Sin análisis de amortización</div>
-                <div class="empty-state-description">Añade pasivos con datos financieros para ver recomendaciones inteligentes</div>
-            </div>
-        `;
-        return;
-    }
-    
-    // Mostrar solo los primeros 3 pasivos más prioritarios
-    const topLiabilities = analysis.slice(0, 3);
-    
-    container.innerHTML = `
-        <div class="insights-summary">
-            <div class="summary-card">
-                <div class="summary-title">Ahorro Total Disponible</div>
-                <div class="summary-value">€${availableSavings.toFixed(0)}</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-title">Pasivos Analizados</div>
-                <div class="summary-value">${analysis.length}</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-title">Ahorro Potencial</div>
-                <div class="summary-value">€${analysis.reduce((sum, item) => sum + item.savings, 0).toFixed(0)}</div>
-            </div>
-        </div>
-        
-        <!-- Análisis Automático Basado en Pasivos Existentes -->
-        <div class="automatic-analysis">
-            <h4>Análisis Automático de tus Pasivos</h4>
-            <div class="analysis-results">
-                ${this.generateAutomaticAnalysis(analysis, availableSavings)}
-            </div>
-        </div>
-        
-        <!-- Simulador Interactivo -->
-        <div class="interactive-simulator">
-            <h4>Simulador de Amortización</h4>
-            <p>Juega con diferentes escenarios de amortización</p>
-            <div class="simulator-controls">
-                <div class="simulator-input">
-                    <label for="simulator-amount">Cantidad a amortizar (€):</label>
-                    <input type="number" id="simulator-amount" value="${Math.min(availableSavings, analysis.reduce((sum, item) => sum + item.savings, 0) * 0.1)}" min="0" step="100">
-                </div>
-                <div class="simulator-input">
-                    <label for="simulator-strategy">Estrategia:</label>
-                    <select id="simulator-strategy">
-                        <option value="highest-rate">Mayor TIN primero</option>
-                        <option value="highest-savings">Mayor ahorro primero</option>
-                        <option value="lowest-progress">Menor progreso primero</option>
-                        <option value="custom">Personalizada</option>
-                    </select>
-                </div>
-                <button class="btn-primary" onclick="runAmortizationSimulation()">Simular</button>
-            </div>
-            <div class="simulator-results" id="simulator-results">
-                <!-- Se llenará con los resultados de la simulación -->
-            </div>
-        </div>
-        
-        <div class="liability-insights-grid">
-            ${topLiabilities.map((item, index) => `
-                <div class="liability-insight-card ${item.priority}">
-                    <div class="liability-insight-header">
-                        <div class="liability-insight-title">#${index + 1} ${item.name}</div>
-                        <div class="liability-insight-icon">${item.recommendation.icon}</div>
-                    </div>
-                    <div class="liability-insight-description">
-                        ${item.recommendation.description}
-                    </div>
-                    <div class="liability-insight-metrics">
-                        <div class="liability-metric">
-                            <span class="liability-metric-label">Score:</span>
-                            <span class="liability-metric-value">${item.priorityScore.toFixed(1)}/100</span>
-                        </div>
-                        <div class="liability-metric">
-                            <span class="liability-metric-label">Progreso:</span>
-                            <span class="liability-metric-value">${item.progress.toFixed(1)}%</span>
-                        </div>
-                        <div class="liability-metric">
-                            <span class="liability-metric-label">TIN:</span>
-                            <span class="liability-metric-value">${item.rate}%</span>
-                        </div>
-                        <div class="liability-metric">
-                            <span class="liability-metric-label">Ahorro:</span>
-                            <span class="liability-metric-value">€${item.savings.toFixed(0)}</span>
-                        </div>
-                    </div>
-                    <div class="liability-insight-action">
-                        <button class="btn-outline" onclick="showLiabilityAmortization('${item.id}')">
-                            Ver Análisis Completo
-                        </button>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-        
-        ${analysis.length > 3 ? `
-            <div class="insights-footer">
-                <p>Mostrando los 3 pasivos más prioritarios. <button class="btn-link" onclick="showTab('overview')">Ver ranking completo</button></p>
-            </div>
-        ` : ''}
-    `;
-};
-
-VeedorFinanceCenter.prototype.generateAutomaticAnalysis = function(analysis, availableSavings) {
-    if (analysis.length === 0) return '<p>No hay pasivos para analizar.</p>';
-    
-    const topLiability = analysis[0];
-    const totalSavings = analysis.reduce((sum, item) => sum + item.savings, 0);
-    const affordableCount = analysis.filter(item => item.affordable).length;
-    
-    let recommendation = '';
-    if (availableSavings >= topLiability.amount) {
-        recommendation = `Recomendación: Amortiza ${topLiability.name} completamente. Ahorrarás €${topLiability.savings.toFixed(0)} y liberarás €${topLiability.monthlyPayment.toFixed(0)} mensuales.`;
-    } else if (availableSavings > 0) {
-        const partialSavings = (availableSavings / topLiability.amount) * topLiability.savings;
-        recommendation = `Con €${availableSavings.toFixed(0)} disponibles, puedes amortizar parcialmente ${topLiability.name} y ahorrar aproximadamente €${partialSavings.toFixed(0)}.`;
-    } else {
-        recommendation = `Configura tu ahorro disponible para recibir recomendaciones personalizadas de amortización.`;
-    }
-    
-    return `
-        <div class="automatic-analysis-card">
-            <div class="analysis-insight">
-                <div class="insight-icon">★</div>
-                <div class="insight-content">
-                    <div class="insight-title">Mejor Opción: ${topLiability.name}</div>
-                    <div class="insight-description">${recommendation}</div>
-                </div>
-            </div>
-            <div class="analysis-stats">
-                <div class="stat">
-                    <span class="stat-label">Pasivos asequibles:</span>
-                    <span class="stat-value">${affordableCount}/${analysis.length}</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">Ahorro total posible:</span>
-                    <span class="stat-value">€${totalSavings.toFixed(0)}</span>
-                </div>
-            </div>
-        </div>
-    `;
-};
-
-function runAmortizationSimulation() {
-    const amount = parseFloat(document.getElementById('simulator-amount').value) || 0;
-    const strategy = document.getElementById('simulator-strategy').value;
-    const resultsContainer = document.getElementById('simulator-results');
-    
-    if (amount <= 0) {
-        resultsContainer.innerHTML = '<p class="error">Introduce una cantidad válida para simular.</p>';
-        return;
-    }
-    
-    const analysis = veedorFinance.calculateAmortizationAnalysis();
-    const simulation = calculateSimulation(analysis, amount, strategy);
-    
-    resultsContainer.innerHTML = `
-        <div class="simulation-results">
-            <h5>Resultados de la Simulación</h5>
-            <div class="simulation-summary">
-                <div class="sim-summary-card">
-                    <div class="sim-summary-title">Cantidad Simulada</div>
-                    <div class="sim-summary-value">€${amount.toFixed(0)}</div>
-                </div>
-                <div class="sim-summary-card">
-                    <div class="sim-summary-title">Ahorro Total</div>
-                    <div class="sim-summary-value">€${simulation.totalSavings.toFixed(0)}</div>
-                </div>
-                <div class="sim-summary-card">
-                    <div class="sim-summary-title">Pasivos Afectados</div>
-                    <div class="sim-summary-value">${simulation.affectedLiabilities.length}</div>
-                </div>
-            </div>
-            
-            <div class="simulation-details">
-                <h6>Plan de Amortización Recomendado:</h6>
-                ${simulation.affectedLiabilities.map(item => `
-                    <div class="simulation-item">
-                        <div class="sim-item-header">
-                            <span class="sim-item-name">${item.name}</span>
-                            <span class="sim-item-amount">€${item.allocation.toFixed(0)}</span>
-                        </div>
-                        <div class="sim-item-details">
-                            <span>Ahorro: €${item.savings.toFixed(0)} | TIN: ${item.rate}% | Progreso: ${item.progress.toFixed(1)}%</span>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-            
-            <div class="simulation-insights">
-                <h6>Insights de la Simulación:</h6>
-                <ul>
-                    ${simulation.insights.map(insight => `<li>${insight}</li>`).join('')}
-                </ul>
-            </div>
-        </div>
-    `;
-}
-
-function calculateSimulation(analysis, amount, strategy) {
-    let sortedAnalysis = [...analysis];
-    
-    // Ordenar según la estrategia
-    switch (strategy) {
-        case 'highest-rate':
-            sortedAnalysis.sort((a, b) => b.rate - a.rate);
-            break;
-        case 'highest-savings':
-            sortedAnalysis.sort((a, b) => b.savings - a.savings);
-            break;
-        case 'lowest-progress':
-            sortedAnalysis.sort((a, b) => a.progress - b.progress);
-            break;
-        case 'custom':
-            // Usar el ranking original (ya ordenado por score)
-            break;
-    }
-    
-    let remainingAmount = amount;
-    const affectedLiabilities = [];
-    let totalSavings = 0;
-    
-    for (const liability of sortedAnalysis) {
-        if (remainingAmount <= 0) break;
-        
-        const allocation = Math.min(remainingAmount, liability.amount);
-        const savingsRatio = allocation / liability.amount;
-        const savings = liability.savings * savingsRatio;
-        
-        affectedLiabilities.push({
-            ...liability,
-            allocation: allocation,
-            savings: savings
-        });
-        
-        totalSavings += savings;
-        remainingAmount -= allocation;
-    }
-    
-    // Generar insights
-    const insights = [];
-    if (affectedLiabilities.length > 0) {
-        const topLiability = affectedLiabilities[0];
-        insights.push(`Prioridad: ${topLiability.name} con ${topLiability.rate}% TIN`);
-        insights.push(`Ahorro total estimado: €${totalSavings.toFixed(0)}`);
-        if (remainingAmount > 0) {
-            insights.push(`Cantidad restante sin asignar: €${remainingAmount.toFixed(0)}`);
-        }
-        insights.push(`Estrategia aplicada: ${getStrategyName(strategy)}`);
-    }
-    
-    return {
-        affectedLiabilities,
-        totalSavings,
-        insights
-    };
-}
-
-function getStrategyName(strategy) {
-    const names = {
-        'highest-rate': 'Mayor TIN primero',
-        'highest-savings': 'Mayor ahorro primero',
-        'lowest-progress': 'Menor progreso primero',
-        'custom': 'Personalizada (por score)'
-    };
-    return names[strategy] || strategy;
-}
 
 VeedorFinanceCenter.prototype.updateAssetsList = function() {
     const container = document.querySelector('#assets-list');

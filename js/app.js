@@ -1593,15 +1593,6 @@ function showUserMenu() {
 function showDashboard() {
     console.log('showDashboard llamado');
     
-    // Verificar si estamos en index.html o demo.html
-    const dashboardElement = document.getElementById('dashboard');
-    
-    if (!dashboardElement) {
-        console.log('Dashboard no encontrado en esta página, redirigiendo a demo.html...');
-        window.location.href = 'demo.html';
-        return;
-    }
-    
     // Ocultar otras secciones principales
     const inicio = document.getElementById('inicio');
     const features = document.getElementById('features');
@@ -1612,6 +1603,7 @@ function showDashboard() {
     if (about) about.style.display = 'none';
     
     // Mostrar dashboard
+    const dashboardElement = document.getElementById('dashboard');
     if (dashboardElement) {
         dashboardElement.style.display = 'block';
         console.log('Dashboard mostrado');
@@ -2185,72 +2177,6 @@ function downloadApp(platform) {
     }
 }
 
-// Función para probar el mensaje de debug
-function testDebugMessage() {
-    console.log('=== PROBANDO MENSAJE DE DEBUG ===');
-    
-    // Mostrar dashboard
-    showDashboard();
-    
-    // Esperar un poco para que se cargue
-    setTimeout(() => {
-        if (window.dashboardManager) {
-            console.log('DashboardManager disponible, mostrando debug...');
-            window.dashboardManager.showDebugMessage();
-            
-            // Verificar que el mensaje se haya creado
-            const debugMessage = document.getElementById('debug-message');
-            if (debugMessage) {
-                console.log('✅ Mensaje de debug creado correctamente');
-                console.log('Posición:', debugMessage.offsetTop);
-                console.log('Contenido:', debugMessage.textContent.substring(0, 100) + '...');
-            } else {
-                console.error('❌ Mensaje de debug NO creado');
-            }
-            
-        } else {
-            console.error('DashboardManager no disponible');
-        }
-    }, 1000);
-}
-
-// Función para probar las gráficas del dashboard
-function testDashboardCharts() {
-    console.log('=== PROBANDO GRÁFICAS DEL DASHBOARD ===');
-    
-    // Mostrar dashboard
-    showDashboard();
-    
-    // Esperar un poco para que se cargue
-    setTimeout(() => {
-        if (window.dashboardManager) {
-            console.log('DashboardManager disponible, cargando gráficas...');
-            window.dashboardManager.loadOverviewTab();
-            
-            // Verificar que Chart.js esté disponible
-            if (typeof Chart !== 'undefined') {
-                console.log('Chart.js disponible');
-            } else {
-                console.error('Chart.js NO disponible');
-            }
-            
-            // Verificar que los canvas existan
-            const canvas1 = document.getElementById('overviewCategoryChart');
-            const canvas2 = document.getElementById('overviewTrendsChart');
-            const canvas3 = document.getElementById('overviewIncomeExpensesChart');
-            
-            console.log('Canvas encontrados:', {
-                categoryChart: !!canvas1,
-                trendsChart: !!canvas2,
-                incomeExpensesChart: !!canvas3
-            });
-            
-        } else {
-            console.error('DashboardManager no disponible');
-        }
-    }, 1000);
-}
-
 // Hacer funciones globales
 window.showAuth = showAuth;
 window.showAuthTab = showAuthTab;
@@ -2260,5 +2186,3 @@ window.logout = logout;
 window.loginWithGmail = loginWithGmail;
 window.loginWithNotion = loginWithNotion;
 window.downloadApp = downloadApp;
-window.testDashboardCharts = testDashboardCharts;
-window.testDebugMessage = testDebugMessage;

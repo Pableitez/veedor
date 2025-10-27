@@ -67,7 +67,7 @@
                         <span class="dropdown-arrow">▼</span>
                     </button>
                     <div class="nav-dropdown-content" id="nav-dropdown-content">
-                        <button class="nav-btn nav-btn-dropdown-item" id="dashboard-link" style="display: none;" onclick="window.location.href='demo.html'; closeMobileMenu();">Mis Finanzas</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="dashboard-link" style="display: none;" onclick="showDashboard(); closeMobileMenu();">Mis Finanzas</button>
                         <button class="nav-btn nav-btn-dropdown-item" id="auth-button" onclick="showAuth(); closeMobileMenu();">Acceder</button>
                         <button class="nav-btn nav-btn-dropdown-item" id="logout-button" style="display: none;" onclick="logout(); closeMobileMenu();">Cerrar Sesión</button>
                     </div>
@@ -390,7 +390,7 @@
                     <h2>Por qué funciona</h2>
                     <p>Lo que hace diferente a Veedor</p>
                 </div>
-
+                
                 <div class="benefits-grid">
                     <div class="benefit-card">
                         <div class="benefit-icon"></div>
@@ -419,78 +419,6 @@
             </div>
         </section>
 
-        <!-- Insights Inteligentes Section -->
-        <section class="insights-section">
-            <div class="container">
-                <div class="insights-header">
-                    <h2>Insights Inteligentes de Amortización</h2>
-                    <p>Descubre qué préstamo amortizar primero y optimiza tus finanzas con IA</p>
-                </div>
-
-                <div class="insights-grid">
-                    <div class="insight-card interactive">
-                        <div class="insight-icon">★</div>
-                        <div class="insight-content">
-                            <h3>Configura tu Ahorro</h3>
-                            <p>Indica cuánto dinero tienes disponible para amortizar y recibe recomendaciones personalizadas</p>
-                            <div class="savings-input">
-                                <input type="number" id="main-savings-input" placeholder="Ej: 15000" min="0" step="100">
-                                <button class="btn-primary" onclick="configureSavings()">Configurar</button>
-                        </div>
-                    </div>
-                </div>
-
-                    <div class="insight-card">
-                        <div class="insight-icon">▶</div>
-                        <div class="insight-content">
-                            <h3>Momento Óptimo</h3>
-                            <p>Los primeros años del préstamo son cuando más intereses pagas. Es el momento MÁS favorable para amortizar.</p>
-                            </div>
-                        </div>
-                        
-                    <div class="insight-card">
-                        <div class="insight-icon">€</div>
-                        <div class="insight-content">
-                            <h3>Ahorro Potencial</h3>
-                            <p>Con una hipoteca de €200,000 al 4.5% TIN, puedes ahorrar hasta €45,000 en intereses amortizando anticipadamente.</p>
-                    </div>
-                </div>
-
-                    <div class="insight-card">
-                        <div class="insight-icon">▲</div>
-                        <div class="insight-content">
-                            <h3>Prioridad Inteligente</h3>
-                            <p>Nuestro algoritmo analiza progreso, tasa de interés, cuota mensual y tu liquidez para recomendarte el mejor orden.</p>
-                            </div>
-                        </div>
-                        
-                    <div class="insight-card">
-                        <div class="insight-icon">◊</div>
-                        <div class="insight-content">
-                            <h3>Análisis Contextual</h3>
-                            <p>Consideramos tu tolerancia al riesgo, prioridades de uso del dinero y situación financiera personal.</p>
-                    </div>
-                </div>
-
-                    <div class="insight-card interactive">
-                        <div class="insight-icon">✓</div>
-                        <div class="insight-content">
-                            <h3>Recomendaciones en Tiempo Real</h3>
-                            <p>Recibe consejos actualizados basados en tu situación actual y objetivos financieros</p>
-                            <button class="btn-outline" onclick="showDemoInsights()">Ver Demo Completa</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="insights-summary" id="insights-summary" style="display: none;">
-                    <h3>Tu Análisis Personalizado</h3>
-                    <div class="summary-content" id="summary-content">
-                        <!-- Contenido dinámico -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- CTA Section -->
         <section class="cta section section-gradient">
             <div class="container">
@@ -501,40 +429,40 @@
                         <div class="cta-actions">
                             <button class="btn btn-accent" onclick="window.open('demo.html', '_blank')">Ver Demo</button>
                             <button class="btn btn-outline" onclick="showAuth()">Comenzar</button>
-                </div>
+                        </div>
                     </div>
                     <div class="cta-visual">
                         <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
                              alt="Casa nueva con llaves - Tu hogar te espera" 
                              class="cta-image">
                     </div>
-                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-        <!-- Footer -->
-        <footer id="footer" class="footer">
+    <!-- Footer -->
+    <footer id="footer" class="footer">
             <div class="container">
-                <div class="footer-content">
-            <div class="footer-section">
-                <h3>Veedor</h3>
+            <div class="footer-content">
+        <div class="footer-section">
+            <h3>Veedor</h3>
             <p>La cuenta de la vieja, pero digital. Sin complicaciones, como toda la vida.</p>
-                <div class="social-links">
-                    <a href="#" class="social-link">Twitter</a>
-                    <a href="#" class="social-link">LinkedIn</a>
-                    <a href="#" class="social-link">GitHub</a>
-                </div>
-            </div>
-                    <div class="footer-section">
+            <div class="social-links">
+                <a href="#" class="social-link">Twitter</a>
+                <a href="#" class="social-link">LinkedIn</a>
+                <a href="#" class="social-link">GitHub</a>
+                        </div>
+                    </div>
+                <div class="footer-section">
                     <h4>Legal</h4>
                     <ul>
                         <li><a href="#" onclick="openModal('privacy-modal'); return false;">Política de Privacidad</a></li>
                         <li><a href="#" onclick="openModal('terms-modal'); return false;">Términos y Condiciones</a></li>
                         <li><a href="#" onclick="openModal('cookies-modal'); return false;">Política de Cookies</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-section">
+                    </ul>
+                </div>
+                <div class="footer-section">
                     <h4>Descarga la App</h4>
                     <div class="download-badges">
                         <a href="#" class="download-badge app-store" onclick="downloadApp('ios')">
@@ -547,13 +475,13 @@
                                  alt="Disponible en Google Play" 
                                  class="badge-image">
                         </a>
+                        </div>
                     </div>
-                    </div>
-                </div>
-                <div class="footer-bottom">
+                        </div>
+            <div class="footer-bottom">
                 <p>&copy; 2025 Veedor. Todos los derechos reservados.</p>
-            </div>
-        </div>
+                        </div>
+                    </div>
     </footer>
 
     <!-- Legal Modals -->
@@ -562,68 +490,68 @@
             <div class="modal-header">
                 <h2>Política de Privacidad</h2>
                 <button class="close-btn" onclick="closeModal('privacy-modal')">&times;</button>
-            </div>
+                        </div>
             <div class="modal-body">
                 <div class="legal-section">
                     <h4>¿Qué datos guardamos?</h4>
                     <p>Solo lo que introduces: gastos, ingresos y tu email.</p>
                 </div>
-                
+
                 <div class="legal-section">
                     <h4>¿Para qué?</h4>
                     <p>Para que puedas ver tus finanzas y crear presupuestos.</p>
                 </div>
-                
+
                 <div class="legal-section">
                     <h4>¿Los vendemos?</h4>
                     <p>No. Tus datos son tuyos.</p>
                 </div>
-                
+
                 <div class="legal-section">
                     <h4>¿Puedes borrarlos?</h4>
                     <p>Sí, cuando quieras desde tu cuenta.</p>
-                </div>
-                
+                        </div>
+                        
                 <div class="legal-contact">
                     <p><strong>Contacto:</strong> privacidad@veedor.com</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
+                            </div>
+                            </div>
+                            </div>
+                        </div>
+                        
     <div id="terms-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Términos y Condiciones</h2>
                 <button class="close-btn" onclick="closeModal('terms-modal')">&times;</button>
-            </div>
+                        </div>
             <div class="modal-body">
                 <div class="legal-section">
                     <h4>¿Qué es Veedor?</h4>
                     <p>Una app para llevar tus cuentas como siempre, pero digital.</p>
                 </div>
-                
+
                 <div class="legal-section">
                     <h4>¿Qué puedes hacer?</h4>
                     <p>Apuntar gastos, crear presupuestos y ver análisis.</p>
-                </div>
-                
+                        </div>
+                        
                 <div class="legal-section">
                     <h4>¿Qué no puedes hacer?</h4>
                     <p>Usar la app para cosas ilegales o acceder a cuentas ajenas.</p>
-                </div>
-                
+                        </div>
+                        
                 <div class="legal-section">
                     <h4>¿Somos responsables de tus decisiones?</h4>
                     <p>No. Tú decides cómo gastar tu dinero.</p>
-                    </div>
-                
+                </div>
+
                 <div class="legal-contact">
                     <p><strong>Contacto:</strong> legal@veedor.com</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
     <div id="cookies-modal" class="modal">
         <div class="modal-content">
@@ -635,8 +563,8 @@
                 <div class="legal-section">
                     <h4>¿Qué son las cookies?</h4>
                     <p>Pequeños archivos que recuerdan tus preferencias.</p>
-                </div>
-                
+        </div>
+
                 <div class="legal-section">
                     <h4>¿Qué cookies usamos?</h4>
                     <p>Solo las necesarias: para mantener tu sesión y recordar si prefieres tema claro u oscuro.</p>
@@ -655,6 +583,17 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/veedor-unified-system.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/validations.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/categorization.js"></script>
+    <script src="js/gastos.js"></script>
+    <script src="js/budget-manager.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="js/tests.js" defer></script>
 </body>
 </html>
