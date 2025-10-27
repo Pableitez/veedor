@@ -4549,6 +4549,39 @@ VeedorFinanceCenter.prototype.updateLiabilityInsights = function() {
             </div>
         </div>
         
+        <!-- Análisis Automático Basado en Pasivos Existentes -->
+        <div class="automatic-analysis">
+            <h4>Análisis Automático de tus Pasivos</h4>
+            <div class="analysis-results">
+                ${this.generateAutomaticAnalysis(analysis, availableSavings)}
+            </div>
+        </div>
+        
+        <!-- Simulador Interactivo -->
+        <div class="interactive-simulator">
+            <h4>Simulador de Amortización</h4>
+            <p>Juega con diferentes escenarios de amortización</p>
+            <div class="simulator-controls">
+                <div class="simulator-input">
+                    <label for="simulator-amount">Cantidad a amortizar (€):</label>
+                    <input type="number" id="simulator-amount" value="${Math.min(availableSavings, analysis.reduce((sum, item) => sum + item.savings, 0) * 0.1)}" min="0" step="100">
+                </div>
+                <div class="simulator-input">
+                    <label for="simulator-strategy">Estrategia:</label>
+                    <select id="simulator-strategy">
+                        <option value="highest-rate">Mayor TIN primero</option>
+                        <option value="highest-savings">Mayor ahorro primero</option>
+                        <option value="lowest-progress">Menor progreso primero</option>
+                        <option value="custom">Personalizada</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="runAmortizationSimulation()">Simular</button>
+            </div>
+            <div class="simulator-results" id="simulator-results">
+                <!-- Se llenará con los resultados de la simulación -->
+            </div>
+        </div>
+        
         <div class="liability-insights-grid">
             ${topLiabilities.map((item, index) => `
                 <div class="liability-insight-card ${item.priority}">
@@ -4593,6 +4626,171 @@ VeedorFinanceCenter.prototype.updateLiabilityInsights = function() {
         ` : ''}
     `;
 };
+
+VeedorFinanceCenter.prototype.generateAutomaticAnalysis = function(analysis, availableSavings) {
+    if (analysis.length === 0) return '<p>No hay pasivos para analizar.</p>';
+    
+    const topLiability = analysis[0];
+    const totalSavings = analysis.reduce((sum, item) => sum + item.savings, 0);
+    const affordableCount = analysis.filter(item => item.affordable).length;
+    
+    let recommendation = '';
+    if (availableSavings >= topLiability.amount) {
+        recommendation = `Recomendación: Amortiza ${topLiability.name} completamente. Ahorrarás €${topLiability.savings.toFixed(0)} y liberarás €${topLiability.monthlyPayment.toFixed(0)} mensuales.`;
+    } else if (availableSavings > 0) {
+        const partialSavings = (availableSavings / topLiability.amount) * topLiability.savings;
+        recommendation = `Con €${availableSavings.toFixed(0)} disponibles, puedes amortizar parcialmente ${topLiability.name} y ahorrar aproximadamente €${partialSavings.toFixed(0)}.`;
+    } else {
+        recommendation = `Configura tu ahorro disponible para recibir recomendaciones personalizadas de amortización.`;
+    }
+    
+    return `
+        <div class="automatic-analysis-card">
+            <div class="analysis-insight">
+                <div class="insight-icon">★</div>
+                <div class="insight-content">
+                    <div class="insight-title">Mejor Opción: ${topLiability.name}</div>
+                    <div class="insight-description">${recommendation}</div>
+                </div>
+            </div>
+            <div class="analysis-stats">
+                <div class="stat">
+                    <span class="stat-label">Pasivos asequibles:</span>
+                    <span class="stat-value">${affordableCount}/${analysis.length}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Ahorro total posible:</span>
+                    <span class="stat-value">€${totalSavings.toFixed(0)}</span>
+                </div>
+            </div>
+        </div>
+    `;
+};
+
+function runAmortizationSimulation() {
+    const amount = parseFloat(document.getElementById('simulator-amount').value) || 0;
+    const strategy = document.getElementById('simulator-strategy').value;
+    const resultsContainer = document.getElementById('simulator-results');
+    
+    if (amount <= 0) {
+        resultsContainer.innerHTML = '<p class="error">Introduce una cantidad válida para simular.</p>';
+        return;
+    }
+    
+    const analysis = veedorFinance.calculateAmortizationAnalysis();
+    const simulation = calculateSimulation(analysis, amount, strategy);
+    
+    resultsContainer.innerHTML = `
+        <div class="simulation-results">
+            <h5>Resultados de la Simulación</h5>
+            <div class="simulation-summary">
+                <div class="sim-summary-card">
+                    <div class="sim-summary-title">Cantidad Simulada</div>
+                    <div class="sim-summary-value">€${amount.toFixed(0)}</div>
+                </div>
+                <div class="sim-summary-card">
+                    <div class="sim-summary-title">Ahorro Total</div>
+                    <div class="sim-summary-value">€${simulation.totalSavings.toFixed(0)}</div>
+                </div>
+                <div class="sim-summary-card">
+                    <div class="sim-summary-title">Pasivos Afectados</div>
+                    <div class="sim-summary-value">${simulation.affectedLiabilities.length}</div>
+                </div>
+            </div>
+            
+            <div class="simulation-details">
+                <h6>Plan de Amortización Recomendado:</h6>
+                ${simulation.affectedLiabilities.map(item => `
+                    <div class="simulation-item">
+                        <div class="sim-item-header">
+                            <span class="sim-item-name">${item.name}</span>
+                            <span class="sim-item-amount">€${item.allocation.toFixed(0)}</span>
+                        </div>
+                        <div class="sim-item-details">
+                            <span>Ahorro: €${item.savings.toFixed(0)} | TIN: ${item.rate}% | Progreso: ${item.progress.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="simulation-insights">
+                <h6>Insights de la Simulación:</h6>
+                <ul>
+                    ${simulation.insights.map(insight => `<li>${insight}</li>`).join('')}
+                </ul>
+            </div>
+        </div>
+    `;
+}
+
+function calculateSimulation(analysis, amount, strategy) {
+    let sortedAnalysis = [...analysis];
+    
+    // Ordenar según la estrategia
+    switch (strategy) {
+        case 'highest-rate':
+            sortedAnalysis.sort((a, b) => b.rate - a.rate);
+            break;
+        case 'highest-savings':
+            sortedAnalysis.sort((a, b) => b.savings - a.savings);
+            break;
+        case 'lowest-progress':
+            sortedAnalysis.sort((a, b) => a.progress - b.progress);
+            break;
+        case 'custom':
+            // Usar el ranking original (ya ordenado por score)
+            break;
+    }
+    
+    let remainingAmount = amount;
+    const affectedLiabilities = [];
+    let totalSavings = 0;
+    
+    for (const liability of sortedAnalysis) {
+        if (remainingAmount <= 0) break;
+        
+        const allocation = Math.min(remainingAmount, liability.amount);
+        const savingsRatio = allocation / liability.amount;
+        const savings = liability.savings * savingsRatio;
+        
+        affectedLiabilities.push({
+            ...liability,
+            allocation: allocation,
+            savings: savings
+        });
+        
+        totalSavings += savings;
+        remainingAmount -= allocation;
+    }
+    
+    // Generar insights
+    const insights = [];
+    if (affectedLiabilities.length > 0) {
+        const topLiability = affectedLiabilities[0];
+        insights.push(`Prioridad: ${topLiability.name} con ${topLiability.rate}% TIN`);
+        insights.push(`Ahorro total estimado: €${totalSavings.toFixed(0)}`);
+        if (remainingAmount > 0) {
+            insights.push(`Cantidad restante sin asignar: €${remainingAmount.toFixed(0)}`);
+        }
+        insights.push(`Estrategia aplicada: ${getStrategyName(strategy)}`);
+    }
+    
+    return {
+        affectedLiabilities,
+        totalSavings,
+        insights
+    };
+}
+
+function getStrategyName(strategy) {
+    const names = {
+        'highest-rate': 'Mayor TIN primero',
+        'highest-savings': 'Mayor ahorro primero',
+        'lowest-progress': 'Menor progreso primero',
+        'custom': 'Personalizada (por score)'
+    };
+    return names[strategy] || strategy;
+}
 
 VeedorFinanceCenter.prototype.updateAssetsList = function() {
     const container = document.querySelector('#assets-list');

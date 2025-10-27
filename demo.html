@@ -2246,6 +2246,251 @@
             color: var(--error);
         }
         
+        /* Estilos para análisis automático y simulador */
+        .automatic-analysis {
+            margin: var(--space-lg) 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+        }
+        
+        .automatic-analysis h4 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+        
+        .automatic-analysis-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+        }
+        
+        .analysis-insight {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+        
+        .analysis-insight .insight-icon {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+        
+        .analysis-insight .insight-content {
+            flex: 1;
+        }
+        
+        .analysis-insight .insight-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .analysis-insight .insight-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .analysis-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-sm);
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-xs);
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .stat-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .interactive-simulator {
+            margin: var(--space-lg) 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+        }
+        
+        .interactive-simulator h4 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .interactive-simulator p {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-md);
+        }
+        
+        .simulator-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .simulator-input {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+        
+        .simulator-input label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .simulator-input input,
+        .simulator-input select {
+            padding: var(--space-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .simulator-input input:focus,
+        .simulator-input select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .simulation-results {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+        }
+        
+        .simulation-results h5 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+        
+        .simulation-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .sim-summary-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+        }
+        
+        .sim-summary-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .sim-summary-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .simulation-details {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .simulation-details h6 {
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .simulation-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: var(--space-sm);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .sim-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .sim-item-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .sim-item-amount {
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .sim-item-details {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .simulation-insights h6 {
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .simulation-insights ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .simulation-insights li {
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--accent);
+            padding: var(--space-sm);
+            margin-bottom: var(--space-xs);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .error {
+            color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+        
         /* Estilos para insights de amortización */
         .amortization-insights {
             margin-top: var(--space-lg);
