@@ -3244,23 +3244,23 @@ a:hover {
    MODALES NUEVOS - DISEÑO CONSISTENTE
    ======================================== */
 
-/* Modal Base */
+/* Modal Base - Estilo Revolut Unificado */
 .modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
     z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
-    padding: 20px;
+    transition: all 0.2s ease;
+    padding: var(--space-xl);
     box-sizing: border-box;
 }
 
@@ -3269,18 +3269,20 @@ a:hover {
     visibility: visible;
 }
 
-/* Modal Content */
+/* Modal Content - Estilo Revolut */
 .modal-content {
-    background: var(--card-bg);
-    border-radius: var(--modal-radius-lg);
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
     width: 100%;
     max-width: 500px;
-    max-height: 80vh;
+    max-height: calc(100vh - 120px);
     overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     border: 1px solid var(--border-color);
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal.show .modal-content {
@@ -3289,12 +3291,13 @@ a:hover {
 
 /* Modal Header */
 .modal-header {
-    padding: var(--modal-padding-lg) var(--modal-padding-xl) var(--modal-padding-md);
+    padding: var(--space-lg) var(--space-xl) var(--space-md);
     border-bottom: 1px solid var(--border-color);
-    background: var(--card-bg);
+    background: var(--bg-primary);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .modal-header h2 {
@@ -3306,10 +3309,10 @@ a:hover {
     margin-right: var(--modal-margin-lg);
 }
 
-/* Modal Body */
+/* Modal Body - Estilo Revolut */
 .modal-body {
-    padding: var(--modal-padding-xl);
-    max-height: 60vh;
+    padding: var(--space-lg) var(--space-xl);
+    flex: 1;
     overflow-y: auto;
 }
 
@@ -3370,9 +3373,11 @@ a:hover {
     transform: scale(1.1);
 }
 
-/* Modal Form */
+/* Modal Form - Estilo Revolut */
 .modal-form {
-    padding: var(--modal-padding-xl);
+    padding: var(--space-lg) var(--space-xl);
+    flex: 1;
+    overflow-y: auto;
 }
 
 .form-group {
