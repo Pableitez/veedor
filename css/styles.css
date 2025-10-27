@@ -4116,8 +4116,7 @@ a:hover {
     width: 100%;
     max-width: 420px;
     height: auto;
-    max-height: calc(100vh - 120px);
-    min-height: 400px;
+    max-height: calc(100vh - 200px);
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     border: 1px solid var(--border-color);
@@ -4320,8 +4319,7 @@ a:hover {
     
     .auth-modal {
         max-width: 100%;
-        max-height: calc(100vh - 140px);
-        min-height: 350px;
+        max-height: calc(100vh - 200px);
     }
     
     .auth-header {
@@ -4349,8 +4347,7 @@ a:hover {
     
     .auth-modal {
         max-width: 100%;
-        max-height: calc(100vh - 100px);
-        min-height: 280px;
+        max-height: calc(100vh - 200px);
     }
     
     .auth-header {
