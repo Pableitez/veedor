@@ -23,11 +23,12 @@
         
         .main-content {
             flex: 1;
-            padding: var(--space-lg) var(--space-sm);
+            padding: var(--space-lg) var(--space-xs);
             margin-top: 0;
             background: var(--bg-primary);
             max-width: none;
             width: 100%;
+            box-sizing: border-box;
         }
         
         .dashboard-section {
@@ -41,6 +42,7 @@
             margin: 0;
             padding: 0;
             width: 100%;
+            box-sizing: border-box;
         }
         
         /* Dashboard Header */
@@ -72,6 +74,8 @@
             gap: var(--space-sm);
             margin-bottom: var(--space-xl);
             justify-items: stretch;
+            width: 100%;
+            max-width: none;
         }
         
         .summary-card {
