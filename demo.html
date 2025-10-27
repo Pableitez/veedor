@@ -33,49 +33,53 @@
         
         .main-content {
             flex: 1;
-            padding-top: 0;
+            padding: var(--space-lg) var(--space-md);
             margin-top: 0;
             background: var(--bg-primary);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .dashboard-section {
-            padding: var(--space-xl) 0;
-            min-height: calc(100vh - 160px);
-            background: var(--bg-primary);
+            padding: 0;
+            min-height: calc(100vh - 120px);
+            background: transparent;
         }
         
         .dashboard-content {
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
             padding: 0 var(--space-lg);
         }
         
         /* Dashboard Header */
         .dashboard-header {
-            text-align: center;
             margin-bottom: var(--space-xl);
+            padding: var(--space-lg) 0;
         }
         
         .dashboard-header h2 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: var(--space-sm);
-            background: var(--button-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: var(--space-xs);
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
         }
         
         .dashboard-header p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: var(--text-secondary);
+            margin-bottom: var(--space-lg);
+            font-weight: 400;
         }
         
         /* Financial Summary */
         .financial-summary {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--space-lg);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-md);
             margin-bottom: var(--space-xl);
         }
         
@@ -86,13 +90,12 @@
             padding: var(--space-lg);
             text-align: center;
             transition: var(--transition-normal);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
         }
         
         .summary-card:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-md);
             border-color: var(--accent);
         }
         
@@ -155,13 +158,14 @@
         /* Dashboard Navigation */
         .dashboard-nav {
             display: flex;
-            gap: var(--space-sm);
-            margin-bottom: var(--space-lg);
+            gap: var(--space-xs);
+            margin-bottom: var(--space-xl);
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             padding: var(--space-sm);
             overflow-x: auto;
+            box-shadow: var(--shadow-sm);
         }
         
         .nav-tab {
@@ -170,18 +174,22 @@
             padding: var(--space-sm) var(--space-md);
             border-radius: var(--radius-md);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: var(--transition-fast);
             white-space: nowrap;
             font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
         }
         
         .nav-tab.active {
             background: var(--accent);
             color: white;
+            box-shadow: var(--shadow-sm);
         }
         
         .nav-tab:hover:not(.active) {
-            background: var(--card-bg);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
         
         /* Dashboard Tabs */
@@ -1488,20 +1496,20 @@
             border-radius: var(--radius-lg);
             padding: var(--space-xl);
             margin-bottom: var(--space-xl);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
         }
         
         .net-worth-header {
-            text-align: center;
             margin-bottom: var(--space-lg);
+            padding: var(--space-md) 0;
         }
         
         .net-worth-header h3 {
             font-size: 1.5rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: var(--space-sm);
             color: var(--text-primary);
+            letter-spacing: -0.01em;
         }
         
         .net-worth-actions {
@@ -1514,13 +1522,16 @@
         .net-worth-actions .btn-outline {
             padding: var(--space-xs) var(--space-sm);
             font-size: 0.8rem;
+            font-weight: 500;
         }
         
         .net-worth-value {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: var(--space-xs);
+            text-align: center;
+            margin-bottom: var(--space-sm);
+            letter-spacing: -0.02em;
         }
         
         .net-worth-change {
