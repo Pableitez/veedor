@@ -3641,6 +3641,8 @@ function logout() {
         const savedSavings = localStorage.getItem('veedor-savings-config');
         return savedSavings ? JSON.parse(savedSavings) : null;
     }
+    
+    function generateAmortizationInsights(progressPercentage, remainingInterest, remainingPayments, totalPayments, rate) {
         // Determinar momento del préstamo
         let timing = {};
         if (progressPercentage < 20) {
