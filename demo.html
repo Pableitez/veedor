@@ -57,6 +57,7 @@
         .dashboard-header {
             margin-bottom: var(--space-xl);
             padding: var(--space-lg) 0;
+            text-align: center;
         }
         
         .dashboard-header h2 {
@@ -80,6 +81,7 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: var(--space-sm);
             margin-bottom: var(--space-xl);
+            justify-items: center;
         }
         
         .summary-card {
@@ -645,6 +647,8 @@
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             overflow: hidden;
+            max-height: 500px;
+            overflow-y: auto;
         }
         
         .transaction-actions {
@@ -1673,6 +1677,8 @@
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: var(--space-sm);
             margin-top: var(--space-lg);
+            max-height: 600px;
+            overflow-y: auto;
         }
         
         .envelope-card {
@@ -1905,6 +1911,8 @@
             display: flex;
             flex-direction: column;
             gap: var(--space-sm);
+            max-height: 400px;
+            overflow-y: auto;
         }
         
         .asset-item,
@@ -2253,7 +2261,63 @@
             will-change: opacity;
         }
         
-        /* Optimización para pantallas grandes */
+        /* Mensajes eliminables */
+        .message {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            box-shadow: var(--shadow-lg);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition-normal);
+        }
+        
+        .message.success {
+            border-left: 4px solid #4CAF50;
+            background: linear-gradient(90deg, rgba(76, 175, 80, 0.1) 0%, var(--bg-card) 100%);
+        }
+        
+        .message.error {
+            border-left: 4px solid #F44336;
+            background: linear-gradient(90deg, rgba(244, 67, 54, 0.1) 0%, var(--bg-card) 100%);
+        }
+        
+        .message.info {
+            border-left: 4px solid var(--accent);
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.1) 0%, var(--bg-card) 100%);
+        }
+        
+        /* Scrollbars personalizados */
+        .transactions-list::-webkit-scrollbar,
+        .assets-list::-webkit-scrollbar,
+        .liabilities-list::-webkit-scrollbar,
+        .envelope-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .transactions-list::-webkit-scrollbar-track,
+        .assets-list::-webkit-scrollbar-track,
+        .liabilities-list::-webkit-scrollbar-track,
+        .envelope-grid::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+        }
+        
+        .transactions-list::-webkit-scrollbar-thumb,
+        .assets-list::-webkit-scrollbar-thumb,
+        .liabilities-list::-webkit-scrollbar-thumb,
+        .envelope-grid::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: var(--radius-sm);
+        }
+        
+        .transactions-list::-webkit-scrollbar-thumb:hover,
+        .assets-list::-webkit-scrollbar-thumb:hover,
+        .liabilities-list::-webkit-scrollbar-thumb:hover,
+        .envelope-grid::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-hover);
+        }
         @media (min-width: 1400px) {
             .main-content {
                 padding: var(--space-lg) var(--space-md);

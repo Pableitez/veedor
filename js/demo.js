@@ -1465,7 +1465,7 @@ class VeedorFinanceCenter {
     }
 
     updateEnvelopes() {
-        const container = document.querySelector('#envelope-grid');
+        const container = document.querySelector('.envelope-grid');
         if (!container) return;
 
         container.innerHTML = this.envelopes.map(envelope => {
@@ -3447,23 +3447,46 @@ VeedorFinanceCenter.prototype.setupAccessibility = function() {
     };
 };
 
-// Mostrar mensajes de feedback
+// Mostrar mensajes de feedback eliminables
 VeedorFinanceCenter.prototype.showMessage = function(message, type = 'info') {
     const container = document.createElement('div');
     container.className = `message ${type}`;
-    container.textContent = message;
     container.style.position = 'fixed';
     container.style.top = '80px';
     container.style.right = '20px';
     container.style.zIndex = '9999';
     container.style.maxWidth = '300px';
+    container.style.display = 'flex';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'space-between';
+    container.style.gap = 'var(--space-sm)';
+    
+    const messageText = document.createElement('span');
+    messageText.textContent = message;
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '×';
+    closeBtn.style.background = 'none';
+    closeBtn.style.border = 'none';
+    closeBtn.style.fontSize = '1.2rem';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.style.color = 'inherit';
+    closeBtn.style.padding = '0';
+    closeBtn.style.marginLeft = 'var(--space-sm)';
+    closeBtn.onclick = () => container.remove();
+    
+    container.appendChild(messageText);
+    container.appendChild(closeBtn);
     
     document.body.appendChild(container);
     
+    // Auto-remove después de 5 segundos
     setTimeout(() => {
-        container.style.opacity = '0';
-        setTimeout(() => container.remove(), 300);
-    }, 3000);
+        if (container.parentNode) {
+            container.style.opacity = '0';
+            setTimeout(() => container.remove(), 300);
+        }
+    }, 5000);
 };
 
 // ========================================
