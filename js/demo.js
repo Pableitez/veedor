@@ -38,9 +38,19 @@ class VeedorFinanceCenter {
         this.setupEventListeners();
         this.initializeCharts();
         this.updateDashboard();
-        this.showTab('overview');
+        this.initializeTabs();
         this.startRealTimeUpdates();
         this.setupThemeToggle();
+    }
+
+    initializeTabs() {
+        // Ocultar todas las secciones primero
+        document.querySelectorAll('.tab-panel').forEach(panel => {
+            panel.classList.remove('active');
+        });
+        
+        // Mostrar solo la sección overview
+        this.showTab('overview');
     }
 
     // ========================================
@@ -188,9 +198,9 @@ class VeedorFinanceCenter {
     // ========================================
     setupEventListeners() {
         // Tabs del dashboard
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        document.querySelectorAll('.nav-tab').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const tabName = e.target.closest('.tab-btn').dataset.tab;
+                const tabName = e.target.closest('.nav-tab').dataset.tab;
                 this.showTab(tabName);
             });
         });
@@ -211,6 +221,14 @@ class VeedorFinanceCenter {
             }
             if (e.target.matches('[data-action="import-data"]')) {
                 this.showImportModal();
+            }
+        });
+
+        // Navegación por URL hash
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash && ['overview', 'transactions', 'budgets', 'goals', 'analytics'].includes(hash)) {
+                this.showTab(hash);
             }
         });
 
@@ -273,7 +291,7 @@ class VeedorFinanceCenter {
             panel.classList.remove('active');
         });
         
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        document.querySelectorAll('.nav-tab').forEach(btn => {
             btn.classList.remove('active');
         });
 
@@ -281,14 +299,29 @@ class VeedorFinanceCenter {
         const targetPanel = document.getElementById(tabName);
         const targetBtn = document.querySelector(`[data-tab="${tabName}"]`);
         
-        if (targetPanel) targetPanel.classList.add('active');
-        if (targetBtn) targetBtn.classList.add('active');
+        if (targetPanel) {
+            targetPanel.classList.add('active');
+        }
+        if (targetBtn) {
+            targetBtn.classList.add('active');
+        }
 
         // Actualizar contenido específico del tab
         this.updateTabContent(tabName);
         
         // Actualizar URL sin recargar
         history.pushState(null, null, `#${tabName}`);
+        
+        // Scroll suave al contenido
+        setTimeout(() => {
+            const dashboardTabs = document.querySelector('.dashboard-tabs');
+            if (dashboardTabs) {
+                dashboardTabs.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }, 100);
     }
 
     updateTabContent(tabName) {
