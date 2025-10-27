@@ -1581,8 +1581,9 @@ function showAuth() {
         authOverlay.classList.add('show');
         document.body.style.overflow = 'hidden';
         
-        // Inicializar validaciones
+        // Ajustar modal según zoom
         setTimeout(() => {
+            adjustModalForZoom();
             initAuthValidations();
         }, 100);
         
@@ -2004,6 +2005,43 @@ function hideFieldError(input, errorElement) {
     input.parentElement.classList.remove('error');
     input.parentElement.classList.add('success');
 }
+
+// Detectar zoom del navegador y ajustar modal
+function detectZoom() {
+    const ratio = window.devicePixelRatio || 1;
+    const screen = window.screen;
+    const availWidth = screen.availWidth;
+    const availHeight = screen.availHeight;
+    
+    // Calcular zoom aproximado
+    const zoom = Math.round((window.outerWidth / window.innerWidth) * 100);
+    
+    console.log('Zoom detectado:', zoom + '%');
+    return zoom;
+}
+
+// Ajustar modal según zoom
+function adjustModalForZoom() {
+    const zoom = detectZoom();
+    const modal = document.querySelector('.auth-modal');
+    
+    if (modal) {
+        if (zoom > 100) {
+            // Zoom aumentado - reducir altura máxima
+            modal.style.maxHeight = `calc(100vh - ${2 + (zoom - 100) / 50}rem)`;
+        } else if (zoom < 100) {
+            // Zoom reducido - aumentar altura máxima
+            modal.style.maxHeight = `calc(100vh - ${2 - (100 - zoom) / 100}rem)`;
+        } else {
+            // Zoom normal
+            modal.style.maxHeight = 'calc(100vh - 2rem)';
+        }
+    }
+}
+
+// Escuchar cambios de zoom
+window.addEventListener('resize', adjustModalForZoom);
+window.addEventListener('load', adjustModalForZoom);
 
 // Social Login Functions
 function loginWithGmail() {
