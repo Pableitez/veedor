@@ -439,7 +439,10 @@ function initializeDashboard() {
     // 3. Actualizar transacciones recientes
     updateRecentTransactions();
     
-    // 4. Crear gráficas si Chart.js está disponible
+    // 4. Actualizar patrimonio neto
+    updateNetWorth();
+    
+    // 5. Crear gráficas si Chart.js está disponible
     if (typeof Chart !== 'undefined') {
         console.log('✅ Chart.js disponible, creando gráficas...');
         createCategoryChart();
@@ -509,6 +512,203 @@ function debugCharts() {
     });
 }
 
+// Función para actualizar patrimonio neto
+function updateNetWorth() {
+    console.log('💰 Actualizando patrimonio neto...');
+    
+    // Datos de ejemplo para patrimonio
+    const netWorthData = {
+        totalAssets: 52180,
+        totalLiabilities: 6950,
+        netWorth: 45230,
+        monthlyChange: 2150
+    };
+    
+    // Actualizar elementos del patrimonio
+    const netWorthValue = document.getElementById('net-worth-value');
+    const netWorthChange = document.getElementById('net-worth-change');
+    const totalAssets = document.getElementById('total-assets');
+    const totalLiabilities = document.getElementById('total-liabilities');
+    
+    if (netWorthValue) {
+        netWorthValue.textContent = `€${netWorthData.netWorth.toLocaleString()}`;
+        console.log('✅ Patrimonio neto actualizado');
+    } else {
+        console.log('❌ Elemento net-worth-value no encontrado');
+    }
+    
+    if (netWorthChange) {
+        netWorthChange.textContent = `+€${netWorthData.monthlyChange.toLocaleString()} este mes`;
+        console.log('✅ Cambio mensual actualizado');
+    } else {
+        console.log('❌ Elemento net-worth-change no encontrado');
+    }
+    
+    if (totalAssets) {
+        totalAssets.textContent = `€${netWorthData.totalAssets.toLocaleString()}`;
+        console.log('✅ Total activos actualizado');
+    } else {
+        console.log('❌ Elemento total-assets no encontrado');
+    }
+    
+    if (totalLiabilities) {
+        totalLiabilities.textContent = `€${netWorthData.totalLiabilities.toLocaleString()}`;
+        console.log('✅ Total pasivos actualizado');
+    } else {
+        console.log('❌ Elemento total-liabilities no encontrado');
+    }
+}
+
+// Función para actualizar lista de activos
+function updateAssetsList() {
+    console.log('📈 Actualizando lista de activos...');
+    
+    const container = document.getElementById('assets-list');
+    if (!container) {
+        console.log('❌ Container assets-list no encontrado');
+        return;
+    }
+
+    const assets = [
+        { name: 'Cuenta Corriente', amount: 8500, type: 'bank' },
+        { name: 'Cuenta de Ahorros', amount: 12000, type: 'bank' },
+        { name: 'Inversiones', amount: 8500, type: 'investment' },
+        { name: 'Coche', amount: 15000, type: 'vehicle' },
+        { name: 'Propiedad', amount: 8500, type: 'property' }
+    ];
+
+    container.innerHTML = assets.map(asset => `
+        <div class="asset-item">
+            <div class="asset-info">
+                <span class="asset-name">${asset.name}</span>
+                <span class="asset-type">${asset.type}</span>
+            </div>
+            <div class="asset-amount positive">
+                €${asset.amount.toLocaleString()}
+            </div>
+        </div>
+    `).join('');
+    
+    console.log('✅ Lista de activos actualizada:', assets.length, 'activos');
+}
+
+// Función para actualizar lista de pasivos
+function updateLiabilitiesList() {
+    console.log('📉 Actualizando lista de pasivos...');
+    
+    const container = document.getElementById('liabilities-list');
+    if (!container) {
+        console.log('❌ Container liabilities-list no encontrado');
+        return;
+    }
+
+    const liabilities = [
+        { name: 'Hipoteca', amount: 4500, type: 'mortgage', interest: 2.5 },
+        { name: 'Préstamo Coche', amount: 1200, type: 'loan', interest: 4.2 },
+        { name: 'Tarjeta de Crédito', amount: 800, type: 'credit', interest: 18.5 },
+        { name: 'Préstamo Personal', amount: 450, type: 'loan', interest: 6.8 }
+    ];
+
+    container.innerHTML = liabilities.map(liability => `
+        <div class="liability-item">
+            <div class="liability-info">
+                <span class="liability-name">${liability.name}</span>
+                <span class="liability-type">${liability.type} (${liability.interest}%)</span>
+            </div>
+            <div class="liability-amount negative">
+                €${liability.amount.toLocaleString()}
+            </div>
+        </div>
+    `).join('');
+    
+    console.log('✅ Lista de pasivos actualizada:', liabilities.length, 'pasivos');
+}
+
+// Función para actualizar insights de amortización
+function updateAmortizationInsights() {
+    console.log('💡 Actualizando insights de amortización...');
+    
+    const container = document.getElementById('liability-insights');
+    if (!container) {
+        console.log('❌ Container liability-insights no encontrado');
+        return;
+    }
+
+    const insights = [
+        {
+            title: 'Prioridad de Amortización',
+            content: 'Amortiza primero la Tarjeta de Crédito (18.5% interés) para ahorrar €148/año',
+            action: 'Optimizar'
+        },
+        {
+            title: 'Impacto en Patrimonio',
+            content: 'Reducir deudas en €1,000 aumentaría tu patrimonio neto en €1,000',
+            action: 'Calcular'
+        },
+        {
+            title: 'Recomendación Inteligente',
+            content: 'Con €500/mes extra, podrías eliminar la Tarjeta de Crédito en 1.6 meses',
+            action: 'Planificar'
+        }
+    ];
+    
+    container.innerHTML = insights.map(insight => `
+        <div class="insight-card">
+            <div class="insight-icon">💡</div>
+            <div class="insight-content">
+                <h4>${insight.title}</h4>
+                <p>${insight.content}</p>
+                <div class="insight-action">
+                    <button class="btn btn-sm btn-outline">${insight.action}</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    console.log('✅ Insights de amortización actualizados');
+}
+
+// Función para cargar pestaña de patrimonio
+function loadAssetsTab() {
+    console.log('🏠 Cargando pestaña de patrimonio...');
+    
+    const container = document.getElementById('assets');
+    if (container) {
+        // Actualizar listas de activos y pasivos
+        updateAssetsList();
+        updateLiabilitiesList();
+        updateAmortizationInsights();
+        
+        console.log('✅ Pestaña de patrimonio cargada');
+    }
+}
+
+// Funciones para modales de patrimonio
+function showAddAssetModal() {
+    console.log('➕ Mostrando modal de nuevo activo...');
+    alert('Funcionalidad de nuevo activo en desarrollo');
+}
+
+function showAddLiabilityModal() {
+    console.log('➕ Mostrando modal de nuevo pasivo...');
+    alert('Funcionalidad de nuevo pasivo en desarrollo');
+}
+
+function showAssetsList() {
+    console.log('📋 Mostrando lista de activos...');
+    showTab('assets');
+}
+
+function showLiabilitiesList() {
+    console.log('📋 Mostrando lista de pasivos...');
+    showTab('assets');
+}
+
+function showNetWorthSettings() {
+    console.log('⚙️ Mostrando configuración de patrimonio...');
+    alert('Funcionalidad de configuración en desarrollo');
+}
+
 // Función para cambiar pestañas
 function showTab(tabName) {
     console.log('Cambiando a pestaña:', tabName);
@@ -540,12 +740,65 @@ function showTab(tabName) {
     } else {
         console.log('❌ Botón no encontrado para:', tabName);
     }
+
+    // Cargar contenido específico de la pestaña
+    switch (tabName) {
+        case 'overview':
+            updateFinancialSummary();
+            updateRecentTransactions();
+            updateNetWorth();
+            updateAllCharts();
+            break;
+        case 'transactions':
+            console.log('📝 Cargando pestaña de transacciones...');
+            break;
+        case 'budgets':
+            console.log('💰 Cargando pestaña de presupuestos...');
+            break;
+        case 'analytics':
+            console.log('📊 Cargando pestaña de análisis...');
+            break;
+        case 'goals':
+            console.log('🎯 Cargando pestaña de objetivos...');
+            break;
+        case 'assets':
+            loadAssetsTab();
+            break;
+        default:
+            console.log('❓ Pestaña desconocida:', tabName);
+    }
+}
+
+// Función para actualizar todas las gráficas
+function updateAllCharts() {
+    console.log('📊 Actualizando todas las gráficas...');
+    
+    if (typeof Chart !== 'undefined') {
+        createCategoryChart();
+        createTrendsChart();
+        createIncomeExpensesChart();
+        console.log('✅ Todas las gráficas actualizadas');
+    } else {
+        console.log('❌ Chart.js no disponible para actualizar gráficas');
+    }
 }
 
 // Hacer funciones globales
 window.debugCharts = debugCharts;
 window.initializeDashboard = initializeDashboard;
 window.showTab = showTab;
+window.updateAllCharts = updateAllCharts;
+window.updateNetWorth = updateNetWorth;
+window.updateAssetsList = updateAssetsList;
+window.updateLiabilitiesList = updateLiabilitiesList;
+window.updateAmortizationInsights = updateAmortizationInsights;
+window.loadAssetsTab = loadAssetsTab;
+window.showAddAssetModal = showAddAssetModal;
+window.showAddLiabilityModal = showAddLiabilityModal;
+window.showAssetsList = showAssetsList;
+window.showLiabilitiesList = showLiabilitiesList;
+window.showNetWorthSettings = showNetWorthSettings;
+window.showSavingsConfiguration = showSavingsConfiguration;
 
 // Inicializar automáticamente cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
