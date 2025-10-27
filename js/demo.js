@@ -450,11 +450,14 @@ class VeedorFinanceCenter {
         // Ahorro con tasa
         const savingsElement = document.querySelector('.savings-amount');
         if (savingsElement) {
+            savingsElement.textContent = `€${totals.balance.toFixed(2)}`;
+        }
+        
+        // Actualizar la tasa de ahorro en el elemento separado
+        const savingsRateElement = document.querySelector('.summary-change.positive');
+        if (savingsRateElement && savingsRateElement.textContent.includes('tasa de ahorro')) {
             const savingsRate = (totals.balance / totals.income) * 100;
-            savingsElement.innerHTML = `
-                €${totals.balance.toFixed(2)}
-                <span class="savings-rate">${savingsRate.toFixed(1)}% tasa de ahorro</span>
-            `;
+            savingsRateElement.textContent = `${savingsRate.toFixed(1)}% tasa de ahorro`;
         }
     }
 
@@ -464,30 +467,25 @@ class VeedorFinanceCenter {
         // Transacciones del mes
         const transactionsElement = document.querySelector('.stat-transactions');
         if (transactionsElement) {
-            transactionsElement.innerHTML = `
-                <span class="stat-number">${stats.transactionsCount}</span>
-                <span class="stat-label">Transacciones este mes</span>
-            `;
+            transactionsElement.textContent = stats.transactionsCount;
         }
 
         // Categorías más gastadas
         const topCategoryElement = document.querySelector('.stat-top-category');
         if (topCategoryElement) {
-            const topCategory = stats.topCategory;
-            topCategoryElement.innerHTML = `
-                <span class="stat-number">${topCategory.name}</span>
-                <span class="stat-label">€${topCategory.amount.toFixed(2)}</span>
-            `;
+            topCategoryElement.textContent = stats.topCategory.name;
+        }
+        
+        // Actualizar el label de la categoría
+        const topCategoryLabel = topCategoryElement?.nextElementSibling;
+        if (topCategoryLabel && topCategoryLabel.classList.contains('stat-label')) {
+            topCategoryLabel.textContent = `€${stats.topCategory.amount.toFixed(2)}`;
         }
 
         // Días restantes del mes
         const daysLeftElement = document.querySelector('.stat-days-left');
         if (daysLeftElement) {
-            const daysLeft = stats.daysLeft;
-            daysLeftElement.innerHTML = `
-                <span class="stat-number">${daysLeft}</span>
-                <span class="stat-label">Días restantes</span>
-            `;
+            daysLeftElement.textContent = stats.daysLeft;
         }
     }
 
