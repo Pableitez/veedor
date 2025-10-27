@@ -1553,17 +1553,18 @@
             gap: var(--space-xs);
         }
         
-        .net-worth-item .btn-icon {
-            padding: var(--space-xs);
+        .net-worth-item .btn-outline {
+            padding: var(--space-xs) var(--space-sm);
             font-size: 0.8rem;
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-sm);
             cursor: pointer;
             transition: var(--transition-fast);
+            margin-top: var(--space-xs);
         }
         
-        .net-worth-item .btn-icon:hover {
+        .net-worth-item .btn-outline:hover {
             background: var(--accent);
             color: white;
             border-color: var(--accent);
@@ -1716,12 +1717,14 @@
             font-size: 0.8rem;
             cursor: pointer;
             transition: var(--transition-fast);
+            font-weight: 500;
         }
         
         .envelope-btn:hover {
             background: var(--accent);
             border-color: var(--accent);
             color: white;
+            transform: translateY(-1px);
         }
         
         /* Financial Health Metrics */
@@ -1908,6 +1911,7 @@
             color: var(--text-primary);
             cursor: pointer;
             transition: var(--transition-fast);
+            font-weight: 500;
         }
         
         .asset-actions button:hover,
@@ -1915,6 +1919,7 @@
             background: var(--accent);
             border-color: var(--accent);
             color: white;
+            transform: translateY(-1px);
         }
         
         .asset-actions .edit-btn:hover {
@@ -2292,7 +2297,7 @@
                         <div class="net-worth-actions">
                             <button class="btn-outline" onclick="showAddAssetModal()" data-tooltip="Añadir activo">+ Activo</button>
                             <button class="btn-outline" onclick="showAddLiabilityModal()" data-tooltip="Añadir pasivo">+ Pasivo</button>
-                            <button class="btn-outline" onclick="showNetWorthSettings()" data-tooltip="Configurar patrimonio">⚙</button>
+                            <button class="btn-outline" onclick="showNetWorthSettings()" data-tooltip="Configurar patrimonio">Configurar</button>
                         </div>
                     </div>
                     <div class="net-worth-value" id="net-worth-value">€45,230.00</div>
@@ -2301,12 +2306,12 @@
                         <div class="net-worth-item">
                             <span class="net-worth-label">Activos</span>
                             <span class="net-worth-amount positive" id="total-assets">€52,180.00</span>
-                            <button class="btn-icon" onclick="showAssetsList()" data-tooltip="Ver lista de activos">📋</button>
+                            <button class="btn-outline" onclick="showAssetsList()" data-tooltip="Ver lista de activos">Ver Lista</button>
                         </div>
                         <div class="net-worth-item">
                             <span class="net-worth-label">Pasivos</span>
                             <span class="net-worth-amount negative" id="total-liabilities">€6,950.00</span>
-                            <button class="btn-icon" onclick="showLiabilitiesList()" data-tooltip="Ver lista de pasivos">📋</button>
+                            <button class="btn-outline" onclick="showLiabilitiesList()" data-tooltip="Ver lista de pasivos">Ver Lista</button>
                         </div>
                     </div>
                 </div>
