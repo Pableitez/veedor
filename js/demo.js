@@ -491,6 +491,18 @@ class VeedorFinanceCenter {
         }
     }
 
+    updateOverview() {
+        // Actualizar todas las secciones del resumen
+        this.updateFinancialSummary();
+        this.updateQuickStats();
+        this.updateInsightsCenter();
+        this.updateNetWorth();
+        this.updateRecentTransactions();
+        this.updateBudgetsOverview();
+        this.updateGoalsOverview();
+        this.updateSpendingChart();
+    }
+
     updateInsightsCenter() {
         const insights = this.generateInsights();
         const container = document.querySelector('#insights-grid');
@@ -515,13 +527,7 @@ class VeedorFinanceCenter {
     // ========================================
     // TAB OVERVIEW PROFESIONAL
     // ========================================
-    updateOverview() {
-        this.updateRecentTransactions();
-        this.updateBudgetsOverview();
-        this.updateGoalsOverview();
-        this.updateSpendingChart();
-    }
-
+    
     updateRecentTransactions() {
         const container = document.querySelector('#overview .recent-transactions');
         if (!container) return;
