@@ -501,6 +501,105 @@ class VeedorFinanceCenter {
         this.updateBudgetsOverview();
         this.updateGoalsOverview();
         this.updateSpendingChart();
+        this.updateAmortizationAnalysis();
+    }
+    
+    updateAmortizationAnalysis() {
+        const container = document.querySelector('#overview .amortization-analysis');
+        if (!container) return;
+        
+        const analysis = this.calculateAmortizationAnalysis();
+        if (analysis.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-title">Sin análisis de amortización</div>
+                    <div class="empty-state-description">Añade pasivos con datos financieros para ver recomendaciones</div>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = `
+            <div class="analysis-header">
+                <h3>Análisis de Amortización</h3>
+                <p>Recomendaciones para optimizar tus pasivos</p>
+            </div>
+            <div class="analysis-list">
+                ${analysis.map(item => `
+                    <div class="analysis-item ${item.priority}">
+                        <div class="analysis-title">${item.title}</div>
+                        <div class="analysis-description">${item.description}</div>
+                        <div class="analysis-savings">Ahorro potencial: €${item.savings.toFixed(2)}</div>
+                        <div class="analysis-action">
+                            <button class="btn-outline" onclick="showLiabilityAmortization(${item.liabilityId})">Ver Detalles</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+    
+    calculateAmortizationAnalysis() {
+        const analysis = [];
+        
+        this.liabilities.forEach(liability => {
+            if (!liability.interestRate || !liability.years) return;
+            
+            const principal = liability.amount;
+            const rate = liability.interestRate;
+            const years = liability.years;
+            const fees = liability.fees || 0;
+            
+            // Calcular coste total del préstamo
+            const loanDetails = this.calculateLoanDetails(principal, rate, years, fees);
+            const totalCost = loanDetails.totalCost;
+            
+            // Calcular ahorro potencial por amortización anticipada
+            const earlyCancellationFee = liability.earlyCancellationFee || 0;
+            const remainingPayments = loanDetails.amortization.schedule.filter(p => p.remainingBalance > 0).length;
+            const remainingInterest = loanDetails.amortization.schedule
+                .filter(p => p.remainingBalance > 0)
+                .reduce((sum, p) => sum + p.interestPayment, 0);
+            
+            const cancellationCost = (principal * earlyCancellationFee / 100);
+            const potentialSavings = remainingInterest - cancellationCost;
+            
+            // Determinar prioridad
+            let priority = 'low';
+            let title = '';
+            let description = '';
+            
+            if (potentialSavings > 5000) {
+                priority = 'high';
+                title = `Amortizar ${liability.name}`;
+                description = `Alto potencial de ahorro. Puedes ahorrar €${potentialSavings.toFixed(2)} amortizando anticipadamente.`;
+            } else if (potentialSavings > 1000) {
+                priority = 'medium';
+                title = `Considerar ${liability.name}`;
+                description = `Ahorro moderado de €${potentialSavings.toFixed(2)}. Evalúa si compensa la comisión de cancelación.`;
+            } else if (potentialSavings > 0) {
+                priority = 'low';
+                title = `Mantener ${liability.name}`;
+                description = `Ahorro limitado de €${potentialSavings.toFixed(2)}. Mejor mantener el préstamo actual.`;
+            } else {
+                priority = 'low';
+                title = `No amortizar ${liability.name}`;
+                description = `La comisión de cancelación supera el ahorro en intereses.`;
+            }
+            
+            analysis.push({
+                liabilityId: liability.id,
+                title,
+                description,
+                savings: potentialSavings,
+                priority,
+                totalCost,
+                remainingPayments
+            });
+        });
+        
+        // Ordenar por ahorro potencial descendente
+        return analysis.sort((a, b) => b.savings - a.savings);
     }
 
     updateInsightsCenter() {
@@ -3160,8 +3259,12 @@ function logout() {
                         <input type="number" id="liability-payment" step="0.01" value="${liability ? liability.monthlyPayment || '' : ''}">
                     </div>
                     <div class="form-group">
-                        <label for="liability-rate">Tipo de Interés Anual (%)</label>
+                        <label for="liability-rate">TIN - Tipo de Interés Nominal (%)</label>
                         <input type="number" id="liability-rate" step="0.01" value="${liability ? liability.interestRate || '' : ''}" placeholder="Ej: 3.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="liability-tae">TAE - Tasa Anual Equivalente (%)</label>
+                        <input type="number" id="liability-tae" step="0.01" value="${liability ? liability.tae || '' : ''}" placeholder="Ej: 3.8">
                     </div>
                     <div class="form-group">
                         <label for="liability-years">Años de Duración</label>
@@ -3170,6 +3273,18 @@ function logout() {
                     <div class="form-group">
                         <label for="liability-fees">Comisiones Iniciales (€)</label>
                         <input type="number" id="liability-fees" step="0.01" value="${liability ? liability.fees || '' : ''}" placeholder="Ej: 1500">
+                    </div>
+                    <div class="form-group">
+                        <label for="liability-early-cancellation">Comisión Cancelación Anticipada (%)</label>
+                        <input type="number" id="liability-early-cancellation" step="0.01" value="${liability ? liability.earlyCancellationFee || '' : ''}" placeholder="Ej: 1.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="liability-maintenance">Comisión Mantenimiento Anual (€)</label>
+                        <input type="number" id="liability-maintenance" step="0.01" value="${liability ? liability.maintenanceFee || '' : ''}" placeholder="Ej: 120">
+                    </div>
+                    <div class="form-group">
+                        <label for="liability-insurance">Seguro Anual (€)</label>
+                        <input type="number" id="liability-insurance" step="0.01" value="${liability ? liability.insuranceFee || '' : ''}" placeholder="Ej: 300">
                     </div>
                     <div class="form-group">
                         <button type="button" class="btn-outline" onclick="calculateAmortization()">Calcular Amortización</button>
@@ -3416,9 +3531,9 @@ function logout() {
         
         // Calcular amortización con datos del pasivo
         const principal = liability.amount;
-        const rate = 3.5; // Tasa por defecto, se podría añadir al pasivo
-        const years = 25; // Años por defecto, se podría añadir al pasivo
-        const fees = 0;
+        const rate = liability.interestRate || 3.5; // Usar TIN del pasivo o por defecto
+        const years = liability.years || 25; // Usar años del pasivo o por defecto
+        const fees = liability.fees || 0; // Usar comisiones del pasivo
         
         const loanDetails = veedorFinance.calculateLoanDetails(principal, rate, years, fees);
         const resultsDiv = document.getElementById('liability-amortization-results');
@@ -3645,7 +3760,14 @@ function logout() {
             amount: parseFloat(document.getElementById('liability-amount').value),
             type: document.getElementById('liability-type').value,
             institution: document.getElementById('liability-institution').value,
-            monthlyPayment: parseFloat(document.getElementById('liability-payment').value) || 0
+            monthlyPayment: parseFloat(document.getElementById('liability-payment').value) || 0,
+            interestRate: parseFloat(document.getElementById('liability-rate').value) || 0,
+            tae: parseFloat(document.getElementById('liability-tae').value) || 0,
+            years: parseInt(document.getElementById('liability-years').value) || 0,
+            fees: parseFloat(document.getElementById('liability-fees').value) || 0,
+            earlyCancellationFee: parseFloat(document.getElementById('liability-early-cancellation').value) || 0,
+            maintenanceFee: parseFloat(document.getElementById('liability-maintenance').value) || 0,
+            insuranceFee: parseFloat(document.getElementById('liability-insurance').value) || 0
         };
 
         if (liabilityId) {

@@ -1926,6 +1926,84 @@
             height: 100% !important;
         }
         
+        /* Estilos para análisis de amortización */
+        .amortization-analysis {
+            margin-top: var(--space-lg);
+        }
+        
+        .analysis-header {
+            margin-bottom: var(--space-md);
+        }
+        
+        .analysis-header h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .analysis-header p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .analysis-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        
+        .analysis-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            transition: all 0.2s ease;
+        }
+        
+        .analysis-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .analysis-item.high {
+            border-left: 4px solid var(--error);
+        }
+        
+        .analysis-item.medium {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .analysis-item.low {
+            border-left: 4px solid var(--text-secondary);
+        }
+        
+        .analysis-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .analysis-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+            line-height: 1.4;
+        }
+        
+        .analysis-savings {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .analysis-action {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
         .envelope-icon {
             font-size: 1.2rem;
             opacity: 0.7;
@@ -2203,6 +2281,33 @@
         .liability-actions .delete-btn:hover {
             background: #F44336;
             border-color: #F44336;
+        }
+        
+        /* Estilos base para botones edit-btn y delete-btn */
+        .edit-btn, .delete-btn {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .edit-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .delete-btn:hover {
+            background: var(--error);
+            border-color: var(--error);
+            color: white;
+            transform: translateY(-1px);
         }
         
         /* Section Descriptions */
@@ -2693,9 +2798,17 @@
                                     <h3>Gastos por Categoría</h3>
                                     <button class="btn btn-sm btn-outline" onclick="showTab('analytics')">Ver análisis</button>
                                 </div>
-                                <div class="spending-chart">
-                                    <!-- Se llena dinámicamente -->
-                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Análisis de Amortización -->
+                        <div class="overview-card amortization-analysis">
+                            <div class="card-header">
+                                <h3>Análisis de Amortización</h3>
+                                <button class="btn btn-sm btn-outline" onclick="showTab('assets')">Ver Patrimonio</button>
+                            </div>
+                            <div class="amortization-analysis">
+                                <!-- Se llena dinámicamente -->
                             </div>
                         </div>
                     </div>
