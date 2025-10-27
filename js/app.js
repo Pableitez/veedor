@@ -1750,26 +1750,31 @@ function toggleTheme() {
 
 // Cargar tema guardado al iniciar
 function loadTheme() {
-    // Verificar si ya hay un tema establecido en el HTML
-    const htmlTheme = document.documentElement.getAttribute('data-theme');
-    const bodyTheme = document.body.getAttribute('data-theme');
+    // Si hay un tema guardado en localStorage, usarlo
+    const savedTheme = localStorage.getItem('veedor-theme');
     
-    // Si no hay tema guardado, usar el modo oscuro por defecto
-    const savedTheme = localStorage.getItem('veedor-theme') || 'dark';
-    
-    // Aplicar el tema (priorizar el guardado si existe, sino usar el del HTML)
-    const themeToApply = localStorage.getItem('veedor-theme') || htmlTheme || bodyTheme || 'dark';
-    
-    document.documentElement.setAttribute('data-theme', themeToApply);
-    document.body.setAttribute('data-theme', themeToApply);
-    
-    // Actualizar icono del botón
-    const themeIcon = document.querySelector('.theme-icon');
-    if (themeIcon) {
-        themeIcon.textContent = themeToApply === 'dark' ? '☀️' : '🌙';
+    if (savedTheme) {
+        // Usar el tema guardado
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.body.setAttribute('data-theme', savedTheme);
+        
+        // Actualizar icono del botón
+        const themeIcon = document.querySelector('.theme-icon');
+        if (themeIcon) {
+            themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        }
+        
+        console.log(`Tema cargado desde localStorage: ${savedTheme}`);
+    } else {
+        // Si no hay tema guardado, mantener el modo oscuro por defecto del HTML
+        console.log('Usando modo oscuro por defecto del HTML');
+        
+        // Actualizar icono del botón para modo oscuro
+        const themeIcon = document.querySelector('.theme-icon');
+        if (themeIcon) {
+            themeIcon.textContent = '☀️';
+        }
     }
-    
-    console.log(`Tema cargado: ${themeToApply}`);
 }
 
 // Asegurar que las funciones estén en el scope global
