@@ -2490,6 +2490,51 @@
             border-radius: var(--radius-sm);
             text-align: center;
         }
+
+        /* ========================================
+           ESTILOS PARA GRÁFICAS DE ANÁLISIS
+           ======================================== */
+        .analytics-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-lg);
+            margin-top: var(--space-lg);
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--space-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-container h4 {
+            margin: 0 0 var(--space-md) 0;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .chart-container canvas {
+            max-height: 300px;
+        }
+
+        @media (max-width: 768px) {
+            .analytics-charts {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+            
+            .chart-container {
+                padding: var(--space-md);
+            }
+            
+            .chart-container canvas {
+                max-height: 250px;
+            }
+        }
         
         /* Estilos para insights de amortización */
         .amortization-insights {
