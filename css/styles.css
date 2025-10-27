@@ -3728,7 +3728,7 @@ a:hover {
    AUTH MODAL STYLES - SIMPLIFICADO
    ======================================== */
 
-/* Overlay simplificado con Flexbox */
+/* Overlay simplificado con Flexbox - MÁS ESPACIO VERTICAL */
 .auth-overlay {
     position: fixed;
     top: 0;
@@ -3744,7 +3744,7 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
     box-sizing: border-box;
 }
 
@@ -3753,14 +3753,14 @@ a:hover {
     visibility: visible;
 }
 
-/* Modal completamente responsive - MÁS PEQUEÑO */
+/* Modal completamente responsive - MÁS ANCHO Y MENOS ALTO */
 .auth-modal {
     background: var(--card-bg);
     border-radius: 16px;
     padding: 0;
     width: 100%;
-    max-width: 400px;
-    max-height: calc(100vh - 4rem);
+    max-width: 520px;
+    max-height: calc(100vh - 6rem);
     overflow-y: auto;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(25px);
@@ -3776,12 +3776,12 @@ a:hover {
 /* Responsive Modal */
 @media (max-width: 768px) {
     .auth-overlay {
-        padding: 1rem;
+        padding: 1.5rem 1rem;
     }
     
     .auth-modal {
         max-width: 95%;
-        max-height: calc(100vh - 2rem);
+        max-height: calc(100vh - 3rem);
         border-radius: 14px;
     }
 }
@@ -3789,12 +3789,12 @@ a:hover {
 /* Mobile Optimizations */
 @media (max-width: 480px) {
     .auth-overlay {
-        padding: 0.5rem;
+        padding: 1rem 0.5rem;
     }
     
     .auth-modal {
         max-width: 100%;
-        max-height: calc(100vh - 1rem);
+        max-height: calc(100vh - 2rem);
         border-radius: 10px;
     }
     
