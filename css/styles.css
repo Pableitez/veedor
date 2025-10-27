@@ -3911,12 +3911,15 @@ a:hover {
     border-radius: var(--modal-radius-lg);
     width: 100%;
     max-width: 400px;
-    max-height: 70vh;
+    max-height: 90vh;
+    min-height: 400px;
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
     transform: scale(0.9);
     transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .auth-overlay.show .auth-modal {
@@ -3931,6 +3934,7 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .auth-header h2 {
@@ -3947,6 +3951,7 @@ a:hover {
     display: flex;
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
+    flex-shrink: 0;
 }
 
 .auth-tab {
@@ -3977,17 +3982,20 @@ a:hover {
 .auth-form {
     padding: var(--modal-padding-lg);
     display: none;
-    max-height: 50vh;
+    flex: 1;
     overflow-y: auto;
+    min-height: 0;
 }
 
 .auth-form.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
 .auth-form .form-group {
     margin-bottom: var(--modal-margin-md);
     position: relative;
+    flex-shrink: 0;
 }
 
 .auth-form .form-group label {
@@ -4048,6 +4056,7 @@ a:hover {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .auth-submit:hover {
@@ -4065,6 +4074,7 @@ a:hover {
 .auth-footer {
     text-align: center;
     margin-top: var(--modal-margin-sm);
+    flex-shrink: 0;
 }
 
 .auth-footer a {
@@ -4099,16 +4109,17 @@ a:hover {
 /* Responsive */
 @media (max-width: 768px) {
     .auth-overlay {
-        padding: 16px;
+        padding: var(--modal-padding-md);
     }
     
     .auth-modal {
         max-width: 100%;
-        max-height: 80vh;
+        max-height: 95vh;
+        min-height: 350px;
     }
     
     .auth-header {
-        padding: 14px 16px 10px;
+        padding: var(--modal-padding-sm) var(--modal-padding-md) var(--modal-padding-xs);
     }
     
     .auth-header h2 {
@@ -4116,28 +4127,28 @@ a:hover {
     }
     
     .auth-form {
-        padding: 16px;
-        max-height: 60vh;
+        padding: var(--modal-padding-md);
     }
     
     .auth-tab {
-        padding: 10px 12px;
+        padding: var(--modal-padding-xs) var(--modal-padding-sm);
         font-size: 0.85rem;
     }
 }
 
 @media (max-width: 480px) {
     .auth-overlay {
-        padding: 12px;
+        padding: var(--modal-padding-sm);
     }
     
     .auth-modal {
         max-width: 100%;
-        max-height: 85vh;
+        max-height: 98vh;
+        min-height: 300px;
     }
     
     .auth-header {
-        padding: 12px 14px 8px;
+        padding: var(--modal-padding-sm);
     }
     
     .auth-header h2 {
@@ -4145,12 +4156,11 @@ a:hover {
     }
     
     .auth-form {
-        padding: 14px;
-        max-height: 65vh;
+        padding: var(--modal-padding-sm);
     }
     
     .auth-tab {
-        padding: 8px 10px;
+        padding: var(--modal-padding-xs);
         font-size: 0.8rem;
     }
     
@@ -4380,8 +4390,9 @@ a:hover {
    ======================================== */
 
 .social-login {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--modal-margin-lg);
     text-align: center;
+    flex-shrink: 0;
 }
 
 .social-login h3 {
