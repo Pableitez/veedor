@@ -1750,16 +1750,26 @@ function toggleTheme() {
 
 // Cargar tema guardado al iniciar
 function loadTheme() {
-    const savedTheme = localStorage.getItem('veedor-theme') || 'dark'; // Modo oscuro por defecto
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    // Verificar si ya hay un tema establecido en el HTML
+    const htmlTheme = document.documentElement.getAttribute('data-theme');
+    const bodyTheme = document.body.getAttribute('data-theme');
+    
+    // Si no hay tema guardado, usar el modo oscuro por defecto
+    const savedTheme = localStorage.getItem('veedor-theme') || 'dark';
+    
+    // Aplicar el tema (priorizar el guardado si existe, sino usar el del HTML)
+    const themeToApply = localStorage.getItem('veedor-theme') || htmlTheme || bodyTheme || 'dark';
+    
+    document.documentElement.setAttribute('data-theme', themeToApply);
+    document.body.setAttribute('data-theme', themeToApply);
     
     // Actualizar icono del botón
     const themeIcon = document.querySelector('.theme-icon');
     if (themeIcon) {
-        themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        themeIcon.textContent = themeToApply === 'dark' ? '☀️' : '🌙';
     }
     
-    console.log(`Tema cargado: ${savedTheme}`);
+    console.log(`Tema cargado: ${themeToApply}`);
 }
 
 // Asegurar que las funciones estén en el scope global
