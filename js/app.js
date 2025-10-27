@@ -1748,6 +1748,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar carrusel
     initCarousel();
     
+    // Configurar eventos de modales legales
+    setupLegalModalEvents();
+    
     // Login
     document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1849,3 +1852,64 @@ window.showAuthTab = showAuthTab;
 window.showForgotPassword = showForgotPassword;
 window.showProfile = showProfile;
 window.logout = logout;
+
+// ========================================
+// FUNCIONES PARA MODALES LEGALES
+// ========================================
+
+// Función para abrir modal legal
+function openLegalModal(modalId) {
+    console.log('Abriendo modal legal:', modalId);
+    
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+        
+        // Animar entrada
+        setTimeout(() => {
+            modal.style.opacity = '1';
+        }, 10);
+    }
+}
+
+// Función para cerrar modal legal
+function closeLegalModal(modalId) {
+    console.log('Cerrando modal legal:', modalId);
+    
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.opacity = '0';
+        
+        setTimeout(() => {
+            modal.classList.remove('show');
+            document.body.style.overflow = ''; // Restaurar scroll del body
+        }, 300);
+    }
+}
+
+// Cerrar modal al hacer clic fuera del contenido
+function setupLegalModalEvents() {
+    document.querySelectorAll('.legal-modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                const modalId = modal.id;
+                closeLegalModal(modalId);
+            }
+        });
+    });
+    
+    // Cerrar con tecla Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const openModal = document.querySelector('.legal-modal.show');
+            if (openModal) {
+                closeLegalModal(openModal.id);
+            }
+        }
+    });
+}
+
+// Hacer funciones globales
+window.openLegalModal = openLegalModal;
+window.closeLegalModal = closeLegalModal;
