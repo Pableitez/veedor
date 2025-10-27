@@ -3011,7 +3011,7 @@ a:hover {
     }
 }
 
-/* Modal Styles */
+/* Modal Styles - UNIFICADO CON AUTH-MODAL */
 .modal {
     display: none;
     position: fixed;
@@ -3020,8 +3020,8 @@ a:hover {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(15px);
     justify-content: center;
     align-items: center;
     opacity: 0;
@@ -3037,14 +3037,14 @@ a:hover {
     background: var(--card-bg);
     border-radius: 16px;
     padding: 0;
-    max-width: 450px;
+    max-width: 420px;
     width: 90%;
-    max-height: 80vh;
+    max-height: 70vh;
     overflow-y: auto;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transform: scale(0.9);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transform: scale(0.95);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -3056,29 +3056,22 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 1.25rem;
+    padding: 1rem 1.5rem 0.75rem;
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
     border-radius: 16px 16px 0 0;
     position: sticky;
     top: 0;
     z-index: 10;
+    backdrop-filter: blur(10px);
 }
 
 .modal-header h2 {
     margin: 0;
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--text-primary);
-    letter-spacing: -0.01em;
-}
-
-.modal-header h2 {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
 }
 
 .modal-body {
@@ -3160,31 +3153,32 @@ a:hover {
 }
 
 .modal-form {
-    padding: 1.5rem;
+    padding: 1rem 1.5rem;
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
     color: var(--text-primary);
-    font-size: 0.9rem;
 }
 
 .form-group .input,
 .form-group select {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background: var(--input-bg);
+    padding: 0.7rem 0.9rem;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--card-bg);
     color: var(--text-primary);
-    font-size: 1rem;
-    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
     box-sizing: border-box;
 }
 
@@ -4367,7 +4361,7 @@ a:hover {
    SCROLLBAR UNIFICADO CON PALETA DE COLORES
    ======================================== */
 
-/* Scrollbar para Webkit (Chrome, Safari, Edge) - SIN FLECHAS */
+/* Scrollbar para Webkit (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -4392,23 +4386,13 @@ a:hover {
     background: var(--bg-secondary);
 }
 
-/* Quitar flechas de dirección */
-::-webkit-scrollbar-button {
-    display: none;
-}
-
-::-webkit-scrollbar-button:start:decrement,
-::-webkit-scrollbar-button:end:increment {
-    display: none;
-}
-
 /* Scrollbar para Firefox */
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--accent) var(--bg-secondary);
 }
 
-/* Scrollbar específico para modales - SIN FLECHAS */
+/* Scrollbar específico para modales */
 .auth-modal::-webkit-scrollbar {
     width: 6px;
 }
@@ -4425,14 +4409,4 @@ a:hover {
 
 .auth-modal::-webkit-scrollbar-thumb:hover {
     background: var(--accent-light);
-}
-
-/* Quitar flechas de dirección en modales */
-.auth-modal::-webkit-scrollbar-button {
-    display: none;
-}
-
-.auth-modal::-webkit-scrollbar-button:start:decrement,
-.auth-modal::-webkit-scrollbar-button:end:increment {
-    display: none;
 }
