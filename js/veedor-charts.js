@@ -657,10 +657,82 @@ function showTab(tabName) {
     }
 }
 
+// Función para verificar que todo esté funcionando
+function verifySystem() {
+    console.log('=== VERIFICACIÓN COMPLETA DEL SISTEMA ===');
+    
+    // 1. Verificar Chart.js
+    console.log('1. Chart.js disponible:', typeof Chart !== 'undefined');
+    
+    // 2. Verificar canvas
+    const canvas1 = document.getElementById('overviewCategoryChart');
+    const canvas2 = document.getElementById('overviewTrendsChart');
+    const canvas3 = document.getElementById('overviewIncomeExpensesChart');
+    
+    console.log('2. Canvas encontrados:', {
+        categoryChart: !!canvas1,
+        trendsChart: !!canvas2,
+        incomeExpensesChart: !!canvas3
+    });
+    
+    if (canvas1) console.log('   - Canvas 1 dimensions:', canvas1.offsetWidth, 'x', canvas1.offsetHeight);
+    if (canvas2) console.log('   - Canvas 2 dimensions:', canvas2.offsetWidth, 'x', canvas2.offsetHeight);
+    if (canvas3) console.log('   - Canvas 3 dimensions:', canvas3.offsetWidth, 'x', canvas3.offsetHeight);
+    
+    // 3. Verificar elementos del resumen
+    const elements = {
+        balance: document.querySelector('.balance-amount'),
+        income: document.querySelector('.income-amount'),
+        expenses: document.querySelector('.expenses-amount'),
+        savings: document.querySelector('.savings-amount')
+    };
+    
+    console.log('3. Elementos del resumen:', {
+        balance: !!elements.balance,
+        income: !!elements.income,
+        expenses: !!elements.expenses,
+        savings: !!elements.savings
+    });
+    
+    // 4. Verificar datos
+    const transactions = JSON.parse(localStorage.getItem('veedorTransactions') || '[]');
+    console.log('4. Transacciones cargadas:', transactions.length);
+    
+    // 5. Verificar gráficas creadas
+    console.log('5. Gráficas creadas:', {
+        categoryChart: !!window.overviewCategoryChart,
+        trendsChart: !!window.overviewTrendsChart,
+        incomeExpensesChart: !!window.overviewIncomeExpensesChart
+    });
+    
+    // 6. Intentar crear gráficas si no existen
+    if (typeof Chart !== 'undefined' && transactions.length > 0) {
+        console.log('6. Intentando crear gráficas...');
+        
+        if (!window.overviewCategoryChart && canvas1) {
+            console.log('   - Creando gráfica de categorías...');
+            createCategoryChart(transactions);
+        }
+        
+        if (!window.overviewTrendsChart && canvas2) {
+            console.log('   - Creando gráfica de tendencias...');
+            createTrendsChart(transactions);
+        }
+        
+        if (!window.overviewIncomeExpensesChart && canvas3) {
+            console.log('   - Creando gráfica de resumen...');
+            createIncomeExpensesChart(transactions);
+        }
+    }
+    
+    console.log('=== VERIFICACIÓN COMPLETADA ===');
+}
+
 // Hacer funciones globales
 window.debugCharts = debugCharts;
 window.initializeDashboard = initializeDashboard;
 window.showTab = showTab;
+window.verifySystem = verifySystem;
 
 // Inicializar automáticamente cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
