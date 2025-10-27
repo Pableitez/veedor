@@ -3338,6 +3338,10 @@ a:hover {
     color: #1e293b;
 }
 
+[data-theme="light"] .btn-outline {
+    color: #ffffff;
+}
+
 [data-theme="light"] .form-group .input:focus,
 [data-theme="light"] .form-group select:focus {
     border-color: #1e293b;
