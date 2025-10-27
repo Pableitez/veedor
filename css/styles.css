@@ -469,21 +469,21 @@ a:hover {
         font-weight: 600;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         min-width: auto;
-    }
-    
-    .nav-btn:hover {
+}
+
+.nav-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
-    }
-    
-    .nav-btn-primary {
+}
+
+.nav-btn-primary {
         background: var(--accent);
-        color: var(--text-white);
+    color: var(--text-white);
         border-color: var(--accent);
         box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
-    }
-    
-    .nav-btn-primary:hover {
+}
+
+.nav-btn-primary:hover {
         background: var(--accent-light);
         box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
     }

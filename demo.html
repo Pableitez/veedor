@@ -81,7 +81,7 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: var(--space-sm);
             margin-bottom: var(--space-xl);
-            justify-items: center;
+            justify-items: stretch;
         }
         
         .summary-card {
@@ -1162,6 +1162,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: var(--space-md);
+            margin-top: var(--space-lg);
         }
         
         .trend-summary-item {
@@ -1170,18 +1171,29 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
+            transition: var(--transition-normal);
+        }
+        
+        .trend-summary-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
         }
         
         .trend-label {
             display: block;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
             color: var(--text-secondary);
             margin-bottom: var(--space-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .trend-value {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
         }
         
         /* Notifications */

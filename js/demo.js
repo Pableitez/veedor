@@ -1084,21 +1084,26 @@ class VeedorFinanceCenter {
 
     updateAnalyticsTrends() {
         const trends = this.calculateDetailedTrends();
+        const totals = this.calculateTotals();
         const container = document.querySelector('#analytics .analytics-trends');
         if (!container) return;
 
         container.innerHTML = `
             <div class="trends-summary">
                 <div class="trend-summary-item">
+                    <span class="trend-label">Transacciones Este Mes</span>
+                    <span class="trend-value">${this.transactions.length}</span>
+                </div>
+                <div class="trend-summary-item">
+                    <span class="trend-label">Días Restantes</span>
+                    <span class="trend-value">${trends.daysRemaining}</span>
+                </div>
+                <div class="trend-summary-item">
                     <span class="trend-label">Gasto Promedio Diario</span>
                     <span class="trend-value">€${trends.dailyAverage.toFixed(2)}</span>
                 </div>
                 <div class="trend-summary-item">
-                    <span class="trend-label">Días de Mayor Gasto</span>
-                    <span class="trend-value">${trends.highSpendingDays}</span>
-                </div>
-                <div class="trend-summary-item">
-                    <span class="trend-label">Categoría Más Variable</span>
+                    <span class="trend-label">Categoría Principal</span>
                     <span class="trend-value">${trends.mostVariableCategory}</span>
                 </div>
             </div>
@@ -1207,9 +1212,10 @@ class VeedorFinanceCenter {
     calculateDetailedTrends() {
         const dailyAverage = this.calculateTotals().expenses / this.getDaysLeftInMonth();
         const highSpendingDays = Math.floor(Math.random() * 5) + 3; // Simulado
-        const mostVariableCategory = 'Entretenimiento'; // Simulado
+        const mostVariableCategory = 'Servicios'; // Simulado
+        const daysRemaining = this.getDaysLeftInMonth();
         
-        return { dailyAverage, highSpendingDays, mostVariableCategory };
+        return { dailyAverage, highSpendingDays, mostVariableCategory, daysRemaining };
     }
 
     getDaysLeftInMonth() {
