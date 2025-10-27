@@ -47,18 +47,26 @@
             <div class="nav-brand">
                 <h1>Veedor</h1>
             </div>
-            <ul class="nav-menu">
-                <li><button class="nav-btn" onclick="showInicio()">Inicio</button></li>
-                <li><button class="nav-btn" id="dashboard-link" style="display: none;" onclick="showDashboard()">Mis Finanzas</button></li>
-                <li><button class="nav-btn" onclick="showFeatures()">Funciones</button></li>
+            
+            <!-- Botón hamburguesa para móviles -->
+            <button class="hamburger" onclick="toggleMobileMenu()">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li><button class="nav-btn" onclick="showInicio(); closeMobileMenu();">Inicio</button></li>
+                <li><button class="nav-btn" id="dashboard-link" style="display: none;" onclick="showDashboard(); closeMobileMenu();">Mis Finanzas</button></li>
+                <li><button class="nav-btn" onclick="showFeatures(); closeMobileMenu();">Funciones</button></li>
                 <li id="auth-buttons">
-                    <button class="nav-btn nav-btn-primary" onclick="showAuth()">Acceder</button>
+                    <button class="nav-btn nav-btn-primary" onclick="showAuth(); closeMobileMenu();">Acceder</button>
                 </li>
                 <li id="user-menu" style="display: none;">
                     <div class="user-profile">
                         <div class="user-avatar" id="user-avatar">U</div>
                         <span id="user-name-display">Usuario</span>
-                        <button class="nav-btn nav-btn-secondary" onclick="logout()">Cerrar Sesión</button>
+                        <button class="nav-btn nav-btn-secondary" onclick="logout(); closeMobileMenu();">Cerrar Sesión</button>
                     </div>
                 </li>
             </ul>

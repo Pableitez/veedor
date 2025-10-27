@@ -7,20 +7,49 @@
 // ========================================
 
 /**
- * Abre un modal específico por su ID
- * @param {string} modalId - ID del modal a abrir
+ * Toggle del menú móvil hamburguesa
  */
-function openModal(modalId) {
-    console.log('Opening modal:', modalId);
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        console.log('Modal opened:', modalId);
-    } else {
-        console.error('Modal not found:', modalId);
-    }
+function toggleMobileMenu() {
+    const navMenu = document.getElementById('nav-menu');
+    const hamburger = document.querySelector('.hamburger');
+    
+    navMenu.classList.toggle('active');
+    hamburger.classList.toggle('active');
 }
+
+/**
+ * Cerrar el menú móvil
+ */
+function closeMobileMenu() {
+    const navMenu = document.getElementById('nav-menu');
+    const hamburger = document.querySelector('.hamburger');
+    
+    navMenu.classList.remove('active');
+    hamburger.classList.remove('active');
+}
+
+/**
+ * Cerrar menú al hacer clic fuera
+ */
+document.addEventListener('click', function(event) {
+    const navMenu = document.getElementById('nav-menu');
+    const hamburger = document.querySelector('.hamburger');
+    const navbar = document.querySelector('.navbar');
+    
+    if (navMenu.classList.contains('active') && 
+        !navbar.contains(event.target)) {
+        closeMobileMenu();
+    }
+});
+
+/**
+ * Cerrar menú al cambiar tamaño de ventana
+ */
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        closeMobileMenu();
+    }
+});
 
 /**
  * Cierra un modal específico por su ID
