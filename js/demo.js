@@ -34,17 +34,35 @@ class VeedorFinanceCenter {
     }
 
     init() {
-        this.loadProfessionalData();
+        this.loadData();
         this.setupEventListeners();
         this.initializeCharts();
         this.updateDashboard();
         this.showTab('overview');
         this.startRealTimeUpdates();
+        this.setupThemeToggle();
     }
 
     // ========================================
-    // DATOS PROFESIONALES REALISTAS
+    // CARGA DE DATOS CON PERSISTENCIA
     // ========================================
+    loadData() {
+        // Intentar cargar datos guardados
+        const savedData = this.loadFromStorage();
+        
+        if (savedData && Object.keys(savedData).length > 0) {
+            this.transactions = savedData.transactions || [];
+            this.budgets = savedData.budgets || [];
+            this.goals = savedData.goals || [];
+        } else {
+            // Cargar datos de demo si no hay datos guardados
+            this.loadProfessionalData();
+        }
+        
+        // Guardar datos iniciales
+        this.saveToStorage();
+    }
+
     loadProfessionalData() {
         const today = new Date();
         const currentMonth = today.getMonth();
@@ -1500,9 +1518,24 @@ class VeedorFinanceCenter {
 
         const type = document.getElementById('transaction-type').value;
         const amount = parseFloat(document.getElementById('transaction-amount').value);
-        const description = document.getElementById('transaction-description').value;
+        const description = document.getElementById('transaction-description').value.trim();
         const category = document.getElementById('transaction-category').value;
         const date = document.getElementById('transaction-date').value;
+
+        const transactionData = {
+            type,
+            amount,
+            description,
+            category,
+            date
+        };
+
+        // Validar datos
+        const errors = this.validateTransaction(transactionData);
+        if (errors.length > 0) {
+            this.showError(errors.join(', '));
+            return;
+        }
 
         const transaction = {
             id: Date.now() + Math.random(),
@@ -1511,14 +1544,16 @@ class VeedorFinanceCenter {
             category,
             date,
             type,
-            recurring: false
+            recurring: false,
+            createdAt: new Date().toISOString()
         };
 
         this.transactions.unshift(transaction);
+        this.saveToStorage();
         this.updateDashboard();
         this.updateTabContent(this.currentTab);
         
-        this.showNotification('Transacción agregada correctamente', 'success');
+        this.showSuccess('Transacción agregada correctamente');
     }
 
     addBudget() {
@@ -1529,31 +1564,68 @@ class VeedorFinanceCenter {
         const limit = parseFloat(document.getElementById('budget-limit').value);
         const period = document.getElementById('budget-period').value;
 
+        const budgetData = {
+            category,
+            limit,
+            period
+        };
+
+        // Validar datos
+        const errors = this.validateBudget(budgetData);
+        if (errors.length > 0) {
+            this.showError(errors.join(', '));
+            return;
+        }
+
+        // Verificar si ya existe un presupuesto para esta categoría
+        const existingBudget = this.budgets.find(b => b.category === category);
+        if (existingBudget) {
+            this.showError('Ya existe un presupuesto para esta categoría');
+            return;
+        }
+
         const budget = {
             id: Date.now() + Math.random(),
             category,
             limit,
             spent: this.calculateCategorySpent(category),
             period,
-            alerts: []
+            alerts: [],
+            createdAt: new Date().toISOString()
         };
 
         this.budgets.push(budget);
+        this.saveToStorage();
         this.updateDashboard();
         this.updateTabContent(this.currentTab);
         
-        this.showNotification('Presupuesto creado correctamente', 'success');
+        this.showSuccess('Presupuesto creado correctamente');
     }
 
     addGoal() {
         const form = document.getElementById('new-goal-form');
         if (!form) return;
 
-        const name = document.getElementById('goal-name').value;
+        const name = document.getElementById('goal-name').value.trim();
         const target = parseFloat(document.getElementById('goal-target').value);
-        const current = parseFloat(document.getElementById('goal-current').value);
+        const current = parseFloat(document.getElementById('goal-current').value) || 0;
         const deadline = document.getElementById('goal-deadline').value;
         const priority = document.getElementById('goal-priority').value;
+
+        const goalData = {
+            name,
+            target,
+            current,
+            deadline,
+            priority
+        };
+
+        // Validar datos
+        const errors = this.validateGoal(goalData);
+        if (errors.length > 0) {
+            this.showError(errors.join(', '));
+            return;
+        }
 
         const goal = {
             id: Date.now() + Math.random(),
@@ -1563,47 +1635,242 @@ class VeedorFinanceCenter {
             deadline,
             priority,
             category: 'personal',
-            monthlyTarget: (target - current) / Math.max(Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 30)), 1)
+            monthlyTarget: (target - current) / Math.max(Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 30)), 1),
+            createdAt: new Date().toISOString()
         };
 
         this.goals.push(goal);
+        this.saveToStorage();
         this.updateDashboard();
         this.updateTabContent(this.currentTab);
         
-        this.showNotification('Objetivo creado correctamente', 'success');
+        this.showSuccess('Objetivo creado correctamente');
     }
 
     editTransaction(id) {
         const transaction = this.transactions.find(t => t.id === id);
         if (!transaction) return;
 
-        // Implementar edición
-        this.showNotification('Función de edición próximamente', 'info');
+        const modal = this.createModal('Editar Transacción', this.getTransactionFormHTML(transaction));
+        document.body.appendChild(modal);
+        
+        // Llenar formulario con datos existentes
+        document.getElementById('transaction-type').value = transaction.type;
+        document.getElementById('transaction-description').value = transaction.description;
+        document.getElementById('transaction-amount').value = Math.abs(transaction.amount);
+        document.getElementById('transaction-category').value = transaction.category;
+        document.getElementById('transaction-date').value = transaction.date;
+        
+        modal.querySelector('#new-transaction-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.updateTransaction(id);
+            modal.remove();
+        });
+    }
+
+    updateTransaction(id) {
+        const form = document.getElementById('new-transaction-form');
+        if (!form) return;
+
+        const type = document.getElementById('transaction-type').value;
+        const amount = parseFloat(document.getElementById('transaction-amount').value);
+        const description = document.getElementById('transaction-description').value.trim();
+        const category = document.getElementById('transaction-category').value;
+        const date = document.getElementById('transaction-date').value;
+
+        const transactionData = {
+            type,
+            amount,
+            description,
+            category,
+            date
+        };
+
+        // Validar datos
+        const errors = this.validateTransaction(transactionData);
+        if (errors.length > 0) {
+            this.showError(errors.join(', '));
+            return;
+        }
+
+        const transactionIndex = this.transactions.findIndex(t => t.id === id);
+        if (transactionIndex !== -1) {
+            this.transactions[transactionIndex] = {
+                ...this.transactions[transactionIndex],
+                description,
+                amount: type === 'income' ? amount : -amount,
+                category,
+                date,
+                type,
+                updatedAt: new Date().toISOString()
+            };
+            
+            this.saveToStorage();
+            this.updateDashboard();
+            this.updateTabContent(this.currentTab);
+            this.showSuccess('Transacción actualizada correctamente');
+        }
     }
 
     deleteTransaction(id) {
         if (confirm('¿Estás seguro de que quieres eliminar esta transacción?')) {
             this.transactions = this.transactions.filter(t => t.id !== id);
+            this.saveToStorage();
             this.updateDashboard();
             this.updateTabContent(this.currentTab);
-            this.showNotification('Transacción eliminada', 'success');
+            this.showSuccess('Transacción eliminada correctamente');
         }
     }
 
     editBudget(id) {
-        this.showNotification('Función de edición próximamente', 'info');
+        const budget = this.budgets.find(b => b.id === id);
+        if (!budget) return;
+
+        const modal = this.createModal('Editar Presupuesto', this.getBudgetFormHTML(budget));
+        document.body.appendChild(modal);
+        
+        // Llenar formulario con datos existentes
+        document.getElementById('budget-category').value = budget.category;
+        document.getElementById('budget-limit').value = budget.limit;
+        document.getElementById('budget-period').value = budget.period;
+        
+        modal.querySelector('#new-budget-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.updateBudget(id);
+            modal.remove();
+        });
+    }
+
+    updateBudget(id) {
+        const form = document.getElementById('new-budget-form');
+        if (!form) return;
+
+        const limit = parseFloat(document.getElementById('budget-limit').value);
+        const period = document.getElementById('budget-period').value;
+
+        const budgetData = {
+            category: document.getElementById('budget-category').value,
+            limit,
+            period
+        };
+
+        // Validar datos
+        const errors = this.validateBudget(budgetData);
+        if (errors.length > 0) {
+            this.showError(errors.join(', '));
+            return;
+        }
+
+        const budgetIndex = this.budgets.findIndex(b => b.id === id);
+        if (budgetIndex !== -1) {
+            this.budgets[budgetIndex] = {
+                ...this.budgets[budgetIndex],
+                limit,
+                period,
+                updatedAt: new Date().toISOString()
+            };
+            
+            this.saveToStorage();
+            this.updateDashboard();
+            this.updateTabContent(this.currentTab);
+            this.showSuccess('Presupuesto actualizado correctamente');
+        }
     }
 
     addToBudget(id) {
-        this.showNotification('Función de añadir próximamente', 'info');
+        const budget = this.budgets.find(b => b.id === id);
+        if (!budget) return;
+
+        const amount = prompt(`¿Cuánto quieres añadir al presupuesto de ${this.categories.find(c => c.id === budget.category)?.name}?`);
+        if (amount && !isNaN(amount) && parseFloat(amount) > 0) {
+            budget.limit += parseFloat(amount);
+            this.saveToStorage();
+            this.updateDashboard();
+            this.updateTabContent(this.currentTab);
+            this.showSuccess(`Se añadieron €${amount} al presupuesto`);
+        }
     }
 
     editGoal(id) {
-        this.showNotification('Función de edición próximamente', 'info');
+        const goal = this.goals.find(g => g.id === id);
+        if (!goal) return;
+
+        const modal = this.createModal('Editar Objetivo', this.getGoalFormHTML(goal));
+        document.body.appendChild(modal);
+        
+        // Llenar formulario con datos existentes
+        document.getElementById('goal-name').value = goal.name;
+        document.getElementById('goal-target').value = goal.target;
+        document.getElementById('goal-current').value = goal.current;
+        document.getElementById('goal-deadline').value = goal.deadline;
+        document.getElementById('goal-priority').value = goal.priority;
+        
+        modal.querySelector('#new-goal-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.updateGoal(id);
+            modal.remove();
+        });
+    }
+
+    updateGoal(id) {
+        const form = document.getElementById('new-goal-form');
+        if (!form) return;
+
+        const name = document.getElementById('goal-name').value.trim();
+        const target = parseFloat(document.getElementById('goal-target').value);
+        const current = parseFloat(document.getElementById('goal-current').value) || 0;
+        const deadline = document.getElementById('goal-deadline').value;
+        const priority = document.getElementById('goal-priority').value;
+
+        const goalData = {
+            name,
+            target,
+            current,
+            deadline,
+            priority
+        };
+
+        // Validar datos
+        const errors = this.validateGoal(goalData);
+        if (errors.length > 0) {
+            this.showError(errors.join(', '));
+            return;
+        }
+
+        const goalIndex = this.goals.findIndex(g => g.id === id);
+        if (goalIndex !== -1) {
+            this.goals[goalIndex] = {
+                ...this.goals[goalIndex],
+                name,
+                target,
+                current,
+                deadline,
+                priority,
+                monthlyTarget: (target - current) / Math.max(Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 30)), 1),
+                updatedAt: new Date().toISOString()
+            };
+            
+            this.saveToStorage();
+            this.updateDashboard();
+            this.updateTabContent(this.currentTab);
+            this.showSuccess('Objetivo actualizado correctamente');
+        }
     }
 
     addToGoal(id) {
-        this.showNotification('Función de añadir próximamente', 'info');
+        const goal = this.goals.find(g => g.id === id);
+        if (!goal) return;
+
+        const amount = prompt(`¿Cuánto quieres añadir al objetivo "${goal.name}"?`);
+        if (amount && !isNaN(amount) && parseFloat(amount) > 0) {
+            goal.current += parseFloat(amount);
+            goal.monthlyTarget = (goal.target - goal.current) / Math.max(Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 30)), 1);
+            
+            this.saveToStorage();
+            this.updateDashboard();
+            this.updateTabContent(this.currentTab);
+            this.showSuccess(`Se añadieron €${amount} al objetivo`);
+        }
     }
 
     // ========================================
@@ -1809,6 +2076,167 @@ class VeedorFinanceCenter {
         setInterval(() => {
             this.updateNotifications();
         }, 60000);
+    }
+
+    // ========================================
+    // PERSISTENCIA DE DATOS
+    // ========================================
+    saveToStorage() {
+        const data = {
+            transactions: this.transactions,
+            budgets: this.budgets,
+            goals: this.goals,
+            lastUpdated: new Date().toISOString()
+        };
+        
+        try {
+            localStorage.setItem('veedor-finance-data', JSON.stringify(data));
+        } catch (error) {
+            console.warn('No se pudieron guardar los datos:', error);
+        }
+    }
+
+    loadFromStorage() {
+        try {
+            const data = localStorage.getItem('veedor-finance-data');
+            return data ? JSON.parse(data) : {};
+        } catch (error) {
+            console.warn('No se pudieron cargar los datos:', error);
+            return {};
+        }
+    }
+
+    // ========================================
+    // GESTIÓN DE TEMA
+    // ========================================
+    setupThemeToggle() {
+        // Crear botón de tema si no existe
+        if (!document.querySelector('.theme-toggle')) {
+            const themeButton = document.createElement('button');
+            themeButton.className = 'theme-toggle';
+            themeButton.innerHTML = '<span class="theme-icon">☀️</span>';
+            themeButton.onclick = () => this.toggleTheme();
+            
+            // Añadir al header
+            const navBrand = document.querySelector('.nav-brand');
+            if (navBrand) {
+                navBrand.appendChild(themeButton);
+            }
+        }
+        
+        // Cargar tema guardado
+        this.loadTheme();
+    }
+
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('veedor-theme', newTheme);
+        
+        const themeIcon = document.querySelector('.theme-icon');
+        if (themeIcon) {
+            themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        }
+        
+        // Actualizar gráficos si existen
+        this.updateChartsTheme();
+    }
+
+    loadTheme() {
+        const savedTheme = localStorage.getItem('veedor-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.body.setAttribute('data-theme', savedTheme);
+        
+        const themeIcon = document.querySelector('.theme-icon');
+        if (themeIcon) {
+            themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        }
+    }
+
+    updateChartsTheme() {
+        // Actualizar colores de gráficos según el tema
+        if (this.charts.category) {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            this.charts.category.options.plugins.legend.labels.color = isDark ? '#FFFFFF' : '#1D1D1F';
+            this.charts.category.update();
+        }
+        
+        if (this.charts.trends) {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            this.charts.trends.options.scales.y.ticks.color = isDark ? '#FFFFFF' : '#1D1D1F';
+            this.charts.trends.options.scales.x.ticks.color = isDark ? '#FFFFFF' : '#1D1D1F';
+            this.charts.trends.update();
+        }
+    }
+
+    // ========================================
+    // VALIDACIONES Y MANEJO DE ERRORES
+    // ========================================
+    validateTransaction(data) {
+        const errors = [];
+        
+        if (!data.description || data.description.trim().length < 2) {
+            errors.push('La descripción debe tener al menos 2 caracteres');
+        }
+        
+        if (!data.amount || isNaN(data.amount) || data.amount <= 0) {
+            errors.push('El monto debe ser un número positivo');
+        }
+        
+        if (!data.category) {
+            errors.push('Debe seleccionar una categoría');
+        }
+        
+        if (!data.date) {
+            errors.push('Debe seleccionar una fecha');
+        }
+        
+        return errors;
+    }
+
+    validateBudget(data) {
+        const errors = [];
+        
+        if (!data.category) {
+            errors.push('Debe seleccionar una categoría');
+        }
+        
+        if (!data.limit || isNaN(data.limit) || data.limit <= 0) {
+            errors.push('El límite debe ser un número positivo');
+        }
+        
+        return errors;
+    }
+
+    validateGoal(data) {
+        const errors = [];
+        
+        if (!data.name || data.name.trim().length < 2) {
+            errors.push('El nombre debe tener al menos 2 caracteres');
+        }
+        
+        if (!data.target || isNaN(data.target) || data.target <= 0) {
+            errors.push('El objetivo debe ser un número positivo');
+        }
+        
+        if (!data.deadline) {
+            errors.push('Debe seleccionar una fecha límite');
+        } else if (new Date(data.deadline) <= new Date()) {
+            errors.push('La fecha límite debe ser futura');
+        }
+        
+        return errors;
+    }
+
+    showError(message) {
+        this.showNotification(message, 'error');
+    }
+
+    showSuccess(message) {
+        this.showNotification(message, 'success');
     }
 
     // ========================================

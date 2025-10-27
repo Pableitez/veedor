@@ -8,29 +8,40 @@
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Estilos específicos para la página demo */
+        /* ========================================
+           ESTILOS ESPECÍFICOS PARA DEMO - UNIFICADOS
+           ======================================== */
         body {
             margin: 0;
             padding: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: var(--transition-theme);
         }
         
         .header {
             position: relative !important;
             top: auto !important;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
         
         .main-content {
             flex: 1;
             padding-top: 0;
             margin-top: 0;
+            background: var(--bg-primary);
         }
         
         .dashboard-section {
             padding: var(--space-xl) 0;
             min-height: calc(100vh - 160px);
+            background: var(--bg-primary);
         }
         
         .dashboard-content {
@@ -49,7 +60,7 @@
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: var(--space-sm);
-            background: linear-gradient(135deg, var(--accent), #A855F7);
+            background: var(--button-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -69,17 +80,20 @@
         }
         
         .summary-card {
-            background: var(--card-bg);
+            background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             padding: var(--space-lg);
             text-align: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: var(--transition-normal);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         .summary-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
         }
         
         .summary-card h3 {
@@ -1158,48 +1172,134 @@
             margin-left: auto;
         }
         
-        /* Responsive */
-        @media (max-width: 768px) {
-            .overview-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .financial-summary {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .dashboard-nav {
-                flex-wrap: wrap;
-            }
-            
-            .analytics-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .filters-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .budgets-grid,
-            .goals-grid {
-                grid-template-columns: 1fr;
-            }
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-sm);
+            cursor: pointer;
+            transition: var(--transition-normal);
+            margin-left: var(--space-md);
         }
         
-        @media (max-width: 480px) {
-            .financial-summary {
-                grid-template-columns: 1fr;
-            }
-            
-            .quick-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .transactions-summary,
-            .budgets-summary,
-            .goals-summary {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .theme-toggle:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+        
+        .theme-icon {
+            font-size: 1.2rem;
+            transition: var(--transition-normal);
+        }
+        
+        /* Unified Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: var(--z-modal);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-normal);
+        }
+        
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: var(--transition-normal);
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition-fast);
+        }
+        
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+        
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: var(--space-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: var(--transition-fast);
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: flex-end;
+            margin-top: var(--space-lg);
         }
     </style>
     <link rel="manifest" href="manifest.json">
