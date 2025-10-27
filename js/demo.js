@@ -46,6 +46,10 @@ class VeedorFinanceCenter {
         this.setupThemeToggle();
         this.setupKeyboardShortcuts();
         this.setupAccessibility();
+        // Asegurar que los insights se muestren
+        setTimeout(() => {
+            this.updateLiabilityInsights();
+        }, 100);
     }
 
     initializeTabs() {
@@ -113,12 +117,54 @@ class VeedorFinanceCenter {
             ];
         }
 
-        // Generar pasivos de demo
+        // Generar pasivos de demo CON DATOS FINANCIEROS COMPLETOS
         if (!this.liabilities || this.liabilities.length === 0) {
             this.liabilities = [
-                { id: 1, name: 'Hipoteca', amount: 180000.00, type: 'mortgage', institution: 'BBVA', monthlyPayment: 850.00 },
-                { id: 2, name: 'Préstamo Coche', amount: 12000.00, type: 'loan', institution: 'Santander', monthlyPayment: 280.00 },
-                { id: 3, name: 'Tarjeta Crédito', amount: 1200.00, type: 'credit', institution: 'BBVA', monthlyPayment: 50.00 }
+                { 
+                    id: 1, 
+                    name: 'Hipoteca', 
+                    amount: 180000.00, 
+                    type: 'mortgage', 
+                    institution: 'BBVA', 
+                    monthlyPayment: 850.00,
+                    interestRate: 4.5, // TIN
+                    tae: 4.8, // TAE
+                    years: 25,
+                    fees: 2000,
+                    earlyCancellationFee: 1.5,
+                    maintenanceFee: 0,
+                    insuranceFee: 0
+                },
+                { 
+                    id: 2, 
+                    name: 'Préstamo Coche', 
+                    amount: 12000.00, 
+                    type: 'loan', 
+                    institution: 'Santander', 
+                    monthlyPayment: 280.00,
+                    interestRate: 6.2, // TIN
+                    tae: 6.8, // TAE
+                    years: 5,
+                    fees: 500,
+                    earlyCancellationFee: 2.0,
+                    maintenanceFee: 0,
+                    insuranceFee: 0
+                },
+                { 
+                    id: 3, 
+                    name: 'Préstamo Personal', 
+                    amount: 8000.00, 
+                    type: 'loan', 
+                    institution: 'CaixaBank', 
+                    monthlyPayment: 180.00,
+                    interestRate: 7.5, // TIN
+                    tae: 8.2, // TAE
+                    years: 4,
+                    fees: 300,
+                    earlyCancellationFee: 1.0,
+                    maintenanceFee: 0,
+                    insuranceFee: 0
+                }
             ];
         }
     }
