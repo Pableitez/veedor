@@ -391,6 +391,7 @@ a:hover {
     }
     
     .nav-menu {
+        display: none;
         position: fixed;
         top: 80px;
         left: -100%;
@@ -405,9 +406,11 @@ a:hover {
         transition: left 0.3s ease;
         border-top: 1px solid var(--border-color);
         backdrop-filter: blur(20px);
+        z-index: 999;
     }
     
     .nav-menu.active {
+        display: flex;
         left: 0;
     }
     
@@ -1642,12 +1645,6 @@ a:hover {
     .features-grid {
         grid-template-columns: 1fr;
         gap: var(--space-lg);
-    }
-    
-    .nav-menu {
-        flex-direction: column;
-        gap: var(--space-sm);
-        width: 100%;
     }
     
     .nav-btn {
