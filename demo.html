@@ -1301,6 +1301,180 @@
             justify-content: flex-end;
             margin-top: var(--space-lg);
         }
+        
+        /* Centro de Insights */
+        .insights-center {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .insights-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .insights-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+            color: var(--text-primary);
+        }
+        
+        .insights-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+        }
+        
+        .insight-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .insight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+        
+        .insight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent);
+            opacity: 0;
+            transition: var(--transition-normal);
+        }
+        
+        .insight-card:hover::before {
+            opacity: 1;
+        }
+        
+        .insight-card.success {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .insight-card.warning {
+            border-left: 4px solid #FF9800;
+        }
+        
+        .insight-card.info {
+            border-left: 4px solid #2196F3;
+        }
+        
+        .insight-card.critical {
+            border-left: 4px solid #F44336;
+        }
+        
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .insight-icon {
+            font-size: 1.2rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+        }
+        
+        .insight-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        
+        .insight-content {
+            margin-bottom: var(--space-sm);
+        }
+        
+        .insight-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        
+        .insight-metrics {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--space-sm);
+            padding-top: var(--space-sm);
+            border-top: 1px solid var(--border-light);
+        }
+        
+        .insight-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .insight-value.positive {
+            color: #4CAF50;
+        }
+        
+        .insight-value.negative {
+            color: #F44336;
+        }
+        
+        .insight-value.neutral {
+            color: var(--text-primary);
+        }
+        
+        .insight-action {
+            font-size: 0.8rem;
+            color: var(--accent);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .insight-action:hover {
+            color: var(--accent-light);
+        }
+        
+        /* Alertas sutiles en cards */
+        .budget-card.warning,
+        .goal-card.warning {
+            border-left: 4px solid #FF9800;
+            background: linear-gradient(90deg, rgba(255, 152, 0, 0.05) 0%, transparent 100%);
+        }
+        
+        .budget-card.critical,
+        .goal-card.critical {
+            border-left: 4px solid #F44336;
+            background: linear-gradient(90deg, rgba(244, 67, 54, 0.05) 0%, transparent 100%);
+        }
+        
+        .budget-card.success,
+        .goal-card.success {
+            border-left: 4px solid #4CAF50;
+            background: linear-gradient(90deg, rgba(76, 175, 80, 0.05) 0%, transparent 100%);
+        }
     </style>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="assets/images/icon-192x192.png">
@@ -1393,6 +1567,17 @@
                     <div class="stat-card">
                         <span class="stat-number stat-days-left">12</span>
                         <span class="stat-label">Días restantes</span>
+                    </div>
+                </div>
+
+                <!-- Centro de Resumen e Insights -->
+                <div class="insights-center">
+                    <div class="insights-header">
+                        <h3>📊 Resumen Destacable</h3>
+                        <span class="insights-subtitle">Lo más importante de tus finanzas</span>
+                    </div>
+                    <div class="insights-grid" id="insights-grid">
+                        <!-- Se llena dinámicamente -->
                     </div>
                 </div>
 
@@ -1773,10 +1958,6 @@
         </div>
     </footer>
 
-    <!-- Notifications Container -->
-    <div class="notifications-container">
-        <!-- Se llena dinámicamente -->
-    </div>
 
     <!-- Auth Modal -->
     <div id="auth-overlay" class="auth-overlay">

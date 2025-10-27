@@ -317,7 +317,7 @@ class VeedorFinanceCenter {
     updateDashboard() {
         this.updateFinancialSummary();
         this.updateQuickStats();
-        this.updateNotifications();
+        this.updateInsightsCenter();
     }
 
     updateFinancialSummary() {
@@ -401,19 +401,24 @@ class VeedorFinanceCenter {
         }
     }
 
-    updateNotifications() {
-        const notifications = this.generateNotifications();
-        const container = document.querySelector('.notifications-container');
+    updateInsightsCenter() {
+        const insights = this.generateInsights();
+        const container = document.querySelector('#insights-grid');
         if (!container) return;
 
-        container.innerHTML = notifications.map(notification => `
-            <div class="notification-item ${notification.type}">
-                <div class="notification-icon">${notification.icon}</div>
-                <div class="notification-content">
-                    <div class="notification-title">${notification.title}</div>
-                    <div class="notification-message">${notification.message}</div>
+        container.innerHTML = insights.map(insight => `
+            <div class="insight-card ${insight.type}">
+                <div class="insight-header">
+                    <div class="insight-icon">${insight.icon}</div>
+                    <div class="insight-title">${insight.title}</div>
                 </div>
-                <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+                <div class="insight-content">
+                    <div class="insight-description">${insight.description}</div>
+                </div>
+                <div class="insight-metrics">
+                    <div class="insight-value ${insight.valueType}">${insight.value}</div>
+                    ${insight.action ? `<div class="insight-action" onclick="${insight.action}">${insight.actionText}</div>` : ''}
+                </div>
             </div>
         `).join('');
     }
@@ -1240,47 +1245,128 @@ class VeedorFinanceCenter {
     // ========================================
     // NOTIFICACIONES INTELIGENTES
     // ========================================
-    generateNotifications() {
-        const notifications = [];
-        
-        // Alertas de presupuesto
-        this.budgets.forEach(budget => {
-            const percentage = (budget.spent / budget.limit) * 100;
-            if (percentage > 90) {
-                notifications.push({
-                    type: 'warning',
-                    icon: '⚠️',
-                    title: 'Presupuesto Casi Agotado',
-                    message: `${this.categories.find(c => c.id === budget.category)?.name} está al ${percentage.toFixed(1)}%`
-                });
-            }
-        });
-        
-        // Alertas de objetivos
-        this.goals.forEach(goal => {
-            const daysLeft = Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24));
-            if (daysLeft < 30 && goal.current < goal.target) {
-                notifications.push({
-                    type: 'info',
-                    icon: '🎯',
-                    title: 'Objetivo Próximo',
-                    message: `${goal.name} tiene ${daysLeft} días restantes`
-                });
-            }
-        });
-        
-        // Consejos financieros
+    generateInsights() {
+        const insights = [];
         const totals = this.calculateTotals();
+        const categoryTotals = this.calculateCategoryTotals();
+        
+        // Insight sobre balance mensual
         if (totals.balance > 0) {
-            notifications.push({
+            insights.push({
                 type: 'success',
                 icon: '💰',
-                title: '¡Excelente Mes!',
-                message: `Has ahorrado €${totals.balance.toFixed(2)} este mes`
+                title: 'Excelente Mes Financiero',
+                description: 'Has logrado un balance positivo este mes. ¡Sigue así!',
+                value: `€${totals.balance.toFixed(2)}`,
+                valueType: 'positive',
+                action: 'showTab("analytics")',
+                actionText: 'Ver análisis'
             });
         }
         
-        return notifications.slice(0, 5); // Máximo 5 notificaciones
+        // Insight sobre tasa de ahorro
+        const savingsRate = (totals.balance / totals.income) * 100;
+        if (savingsRate > 20) {
+            insights.push({
+                type: 'success',
+                icon: '🎯',
+                title: 'Tasa de Ahorro Excelente',
+                description: 'Estás ahorrando más del 20% de tus ingresos. ¡Excelente disciplina financiera!',
+                value: `${savingsRate.toFixed(1)}%`,
+                valueType: 'positive',
+                action: 'showTab("goals")',
+                actionText: 'Ver objetivos'
+            });
+        } else if (savingsRate < 10) {
+            insights.push({
+                type: 'warning',
+                icon: '⚠️',
+                title: 'Tasa de Ahorro Baja',
+                description: 'Considera reducir gastos o aumentar ingresos para mejorar tu tasa de ahorro.',
+                value: `${savingsRate.toFixed(1)}%`,
+                valueType: 'negative',
+                action: 'showTab("budgets")',
+                actionText: 'Revisar presupuestos'
+            });
+        }
+        
+        // Insight sobre categoría principal de gastos
+        const topCategory = Object.entries(categoryTotals)
+            .sort(([,a], [,b]) => b - a)[0];
+        
+        if (topCategory) {
+            const categoryName = this.categories.find(c => c.id === topCategory[0])?.name || 'Otros';
+            const percentage = (topCategory[1] / totals.expenses) * 100;
+            
+            insights.push({
+                type: 'info',
+                icon: '📊',
+                title: 'Categoría Principal',
+                description: `${categoryName} representa el ${percentage.toFixed(1)}% de tus gastos totales.`,
+                value: `€${topCategory[1].toFixed(2)}`,
+                valueType: 'neutral',
+                action: 'showTab("analytics")',
+                actionText: 'Ver detalles'
+            });
+        }
+        
+        // Insight sobre presupuestos
+        const budgetAlerts = this.budgets.filter(b => (b.spent / b.limit) > 0.8);
+        if (budgetAlerts.length > 0) {
+            const criticalBudget = budgetAlerts.find(b => (b.spent / b.limit) > 0.9);
+            if (criticalBudget) {
+                const categoryName = this.categories.find(c => c.id === criticalBudget.category)?.name || 'Otros';
+                insights.push({
+                    type: 'critical',
+                    icon: '🚨',
+                    title: 'Presupuesto Crítico',
+                    description: `El presupuesto de ${categoryName} está al ${((criticalBudget.spent / criticalBudget.limit) * 100).toFixed(1)}% de su límite.`,
+                    value: `${((criticalBudget.spent / criticalBudget.limit) * 100).toFixed(1)}%`,
+                    valueType: 'negative',
+                    action: 'showTab("budgets")',
+                    actionText: 'Gestionar'
+                });
+            }
+        }
+        
+        // Insight sobre objetivos
+        const activeGoals = this.goals.filter(g => g.current < g.target);
+        if (activeGoals.length > 0) {
+            const closestGoal = activeGoals.reduce((closest, goal) => {
+                const closestProgress = closest.current / closest.target;
+                const goalProgress = goal.current / goal.target;
+                return goalProgress > closestProgress ? goal : closest;
+            });
+            
+            const progress = (closestGoal.current / closestGoal.target) * 100;
+            insights.push({
+                type: 'info',
+                icon: '🎯',
+                title: 'Objetivo Más Cercano',
+                description: `"${closestGoal.name}" está al ${progress.toFixed(1)}% de completarse.`,
+                value: `${progress.toFixed(1)}%`,
+                valueType: progress > 80 ? 'positive' : 'neutral',
+                action: 'showTab("goals")',
+                actionText: 'Ver progreso'
+            });
+        }
+        
+        // Insight sobre tendencias
+        const trends = this.calculateTrends();
+        if (trends.income > 5) {
+            insights.push({
+                type: 'success',
+                icon: '📈',
+                title: 'Crecimiento de Ingresos',
+                description: 'Tus ingresos han aumentado significativamente este mes.',
+                value: `+${trends.income.toFixed(1)}%`,
+                valueType: 'positive',
+                action: 'showTab("analytics")',
+                actionText: 'Ver tendencias'
+            });
+        }
+        
+        return insights.slice(0, 6); // Máximo 6 insights
     }
 
     generateBudgetAlerts() {
@@ -2072,9 +2158,9 @@ class VeedorFinanceCenter {
             this.updateDashboard();
         }, 30000);
         
-        // Actualizar notificaciones cada minuto
+        // Actualizar insights cada minuto
         setInterval(() => {
-            this.updateNotifications();
+            this.updateInsightsCenter();
         }, 60000);
     }
 
