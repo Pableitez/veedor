@@ -377,7 +377,7 @@ a:hover {
 .nav-menu {
     display: flex;
     list-style: none;
-    gap: var(--space-md);
+    gap: var(--space-lg);
     align-items: center;
     margin: 0;
     padding: 0;
@@ -464,7 +464,7 @@ a:hover {
 }
 
 /* ========================================
-   BOTONES DE NAVEGACIÓN
+   BOTONES DE NAVEGACIÓN UNIFICADOS
    ======================================== */
 .nav-btn {
     background: transparent;
@@ -472,18 +472,19 @@ a:hover {
     color: var(--text-primary);
     font-weight: 600;
     font-size: 0.9rem;
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-sm);
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-md);
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 36px;
-    min-width: 100px;
+    min-height: 40px;
+    min-width: 120px;
     position: relative;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .nav-btn:hover {
@@ -494,6 +495,7 @@ a:hover {
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
 }
 
+/* Botón primario (Acceder) */
 .nav-btn-primary {
     background: var(--accent);
     color: var(--text-white);
@@ -510,6 +512,7 @@ a:hover {
     box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
 }
 
+/* Botón secundario (Cerrar Sesión) */
 .nav-btn-secondary {
     background: var(--error);
     color: var(--text-white);
