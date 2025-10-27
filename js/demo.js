@@ -1331,7 +1331,14 @@ class VeedorFinanceCenter {
         if (!container) return;
 
         console.log('Chart available:', typeof Chart !== 'undefined');
+        
+        // Mostrar mensaje de debug visible
         container.innerHTML = `
+            <div style="background: red; color: white; padding: 20px; margin: 20px; border-radius: 8px;">
+                <h3>DEBUG: updateAnalyticsTrends ejecutándose</h3>
+                <p>Chart.js disponible: ${typeof Chart !== 'undefined' ? 'SÍ' : 'NO'}</p>
+                <p>Container encontrado: ${container ? 'SÍ' : 'NO'}</p>
+            </div>
             <div class="analytics-charts">
                 <div class="chart-container">
                     <h4>Evolución del Patrimonio Neto</h4>
