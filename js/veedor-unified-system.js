@@ -897,6 +897,8 @@ class VeedorApp {
     }
     
     setupNavigation() {
+        console.log('🔗 Configurando navegación...');
+        
         // Configurar navegación entre páginas
         const dashboardLink = document.getElementById('dashboard-link');
         if (dashboardLink) {
@@ -905,6 +907,271 @@ class VeedorApp {
                 window.location.href = VEEDOR_CONFIG.pages.dashboard;
             });
         }
+        
+        // Configurar tabs del dashboard
+        this.setupDashboardTabs();
+        
+        // Configurar botones de acción
+        this.setupActionButtons();
+        
+        console.log('✅ Navegación configurada');
+    }
+    
+    setupDashboardTabs() {
+        console.log('📑 Configurando tabs del dashboard...');
+        
+        document.querySelectorAll('.nav-tab').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabName = e.target.closest('.nav-tab').dataset.tab;
+                console.log('Cambiando a tab:', tabName);
+                this.showTab(tabName);
+            });
+        });
+        
+        console.log('✅ Tabs del dashboard configurados');
+    }
+    
+    setupActionButtons() {
+        console.log('🔘 Configurando botones de acción...');
+        
+        // Botón "Ver todas" transacciones
+        const verTodasBtn = document.querySelector('.recent-transactions + .btn, .recent-transactions .btn');
+        if (verTodasBtn) {
+            verTodasBtn.addEventListener('click', () => {
+                console.log('Mostrando todas las transacciones...');
+                this.showTab('transactions');
+            });
+        }
+        
+        // Botón "Gestionar" presupuestos
+        const gestionarBtn = document.querySelector('[data-action="manage-budgets"], .budgets-section .btn');
+        if (gestionarBtn) {
+            gestionarBtn.addEventListener('click', () => {
+                console.log('Mostrando gestión de presupuestos...');
+                this.showTab('budgets');
+            });
+        }
+        
+        // Botón "Ver todos" objetivos
+        const verTodosBtn = document.querySelector('[data-action="view-goals"], .goals-section .btn');
+        if (verTodosBtn) {
+            verTodosBtn.addEventListener('click', () => {
+                console.log('Mostrando todos los objetivos...');
+                this.showTab('goals');
+            });
+        }
+        
+        // Botón "Ver análisis" gastos por categoría
+        const verAnalisisBtn = document.querySelector('[data-action="view-analysis"], .category-section .btn');
+        if (verAnalisisBtn) {
+            verAnalisisBtn.addEventListener('click', () => {
+                console.log('Mostrando análisis de gastos...');
+                this.showTab('analytics');
+            });
+        }
+        
+        console.log('✅ Botones de acción configurados');
+    }
+    
+    showTab(tabName) {
+        console.log('📑 Cambiando a pestaña:', tabName);
+        
+        // Ocultar todas las pestañas
+        document.querySelectorAll('.tab-panel, .dashboard-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+        // Remover clase active de todos los botones
+        document.querySelectorAll('.nav-tab').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Mostrar pestaña seleccionada
+        const selectedTab = document.getElementById(`${tabName}-tab`) || document.getElementById(tabName);
+        const selectedBtn = document.querySelector(`[data-tab="${tabName}"]`);
+
+        if (selectedTab) {
+            selectedTab.classList.add('active');
+            console.log('✅ Pestaña activada:', selectedTab.id);
+        } else {
+            console.log('❌ Pestaña no encontrada:', `${tabName}-tab`);
+        }
+        
+        if (selectedBtn) {
+            selectedBtn.classList.add('active');
+            console.log('✅ Botón activado:', selectedBtn);
+        } else {
+            console.log('❌ Botón no encontrado para:', tabName);
+        }
+
+        // Actualizar pestaña actual
+        this.currentTab = tabName;
+
+        // Cargar contenido específico de la pestaña
+        switch (tabName) {
+            case 'overview':
+                this.loadOverviewTab();
+                break;
+            case 'transactions':
+                this.loadTransactionsTab();
+                break;
+            case 'budgets':
+                this.loadBudgetsTab();
+                break;
+            case 'analytics':
+                this.loadAnalyticsTab();
+                break;
+            case 'goals':
+                this.loadGoalsTab();
+                break;
+            default:
+                console.log('❓ Pestaña desconocida:', tabName);
+        }
+        
+        console.log('✅ Pestaña cambiada a:', tabName);
+    }
+    
+    loadOverviewTab() {
+        console.log('📊 Cargando pestaña overview...');
+        this.uiManager.updateAll();
+    }
+    
+    loadTransactionsTab() {
+        console.log('📝 Cargando pestaña de transacciones...');
+        
+        const container = document.getElementById('transactions-tab') || document.getElementById('transactions');
+        if (container) {
+            const transactions = this.dataManager.getTransactions();
+            
+            container.innerHTML = `
+                <div class="transactions-header">
+                    <h3>Todas las Transacciones</h3>
+                    <button class="btn btn-primary" onclick="window.veedorApp.showAddTransactionModal()">
+                        + Nueva Transacción
+                    </button>
+                </div>
+                <div class="transactions-list">
+                    ${transactions.map(transaction => `
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <span class="transaction-description">${transaction.description}</span>
+                                <span class="transaction-category">${transaction.category}</span>
+                                <span class="transaction-date">${new Date(transaction.date).toLocaleDateString('es-ES')}</span>
+                            </div>
+                            <div class="transaction-amount ${transaction.type}">
+                                ${transaction.type === 'income' ? '+' : '-'}${VEEDOR_CONFIG.currency}${transaction.amount.toFixed(2)}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    }
+    
+    loadBudgetsTab() {
+        console.log('💰 Cargando pestaña de presupuestos...');
+        
+        const container = document.getElementById('budgets-tab') || document.getElementById('budgets');
+        if (container) {
+            container.innerHTML = `
+                <div class="budgets-header">
+                    <h3>Presupuestos</h3>
+                    <button class="btn btn-primary" onclick="window.veedorApp.showAddBudgetModal()">
+                        + Nuevo Presupuesto
+                    </button>
+                </div>
+                <div class="budgets-list">
+                    <div class="empty-state">
+                        <p>No hay presupuestos configurados</p>
+                        <button class="btn btn-outline" onclick="window.veedorApp.showAddBudgetModal()">
+                            Crear Primer Presupuesto
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    loadAnalyticsTab() {
+        console.log('📈 Cargando pestaña de análisis...');
+        
+        const container = document.getElementById('analytics-tab') || document.getElementById('analytics');
+        if (container) {
+            const summary = this.dataManager.getFinancialSummary();
+            const categoryData = this.dataManager.getCategoryData();
+            
+            container.innerHTML = `
+                <div class="analytics-header">
+                    <h3>Análisis Financiero</h3>
+                </div>
+                <div class="analytics-content">
+                    <div class="analytics-summary">
+                        <div class="summary-card">
+                            <h4>Tasa de Ahorro</h4>
+                            <div class="summary-value">${summary.savingsRate.toFixed(1)}%</div>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Gasto Promedio Diario</h4>
+                            <div class="summary-value">${VEEDOR_CONFIG.currency}${(summary.monthlyExpenses / 30).toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <div class="analytics-charts">
+                        <div class="chart-container">
+                            <h4>Gastos por Categoría</h4>
+                            <canvas id="analyticsCategoryChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Crear gráfica de análisis
+            setTimeout(() => {
+                this.chartManager.createCategoryChart('analyticsCategoryChart');
+            }, 100);
+        }
+    }
+    
+    loadGoalsTab() {
+        console.log('🎯 Cargando pestaña de objetivos...');
+        
+        const container = document.getElementById('goals-tab') || document.getElementById('goals');
+        if (container) {
+            container.innerHTML = `
+                <div class="goals-header">
+                    <h3>Objetivos Financieros</h3>
+                    <button class="btn btn-primary" onclick="window.veedorApp.showAddGoalModal()">
+                        + Nuevo Objetivo
+                    </button>
+                </div>
+                <div class="goals-list">
+                    <div class="empty-state">
+                        <p>No hay objetivos configurados</p>
+                        <button class="btn btn-outline" onclick="window.veedorApp.showAddGoalModal()">
+                            Crear Primer Objetivo
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    showAddTransactionModal() {
+        console.log('➕ Mostrando modal de nueva transacción...');
+        // Implementar modal de nueva transacción
+        alert('Funcionalidad de nueva transacción en desarrollo');
+    }
+    
+    showAddBudgetModal() {
+        console.log('➕ Mostrando modal de nuevo presupuesto...');
+        // Implementar modal de nuevo presupuesto
+        alert('Funcionalidad de nuevo presupuesto en desarrollo');
+    }
+    
+    showAddGoalModal() {
+        console.log('➕ Mostrando modal de nuevo objetivo...');
+        // Implementar modal de nuevo objetivo
+        alert('Funcionalidad de nuevo objetivo en desarrollo');
     }
     
     setupAuth() {
@@ -997,7 +1264,11 @@ window.VEEDOR_CONFIG = VEEDOR_CONFIG;
 // Función para cambiar pestañas (compatibilidad)
 function showTab(tabName) {
     console.log('Cambiando a pestaña:', tabName);
-    // Implementar lógica de pestañas si es necesario
+    if (window.veedorApp) {
+        window.veedorApp.showTab(tabName);
+    } else {
+        console.log('❌ VeedorApp no disponible');
+    }
 }
 
 // Función para toggle de tema
