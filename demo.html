@@ -1480,6 +1480,276 @@
             border-left: 4px solid #4CAF50;
             background: linear-gradient(90deg, rgba(76, 175, 80, 0.05) 0%, transparent 100%);
         }
+        
+        /* Net Worth Tracking (Personal Capital Style) */
+        .net-worth-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .net-worth-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .net-worth-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+        
+        .net-worth-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .net-worth-change {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .net-worth-change.positive {
+            color: #4CAF50;
+        }
+        
+        .net-worth-change.negative {
+            color: #F44336;
+        }
+        
+        .net-worth-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-lg);
+            margin-top: var(--space-lg);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .net-worth-item {
+            text-align: center;
+        }
+        
+        .net-worth-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .net-worth-amount {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .net-worth-amount.positive {
+            color: #4CAF50;
+        }
+        
+        .net-worth-amount.negative {
+            color: #F44336;
+        }
+        
+        /* Envelope System (Goodbudget Style) */
+        .envelope-system {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .envelope-controls {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .envelope-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+        
+        .envelope-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .envelope-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+        
+        .envelope-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent);
+            opacity: 0;
+            transition: var(--transition-normal);
+        }
+        
+        .envelope-card:hover::before {
+            opacity: 1;
+        }
+        
+        .envelope-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .envelope-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        .envelope-icon {
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+        
+        .envelope-amount {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .envelope-progress {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .envelope-progress-bar {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .envelope-progress-bar.warning {
+            background: #FF9800;
+        }
+        
+        .envelope-progress-bar.critical {
+            background: #F44336;
+        }
+        
+        .envelope-progress-bar.success {
+            background: #4CAF50;
+        }
+        
+        .envelope-status {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        
+        .envelope-actions {
+            display: flex;
+            gap: var(--space-xs);
+            margin-top: var(--space-sm);
+        }
+        
+        .envelope-btn {
+            flex: 1;
+            padding: var(--space-xs) var(--space-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .envelope-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        /* Financial Health Metrics */
+        .financial-health {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+        
+        .health-metric {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+            transition: var(--transition-normal);
+        }
+        
+        .health-metric:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .health-metric-icon {
+            font-size: 2rem;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .health-metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .health-metric-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .health-metric.excellent .health-metric-icon,
+        .health-metric.excellent .health-metric-value {
+            color: #4CAF50;
+        }
+        
+        .health-metric.good .health-metric-icon,
+        .health-metric.good .health-metric-value {
+            color: #8BC34A;
+        }
+        
+        .health-metric.fair .health-metric-icon,
+        .health-metric.fair .health-metric-value {
+            color: #FF9800;
+        }
+        
+        .health-metric.poor .health-metric-icon,
+        .health-metric.poor .health-metric-value {
+            color: #F44336;
+        }
     </style>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="assets/images/icon-192x192.png">
@@ -1575,14 +1845,22 @@
                     </div>
                 </div>
 
-                <!-- Centro de Resumen e Insights -->
-                <div class="insights-center">
-                    <div class="insights-header">
-                        <h3>📊 Resumen Destacable</h3>
-                        <span class="insights-subtitle">Lo más importante de tus finanzas</span>
+                <!-- Net Worth Tracking (Personal Capital Style) -->
+                <div class="net-worth-section">
+                    <div class="net-worth-header">
+                        <h3>💰 Patrimonio Neto</h3>
+                        <div class="net-worth-value" id="net-worth-value">€45,230.00</div>
+                        <div class="net-worth-change positive" id="net-worth-change">+€2,150.00 este mes</div>
                     </div>
-                    <div class="insights-grid" id="insights-grid">
-                        <!-- Se llena dinámicamente -->
+                    <div class="net-worth-breakdown">
+                        <div class="net-worth-item">
+                            <span class="net-worth-label">Activos</span>
+                            <span class="net-worth-amount positive" id="total-assets">€52,180.00</span>
+                        </div>
+                        <div class="net-worth-item">
+                            <span class="net-worth-label">Pasivos</span>
+                            <span class="net-worth-amount negative" id="total-liabilities">€6,950.00</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1591,6 +1869,7 @@
                     <button class="nav-tab active" data-tab="overview">Resumen</button>
                     <button class="nav-tab" data-tab="transactions">Transacciones</button>
                     <button class="nav-tab" data-tab="budgets">Presupuestos</button>
+                    <button class="nav-tab" data-tab="envelopes">Sobres</button>
                     <button class="nav-tab" data-tab="goals">Objetivos</button>
                     <button class="nav-tab" data-tab="analytics">Análisis</button>
                 </div>
@@ -1679,6 +1958,22 @@
                         
                         <div class="budgets-grid">
                             <!-- Se llena dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Envelopes Tab (Goodbudget Style) -->
+                    <div id="envelopes" class="tab-panel">
+                        <div class="envelope-system">
+                            <div class="section-header">
+                                <h3>💼 Sistema de Sobres</h3>
+                                <div class="envelope-controls">
+                                    <button class="btn-primary" onclick="showEnvelopeModal()">+ Nuevo Sobre</button>
+                                    <button class="btn-outline" onclick="showEnvelopeSettings()">⚙️ Configurar</button>
+                                </div>
+                            </div>
+                            <div class="envelope-grid" id="envelope-grid">
+                                <!-- Se llena dinámicamente -->
+                            </div>
                         </div>
                     </div>
 

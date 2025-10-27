@@ -7,6 +7,9 @@ class VeedorFinanceCenter {
         this.transactions = [];
         this.budgets = [];
         this.goals = [];
+        this.envelopes = [];
+        this.assets = [];
+        this.liabilities = [];
         this.categories = [
             { id: 'food', name: 'Alimentación', icon: '🍽️', color: '#FF6B6B', budget: 300 },
             { id: 'transport', name: 'Transporte', icon: '🚗', color: '#4ECDC4', budget: 150 },
@@ -64,13 +67,58 @@ class VeedorFinanceCenter {
             this.transactions = savedData.transactions || [];
             this.budgets = savedData.budgets || [];
             this.goals = savedData.goals || [];
+            this.envelopes = savedData.envelopes || [];
+            this.assets = savedData.assets || [];
+            this.liabilities = savedData.liabilities || [];
         } else {
             // Cargar datos de demo si no hay datos guardados
             this.loadProfessionalData();
         }
         
+        // Generar datos adicionales para nuevas características
+        this.generateEnvelopeData();
+        this.generateNetWorthData();
+        
         // Guardar datos iniciales
         this.saveToStorage();
+    }
+
+    generateEnvelopeData() {
+        // Generar sobres de demo (Goodbudget style)
+        if (!this.envelopes || this.envelopes.length === 0) {
+            this.envelopes = [
+                { id: 1, name: 'Alimentación', amount: 220.00, budget: 300, icon: '🍽️', color: '#FF6B6B' },
+                { id: 2, name: 'Transporte', amount: 75.80, budget: 150, icon: '🚗', color: '#4ECDC4' },
+                { id: 3, name: 'Entretenimiento', amount: 30.99, budget: 100, icon: '🎬', color: '#45B7D1' },
+                { id: 4, name: 'Salud', amount: 25.30, budget: 200, icon: '🏥', color: '#96CEB4' },
+                { id: 5, name: 'Compras', amount: 89.99, budget: 200, icon: '🛍️', color: '#FFEAA7' },
+                { id: 6, name: 'Servicios', amount: 85.20, budget: 150, icon: '⚡', color: '#DDA0DD' },
+                { id: 7, name: 'Ahorro', amount: 500.00, budget: 800, icon: '💰', color: '#98D8C8' },
+                { id: 8, name: 'Emergencias', amount: 200.00, budget: 500, icon: '🚨', color: '#F7DC6F' }
+            ];
+        }
+    }
+
+    generateNetWorthData() {
+        // Generar activos de demo (Personal Capital style)
+        if (!this.assets || this.assets.length === 0) {
+            this.assets = [
+                { id: 1, name: 'Cuenta Corriente', amount: 3200.00, type: 'cash', institution: 'BBVA' },
+                { id: 2, name: 'Cuenta Ahorro', amount: 8500.00, type: 'savings', institution: 'Santander' },
+                { id: 3, name: 'Inversiones', amount: 12000.00, type: 'investment', institution: 'MyInvestor' },
+                { id: 4, name: 'Coche', amount: 15000.00, type: 'property', institution: 'Propio' },
+                { id: 5, name: 'Casa', amount: 200000.00, type: 'property', institution: 'Propio' }
+            ];
+        }
+
+        // Generar pasivos de demo
+        if (!this.liabilities || this.liabilities.length === 0) {
+            this.liabilities = [
+                { id: 1, name: 'Hipoteca', amount: 180000.00, type: 'mortgage', institution: 'BBVA', monthlyPayment: 850.00 },
+                { id: 2, name: 'Préstamo Coche', amount: 12000.00, type: 'loan', institution: 'Santander', monthlyPayment: 280.00 },
+                { id: 3, name: 'Tarjeta Crédito', amount: 1200.00, type: 'credit', institution: 'BBVA', monthlyPayment: 50.00 }
+            ];
+        }
     }
 
     loadProfessionalData() {
@@ -335,6 +383,9 @@ class VeedorFinanceCenter {
             case 'budgets':
                 this.updateBudgets();
                 break;
+            case 'envelopes':
+                this.updateEnvelopes();
+                break;
             case 'goals':
                 this.updateGoals();
                 break;
@@ -351,6 +402,7 @@ class VeedorFinanceCenter {
         this.updateFinancialSummary();
         this.updateQuickStats();
         this.updateInsightsCenter();
+        this.updateNetWorth();
     }
 
     updateFinancialSummary() {
@@ -1400,6 +1452,58 @@ class VeedorFinanceCenter {
         }
         
         return insights.slice(0, 6); // Máximo 6 insights
+    }
+
+    updateNetWorth() {
+        const totalAssets = this.assets.reduce((sum, asset) => sum + asset.amount, 0);
+        const totalLiabilities = this.liabilities.reduce((sum, liability) => sum + liability.amount, 0);
+        const netWorth = totalAssets - totalLiabilities;
+        
+        // Actualizar valores en el DOM
+        const netWorthValue = document.getElementById('net-worth-value');
+        const totalAssetsEl = document.getElementById('total-assets');
+        const totalLiabilitiesEl = document.getElementById('total-liabilities');
+        
+        if (netWorthValue) {
+            netWorthValue.textContent = `€${netWorth.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
+        }
+        
+        if (totalAssetsEl) {
+            totalAssetsEl.textContent = `€${totalAssets.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
+        }
+        
+        if (totalLiabilitiesEl) {
+            totalLiabilitiesEl.textContent = `€${totalLiabilities.toLocaleString('es-ES', { minimumFractionDigits: 2 })}`;
+        }
+    }
+
+    updateEnvelopes() {
+        const container = document.querySelector('#envelope-grid');
+        if (!container) return;
+
+        container.innerHTML = this.envelopes.map(envelope => {
+            const percentage = (envelope.amount / envelope.budget) * 100;
+            const status = percentage > 90 ? 'critical' : percentage > 75 ? 'warning' : 'success';
+            const statusText = percentage > 90 ? 'Crítico' : percentage > 75 ? 'Atención' : 'Bien';
+            
+            return `
+                <div class="envelope-card">
+                    <div class="envelope-header">
+                        <div class="envelope-name">${envelope.name}</div>
+                        <div class="envelope-icon">${envelope.icon}</div>
+                    </div>
+                    <div class="envelope-amount">€${envelope.amount.toFixed(2)}</div>
+                    <div class="envelope-progress">
+                        <div class="envelope-progress-bar ${status}" style="width: ${Math.min(percentage, 100)}%"></div>
+                    </div>
+                    <div class="envelope-status">${statusText} - €${envelope.budget.toFixed(2)} presupuesto</div>
+                    <div class="envelope-actions">
+                        <button class="envelope-btn" onclick="addToEnvelope(${envelope.id})">+ Añadir</button>
+                        <button class="envelope-btn" onclick="removeFromEnvelope(${envelope.id})">- Quitar</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
     generateBudgetAlerts() {
@@ -2547,10 +2651,50 @@ function showDashboard() {
     // Ya estamos en el dashboard, no hacer nada
 }
 
-function logout() {
-    // Función de logout - por ahora solo mostrar mensaje
-    alert('Función de logout próximamente');
-}
+    function logout() {
+        // Función de logout - por ahora solo mostrar mensaje
+        alert('Función de logout próximamente');
+    }
+
+    function showEnvelopeModal() {
+        // Función para mostrar modal de nuevo sobre
+        alert('Función de nuevo sobre próximamente');
+    }
+
+    function showEnvelopeSettings() {
+        // Función para mostrar configuración de sobres
+        alert('Función de configuración de sobres próximamente');
+    }
+
+    function addToEnvelope(envelopeId) {
+        // Función para añadir dinero a un sobre
+        if (veedorFinance) {
+            const envelope = veedorFinance.envelopes.find(e => e.id === envelopeId);
+            if (envelope) {
+                const amount = prompt(`¿Cuánto quieres añadir a ${envelope.name}?`);
+                if (amount && !isNaN(amount)) {
+                    envelope.amount += parseFloat(amount);
+                    veedorFinance.updateEnvelopes();
+                    veedorFinance.saveToStorage();
+                }
+            }
+        }
+    }
+
+    function removeFromEnvelope(envelopeId) {
+        // Función para quitar dinero de un sobre
+        if (veedorFinance) {
+            const envelope = veedorFinance.envelopes.find(e => e.id === envelopeId);
+            if (envelope) {
+                const amount = prompt(`¿Cuánto quieres quitar de ${envelope.name}?`);
+                if (amount && !isNaN(amount)) {
+                    envelope.amount = Math.max(0, envelope.amount - parseFloat(amount));
+                    veedorFinance.updateEnvelopes();
+                    veedorFinance.saveToStorage();
+                }
+            }
+        }
+    }
 
 // Cerrar menú al hacer click fuera
 document.addEventListener('click', function(event) {
