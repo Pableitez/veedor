@@ -1736,7 +1736,11 @@ function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     
+    // Aplicar el nuevo tema
     document.documentElement.setAttribute('data-theme', newTheme);
+    document.body.setAttribute('data-theme', newTheme);
+    
+    // Guardar en localStorage
     localStorage.setItem('veedor-theme', newTheme);
     
     // Actualizar icono del botón
@@ -1766,8 +1770,12 @@ function loadTheme() {
         
         console.log(`Tema cargado desde localStorage: ${savedTheme}`);
     } else {
-        // Si no hay tema guardado, mantener el modo oscuro por defecto del HTML
-        console.log('Usando modo oscuro por defecto del HTML');
+        // Si no hay tema guardado, usar el modo oscuro por defecto
+        const defaultTheme = 'dark';
+        document.documentElement.setAttribute('data-theme', defaultTheme);
+        document.body.setAttribute('data-theme', defaultTheme);
+        
+        console.log('Usando modo oscuro por defecto');
         
         // Actualizar icono del botón para modo oscuro
         const themeIcon = document.querySelector('.theme-icon');
