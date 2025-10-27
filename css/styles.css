@@ -3744,7 +3744,7 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 1.5rem;
     box-sizing: border-box;
 }
 
@@ -3753,16 +3753,16 @@ a:hover {
     visibility: visible;
 }
 
-/* Modal completamente responsive */
+/* Modal completamente responsive - MÁS PEQUEÑO */
 .auth-modal {
     background: var(--card-bg);
-    border-radius: 20px;
+    border-radius: 16px;
     padding: 0;
     width: 100%;
-    max-width: 480px;
-    max-height: calc(100vh - 2rem);
+    max-width: 420px;
+    max-height: calc(100vh - 3rem);
     overflow-y: auto;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.15);
     transform: scale(0.95);
@@ -3776,26 +3776,26 @@ a:hover {
 /* Responsive Modal */
 @media (max-width: 768px) {
     .auth-overlay {
-        padding: 0.5rem;
+        padding: 1rem;
     }
     
     .auth-modal {
         max-width: 95%;
-        max-height: calc(100vh - 1rem);
-        border-radius: 16px;
+        max-height: calc(100vh - 2rem);
+        border-radius: 14px;
     }
 }
 
 /* Mobile Optimizations */
 @media (max-width: 480px) {
     .auth-overlay {
-        padding: 0.25rem;
+        padding: 0.5rem;
     }
     
     .auth-modal {
         max-width: 100%;
-        max-height: calc(100vh - 0.5rem);
-        border-radius: 12px;
+        max-height: calc(100vh - 1rem);
+        border-radius: 10px;
     }
     
     .auth-tabs {
@@ -3846,10 +3846,10 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 2rem 1rem;
+    padding: 1rem 1.5rem 0.75rem;
     border-bottom: 1px solid var(--border-color);
     background: linear-gradient(135deg, var(--card-bg) 0%, rgba(139, 92, 246, 0.05) 100%);
-    border-radius: 20px 20px 0 0;
+    border-radius: 16px 16px 0 0;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -3898,7 +3898,7 @@ a:hover {
 .auth-tabs {
     display: flex;
     border-bottom: 1px solid var(--border-color);
-    margin: 0 2rem;
+    margin: 0 1.5rem;
     background: var(--card-bg);
 }
 
@@ -3941,7 +3941,7 @@ a:hover {
 }
 
 .auth-form {
-    padding: 1.5rem 2rem;
+    padding: 1rem 1.5rem;
     display: none;
     animation: fadeInUp 0.4s ease-out;
 }
@@ -3975,7 +3975,7 @@ a:hover {
 }
 
 .auth-form .form-group {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
     position: relative;
 }
 
@@ -3989,9 +3989,9 @@ a:hover {
 
 .auth-form .form-group input {
     width: 100%;
-    padding: 1rem 1.25rem;
+    padding: 0.75rem 1rem;
     border: 2px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--card-bg);
     color: var(--text-primary);
     font-size: 1rem;
@@ -4035,12 +4035,12 @@ a:hover {
 
 .auth-submit {
     width: 100%;
-    margin-bottom: 1.5rem;
-    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
     background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
