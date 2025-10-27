@@ -3878,8 +3878,8 @@ a:hover {
     background: var(--card-bg);
     border-radius: 16px;
     width: 100%;
-    max-width: 500px;
-    max-height: 80vh;
+    max-width: 400px;
+    max-height: 70vh;
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
@@ -3893,7 +3893,7 @@ a:hover {
 
 /* Auth Header */
 .auth-header {
-    padding: 20px 24px 16px;
+    padding: 16px 20px 12px;
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
     display: flex;
@@ -3903,7 +3903,7 @@ a:hover {
 
 .auth-header h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-primary);
     flex: 1;
@@ -3919,11 +3919,11 @@ a:hover {
 
 .auth-tab {
     flex: 1;
-    padding: 16px 20px;
+    padding: 12px 16px;
     background: none;
     border: none;
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -3943,8 +3943,10 @@ a:hover {
 
 /* Auth Form */
 .auth-form {
-    padding: 24px;
+    padding: 20px;
     display: none;
+    max-height: 50vh;
+    overflow-y: auto;
 }
 
 .auth-form.active {
@@ -3952,26 +3954,26 @@ a:hover {
 }
 
 .auth-form .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     position: relative;
 }
 
 .auth-form .form-group label {
     display: block;
-    margin-bottom: 8px;
-    font-size: 0.9rem;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-primary);
 }
 
 .auth-form .form-group input {
     width: 100%;
-    padding: 12px 16px;
+    padding: 10px 12px;
     border: 2px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--card-bg);
     color: var(--text-primary);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
     box-sizing: border-box;
 }
@@ -4004,13 +4006,13 @@ a:hover {
 /* Auth Submit */
 .auth-submit {
     width: 100%;
-    margin-bottom: 16px;
-    padding: 12px 20px;
+    margin-bottom: 12px;
+    padding: 10px 16px;
     background: var(--accent);
     color: white;
     border: none;
-    border-radius: 12px;
-    font-size: 0.95rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -4030,13 +4032,13 @@ a:hover {
 /* Auth Footer */
 .auth-footer {
     text-align: center;
-    margin-top: 16px;
+    margin-top: 12px;
 }
 
 .auth-footer a {
     color: var(--accent);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .auth-footer a:hover {
@@ -4070,24 +4072,25 @@ a:hover {
     
     .auth-modal {
         max-width: 100%;
-        max-height: 90vh;
+        max-height: 80vh;
     }
     
     .auth-header {
-        padding: 16px 20px 12px;
+        padding: 14px 16px 10px;
     }
     
     .auth-header h2 {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
     
     .auth-form {
-        padding: 20px;
+        padding: 16px;
+        max-height: 60vh;
     }
     
     .auth-tab {
-        padding: 14px 16px;
-        font-size: 0.9rem;
+        padding: 10px 12px;
+        font-size: 0.85rem;
     }
 }
 
@@ -4096,24 +4099,54 @@ a:hover {
         padding: 12px;
     }
     
+    .auth-modal {
+        max-width: 100%;
+        max-height: 85vh;
+    }
+    
     .auth-header {
-        padding: 16px;
+        padding: 12px 14px 8px;
+    }
+    
+    .auth-header h2 {
+        font-size: 0.95rem;
     }
     
     .auth-form {
-        padding: 16px;
+        padding: 14px;
+        max-height: 65vh;
     }
     
     .auth-tab {
-        padding: 12px 14px;
-        font-size: 0.85rem;
+        padding: 8px 10px;
+        font-size: 0.8rem;
     }
     
     .close-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 20px;
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
     }
+}
+
+/* Scroll interno para auth-form */
+.auth-form::-webkit-scrollbar {
+    width: 6px;
+}
+
+.auth-form::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+}
+
+.auth-form::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.auth-form::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-light);
 }
 
 /* ========================================
