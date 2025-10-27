@@ -4104,20 +4104,20 @@ a:hover {
     visibility: visible;
 }
 
-/* Auth Modal */
+/* Auth Modal - Estilo Revolut */
 .auth-modal {
-    background: var(--card-bg);
-    border-radius: var(--modal-radius-lg);
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     height: auto;
-    max-height: calc(100vh - 160px);
+    max-height: calc(100vh - 120px);
     min-height: 400px;
     overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     border: 1px solid var(--border-color);
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
     display: flex;
     flex-direction: column;
 }
@@ -4128,9 +4128,9 @@ a:hover {
 
 /* Auth Header */
 .auth-header {
-    padding: var(--modal-padding-md) var(--modal-padding-lg) var(--modal-padding-sm);
+    padding: var(--space-lg) var(--space-xl) var(--space-md);
     border-bottom: 1px solid var(--border-color);
-    background: var(--card-bg);
+    background: var(--bg-primary);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -4139,7 +4139,7 @@ a:hover {
 
 .auth-header h2 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--text-primary);
     flex: 1;
@@ -4208,21 +4208,20 @@ a:hover {
 
 .auth-form .form-group input {
     width: 100%;
-    padding: 0.4rem 0.6rem;
-    border: 2px solid var(--border-color);
-    border-radius: var(--modal-radius-sm);
-    background: var(--card-bg);
+    padding: var(--space-md) var(--space-lg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
     color: var(--text-primary);
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
     box-sizing: border-box;
-    height: 36px;
 }
 
 .auth-form .form-group input:focus {
     outline: none;
-    border-color: var(--modal-accent);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
 }
 
 .auth-form .form-error {
@@ -4247,23 +4246,23 @@ a:hover {
 /* Auth Submit */
 .auth-submit {
     width: 100%;
-    margin-bottom: var(--modal-margin-sm);
-    padding: 0.4rem 0.6rem;
-    background: var(--modal-accent);
-    color: white;
+    margin-bottom: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--accent);
+    color: var(--text-white);
     border: none;
-    border-radius: var(--modal-radius-sm);
-    font-size: 0.8rem;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     flex-shrink: 0;
-    height: 36px;
 }
 
 .auth-submit:hover {
-    background: var(--modal-accent-hover);
-    transform: translateY(-1px);
+    background: var(--accent-light);
+    transform: none;
+    box-shadow: none;
 }
 
 .auth-submit:disabled {
