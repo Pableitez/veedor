@@ -1771,6 +1771,248 @@
             color: var(--text-primary);
             font-weight: 600;
         }
+        
+        /* ========================================
+           MEJORAS AVANZADAS DE UX
+           ======================================== */
+        
+        /* Micro-interacciones y animaciones suaves */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        /* Skeleton loading para mejor percepción de velocidad */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+        
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                var(--bg-secondary) 25%,
+                var(--bg-tertiary) 50%,
+                var(--bg-secondary) 75%
+            );
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+            border-radius: var(--radius-md);
+        }
+        
+        /* Tooltips informativos */
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+        }
+        
+        [data-tooltip]::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition-fast);
+            z-index: var(--z-tooltip);
+            box-shadow: var(--shadow-md);
+        }
+        
+        [data-tooltip]:hover::before {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-4px);
+        }
+        
+        /* Feedback visual mejorado para inputs */
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            outline: none;
+        }
+        
+        input:valid {
+            border-color: #4CAF50;
+        }
+        
+        input:invalid:not(:placeholder-shown) {
+            border-color: #F44336;
+        }
+        
+        /* Estados de hover más suaves */
+        button,
+        .btn,
+        .nav-btn,
+        .card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        button:hover,
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        button:active,
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Loading states */
+        .loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid var(--accent);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Focus visible para accesibilidad */
+        *:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Reducir movimiento para usuarios que lo prefieren */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+        
+        /* Empty states informativos */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-3xl) var(--space-xl);
+            color: var(--text-secondary);
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+            opacity: 0.5;
+        }
+        
+        .empty-state-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .empty-state-description {
+            font-size: 0.9rem;
+            margin-bottom: var(--space-lg);
+        }
+        
+        /* Success/Error messages */
+        .message {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .message.success {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4CAF50;
+            color: #4CAF50;
+        }
+        
+        .message.error {
+            background: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid #F44336;
+            color: #F44336;
+        }
+        
+        .message.info {
+            background: rgba(33, 150, 243, 0.1);
+            border-left: 4px solid #2196F3;
+            color: #2196F3;
+        }
+        
+        /* Optimización de rendimiento */
+        .will-change-transform {
+            will-change: transform;
+        }
+        
+        .will-change-opacity {
+            will-change: opacity;
+        }
+        
+        /* Mejor legibilidad */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
     </style>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="assets/images/icon-192x192.png">
@@ -1814,7 +2056,7 @@
 
     <!-- Botón de cambio de tema flotante -->
     <button class="theme-toggle-floating" onclick="toggleTheme()" title="Cambiar tema">
-        <span class="theme-icon">☀️</span>
+        <span class="theme-icon">☀</span>
     </button>
 
     <!-- Demo Dashboard -->
@@ -1887,12 +2129,12 @@
 
                 <!-- Dashboard Navigation -->
                 <div class="dashboard-nav">
-                    <button class="nav-tab active" data-tab="overview">Resumen</button>
-                    <button class="nav-tab" data-tab="transactions">Transacciones</button>
-                    <button class="nav-tab" data-tab="budgets">Límites de Gasto</button>
-                    <button class="nav-tab" data-tab="envelopes">Sobres de Dinero</button>
-                    <button class="nav-tab" data-tab="goals">Objetivos</button>
-                    <button class="nav-tab" data-tab="analytics">Análisis</button>
+                    <button class="nav-tab active" data-tab="overview" data-tooltip="Vista general (Alt+1)">Resumen</button>
+                    <button class="nav-tab" data-tab="transactions" data-tooltip="Historial de movimientos (Alt+2)">Transacciones</button>
+                    <button class="nav-tab" data-tab="budgets" data-tooltip="Control de gastos (Alt+3)">Límites de Gasto</button>
+                    <button class="nav-tab" data-tab="envelopes" data-tooltip="Asignación de dinero (Alt+4)">Sobres de Dinero</button>
+                    <button class="nav-tab" data-tab="goals" data-tooltip="Metas de ahorro (Alt+5)">Objetivos</button>
+                    <button class="nav-tab" data-tab="analytics" data-tooltip="Estadísticas detalladas (Alt+6)">Análisis</button>
                 </div>
 
                 <!-- Dashboard Tabs Content -->
@@ -2201,7 +2443,7 @@
                                     </div>
                                     <div class="income-expense-breakdown">
                                         <div class="breakdown-item income">
-                                            <div class="breakdown-icon">💰</div>
+                                            <div class="breakdown-icon">€</div>
                                             <div class="breakdown-content">
                                                 <span class="breakdown-label">Ingresos</span>
                                                 <span class="breakdown-amount">€2,800</span>

@@ -44,6 +44,8 @@ class VeedorFinanceCenter {
         this.initializeTabs();
         this.startRealTimeUpdates();
         this.setupThemeToggle();
+        this.setupKeyboardShortcuts();
+        this.setupAccessibility();
     }
 
     initializeTabs() {
@@ -532,7 +534,7 @@ class VeedorFinanceCenter {
             return `
                 <div class="transaction-item">
                     <div class="transaction-icon" style="background: ${category?.color || '#8B5CF6'}">
-                        ${category?.icon || '📦'}
+                        <div class="category-color" style="background-color: ${category?.color || '#F7DC6F'}; width: 12px; height: 12px; border-radius: 50%;"></div>
                     </div>
                     <div class="transaction-info">
                         <div class="transaction-description">${transaction.description}</div>
@@ -564,7 +566,7 @@ class VeedorFinanceCenter {
                     <div class="budget-header">
                         <div class="budget-category">
                             <span class="budget-icon" style="background: ${category?.color || '#8B5CF6'}">
-                                ${category?.icon || '📦'}
+                                <div class="category-color" style="background-color: ${category?.color || '#F7DC6F'}; width: 12px; height: 12px; border-radius: 50%;"></div>
                             </span>
                             <span class="budget-name">${category?.name || budget.category}</span>
                         </div>
@@ -669,7 +671,7 @@ class VeedorFinanceCenter {
             return `
                 <div class="transaction-item">
                     <div class="transaction-icon" style="background: ${category?.color || '#8B5CF6'}">
-                        ${category?.icon || '📦'}
+                        <div class="category-color" style="background-color: ${category?.color || '#F7DC6F'}; width: 12px; height: 12px; border-radius: 50%;"></div>
                     </div>
                     <div class="transaction-info">
                         <div class="transaction-description">${transaction.description}</div>
@@ -684,10 +686,10 @@ class VeedorFinanceCenter {
                     </div>
                     <div class="transaction-actions">
                         <button class="btn-icon" onclick="veedorFinance.editTransaction('${transaction.id}')" title="Editar">
-                            ✏️
+                            <span class="edit-icon">✏</span>
                         </button>
                         <button class="btn-icon" onclick="veedorFinance.deleteTransaction('${transaction.id}')" title="Eliminar">
-                            🗑️
+                            <span class="delete-icon">🗑</span>
                         </button>
                     </div>
                 </div>
@@ -795,7 +797,7 @@ class VeedorFinanceCenter {
                     <div class="budget-header">
                         <div class="budget-category">
                             <span class="budget-icon" style="background: ${category?.color || '#8B5CF6'}">
-                                ${category?.icon || '📦'}
+                                <div class="category-color" style="background-color: ${category?.color || '#F7DC6F'}; width: 12px; height: 12px; border-radius: 50%;"></div>
                             </span>
                             <span class="budget-name">${category?.name || budget.category}</span>
                         </div>
@@ -1005,7 +1007,7 @@ class VeedorFinanceCenter {
         container.innerHTML = `
             <div class="trends-grid">
                 <div class="trend-item">
-                    <div class="trend-icon">📈</div>
+                    <div class="trend-icon">↗</div>
                     <div class="trend-content">
                         <div class="trend-label">Ingresos</div>
                         <div class="trend-value ${trends.income > 0 ? 'positive' : 'negative'}">
@@ -1023,7 +1025,7 @@ class VeedorFinanceCenter {
                     </div>
                 </div>
                 <div class="trend-item">
-                    <div class="trend-icon">💰</div>
+                    <div class="trend-icon">€</div>
                     <div class="trend-content">
                         <div class="trend-label">Ahorro</div>
                         <div class="trend-value ${trends.savings > 0 ? 'positive' : 'negative'}">
@@ -1508,14 +1510,14 @@ class VeedorFinanceCenter {
             if (percentage > 90) {
                 alerts.push({
                     type: 'warning',
-                    icon: '⚠️',
+                    icon: '⚠',
                     title: `${category?.name} - Presupuesto Agotado`,
                     message: `Has gastado el ${percentage.toFixed(1)}% de tu presupuesto`
                 });
             } else if (percentage > 70) {
                 alerts.push({
                     type: 'info',
-                    icon: 'ℹ️',
+                    icon: 'ℹ',
                     title: `${category?.name} - Cerca del Límite`,
                     message: `Has gastado el ${percentage.toFixed(1)}% de tu presupuesto`
                 });
@@ -1537,7 +1539,6 @@ class VeedorFinanceCenter {
         if (topCategory) {
             insights.push({
                 type: 'info',
-                icon: '📊',
                 title: 'Categoría Principal',
                 description: `${this.categories.find(c => c.id === topCategory[0])?.name} representa el ${((topCategory[1] / totals.expenses) * 100).toFixed(1)}% de tus gastos`
             });
@@ -1557,7 +1558,6 @@ class VeedorFinanceCenter {
         // Insight sobre tendencias
         insights.push({
             type: 'info',
-            icon: '📈',
             title: 'Tendencia Positiva',
             description: 'Tus ingresos han aumentado un 8.5% este mes'
         });
@@ -2350,7 +2350,7 @@ class VeedorFinanceCenter {
         
         const themeIcon = document.querySelector('.theme-icon');
         if (themeIcon) {
-            themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            themeIcon.textContent = savedTheme === 'dark' ? '☀' : '☾';
         }
     }
 
@@ -2536,7 +2536,7 @@ function toggleTheme() {
     
     const themeIcon = document.querySelector('.theme-icon');
     if (themeIcon) {
-        themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        themeIcon.textContent = newTheme === 'dark' ? '☀' : '☾';
     }
     
     // Actualizar gráficos si existen
@@ -2552,7 +2552,7 @@ function loadTheme() {
         document.body.setAttribute('data-theme', savedTheme);
         const themeIcon = document.querySelector('.theme-icon');
         if (themeIcon) {
-            themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            themeIcon.textContent = savedTheme === 'dark' ? '☀' : '☾';
         }
     } else {
         const defaultTheme = 'dark';
@@ -2560,7 +2560,7 @@ function loadTheme() {
         document.body.setAttribute('data-theme', defaultTheme);
         const themeIcon = document.querySelector('.theme-icon');
         if (themeIcon) {
-            themeIcon.textContent = '☀️';
+            themeIcon.textContent = '☀';
         }
     }
 }
@@ -2906,3 +2906,95 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// ========================================
+// MEJORAS AVANZADAS DE UX
+// ========================================
+VeedorFinanceCenter.prototype.setupKeyboardShortcuts = function() {
+    document.addEventListener('keydown', (e) => {
+        // Alt + número para cambiar de tab
+        if (e.altKey && !e.ctrlKey && !e.shiftKey) {
+            const tabs = ['overview', 'transactions', 'budgets', 'envelopes', 'goals', 'analytics'];
+            const number = parseInt(e.key);
+            
+            if (number >= 1 && number <= tabs.length) {
+                e.preventDefault();
+                this.showTab(tabs[number - 1]);
+            }
+            
+            // Alt + T para cambiar tema
+            if (e.key.toLowerCase() === 't') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        }
+        
+        // Escape para cerrar modales
+        if (e.key === 'Escape') {
+            const authOverlay = document.getElementById('auth-overlay');
+            if (authOverlay && authOverlay.style.display === 'flex') {
+                authOverlay.style.display = 'none';
+            }
+        }
+    });
+};
+
+VeedorFinanceCenter.prototype.setupAccessibility = function() {
+    // Añadir aria-labels
+    document.querySelectorAll('.nav-tab').forEach((tab) => {
+        if (!tab.getAttribute('aria-label')) {
+            tab.setAttribute('aria-label', `Navegar a ${tab.textContent.trim()}`);
+            tab.setAttribute('role', 'tab');
+        }
+    });
+    
+    // Anunciar cambios para lectores de pantalla
+    const announceChange = (message) => {
+        const announcement = document.createElement('div');
+        announcement.setAttribute('role', 'status');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.setAttribute('aria-atomic', 'true');
+        announcement.style.position = 'absolute';
+        announcement.style.left = '-10000px';
+        announcement.style.width = '1px';
+        announcement.style.height = '1px';
+        announcement.style.overflow = 'hidden';
+        announcement.textContent = message;
+        document.body.appendChild(announcement);
+        setTimeout(() => announcement.remove(), 1000);
+    };
+    
+    // Override showTab para anunciar cambios
+    const originalShowTab = this.showTab.bind(this);
+    this.showTab = function(tabName) {
+        originalShowTab(tabName);
+        const tabNames = {
+            'overview': 'Resumen',
+            'transactions': 'Transacciones',
+            'budgets': 'Límites de Gasto',
+            'envelopes': 'Sobres de Dinero',
+            'goals': 'Objetivos',
+            'analytics': 'Análisis'
+        };
+        announceChange(`Navegando a ${tabNames[tabName]}`);
+    };
+};
+
+// Mostrar mensajes de feedback
+VeedorFinanceCenter.prototype.showMessage = function(message, type = 'info') {
+    const container = document.createElement('div');
+    container.className = `message ${type}`;
+    container.textContent = message;
+    container.style.position = 'fixed';
+    container.style.top = '80px';
+    container.style.right = '20px';
+    container.style.zIndex = '9999';
+    container.style.maxWidth = '300px';
+    
+    document.body.appendChild(container);
+    
+    setTimeout(() => {
+        container.style.opacity = '0';
+        setTimeout(() => container.remove(), 300);
+    }, 3000);
+};
