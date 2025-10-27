@@ -1325,9 +1325,12 @@ class VeedorFinanceCenter {
     }
 
     updateAnalyticsTrends() {
+        console.log('updateAnalyticsTrends called');
         const container = document.querySelector('#analytics .analytics-trends');
+        console.log('Container found:', container);
         if (!container) return;
 
+        console.log('Chart available:', typeof Chart !== 'undefined');
         container.innerHTML = `
             <div class="analytics-charts">
                 <div class="chart-container">
@@ -1343,6 +1346,7 @@ class VeedorFinanceCenter {
 
         // Esperar a que Chart.js esté disponible
         if (typeof Chart !== 'undefined') {
+            console.log('Creating charts...');
             this.createNetWorthChart();
             this.createSavingsTrendChart();
         } else {
@@ -1356,7 +1360,9 @@ class VeedorFinanceCenter {
     }
 
     createNetWorthChart() {
+        console.log('createNetWorthChart called');
         const ctx = document.getElementById('netWorthChart');
+        console.log('Canvas element:', ctx);
         if (!ctx) return;
 
         // Limpiar gráfica existente si existe
