@@ -3339,9 +3339,7 @@ a:hover {
 }
 
 [data-theme="light"] .btn-outline {
-    background: #000000;
-    color: #ffffff;
-    border: 2px solid var(--hover-primary);
+    color: #000000;
 }
 
 [data-theme="light"] .form-group .input:focus,
