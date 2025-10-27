@@ -442,7 +442,10 @@ function initializeDashboard() {
     // 4. Actualizar patrimonio neto
     updateNetWorth();
     
-    // 5. Crear gráficas si Chart.js está disponible
+    // 5. Configurar event listeners
+    setupEventListeners();
+    
+    // 6. Crear gráficas si Chart.js está disponible
     if (typeof Chart !== 'undefined') {
         console.log('✅ Chart.js disponible, creando gráficas...');
         createCategoryChart();
@@ -724,14 +727,14 @@ function showTab(tabName) {
     });
 
     // Mostrar pestaña seleccionada
-    const selectedTab = document.getElementById(`${tabName}-tab`) || document.getElementById(tabName);
+    const selectedTab = document.getElementById(tabName);
     const selectedBtn = document.querySelector(`[data-tab="${tabName}"]`);
 
     if (selectedTab) {
         selectedTab.classList.add('active');
         console.log('✅ Pestaña activada:', selectedTab.id);
     } else {
-        console.log('❌ Pestaña no encontrada:', `${tabName}-tab`);
+        console.log('❌ Pestaña no encontrada:', tabName);
     }
     
     if (selectedBtn) {
@@ -783,10 +786,53 @@ function updateAllCharts() {
     }
 }
 
+// Función para configurar event listeners
+function setupEventListeners() {
+    console.log('🔗 Configurando event listeners...');
+    
+    // Event listeners para botones de navegación
+    document.querySelectorAll('.nav-tab').forEach(button => {
+        const tabName = button.getAttribute('data-tab');
+        if (tabName) {
+            button.addEventListener('click', () => {
+                console.log('🖱️ Botón de navegación clickeado:', tabName);
+                showTab(tabName);
+            });
+            console.log('✅ Event listener agregado para:', tabName);
+        }
+    });
+    
+    // Event listeners para botones de patrimonio
+    const netWorthButtons = [
+        { selector: '[onclick*="showAddAssetModal"]', action: 'showAddAssetModal' },
+        { selector: '[onclick*="showAddLiabilityModal"]', action: 'showAddLiabilityModal' },
+        { selector: '[onclick*="showAssetsList"]', action: 'showAssetsList' },
+        { selector: '[onclick*="showLiabilitiesList"]', action: 'showLiabilitiesList' },
+        { selector: '[onclick*="showNetWorthSettings"]', action: 'showNetWorthSettings' },
+        { selector: '[onclick*="showSavingsConfiguration"]', action: 'showSavingsConfiguration' }
+    ];
+    
+    netWorthButtons.forEach(({ selector, action }) => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('🖱️ Botón de patrimonio clickeado:', action);
+                if (window[action]) {
+                    window[action]();
+                }
+            });
+        });
+    });
+    
+    console.log('✅ Event listeners configurados');
+}
+
 // Hacer funciones globales
 window.debugCharts = debugCharts;
 window.initializeDashboard = initializeDashboard;
 window.showTab = showTab;
+window.setupEventListeners = setupEventListeners;
 window.updateAllCharts = updateAllCharts;
 window.updateNetWorth = updateNetWorth;
 window.updateAssetsList = updateAssetsList;
