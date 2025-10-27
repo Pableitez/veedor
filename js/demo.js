@@ -2110,39 +2110,22 @@ class VeedorFinanceCenter {
     // GESTIÓN DE TEMA
     // ========================================
     setupThemeToggle() {
-        // Crear botón de tema si no existe
-        if (!document.querySelector('.theme-toggle')) {
-            const themeButton = document.createElement('button');
-            themeButton.className = 'theme-toggle';
-            themeButton.innerHTML = '<span class="theme-icon">☀️</span>';
-            themeButton.onclick = () => this.toggleTheme();
-            
-            // Añadir al header
-            const navBrand = document.querySelector('.nav-brand');
-            if (navBrand) {
-                navBrand.appendChild(themeButton);
-            }
-        }
-        
         // Cargar tema guardado
         this.loadTheme();
-    }
-
-    toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         
-        document.documentElement.setAttribute('data-theme', newTheme);
-        document.body.setAttribute('data-theme', newTheme);
-        localStorage.setItem('veedor-theme', newTheme);
+        // Configurar listener para cambios de tema
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                    this.updateChartsTheme();
+                }
+            });
+        });
         
-        const themeIcon = document.querySelector('.theme-icon');
-        if (themeIcon) {
-            themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-        }
-        
-        // Actualizar gráficos si existen
-        this.updateChartsTheme();
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme']
+        });
     }
 
     loadTheme() {
@@ -2340,6 +2323,11 @@ function toggleTheme() {
     if (themeIcon) {
         themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
     }
+    
+    // Actualizar gráficos si existen
+    if (veedorFinance && veedorFinance.updateChartsTheme) {
+        veedorFinance.updateChartsTheme();
+    }
 }
 
 function loadTheme() {
@@ -2429,6 +2417,20 @@ function toggleMobileMenu() {
 function closeMobileMenu() {
     const navMenu = document.getElementById('nav-menu');
     navMenu.classList.remove('active');
+}
+
+function toggleUserMenu() {
+    const dropdown = document.querySelector('.nav-dropdown');
+    dropdown.classList.toggle('active');
+}
+
+function showDashboard() {
+    // Ya estamos en el dashboard, no hacer nada
+}
+
+function logout() {
+    // Función de logout - por ahora solo mostrar mensaje
+    alert('Función de logout próximamente');
 }
 
 // Cerrar menú al hacer click fuera

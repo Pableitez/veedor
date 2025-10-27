@@ -1309,32 +1309,43 @@
 <body data-theme="dark">
     <!-- Header -->
     <header class="header">
-        <nav class="navbar">
+        <nav class="navbar container">
             <div class="nav-brand">
                 <h1>Veedor</h1>
             </div>
+            
+            <!-- Botón hamburguesa para móviles -->
+            <button class="hamburger" onclick="toggleMobileMenu()">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            
             <ul class="nav-menu" id="nav-menu">
-                <li><button class="nav-btn" onclick="window.location.href='index.html'">Inicio</button></li>
-                <li><button class="nav-btn" onclick="window.location.href='index.html#features'">Funciones</button></li>
+                <!-- Botones fijos siempre visibles -->
+                <li><button class="nav-btn" onclick="window.location.href='index.html'; closeMobileMenu();">Inicio</button></li>
+                <li><button class="nav-btn" onclick="window.location.href='index.html#features'; closeMobileMenu();">Funciones</button></li>
+                
+                <!-- Menú desplegable para funcionalidades dinámicas -->
                 <li class="nav-dropdown">
-                    <button class="nav-btn nav-btn-dropdown" onclick="toggleUserMenu();">
+                    <button class="nav-btn nav-btn-dropdown" onclick="toggleUserMenu(); closeMobileMenu();">
                         <span id="user-menu-text">Mi Cuenta</span>
                         <span class="dropdown-arrow">▼</span>
                     </button>
                     <div class="nav-dropdown-content" id="nav-dropdown-content">
-                        <button class="nav-btn nav-btn-dropdown-item" id="dashboard-link" style="display: none;" onclick="showDashboard();">Mis Finanzas</button>
-                        <button class="nav-btn nav-btn-dropdown-item" id="auth-button" onclick="showAuth();">Acceder</button>
-                        <button class="nav-btn nav-btn-dropdown-item" id="logout-button" style="display: none;" onclick="logout();">Cerrar Sesión</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="dashboard-link" style="display: none;" onclick="showDashboard(); closeMobileMenu();">Mis Finanzas</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="auth-button" onclick="showAuth(); closeMobileMenu();">Acceder</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="logout-button" style="display: none;" onclick="logout(); closeMobileMenu();">Cerrar Sesión</button>
                     </div>
                 </li>
             </ul>
-            <button class="hamburger" onclick="toggleMobileMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
         </nav>
     </header>
+
+    <!-- Botón de cambio de tema flotante -->
+    <button class="theme-toggle-floating" onclick="toggleTheme()" title="Cambiar tema">
+        <span class="theme-icon">☀️</span>
+    </button>
 
     <!-- Demo Dashboard -->
     <main class="main-content">
