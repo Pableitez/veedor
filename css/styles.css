@@ -11,7 +11,7 @@
     --primary-dark: #0056CC;
     --primary-light: #4A9EFF;
     --secondary: #6B7280;
-    --accent: #EF4444;
+    --accent: #8B5CF6;
     --accent-light: #F87171;
     
     /* === COLORES TECH PARA HOVER Y BOTONES === */
@@ -118,7 +118,7 @@
     --primary-dark: #0056CC;
     --primary-light: #4A9EFF;
     --secondary: #6B7280;
-    --accent: #EF4444;
+    --accent: #8B5CF6;
     --accent-light: #F87171;
     
     /* === COLORES TECH PARA HOVER Y BOTONES === */
@@ -1958,6 +1958,11 @@ a:hover {
         padding: var(--space-lg);
     }
     
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
 /* Estilos específicos para contenido legal */
 .modal-body .last-updated {
     text-align: center;

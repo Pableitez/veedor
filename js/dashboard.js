@@ -617,31 +617,25 @@ class DashboardManager {
     }
 
     showAddTransaction() {
-        const modal = document.getElementById('transaction-modal');
-        modal.classList.add('show');
-        document.getElementById('transaction-date').value = new Date().toISOString().split('T')[0];
+        // Usar el sistema unificado de modales
+        openModal('transaction-modal');
         
-        // Cerrar modal al hacer clic fuera
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                this.hideAddTransaction();
-            }
-        });
-        
-        // Cerrar modal con tecla Escape
-        const handleEscape = (e) => {
-            if (e.key === 'Escape') {
-                this.hideAddTransaction();
-                document.removeEventListener('keydown', handleEscape);
-            }
-        };
-        document.addEventListener('keydown', handleEscape);
+        // Establecer fecha por defecto
+        const dateInput = document.getElementById('transaction-date');
+        if (dateInput) {
+            dateInput.value = new Date().toISOString().split('T')[0];
+        }
     }
 
     hideAddTransaction() {
-        const modal = document.getElementById('transaction-modal');
-        modal.classList.remove('show');
-        document.getElementById('transaction-form').reset();
+        // Usar el sistema unificado de modales
+        closeModal('transaction-modal');
+        
+        // Limpiar formulario
+        const form = document.getElementById('transaction-form');
+        if (form) {
+            form.reset();
+        }
     }
 
     filterTransactions() {
@@ -695,40 +689,24 @@ function debugModal() {
 window.debugModal = debugModal;
 
 function showAddTransaction() {
-    // Asegurar que el dashboardManager esté inicializado
-    if (!window.dashboardManager) {
-        console.log('DashboardManager no inicializado, inicializando...');
-        window.dashboardManager = new DashboardManager();
-    }
+    // Usar el sistema unificado de modales
+    openModal('transaction-modal');
     
-    if (window.dashboardManager) {
-        window.dashboardManager.showAddTransaction();
-    } else {
-        console.error('No se pudo inicializar DashboardManager');
-        // Fallback: mostrar modal directamente
-        const modal = document.getElementById('transaction-modal');
-        if (modal) {
-            modal.classList.add('show');
-            document.getElementById('transaction-date').value = new Date().toISOString().split('T')[0];
-        } else {
-            console.error('Modal transaction-modal no encontrado');
-        }
+    // Establecer fecha por defecto
+    const dateInput = document.getElementById('transaction-date');
+    if (dateInput) {
+        dateInput.value = new Date().toISOString().split('T')[0];
     }
 }
 
 function hideAddTransaction() {
-    if (window.dashboardManager) {
-        window.dashboardManager.hideAddTransaction();
-    } else {
-        // Fallback: ocultar modal directamente
-        const modal = document.getElementById('transaction-modal');
-        if (modal) {
-            modal.classList.remove('show');
-            const form = document.getElementById('transaction-form');
-            if (form) {
-                form.reset();
-            }
-        }
+    // Usar el sistema unificado de modales
+    closeModal('transaction-modal');
+    
+    // Limpiar formulario
+    const form = document.getElementById('transaction-form');
+    if (form) {
+        form.reset();
     }
 }
 

@@ -1319,7 +1319,7 @@ function handleNewTransaction(event) {
     updateTransactionSummary();
     
     // Cerrar modal
-    hideAddTransaction();
+    closeModal('transaction-modal');
     
     // Mostrar notificación
     alert('Transacción agregada correctamente');
@@ -1344,8 +1344,6 @@ window.deleteBudget = deleteBudget;
 window.editGoal = editGoal;
 window.deleteGoal = deleteGoal;
 window.handleNewTransaction = handleNewTransaction;
-window.hideAddTransaction = hideAddTransaction;
-window.showAddTransaction = showAddTransaction;
 window.showAddBudget = showAddBudget;
 window.showAddGoal = showAddGoal;
 window.openDemo = openDemo;

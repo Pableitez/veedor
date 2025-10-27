@@ -466,8 +466,8 @@
                             <div class="card-header">
                                 <h3>Resumen Financiero</h3>
                                 <div class="card-actions">
-                                    <button class="btn btn-sm btn-outline" onclick="showAddTransaction()">+ Gasto</button>
-                                    <button class="btn btn-sm btn-primary" onclick="showAddTransaction()">+ Ingreso</button>
+                                    <button class="btn btn-sm btn-outline" onclick="openModal('transaction-modal')">+ Gasto</button>
+                                    <button class="btn btn-sm btn-primary" onclick="openModal('transaction-modal')">+ Ingreso</button>
                                 </div>
                             </div>
                             <div class="financial-overview">
@@ -659,7 +659,7 @@
                             </div>
                             <div class="header-actions">
                                 <button class="btn btn-outline" onclick="exportTransactions()">Exportar</button>
-                            <button class="btn btn-accent" onclick="showAddTransaction()">+ Nueva Transacción</button>
+                            <button class="btn btn-accent" onclick="openModal('transaction-modal')">+ Nueva Transacción</button>
                             </div>
                         </div>
                         
@@ -1107,7 +1107,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>Nueva Transacción</h3>
-                    <button class="close-btn" onclick="hideAddTransaction()">&times;</button>
+                    <button class="close-btn" onclick="closeModal('transaction-modal')">&times;</button>
                 </div>
                 <form id="transaction-form" class="modal-form" onsubmit="handleNewTransaction(event)">
                     <div class="form-group">
@@ -1142,7 +1142,7 @@
                         <input type="date" id="transaction-date" class="input" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="hideAddTransaction()">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('transaction-modal')">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Guardar Transacción</button>
                     </div>
                 </form>
@@ -1486,8 +1486,8 @@
                                             <div class="card-header">
                                                 <h3>Resumen Financiero</h3>
                                                 <div class="card-actions">
-                                                    <button class="btn btn-sm btn-outline" onclick="showAddTransaction()">+ Gasto</button>
-                                                    <button class="btn btn-sm btn-primary" onclick="showAddTransaction()">+ Ingreso</button>
+                                                    <button class="btn btn-sm btn-outline" onclick="openModal('transaction-modal')">+ Gasto</button>
+                                                    <button class="btn btn-sm btn-primary" onclick="openModal('transaction-modal')">+ Ingreso</button>
                                                 </div>
                                             </div>
                                             <div class="financial-overview">
@@ -1667,7 +1667,7 @@
                                         </div>
                                         <div class="header-actions">
                                             <button class="btn btn-outline" onclick="exportTransactions()">Exportar</button>
-                                            <button class="btn btn-accent" onclick="showAddTransaction()">+ Nueva Transacción</button>
+                                            <button class="btn btn-accent" onclick="openModal('transaction-modal')">+ Nueva Transacción</button>
                                         </div>
                                     </div>
                                     <!-- Transactions content will be populated by JavaScript -->
