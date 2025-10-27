@@ -3974,10 +3974,15 @@ a:hover {
     transition: all 0.3s ease;
     border-radius: 8px;
     overflow: hidden;
-    width: 150px;
-    height: 50px;
+    width: 150px !important;
+    height: 50px !important;
+    min-width: 150px !important;
+    min-height: 50px !important;
+    max-width: 150px !important;
+    max-height: 50px !important;
     text-decoration: none;
     position: relative;
+    box-sizing: border-box;
 }
 
 .download-badge:hover {
@@ -4003,14 +4008,25 @@ a:hover {
     min-height: 50px !important;
     max-width: 150px !important;
     max-height: 50px !important;
+    display: block !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 .app-store .badge-image,
 .google-play .badge-image {
     width: 150px !important;
     height: 50px !important;
+    min-width: 150px !important;
+    min-height: 50px !important;
+    max-width: 150px !important;
+    max-height: 50px !important;
     object-fit: contain !important;
     object-position: center !important;
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
 }
 
 /* Responsive adjustments */
