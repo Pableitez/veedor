@@ -593,6 +593,8 @@ a:hover {
     margin: 0;
     min-width: auto;
     text-align: left;
+    justify-content: flex-start;
+    align-items: center;
     background: transparent;
     border-bottom: none;
     font-weight: 400;
