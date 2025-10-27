@@ -3982,11 +3982,23 @@ a:hover {
 }
 
 .badge-image {
-    height: 50px;
-    width: 150px;
-    object-fit: contain;
+    height: 50px !important;
+    width: 150px !important;
+    object-fit: contain !important;
     display: block;
     border-radius: 8px;
+    max-width: 150px !important;
+    max-height: 50px !important;
+}
+
+/* Forzar tamaño idéntico para ambos tipos de badge */
+.app-store .badge-image,
+.google-play .badge-image {
+    height: 50px !important;
+    width: 150px !important;
+    max-width: 150px !important;
+    max-height: 50px !important;
+    object-fit: contain !important;
 }
 
 
