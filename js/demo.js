@@ -3203,16 +3203,23 @@ function logout() {
         const loanDetails = veedorFinance.calculateLoanDetails(principal, rate, years, fees);
         const resultsDiv = document.getElementById('amortization-results');
         
-        // Crear tabla de amortización para los primeros 12 meses
-        const amortizationTable = loanDetails.amortization.schedule.slice(0, 12).map(payment => `
+        // Crear tabla de amortización completa
+        const amortizationTable = loanDetails.amortization.schedule.map(payment => `
             <tr>
                 <td>${payment.payment}</td>
                 <td>€${payment.monthlyPayment.toFixed(2)}</td>
                 <td>€${payment.principalPayment.toFixed(2)}</td>
                 <td>€${payment.interestPayment.toFixed(2)}</td>
                 <td>€${payment.remainingBalance.toFixed(2)}</td>
+                <td>${payment.remainingBalance > 0 ? 'Pendiente' : 'Pagado'}</td>
             </tr>
         `).join('');
+        
+        // Calcular estadísticas adicionales
+        const totalPayments = loanDetails.amortization.schedule.length;
+        const remainingPayments = loanDetails.amortization.schedule.filter(p => p.remainingBalance > 0).length;
+        const totalInterestPaid = loanDetails.amortization.schedule.reduce((sum, p) => sum + p.interestPayment, 0);
+        const totalPrincipalPaid = loanDetails.amortization.schedule.reduce((sum, p) => sum + p.principalPayment, 0);
         
         resultsDiv.innerHTML = `
             <div class="amortization-summary">
@@ -3231,8 +3238,20 @@ function logout() {
                         <span class="value">${loanDetails.tae.toFixed(2)}%</span>
                     </div>
                     <div class="summary-item">
+                        <span class="label">Total Cuotas:</span>
+                        <span class="value">${totalPayments}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Cuotas Pendientes:</span>
+                        <span class="value">${remainingPayments}</span>
+                    </div>
+                    <div class="summary-item">
                         <span class="label">Intereses Totales:</span>
                         <span class="value">€${loanDetails.totalInterest.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Capital Total:</span>
+                        <span class="value">€${principal.toFixed(2)}</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">Coste Total:</span>
@@ -3241,17 +3260,25 @@ function logout() {
                 </div>
             </div>
             
+            <div class="amortization-chart-container">
+                <h4>Evolución del Préstamo</h4>
+                <div class="chart-wrapper">
+                    <canvas id="amortizationChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+            
             <div class="amortization-table-container">
-                <h4>Cuadro de Amortización (Primeros 12 meses)</h4>
+                <h4>Cuadro de Amortización Completo</h4>
                 <div class="table-wrapper">
                     <table class="amortization-table">
                         <thead>
                             <tr>
-                                <th>Mes</th>
                                 <th>Cuota</th>
+                                <th>Pago Mensual</th>
                                 <th>Capital</th>
                                 <th>Intereses</th>
                                 <th>Saldo Restante</th>
+                                <th>Estado</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -3260,7 +3287,7 @@ function logout() {
                     </table>
                 </div>
                 <div class="table-note">
-                    <small>Mostrando los primeros 12 meses. Total de ${loanDetails.totalPayments} cuotas.</small>
+                    <small>Tabla completa de amortización. Total de ${totalPayments} cuotas.</small>
                 </div>
             </div>
         `;
@@ -3268,7 +3295,311 @@ function logout() {
         // Actualizar el campo de pago mensual automáticamente
         document.getElementById('liability-payment').value = loanDetails.monthlyPayment.toFixed(2);
         
+        // Crear gráfico de amortización
+        createAmortizationChart(loanDetails.amortization.schedule);
+        
         resultsDiv.style.display = 'block';
+    }
+    
+    function createAmortizationChart(schedule) {
+        const ctx = document.getElementById('amortizationChart');
+        if (!ctx) return;
+        
+        // Preparar datos para el gráfico
+        const months = schedule.map(p => p.payment);
+        const principalData = schedule.map(p => p.principalPayment);
+        const interestData = schedule.map(p => p.interestPayment);
+        const balanceData = schedule.map(p => p.remainingBalance);
+        
+        // Crear gráfico con Chart.js
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Saldo Restante',
+                        data: balanceData,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Capital por Cuota',
+                        data: principalData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'Intereses por Cuota',
+                        data: interestData,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: false,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Evolución del Préstamo'
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Cuota'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Saldo Restante (€)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Pago por Cuota (€)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+    }
+    
+    function showLiabilityAmortization(liabilityId) {
+        if (!veedorFinance) return;
+        
+        const liability = veedorFinance.liabilities.find(l => l.id === liabilityId);
+        if (!liability) return;
+        
+        // Crear modal para mostrar amortización
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 90vw; max-height: 90vh; overflow-y: auto;">
+                <div class="modal-header">
+                    <h2>Cuadro de Amortización - ${liability.name}</h2>
+                    <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div id="liability-amortization-results"></div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+        
+        // Calcular amortización con datos del pasivo
+        const principal = liability.amount;
+        const rate = 3.5; // Tasa por defecto, se podría añadir al pasivo
+        const years = 25; // Años por defecto, se podría añadir al pasivo
+        const fees = 0;
+        
+        const loanDetails = veedorFinance.calculateLoanDetails(principal, rate, years, fees);
+        const resultsDiv = document.getElementById('liability-amortization-results');
+        
+        // Crear tabla de amortización completa
+        const amortizationTable = loanDetails.amortization.schedule.map(payment => `
+            <tr>
+                <td>${payment.payment}</td>
+                <td>€${payment.monthlyPayment.toFixed(2)}</td>
+                <td>€${payment.principalPayment.toFixed(2)}</td>
+                <td>€${payment.interestPayment.toFixed(2)}</td>
+                <td>€${payment.remainingBalance.toFixed(2)}</td>
+                <td>${payment.remainingBalance > 0 ? 'Pendiente' : 'Pagado'}</td>
+            </tr>
+        `).join('');
+        
+        // Calcular estadísticas adicionales
+        const totalPayments = loanDetails.amortization.schedule.length;
+        const remainingPayments = loanDetails.amortization.schedule.filter(p => p.remainingBalance > 0).length;
+        
+        resultsDiv.innerHTML = `
+            <div class="amortization-summary">
+                <h4>Resumen del Préstamo</h4>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="label">Cuota Mensual:</span>
+                        <span class="value">€${loanDetails.monthlyPayment.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">TIN:</span>
+                        <span class="value">${loanDetails.nominalRate.toFixed(2)}%</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">TAE:</span>
+                        <span class="value">${loanDetails.tae.toFixed(2)}%</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Total Cuotas:</span>
+                        <span class="value">${totalPayments}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Cuotas Pendientes:</span>
+                        <span class="value">${remainingPayments}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Intereses Totales:</span>
+                        <span class="value">€${loanDetails.totalInterest.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Capital Total:</span>
+                        <span class="value">€${principal.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Coste Total:</span>
+                        <span class="value">€${loanDetails.totalCost.toFixed(2)}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="amortization-chart-container">
+                <h4>Evolución del Préstamo</h4>
+                <div class="chart-wrapper">
+                    <canvas id="liabilityAmortizationChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+            
+            <div class="amortization-table-container">
+                <h4>Cuadro de Amortización Completo</h4>
+                <div class="table-wrapper">
+                    <table class="amortization-table">
+                        <thead>
+                            <tr>
+                                <th>Cuota</th>
+                                <th>Pago Mensual</th>
+                                <th>Capital</th>
+                                <th>Intereses</th>
+                                <th>Saldo Restante</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${amortizationTable}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-note">
+                    <small>Tabla completa de amortización. Total de ${totalPayments} cuotas.</small>
+                </div>
+            </div>
+        `;
+        
+        // Crear gráfico de amortización
+        createLiabilityAmortizationChart(loanDetails.amortization.schedule);
+    }
+    
+    function createLiabilityAmortizationChart(schedule) {
+        const ctx = document.getElementById('liabilityAmortizationChart');
+        if (!ctx) return;
+        
+        // Preparar datos para el gráfico
+        const months = schedule.map(p => p.payment);
+        const principalData = schedule.map(p => p.principalPayment);
+        const interestData = schedule.map(p => p.interestPayment);
+        const balanceData = schedule.map(p => p.remainingBalance);
+        
+        // Crear gráfico con Chart.js
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Saldo Restante',
+                        data: balanceData,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Capital por Cuota',
+                        data: principalData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: false,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'Intereses por Cuota',
+                        data: interestData,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: false,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Evolución del Préstamo'
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Cuota'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Saldo Restante (€)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Pago por Cuota (€)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
     }
 
     function saveAsset(event, assetId) {
@@ -3742,8 +4073,9 @@ VeedorFinanceCenter.prototype.updateLiabilitiesList = function() {
                 ${liability.monthlyPayment ? `<div>Pago mensual: €${liability.monthlyPayment.toFixed(2)}</div>` : ''}
             </div>
             <div class="liability-actions">
-                <button class="edit-btn" onclick="editLiability(${liability.id})">Editar</button>
-                <button class="delete-btn" onclick="deleteLiability(${liability.id})">Eliminar</button>
+                <button class="btn-outline" onclick="showLiabilityAmortization(${liability.id})">Ver Amortización</button>
+                <button class="btn-outline" onclick="editLiability(${liability.id})">Editar</button>
+                <button class="btn-danger" onclick="deleteLiability(${liability.id})">Eliminar</button>
             </div>
         </div>
     `).join('');
