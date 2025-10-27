@@ -2,7 +2,11 @@
 // FUNCIONES DE MODAL (GLOBALES)
 // ========================================
 
-// Modal functions
+/**
+ * Abre un modal específico por su ID
+ * @param {string} modalId - ID del modal a abrir
+ * @returns {void}
+ */
 function openModal(modalId) {
     console.log('Opening modal:', modalId);
     const modal = document.getElementById(modalId);
@@ -16,6 +20,11 @@ function openModal(modalId) {
     }
 }
 
+/**
+ * Cierra un modal específico por su ID
+ * @param {string} modalId - ID del modal a cerrar
+ * @returns {void}
+ */
 function closeModal(modalId) {
     console.log('Closing modal:', modalId);
     const modal = document.getElementById(modalId);
