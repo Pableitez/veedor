@@ -3896,7 +3896,7 @@ a:hover {
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
-    padding: 60px 20px 20px;
+    padding: 100px 20px 20px;
     box-sizing: border-box;
 }
 
@@ -3912,7 +3912,7 @@ a:hover {
     width: 100%;
     max-width: 400px;
     height: auto;
-    max-height: calc(100vh - 120px);
+    max-height: calc(100vh - 160px);
     min-height: 400px;
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
@@ -4110,12 +4110,12 @@ a:hover {
 /* Responsive */
 @media (max-width: 768px) {
     .auth-overlay {
-        padding: 50px var(--modal-padding-md) var(--modal-padding-md);
+        padding: 80px var(--modal-padding-md) var(--modal-padding-md);
     }
     
     .auth-modal {
         max-width: 100%;
-        max-height: calc(100vh - 100px);
+        max-height: calc(100vh - 140px);
         min-height: 350px;
     }
     
@@ -4139,12 +4139,12 @@ a:hover {
 
 @media (max-width: 480px) {
     .auth-overlay {
-        padding: 40px var(--modal-padding-sm) var(--modal-padding-sm);
+        padding: 70px var(--modal-padding-sm) var(--modal-padding-sm);
     }
     
     .auth-modal {
         max-width: 100%;
-        max-height: calc(100vh - 80px);
+        max-height: calc(100vh - 120px);
         min-height: 300px;
     }
     
