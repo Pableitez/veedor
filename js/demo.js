@@ -3231,6 +3231,10 @@ function logout() {
         resultsDiv.style.display = 'block';
     }
 
+    function saveAsset(event, assetId) {
+        event.preventDefault();
+        if (!veedorFinance) return;
+
         const formData = {
             name: document.getElementById('asset-name').value,
             amount: parseFloat(document.getElementById('asset-amount').value),
