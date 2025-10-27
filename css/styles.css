@@ -3144,6 +3144,7 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .close-btn:hover {
@@ -3846,8 +3847,9 @@ a:hover {
     border-radius: 16px 16px 0 0;
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 20;
     backdrop-filter: blur(10px);
+    min-height: 60px;
 }
 
 /* Responsive Header */
@@ -3871,10 +3873,10 @@ a:hover {
     font-weight: 700;
     color: var(--text-primary);
     letter-spacing: -0.02em;
-    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    line-height: 1.2;
+    flex: 1;
+    margin-right: 1rem;
+    word-wrap: break-word;
 }
 
 /* Responsive Title */
