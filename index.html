@@ -194,7 +194,7 @@
                         <h1>La cuenta de la vieja, pero digital</h1>
                         <p class="hero-subtitle">Como cuando tu abuela llevaba las cuentas, sin perder ni una peseta.</p>
                         <div class="hero-actions">
-                            <button class="btn btn-accent" onclick="loadAndShowDemo()">Descubre Veedor</button>
+                            <button class="btn btn-accent" onclick="window.open('demo.html', '_blank')">Descubre Veedor</button>
                             <button class="btn btn-outline" onclick="showAuth()">Registrarse</button>
                         </div>
                     </div>
@@ -439,1346 +439,161 @@
                 </div>
             </div>
         </section>
+    </main>
 
-        <!-- Dashboard Section -->
-        <section id="dashboard" class="section section-white" style="display: none;">
-            <div class="container">
-                <div class="dashboard-header">
-                    <div class="dashboard-header-content">
-                        <div class="dashboard-header-text">
-                            <h2>Mi Cuaderno</h2>
-                            <p>Aquí tienes todo claro, como toda la vida</p>
-                        </div>
-                        <div class="dashboard-header-image">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Resumen Financiero -->
-                <div class="financial-summary">
-                    <div class="summary-card primary">
-                        <div class="summary-icon">
-                        </div>
-                        <div class="summary-content">
-                            <h3>Balance Total</h3>
-                            <span class="summary-amount" id="total-balance">€0</span>
-                            <div class="summary-trend" id="balance-trend">
-                                <span class="trend-icon">
-                                </span>
-                                <span class="trend-text">+5.2% este mes</span>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="summary-card success">
-                        <div class="summary-icon">
-                        </div>
-                        <div class="summary-content">
-                            <h3>Ingresos del Mes</h3>
-                            <span class="summary-amount positive" id="monthly-income">€0</span>
-                            <div class="summary-trend" id="income-trend">
-                                <span class="trend-icon">
-                                </span>
-                                <span class="trend-text">vs mes anterior</span>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="summary-card warning">
-                        <div class="summary-icon">
-                        </div>
-                        <div class="summary-content">
-                            <h3>Gastos del Mes</h3>
-                            <span class="summary-amount negative" id="monthly-expenses">€0</span>
-                            <div class="summary-trend" id="expenses-trend">
-                                <span class="trend-icon">
-                                </span>
-                                <span class="trend-text">vs mes anterior</span>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="summary-card info">
-                        <div class="summary-icon">
-                        </div>
-                        <div class="summary-content">
-                            <h3>Ahorro Mensual</h3>
-                            <span class="summary-amount" id="monthly-savings">€0</span>
-                            <div class="summary-trend" id="savings-trend">
-                                <span class="trend-icon">
-                                </span>
-                                <span class="trend-text">Meta: €500</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Navegación del Dashboard -->
-                <div class="dashboard-nav">
-                    <button class="nav-tab active" data-tab="overview" onclick="showDashboardTab('overview')">
-                        <span class="nav-icon">
-                        </span>
-                        <span class="nav-text">Resumen</span>
-                    </button>
-                    <button class="nav-tab" data-tab="transactions" onclick="showDashboardTab('transactions')">
-                        <span class="nav-icon">
-                        </span>
-                        <span class="nav-text">Transacciones</span>
-                    </button>
-                    <button class="nav-tab" data-tab="budgets" onclick="showDashboardTab('budgets')">
-                        <span class="nav-icon">
-                        </span>
-                        <span class="nav-text">Presupuestos</span>
-                    </button>
-                    <button class="nav-tab" data-tab="analytics" onclick="showDashboardTab('analytics')">
-                        <span class="nav-icon">
-                        </span>
-                        <span class="nav-text">Análisis</span>
-                    </button>
-                    <button class="nav-tab" data-tab="goals" onclick="showDashboardTab('goals')">
-                        <span class="nav-icon">
-                        </span>
-                        <span class="nav-text">Objetivos</span>
-                    </button>
-                </div>
-
-                <!-- Pestaña Resumen -->
-                <div id="overview-tab" class="dashboard-tab active">
-                    <div class="overview-grid">
-                        <div class="overview-card large">
-                            <div class="card-header">
-                                <h3>Resumen Financiero</h3>
-                                <div class="card-actions">
-                                    <button class="btn btn-sm btn-outline" onclick="showAddTransaction()">+ Gasto</button>
-                                    <button class="btn btn-sm btn-primary" onclick="showAddTransaction()">+ Ingreso</button>
-                                </div>
-                            </div>
-                            <div class="financial-overview">
-                                <div class="overview-metric">
-                                    <div class="metric-icon"></div>
-                                    <div class="metric-content">
-                                        <span class="metric-label">Balance del Mes</span>
-                                        <span class="metric-value" id="monthly-balance">€2,450</span>
-                                        <span class="metric-change positive" id="monthly-balance-change">+€320 vs mes anterior</span>
-                                    </div>
-                                </div>
-                                <div class="overview-metric">
-                                    <div class="metric-icon"></div>
-                                    <div class="metric-content">
-                                        <span class="metric-label">Gasto Promedio Diario</span>
-                                        <span class="metric-value" id="daily-average">€45</span>
-                                        <span class="metric-change" id="daily-average-change">-€8 vs promedio</span>
-                                    </div>
-                                </div>
-                                <div class="overview-metric">
-                                    <div class="metric-icon"></div>
-                                    <div class="metric-content">
-                                        <span class="metric-label">Días Restantes</span>
-                                        <span class="metric-value" id="days-remaining">12</span>
-                                        <span class="metric-change" id="days-remaining-text">días del mes</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="overview-card">
-                            <div class="card-header">
-                            <h3>Transacciones Recientes</h3>
-                                <button class="btn btn-sm btn-outline" onclick="showDashboardTab('transactions')">Ver todas</button>
-                            </div>
-                            <div id="recent-transactions" class="transactions-list">
-                                <div class="transaction-item">
-                                    <div class="transaction-icon"></div>
-                                    <div class="transaction-details">
-                                        <span class="transaction-description">Supermercado Carrefour</span>
-                                        <span class="transaction-category">Alimentación</span>
-                            </div>
-                                    <div class="transaction-amount negative">-€85.50</div>
-                        </div>
-                                <div class="transaction-item">
-                                    <div class="transaction-icon"></div>
-                                    <div class="transaction-details">
-                                        <span class="transaction-description">Gasolinera Shell</span>
-                                        <span class="transaction-category">Transporte</span>
-                                    </div>
-                                    <div class="transaction-amount negative">-€45.00</div>
-                                </div>
-                                <div class="transaction-item">
-                                    <div class="transaction-icon"></div>
-                                    <div class="transaction-details">
-                                        <span class="transaction-description">Nómina Diciembre</span>
-                                        <span class="transaction-category">Salario</span>
-                                    </div>
-                                    <div class="transaction-amount positive">+€2,800.00</div>
-                                </div>
-                                <div class="transaction-item">
-                                    <div class="transaction-icon"></div>
-                                    <div class="transaction-details">
-                                        <span class="transaction-description">Pizza Delivery</span>
-                                        <span class="transaction-category">Ocio</span>
-                                    </div>
-                                    <div class="transaction-amount negative">-€18.50</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="overview-card">
-                            <div class="card-header">
-                                <h3>Gastos por Categoría</h3>
-                                <button class="btn btn-sm btn-outline" onclick="showDashboardTab('analytics')">Ver análisis</button>
-                            </div>
-                            <div id="category-chart" class="chart-container">
-                                <canvas id="categoryChart"></canvas>
-                            </div>
-                        </div>
-                        
-                        <div class="overview-card">
-                            <div class="card-header">
-                                <h3>Presupuestos</h3>
-                                <button class="btn btn-sm btn-outline" onclick="showDashboardTab('budgets')">Gestionar</button>
-                            </div>
-                            <div id="budgets-overview" class="budgets-overview">
-                                <div class="budget-item">
-                                    <div class="budget-header">
-                                        <span class="budget-category">Vivienda</span>
-                                        <span class="budget-status good">Bien</span>
-                                    </div>
-                                    <div class="budget-progress">
-                                        <div class="budget-progress-bar">
-                                            <div class="budget-progress-fill" style="width: 65%"></div>
-                                        </div>
-                                        <div class="budget-amount">€650 / €1,000</div>
-                                    </div>
-                                </div>
-                                <div class="budget-item">
-                                    <div class="budget-header">
-                                        <span class="budget-category">Alimentación</span>
-                                        <span class="budget-status warning">Cuidado</span>
-                                    </div>
-                                    <div class="budget-progress">
-                                        <div class="budget-progress-bar">
-                                            <div class="budget-progress-fill warning" style="width: 85%"></div>
-                                        </div>
-                                        <div class="budget-amount">€425 / €500</div>
-                                    </div>
-                                </div>
-                                <div class="budget-item">
-                                    <div class="budget-header">
-                                        <span class="budget-category">Transporte</span>
-                                        <span class="budget-status good">Bien</span>
-                                    </div>
-                                    <div class="budget-progress">
-                                        <div class="budget-progress-bar">
-                                            <div class="budget-progress-fill" style="width: 40%"></div>
-                                        </div>
-                                        <div class="budget-amount">€120 / €300</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="overview-card">
-                            <div class="card-header">
-                            <h3>Alertas Financieras</h3>
-                                <span class="alert-count" id="alert-count">2</span>
-                            </div>
-                            <div id="financial-alerts" class="alerts-list">
-                                <div class="alert-item warning">
-                                    <div class="alert-icon"></div>
-                                    <div class="alert-content">
-                                        <span class="alert-title">Presupuesto de Alimentación</span>
-                                        <span class="alert-message">Has gastado el 85% de tu presupuesto mensual</span>
-                            </div>
-                        </div>
-                                <div class="alert-item info">
-                                    <div class="alert-icon"></div>
-                                    <div class="alert-content">
-                                        <span class="alert-title">Objetivo de Ahorro</span>
-                                        <span class="alert-message">¡Solo te faltan €200 para alcanzar tu meta!</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="overview-card">
-                            <div class="card-header">
-                            <h3>Consejos Financieros</h3>
-                                <button class="btn btn-sm btn-outline">Más consejos</button>
-                            </div>
-                            <div id="financial-tips" class="tips-list">
-                                <div class="tip-item">
-                                    <div class="tip-icon"></div>
-                                    <div class="tip-content">
-                                        <span class="tip-title">Regla 50-30-20</span>
-                                        <span class="tip-description">Destina 50% a necesidades, 30% a deseos y 20% a ahorros</span>
-                                    </div>
-                                </div>
-                                <div class="tip-item">
-                                    <div class="tip-icon"></div>
-                                    <div class="tip-content">
-                                        <span class="tip-title">Revisa tus gastos</span>
-                                        <span class="tip-description">Analiza tus transacciones semanalmente para identificar patrones</span>
-                                    </div>
-                                </div>
-                                <div class="tip-item">
-                                    <div class="tip-icon"></div>
-                                    <div class="tip-content">
-                                        <span class="tip-title">Fondo de emergencia</span>
-                                        <span class="tip-description">Mantén 3-6 meses de gastos en una cuenta separada</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pestaña Transacciones -->
-                <div id="transactions-tab" class="dashboard-tab">
-                    <div class="transactions-container">
-                        <div class="transactions-header">
-                            <div class="header-content">
-                                <h3>Gestión de Transacciones</h3>
-                                <p>Registra y controla todos tus ingresos y gastos</p>
-                            </div>
-                            <div class="header-actions">
-                                <button class="btn btn-outline" onclick="exportTransactions()">Exportar</button>
-                            <button class="btn btn-accent" onclick="showAddTransaction()">+ Nueva Transacción</button>
-                            </div>
-                        </div>
-                        
-                        <!-- Resumen de transacciones -->
-                        <div class="transactions-summary">
-                            <div class="summary-item">
-                                <span class="summary-label">Total Ingresos:</span>
-                                <span class="summary-value positive" id="total-income">€2,800</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Total Gastos:</span>
-                                <span class="summary-value negative" id="total-expenses">€1,350</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Balance:</span>
-                                <span class="summary-value" id="transaction-balance">€1,450</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Transacciones:</span>
-                                <span class="summary-value" id="transaction-count">24</span>
-                            </div>
-                        </div>
-                        
-                        <div class="transactions-filters">
-                            <div class="filter-group">
-                                <label>Categoría</label>
-                            <select id="filter-category" class="input">
-                                <option value="">Todas las categorías</option>
-                                <option value="alimentacion">Alimentación</option>
-                                <option value="transporte">Transporte</option>
-                                <option value="entretenimiento">Entretenimiento</option>
-                                <option value="salud">Salud</option>
-                                <option value="vivienda">Vivienda</option>
-                                <option value="educacion">Educación</option>
-                                <option value="otros">Otros</option>
-                            </select>
-                            </div>
-                            <div class="filter-group">
-                                <label>Tipo</label>
-                            <select id="filter-type" class="input">
-                                <option value="">Todos los tipos</option>
-                                <option value="income">Ingresos</option>
-                                <option value="expense">Gastos</option>
-                            </select>
-                            </div>
-                            <div class="filter-group">
-                                <label>Fecha</label>
-                            <input type="date" id="filter-date" class="input">
-                            </div>
-                            <div class="filter-group">
-                                <label>Rango</label>
-                                <select id="filter-range" class="input">
-                                    <option value="">Seleccionar período</option>
-                                    <option value="today">Hoy</option>
-                                    <option value="week">Esta semana</option>
-                                    <option value="month">Este mes</option>
-                                    <option value="quarter">Este trimestre</option>
-                                    <option value="year">Este año</option>
-                                </select>
-                            </div>
-                            <button class="btn btn-secondary" onclick="clearFilters()">Limpiar</button>
-                        </div>
-                        
-                        <div class="transactions-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Descripción</th>
-                                        <th>Tipo</th>
-                                        <th>Categoría</th>
-                                        <th>Monto</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="transactions-list">
-                                    <!-- Se llena dinámicamente -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pestaña Presupuestos -->
-                <div id="budgets-tab" class="dashboard-tab">
-                    <div class="budgets-container">
-                        <div class="budgets-header">
-                            <div class="header-content">
-                                <h3>Control de Presupuestos</h3>
-                                <p>Gestiona tus límites de gasto por categoría y mantén el control</p>
-                            </div>
-                            <div class="header-actions">
-                                <button class="btn btn-outline" onclick="createBudgetTemplate()">Plantillas</button>
-                            <button class="btn btn-accent" onclick="showAddBudget()">+ Nuevo Presupuesto</button>
-                            </div>
-                        </div>
-                        
-                        <!-- Resumen de presupuestos -->
-                        <div class="budgets-summary">
-                            <div class="summary-item">
-                                <span class="summary-label">Presupuesto Total:</span>
-                                <span class="summary-value" id="total-budget">€1,800</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Gastado:</span>
-                                <span class="summary-value negative" id="total-spent">€1,195</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Restante:</span>
-                                <span class="summary-value positive" id="total-remaining">€605</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Progreso:</span>
-                                <span class="summary-value" id="budget-progress">66%</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Alertas de presupuesto -->
-                        <div class="budget-alerts" id="budget-alerts">
-                            <!-- Se llena dinámicamente -->
-                        </div>
-                        
-                        <!-- Lista de presupuestos -->
-                        <div class="budgets-list" id="budgets-list">
-                            <!-- Se llena dinámicamente -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pestaña Análisis -->
-                <div id="analytics-tab" class="dashboard-tab">
-                    <div class="analytics-container">
-                        <div class="analytics-header">
-                            <div class="header-content">
-                                <h3>Análisis Financiero</h3>
-                                <p>Descubre patrones y tendencias en tus finanzas</p>
-                            </div>
-                            <div class="analytics-controls">
-                                <select id="period-selector" class="input">
-                                    <option value="month">Este Mes</option>
-                                    <option value="quarter">Este Trimestre</option>
-                                    <option value="year">Este Año</option>
-                                    <option value="custom">Personalizado</option>
-                                </select>
-                                <button class="btn btn-outline" onclick="exportAnalytics()">Exportar</button>
-                            </div>
-                        </div>
-                        
-                        <!-- Gráficos -->
-                        <div class="analytics-grid">
-                            <div class="analytics-card">
-                                <div class="card-header">
-                                    <h4>Distribución por Categorías</h4>
-                                    <span class="card-subtitle">Este mes</span>
-                            </div>
-                                <div class="card-metrics">
-                                    <div class="metric-summary">
-                                        <span class="metric-label">Total Gastado</span>
-                                        <span class="metric-value">€1,300</span>
-                            </div>
-                                    <div class="metric-summary">
-                                        <span class="metric-label">Categorías</span>
-                                        <span class="metric-value">5</span>
-                                    </div>
-                                </div>
-                                <div class="category-breakdown">
-                                    <div class="category-item">
-                                        <div class="category-info">
-                                            <span class="category-name">Vivienda</span>
-                                            <span class="category-percentage">36%</span>
-                                        </div>
-                                        <div class="category-bar">
-                                            <div class="category-fill" style="width: 36%; background: #3D1F1F;"></div>
-                                        </div>
-                                        <span class="category-amount">€468</span>
-                                    </div>
-                                    <div class="category-item">
-                                        <div class="category-info">
-                                            <span class="category-name">Alimentación</span>
-                                            <span class="category-percentage">28%</span>
-                                        </div>
-                                        <div class="category-bar">
-                                            <div class="category-fill" style="width: 28%; background: #2D4A2D;"></div>
-                                        </div>
-                                        <span class="category-amount">€364</span>
-                                    </div>
-                                    <div class="category-item">
-                                        <div class="category-info">
-                                            <span class="category-name">Transporte</span>
-                                            <span class="category-percentage">18%</span>
-                                        </div>
-                                        <div class="category-bar">
-                                            <div class="category-fill" style="width: 18%; background: #4A2D1F;"></div>
-                                        </div>
-                                        <span class="category-amount">€234</span>
-                                    </div>
-                                    <div class="category-item">
-                                        <div class="category-info">
-                                            <span class="category-name">Ocio</span>
-                                            <span class="category-percentage">12%</span>
-                                        </div>
-                                        <div class="category-bar">
-                                            <div class="category-fill" style="width: 12%; background: #2F1F3D;"></div>
-                                        </div>
-                                        <span class="category-amount">€156</span>
-                                    </div>
-                                    <div class="category-item">
-                                        <div class="category-info">
-                                            <span class="category-name">Salud</span>
-                                            <span class="category-percentage">6%</span>
-                                        </div>
-                                        <div class="category-bar">
-                                            <div class="category-fill" style="width: 6%; background: #1F3D2F;"></div>
-                                        </div>
-                                        <span class="category-amount">€78</span>
-                                    </div>
-                            </div>
-                        </div>
-                        
-                            <div class="analytics-card">
-                                <div class="card-header">
-                                    <h4>Tendencias de Gastos</h4>
-                                    <span class="card-subtitle">Últimos 6 meses</span>
-                            </div>
-                                <div class="card-metrics">
-                                    <div class="metric-summary">
-                                        <span class="metric-label">Promedio Mensual</span>
-                                        <span class="metric-value">€1,325</span>
-                            </div>
-                                    <div class="metric-summary">
-                                        <span class="metric-label">Tendencia</span>
-                                        <span class="metric-value positive">+2.3% ↗</span>
-                                    </div>
-                                </div>
-                                <div class="trends-visualization">
-                                    <div class="trend-chart">
-                                        <div class="trend-line">
-                                            <div class="trend-point" style="left: 10%; bottom: 20%;" data-month="Jul" data-amount="€1,200"></div>
-                                            <div class="trend-point" style="left: 25%; bottom: 35%;" data-month="Ago" data-amount="€1,350"></div>
-                                            <div class="trend-point" style="left: 40%; bottom: 25%;" data-month="Sep" data-amount="€1,280"></div>
-                                            <div class="trend-point" style="left: 55%; bottom: 45%;" data-month="Oct" data-amount="€1,450"></div>
-                                            <div class="trend-point" style="left: 70%; bottom: 30%;" data-month="Nov" data-amount="€1,320"></div>
-                                            <div class="trend-point active" style="left: 85%; bottom: 40%;" data-month="Dic" data-amount="€1,350"></div>
-                                        </div>
-                                        <div class="trend-labels">
-                                            <span>Jul</span>
-                                            <span>Ago</span>
-                                            <span>Sep</span>
-                                            <span>Oct</span>
-                                            <span>Nov</span>
-                                            <span>Dic</span>
-                                        </div>
-                                    </div>
-                                    <div class="trend-summary">
-                                        <div class="trend-stat">
-                                            <span class="trend-label">Promedio mensual</span>
-                                            <span class="trend-value">€1,325</span>
-                                        </div>
-                                        <div class="trend-stat">
-                                            <span class="trend-label">Tendencia</span>
-                                            <span class="trend-value positive">+2.3% ↗</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="analytics-card">
-                                <div class="card-header">
-                                    <h4>Comparación Mensual</h4>
-                                    <span class="card-subtitle">Dic 2024 vs Nov 2024</span>
-                            </div>
-                                <div class="card-metrics">
-                                    <div class="metric-summary">
-                                        <span class="metric-label">Mejora en Ahorro</span>
-                                        <span class="metric-value positive">+€170</span>
-                                    </div>
-                                    <div class="metric-summary">
-                                        <span class="metric-label">Crecimiento</span>
-                                        <span class="metric-value positive">+13.3%</span>
-                                    </div>
-                                </div>
-                                <div class="comparison-visualization">
-                                    <div class="comparison-item">
-                                        <div class="comparison-label">Ingresos</div>
-                                        <div class="comparison-bars">
-                                            <div class="comparison-bar previous">
-                                                <span class="bar-label">Nov</span>
-                                                <div class="bar-fill" style="height: 70%; background: #4A2D1F;"></div>
-                                                <span class="bar-value">€2,600</span>
-                                            </div>
-                                            <div class="comparison-bar current">
-                                                <span class="bar-label">Dic</span>
-                                                <div class="bar-fill" style="height: 80%; background: #2D4A2D;"></div>
-                                                <span class="bar-value">€2,800</span>
-                                            </div>
-                                        </div>
-                                        <div class="comparison-change positive">+€200 (+7.7%)</div>
-                                    </div>
-                                    <div class="comparison-item">
-                                        <div class="comparison-label">Gastos</div>
-                                        <div class="comparison-bars">
-                                            <div class="comparison-bar previous">
-                                                <span class="bar-label">Nov</span>
-                                                <div class="bar-fill" style="height: 60%; background: #4A2D1F;"></div>
-                                                <span class="bar-value">€1,320</span>
-                                            </div>
-                                            <div class="comparison-bar current">
-                                                <span class="bar-label">Dic</span>
-                                                <div class="bar-fill" style="height: 65%; background: #3D1F1F;"></div>
-                                                <span class="bar-value">€1,350</span>
-                                            </div>
-                                        </div>
-                                        <div class="comparison-change negative">+€30 (+2.3%)</div>
-                                    </div>
-                                    <div class="comparison-item">
-                                        <div class="comparison-label">Ahorro</div>
-                                        <div class="comparison-bars">
-                                            <div class="comparison-bar previous">
-                                                <span class="bar-label">Nov</span>
-                                                <div class="bar-fill" style="height: 50%; background: #4A2D1F;"></div>
-                                                <span class="bar-value">€1,280</span>
-                                            </div>
-                                            <div class="comparison-bar current">
-                                                <span class="bar-label">Dic</span>
-                                                <div class="bar-fill" style="height: 70%; background: #2D4A2D;"></div>
-                                                <span class="bar-value">€1,450</span>
-                                            </div>
-                                        </div>
-                                        <div class="comparison-change positive">+€170 (+13.3%)</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="analytics-card">
-                                <div class="card-header">
-                                    <h4>Ingresos vs Gastos</h4>
-                                    <span class="card-subtitle">Balance mensual</span>
-                            </div>
-                                <div class="card-metrics">
-                                    <div class="metric-summary">
-                                        <span class="metric-label">Tasa de Ahorro</span>
-                                        <span class="metric-value positive">52%</span>
-                                    </div>
-                                    <div class="metric-summary">
-                                        <span class="metric-label">Balance</span>
-                                        <span class="metric-value">€1,450</span>
-                                    </div>
-                                </div>
-                                <div class="income-expense-visualization">
-                                    <div class="balance-circle">
-                                        <div class="circle-progress">
-                                            <div class="circle-fill" style="--progress: 48%;"></div>
-                                            <div class="circle-content">
-                                                <span class="balance-amount">€1,450</span>
-                                                <span class="balance-label">Balance</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="income-expense-breakdown">
-                                        <div class="breakdown-item income">
-                                            <div class="breakdown-icon"></div>
-                                            <div class="breakdown-content">
-                                                <span class="breakdown-label">Ingresos</span>
-                                                <span class="breakdown-amount">€2,800</span>
-                                                <span class="breakdown-percentage">100%</span>
-                                            </div>
-                                        </div>
-                                        <div class="breakdown-item expense">
-                                            <div class="breakdown-icon"></div>
-                                            <div class="breakdown-content">
-                                                <span class="breakdown-label">Gastos</span>
-                                                <span class="breakdown-amount">€1,350</span>
-                                                <span class="breakdown-percentage">48%</span>
-                                            </div>
-                                        </div>
-                                        <div class="breakdown-item savings">
-                                            <div class="breakdown-icon"></div>
-                                            <div class="breakdown-content">
-                                                <span class="breakdown-label">Ahorro</span>
-                                                <span class="breakdown-amount">€1,450</span>
-                                                <span class="breakdown-percentage">52%</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pestaña Objetivos -->
-                <div id="goals-tab" class="dashboard-tab">
-                    <div class="goals-container">
-                        <div class="goals-header">
-                            <div class="header-content">
-                                <h3>Objetivos Financieros</h3>
-                                <p>Define metas claras y haz seguimiento de tu progreso hacia tus sueños</p>
-                            </div>
-                            <div class="header-actions">
-                                <button class="btn btn-outline" onclick="createGoalTemplate()">Plantillas</button>
-                            <button class="btn btn-accent" onclick="showAddGoal()">+ Nuevo Objetivo</button>
-                            </div>
-                        </div>
-                        
-                        <!-- Resumen de objetivos -->
-                        <div class="goals-summary">
-                            <div class="summary-item">
-                                <span class="summary-label">Objetivos Activos:</span>
-                                <span class="summary-value" id="active-goals">3</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Total Ahorrado:</span>
-                                <span class="summary-value positive" id="total-saved">€8,500</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Objetivos Completados:</span>
-                                <span class="summary-value" id="completed-goals">2</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Progreso Promedio:</span>
-                                <span class="summary-value" id="average-progress">68%</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Progreso general -->
-                        <div class="goals-progress">
-                            <h4>Progreso General</h4>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="overall-progress" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text" id="progress-text">0% completado</span>
-                        </div>
-                        
-                        <!-- Lista de objetivos -->
-                        <div class="goals-list" id="goals-list">
-                            <!-- Se llena dinámicamente -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Modal para Nueva Transacción -->
-        <div id="transaction-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Nueva Transacción</h3>
-                    <button class="close-btn" onclick="hideAddTransaction()">&times;</button>
-                </div>
-                <form id="transaction-form" class="modal-form" onsubmit="handleNewTransaction(event)">
-                    <div class="form-group">
-                        <label>Tipo de Transacción</label>
-                        <select id="transaction-type" class="input" required>
-                            <option value="expense">Gasto</option>
-                            <option value="income">Ingreso</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Descripción</label>
-                        <input type="text" id="transaction-description" class="input" placeholder="Descripción de la transacción" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Monto</label>
-                        <input type="number" id="transaction-amount" class="input" placeholder="0.00" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Categoría</label>
-                        <select id="transaction-category" class="input" required>
-                            <option value="alimentacion">Alimentación</option>
-                            <option value="transporte">Transporte</option>
-                            <option value="entretenimiento">Entretenimiento</option>
-                            <option value="salud">Salud</option>
-                            <option value="vivienda">Vivienda</option>
-                            <option value="educacion">Educación</option>
-                            <option value="otros">Otros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Fecha</label>
-                        <input type="date" id="transaction-date" class="input" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="hideAddTransaction()">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Transacción</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer id="footer" class="footer">
-            <div class="container">
-                <div class="footer-content">
-            <div class="footer-section">
-                <h3>Veedor</h3>
-                <p>La cuenta de la vieja, pero digital. Sin complicaciones, como toda la vida.</p>
-                <div class="social-links">
-                    <a href="#" class="social-link">Twitter</a>
-                    <a href="#" class="social-link">LinkedIn</a>
-                    <a href="#" class="social-link">GitHub</a>
-                </div>
-            </div>
-                    <div class="footer-section">
-                        <h4>Legal</h4>
-                        <ul>
-                            <li><a href="#" onclick="openModal('privacy-modal'); return false;">Política de Privacidad</a></li>
-                            <li><a href="#" onclick="openModal('terms-modal'); return false;">Términos y Condiciones</a></li>
-                            <li><a href="#" onclick="openModal('cookies-modal'); return false;">Política de Cookies</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-section">
-                        <h4>Descarga la App</h4>
-                        <div class="download-badges">
-                            <a href="#" class="download-badge app-store" onclick="downloadApp('ios')">
-                                <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&releaseDate=1609459200" 
-                                     alt="Descargar en App Store" 
-                                     class="badge-image">
-                            </a>
-                            <a href="#" class="download-badge google-play" onclick="downloadApp('android')">
-                                <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
-                                     alt="Disponible en Google Play" 
-                                     class="badge-image">
-                            </a>
-                    </div>
-                    </div>
-                    </div>
-                <div class="footer-bottom">
-                    <p>&copy; 2025 Veedor. Todos los derechos reservados.</p>
-                </div>
-            </div>
-        </footer>
-
-        <!-- Legal Modals -->
-        <div id="privacy-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Política de Privacidad</h2>
-                    <button class="close-btn" onclick="closeModal('privacy-modal')">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="legal-section">
-                        <h4>¿Qué datos guardamos?</h4>
-                        <p>Solo lo que introduces: gastos, ingresos y tu email.</p>
-                    </div>
-                    
-                    <div class="legal-section">
-                        <h4>¿Para qué?</h4>
-                        <p>Para que puedas ver tus finanzas y crear presupuestos.</p>
-                    </div>
-                    
-                    <div class="legal-section">
-                        <h4>¿Los vendemos?</h4>
-                        <p>No. Tus datos son tuyos.</p>
-                    </div>
-                    
-                    <div class="legal-section">
-                        <h4>¿Puedes borrarlos?</h4>
-                        <p>Sí, cuando quieras desde tu cuenta.</p>
-                    </div>
-                    
-                    <div class="legal-contact">
-                        <p><strong>Contacto:</strong> privacidad@veedor.com</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="terms-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Términos y Condiciones</h2>
-                    <button class="close-btn" onclick="closeModal('terms-modal')">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="legal-section">
-                        <h4>¿Qué es Veedor?</h4>
-                        <p>Una app para llevar tus cuentas como siempre, pero digital.</p>
-                    </div>
-                    
-                    <div class="legal-section">
-                        <h4>¿Qué puedes hacer?</h4>
-                        <p>Apuntar gastos, crear presupuestos y ver análisis.</p>
-                    </div>
-                    
-                    <div class="legal-section">
-                        <h4>¿Qué no puedes hacer?</h4>
-                        <p>Usar la app para cosas ilegales o acceder a cuentas ajenas.</p>
-                    </div>
-                    
-                    <div class="legal-section">
-                        <h4>¿Somos responsables de tus decisiones?</h4>
-                        <p>No. Tú decides cómo gastar tu dinero.</p>
-                    </div>
-                    
-                    <div class="legal-contact">
-                        <p><strong>Contacto:</strong> legal@veedor.com</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="cookies-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Política de Cookies</h2>
-                    <button class="close-btn" onclick="closeModal('cookies-modal')">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="legal-section">
-                        <h4>¿Qué son las cookies?</h4>
-                        <p>Pequeños archivos que recuerdan tus preferencias.</p>
-                    </div>
-                    
-                    <div class="legal-section">
-                        <h4>¿Qué cookies usamos?</h4>
-                        <p>Solo las necesarias: para mantener tu sesión y recordar si prefieres tema claro u oscuro.</p>
-                    </div>
-                    
-                    <div class="legal-section">
-                        <h4>¿Puedes desactivarlas?</h4>
-                        <p>Sí, desde tu navegador, pero algunas funciones pueden no funcionar.</p>
-                    </div>
-                    
-                    <div class="legal-contact">
-                        <p><strong>Contacto:</strong> cookies@veedor.com</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Demo Full Page Experience -->
-        <div id="demo-fullpage" class="demo-fullpage">
-            <div class="demo-fullpage-content">
-                <!-- Demo Header -->
-                <header class="demo-header">
-                    <div class="container">
-                        <div class="logo">
-                            <h1>Veedor</h1>
-                        </div>
-                        <nav class="demo-nav">
-                            <a href="#inicio">Inicio</a>
-                            <a href="#mis-finanzas">Mis Finanzas</a>
-                            <a href="#funciones">Funciones</a>
-                            <button class="btn btn-primary">Acceder</button>
-                        </nav>
-                    </div>
-                </header>
-
-                <!-- Demo Main Content -->
-                <main class="demo-main-content">
-                    <div class="container">
-                        <!-- Dashboard Section -->
-                        <section id="dashboard" class="dashboard">
-                            <div class="dashboard-header">
-                                <div class="dashboard-header-content">
-                                    <div class="dashboard-header-text">
-                                        <h2>Mi Cuaderno</h2>
-                                        <p>Aquí tienes todo claro, como toda la vida</p>
-                                    </div>
-                                    <div class="dashboard-header-image">
-                                        <div class="dashboard-icon">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Financial Summary -->
-                            <div class="financial-summary">
-                                <div class="summary-card primary">
-                                    <div class="summary-icon">
-                                    </div>
-                                    <div class="summary-content">
-                                        <h3>Balance Total</h3>
-                                        <span class="summary-amount" id="total-balance">€0</span>
-                                        <div class="summary-trend" id="balance-trend">
-                                            <span class="trend-icon">
-                                            </span>
-                                            <span class="trend-text">+5.2% este mes</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="summary-card success">
-                                    <div class="summary-icon">
-                                    </div>
-                                    <div class="summary-content">
-                                        <h3>Ingresos del Mes</h3>
-                                        <span class="summary-amount" id="monthly-income">€0</span>
-                                        <div class="summary-trend" id="income-trend">
-                                            <span class="trend-icon">
-                                            </span>
-                                            <span class="trend-text">vs mes anterior</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="summary-card warning">
-                                    <div class="summary-icon">
-                                    </div>
-                                    <div class="summary-content">
-                                        <h3>Gastos del Mes</h3>
-                                        <span class="summary-amount" id="monthly-expenses">€0</span>
-                                        <div class="summary-trend" id="expenses-trend">
-                                            <span class="trend-icon">
-                                            </span>
-                                            <span class="trend-text">vs mes anterior</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="summary-card info">
-                                    <div class="summary-icon">
-                                    </div>
-                                    <div class="summary-content">
-                                        <h3>Ahorro Mensual</h3>
-                                        <span class="summary-amount" id="monthly-savings">€0</span>
-                                        <div class="summary-trend" id="savings-trend">
-                                            <span class="trend-icon">
-                                            </span>
-                                            <span class="trend-text">Meta: €500</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Dashboard Navigation -->
-                            <div class="dashboard-nav">
-                                <button class="nav-tab active" onclick="showDashboardTab('overview')">
-                                    <span class="nav-icon"></span>
-                                    <span class="nav-text">Resumen</span>
-                                </button>
-                                <button class="nav-tab" onclick="showDashboardTab('transactions')">
-                                    <span class="nav-icon"></span>
-                                    <span class="nav-text">Transacciones</span>
-                                </button>
-                                <button class="nav-tab" onclick="showDashboardTab('budgets')">
-                                    <span class="nav-icon"></span>
-                                    <span class="nav-text">Presupuestos</span>
-                                </button>
-                                <button class="nav-tab" onclick="showDashboardTab('analytics')">
-                                    <span class="nav-icon"></span>
-                                    <span class="nav-text">Análisis</span>
-                                </button>
-                                <button class="nav-tab" onclick="showDashboardTab('goals')">
-                                    <span class="nav-icon"></span>
-                                    <span class="nav-text">Objetivos</span>
-                                </button>
-                            </div>
-
-                            <!-- Dashboard Tabs -->
-                            <div class="dashboard-tabs">
-                                <!-- Overview Tab -->
-                                <div id="overview-tab" class="dashboard-tab active">
-                                    <div class="overview-grid">
-                                        <div class="overview-card">
-                                            <div class="card-header">
-                                                <h3>Resumen Financiero</h3>
-                                                <div class="card-actions">
-                                                    <button class="btn btn-sm btn-outline" onclick="showAddTransaction()">+ Gasto</button>
-                                                    <button class="btn btn-sm btn-primary" onclick="showAddTransaction()">+ Ingreso</button>
-                                                </div>
-                                            </div>
-                                            <div class="financial-overview">
-                                                <div class="overview-metric">
-                                                    <div class="metric-icon"></div>
-                                                    <div class="metric-content">
-                                                        <span class="metric-label">Balance del Mes</span>
-                                                        <span class="metric-value" id="monthly-balance">€2,450</span>
-                                                        <span class="metric-change positive" id="monthly-balance-change">+€320 vs mes anterior</span>
-                                                    </div>
-                                                </div>
-                                                <div class="overview-metric">
-                                                    <div class="metric-icon"></div>
-                                                    <div class="metric-content">
-                                                        <span class="metric-label">Gasto Promedio Diario</span>
-                                                        <span class="metric-value" id="daily-average">€45</span>
-                                                        <span class="metric-change" id="daily-average-change">-€8 vs promedio</span>
-                                                    </div>
-                                                </div>
-                                                <div class="overview-metric">
-                                                    <div class="metric-icon"></div>
-                                                    <div class="metric-content">
-                                                        <span class="metric-label">Días Restantes</span>
-                                                        <span class="metric-value" id="days-remaining">12</span>
-                                                        <span class="metric-change" id="days-remaining-text">días del mes</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="overview-card">
-                                            <div class="card-header">
-                                                <h3>Transacciones Recientes</h3>
-                                                <button class="btn btn-sm btn-outline" onclick="showDashboardTab('transactions')">Ver todas</button>
-                                            </div>
-                                            <div id="recent-transactions" class="transactions-list">
-                                                <div class="transaction-item">
-                                                    <div class="transaction-icon"></div>
-                                                    <div class="transaction-details">
-                                                        <span class="transaction-description">Supermercado Carrefour</span>
-                                                        <span class="transaction-category">Alimentación</span>
-                                                    </div>
-                                                    <div class="transaction-amount negative">-€85.50</div>
-                                                </div>
-                                                <div class="transaction-item">
-                                                    <div class="transaction-icon"></div>
-                                                    <div class="transaction-details">
-                                                        <span class="transaction-description">Gasolinera Shell</span>
-                                                        <span class="transaction-category">Transporte</span>
-                                                    </div>
-                                                    <div class="transaction-amount negative">-€45.00</div>
-                                                </div>
-                                                <div class="transaction-item">
-                                                    <div class="transaction-icon"></div>
-                                                    <div class="transaction-details">
-                                                        <span class="transaction-description">Nómina Diciembre</span>
-                                                        <span class="transaction-category">Ingresos</span>
-                                                    </div>
-                                                    <div class="transaction-amount positive">+€2,500.00</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="overview-card">
-                                            <div class="card-header">
-                                                <h3>Presupuestos</h3>
-                                                <button class="btn btn-sm btn-outline" onclick="showDashboardTab('budgets')">Gestionar</button>
-                                            </div>
-                                            <div class="budget-overview">
-                                                <div class="budget-overview-item">
-                                                    <div class="budget-header">
-                                                        <span class="budget-category">Vivienda</span>
-                                                        <span class="budget-status good">Bien</span>
-                                                    </div>
-                                                    <div class="budget-progress">
-                                                        <div class="budget-progress-bar">
-                                                            <div class="budget-progress-fill" style="width: 65%"></div>
-                                                        </div>
-                                                        <div class="budget-progress-text">
-                                                            <span>€650 / €1,000</span>
-                                                            <span>65%</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="budget-overview-item warning">
-                                                    <div class="budget-header">
-                                                        <span class="budget-category">Alimentación</span>
-                                                        <span class="budget-status warning">Cuidado</span>
-                                                    </div>
-                                                    <div class="budget-progress">
-                                                        <div class="budget-progress-bar">
-                                                            <div class="budget-progress-fill warning" style="width: 85%"></div>
-                                                        </div>
-                                                        <div class="budget-progress-text">
-                                                            <span>€425 / €500</span>
-                                                            <span>85%</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="budget-overview-item">
-                                                    <div class="budget-header">
-                                                        <span class="budget-category">Transporte</span>
-                                                        <span class="budget-status good">Bien</span>
-                                                    </div>
-                                                    <div class="budget-progress">
-                                                        <div class="budget-progress-bar">
-                                                            <div class="budget-progress-fill" style="width: 40%"></div>
-                                                        </div>
-                                                        <div class="budget-progress-text">
-                                                            <span>€200 / €500</span>
-                                                            <span>40%</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="overview-card">
-                                            <div class="card-header">
-                                                <h3>Alertas Financieras</h3>
-                                            </div>
-                                            <div class="alerts-list">
-                                                <div class="alert-item warning">
-                                                    <div class="alert-icon"></div>
-                                                    <div class="alert-content">
-                                                        <span class="alert-title">Presupuesto de Alimentación</span>
-                                                        <span class="alert-message">Has gastado el 85% de tu presupuesto</span>
-                                                    </div>
-                                                </div>
-                                                <div class="alert-item info">
-                                                    <div class="alert-icon"></div>
-                                                    <div class="alert-content">
-                                                        <span class="alert-title">Objetivo de Ahorro</span>
-                                                        <span class="alert-message">¡Estás cerca de alcanzar tu meta mensual!</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="overview-card">
-                                            <div class="card-header">
-                                                <h3>Consejos Financieros</h3>
-                                            </div>
-                                            <div class="tips-list">
-                                                <div class="tip-item">
-                                                    <div class="tip-icon"></div>
-                                                    <div class="tip-content">
-                                                        <span class="tip-title">Regla 50-30-20</span>
-                                                        <span class="tip-description">Destina 50% a necesidades, 30% a deseos y 20% a ahorros</span>
-                                                    </div>
-                                                </div>
-                                                <div class="tip-item">
-                                                    <div class="tip-icon"></div>
-                                                    <div class="tip-content">
-                                                        <span class="tip-title">Revisa tus gastos</span>
-                                                        <span class="tip-description">Analiza tus gastos semanalmente para identificar patrones</span>
-                                                    </div>
-                                                </div>
-                                                <div class="tip-item">
-                                                    <div class="tip-icon"></div>
-                                                    <div class="tip-content">
-                                                        <span class="tip-title">Fondo de emergencia</span>
-                                                        <span class="tip-description">Mantén 3-6 meses de gastos en un fondo de emergencia</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Other tabs will be populated by JavaScript -->
-                                <div id="transactions-tab" class="dashboard-tab">
-                                    <div class="transactions-header">
-                                        <div class="header-content">
-                                            <h3>Transacciones</h3>
-                                            <p>Gestiona todos tus ingresos y gastos de forma organizada</p>
-                                        </div>
-                                        <div class="header-actions">
-                                            <button class="btn btn-outline" onclick="exportTransactions()">Exportar</button>
-                                            <button class="btn btn-accent" onclick="showAddTransaction()">+ Nueva Transacción</button>
-                                        </div>
-                                    </div>
-                                    <!-- Transactions content will be populated by JavaScript -->
-                                </div>
-
-                                <div id="budgets-tab" class="dashboard-tab">
-                                    <div class="budgets-header">
-                                        <div class="header-content">
-                                            <h3>Presupuestos</h3>
-                                            <p>Controla tus gastos por categorías y mantén tus finanzas organizadas</p>
-                                        </div>
-                                        <div class="header-actions">
-                                            <button class="btn btn-outline" onclick="createBudgetTemplate()">Plantillas</button>
-                                            <button class="btn btn-accent" onclick="showAddBudget()">+ Nuevo Presupuesto</button>
-                                        </div>
-                                    </div>
-                                    <!-- Budgets content will be populated by JavaScript -->
-                                </div>
-
-                                <div id="analytics-tab" class="dashboard-tab">
-                                    <div class="analytics-header">
-                                        <div class="header-content">
-                                            <h3>Análisis Financiero</h3>
-                                            <p>Visualiza tus patrones de gasto y toma decisiones informadas</p>
-                                        </div>
-                                        <div class="header-actions">
-                                            <select class="input" id="analytics-period">
-                                                <option value="month">Este mes</option>
-                                                <option value="quarter">Este trimestre</option>
-                                                <option value="year">Este año</option>
-                                            </select>
-                                            <button class="btn btn-outline" onclick="exportAnalytics()">Exportar</button>
-                                        </div>
-                                    </div>
-                                    <!-- Analytics content will be populated by JavaScript -->
-                                </div>
-
-                                <div id="goals-tab" class="dashboard-tab">
-                                    <div class="goals-header">
-                                        <div class="header-content">
-                                            <h3>Objetivos Financieros</h3>
-                                            <p>Define metas claras y haz seguimiento de tu progreso hacia tus sueños</p>
-                                        </div>
-                                        <div class="header-actions">
-                                            <button class="btn btn-outline" onclick="createGoalTemplate()">Plantillas</button>
-                                            <button class="btn btn-accent" onclick="showAddGoal()">+ Nuevo Objetivo</button>
-                                        </div>
-                                    </div>
-                                    <!-- Goals content will be populated by JavaScript -->
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </main>
-
-                <!-- Demo Footer - Reutiliza el footer principal -->
-                <footer class="footer" id="demo-footer">
-                    <div class="container">
+    <!-- Footer -->
+    <footer id="footer" class="footer">
+        <div class="container">
             <div class="footer-content">
-                    <div class="footer-section">
-                    <h3>Veedor</h3>
-                    <p>La cuenta de la vieja, pero digital. Sin complicaciones, como toda la vida.</p>
-                    <div class="social-links">
-                        <a href="#" class="social-link">Twitter</a>
-                        <a href="#" class="social-link">LinkedIn</a>
-                        <a href="#" class="social-link">GitHub</a>
-                    </div>
-                    </div>
-                    <div class="footer-section">
-                        <h4>Legal</h4>
-                        <ul>
+        <div class="footer-section">
+            <h3>Veedor</h3>
+            <p>La cuenta de la vieja, pero digital. Sin complicaciones, como toda la vida.</p>
+            <div class="social-links">
+                <a href="#" class="social-link">Twitter</a>
+                <a href="#" class="social-link">LinkedIn</a>
+                <a href="#" class="social-link">GitHub</a>
+            </div>
+        </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
                         <li><a href="#" onclick="openModal('privacy-modal'); return false;">Política de Privacidad</a></li>
                         <li><a href="#" onclick="openModal('terms-modal'); return false;">Términos y Condiciones</a></li>
                         <li><a href="#" onclick="openModal('cookies-modal'); return false;">Política de Cookies</a></li>
-                        </ul>
-                    </div>
+                    </ul>
                 </div>
-                <div class="footer-bottom">
+                <div class="footer-section">
+                    <h4>Descarga la App</h4>
+                    <div class="download-badges">
+                        <a href="#" class="download-badge app-store" onclick="downloadApp('ios')">
+                            <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&releaseDate=1609459200" 
+                                 alt="Descargar en App Store" 
+                                 class="badge-image">
+                        </a>
+                        <a href="#" class="download-badge google-play" onclick="downloadApp('android')">
+                            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
+                                 alt="Disponible en Google Play" 
+                                 class="badge-image">
+                        </a>
+                </div>
+                </div>
+                </div>
+            <div class="footer-bottom">
                 <p>&copy; 2025 Veedor. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Legal Modals -->
+    <div id="privacy-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Política de Privacidad</h2>
+                <button class="close-btn" onclick="closeModal('privacy-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="legal-section">
+                    <h4>¿Qué datos guardamos?</h4>
+                    <p>Solo lo que introduces: gastos, ingresos y tu email.</p>
+                </div>
+                
+                <div class="legal-section">
+                    <h4>¿Para qué?</h4>
+                    <p>Para que puedas ver tus finanzas y crear presupuestos.</p>
+                </div>
+                
+                <div class="legal-section">
+                    <h4>¿Los vendemos?</h4>
+                    <p>No. Tus datos son tuyos.</p>
+                </div>
+                
+                <div class="legal-section">
+                    <h4>¿Puedes borrarlos?</h4>
+                    <p>Sí, cuando quieras desde tu cuenta.</p>
+                </div>
+                
+                <div class="legal-contact">
+                    <p><strong>Contacto:</strong> privacidad@veedor.com</p>
                 </div>
             </div>
-        </footer>
-            </div>
-            
-            <!-- Close Button -->
-            <button class="demo-close-btn" onclick="closeDemo()" title="Cerrar Demo">
-                ×
-            </button>
         </div>
-    </main>
+    </div>
+
+    <div id="terms-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Términos y Condiciones</h2>
+                <button class="close-btn" onclick="closeModal('terms-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="legal-section">
+                    <h4>¿Qué es Veedor?</h4>
+                    <p>Una app para llevar tus cuentas como siempre, pero digital.</p>
+                </div>
+                
+                <div class="legal-section">
+                    <h4>¿Qué puedes hacer?</h4>
+                    <p>Apuntar gastos, crear presupuestos y ver análisis.</p>
+                </div>
+                
+                <div class="legal-section">
+                    <h4>¿Qué no puedes hacer?</h4>
+                    <p>Usar la app para cosas ilegales o acceder a cuentas ajenas.</p>
+                </div>
+                
+                <div class="legal-section">
+                    <h4>¿Somos responsables de tus decisiones?</h4>
+                    <p>No. Tú decides cómo gastar tu dinero.</p>
+                </div>
+                
+                <div class="legal-contact">
+                    <p><strong>Contacto:</strong> legal@veedor.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cookies-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Política de Cookies</h2>
+                <button class="close-btn" onclick="closeModal('cookies-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="legal-section">
+                    <h4>¿Qué son las cookies?</h4>
+                    <p>Pequeños archivos que recuerdan tus preferencias.</p>
+                </div>
+                
+                <div class="legal-section">
+                    <h4>¿Qué cookies usamos?</h4>
+                    <p>Solo las necesarias: para mantener tu sesión y recordar si prefieres tema claro u oscuro.</p>
+                </div>
+                
+                <div class="legal-section">
+                    <h4>¿Puedes desactivarlas?</h4>
+                    <p>Sí, desde tu navegador, pero algunas funciones pueden no funcionar.</p>
+                </div>
+                
+                <div class="legal-contact">
+                    <p><strong>Contacto:</strong> cookies@veedor.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="js/config.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/validations.js"></script>
     <script src="js/ui.js"></script>
-    <script src="js/categorization.js"></script>
-    <script src="js/budget-manager.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/tests.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/categorization.js"></script>
+    <script src="js/gastos.js"></script>
+    <script src="js/budget-manager.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="js/tests.js" defer></script>
 </body>
 </html>
