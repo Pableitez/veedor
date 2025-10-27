@@ -3997,6 +3997,7 @@ a:hover {
     object-position: center !important;
     display: block;
     border-radius: 8px;
+    background: transparent;
 }
 
 /* Forzar que ambos badges ocupen exactamente el mismo espacio */
@@ -4015,18 +4016,12 @@ a:hover {
 
 .app-store .badge-image,
 .google-play .badge-image {
-    width: 150px !important;
-    height: 50px !important;
-    min-width: 150px !important;
-    min-height: 50px !important;
-    max-width: 150px !important;
-    max-height: 50px !important;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: contain !important;
     object-position: center !important;
     display: block !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+    background: transparent !important;
 }
 
 /* Responsive adjustments */
