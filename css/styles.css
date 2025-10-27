@@ -3724,6 +3724,112 @@ a:hover {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+/* ========================================
+   SOCIAL LOGIN STYLES
+   ======================================== */
+
+.social-login {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.social-login h3 {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.social-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: var(--hover-primary);
+}
+
+.social-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.google-btn:hover {
+    background: #f8f9fa;
+    border-color: #4285F4;
+}
+
+.notion-btn:hover {
+    background: #f8f9fa;
+    border-color: #000000;
+}
+
+.github-btn:hover {
+    background: #f8f9fa;
+    border-color: #333333;
+}
+
+.divider {
+    position: relative;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.divider span {
+    background: var(--bg-primary);
+    padding: 0 1rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Dark theme social buttons */
+[data-theme="dark"] .social-btn {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .social-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .divider span {
+    background: var(--bg-primary);
+}
+
 .benefit-card p {
     color: rgba(255, 255, 255, 0.9);
     line-height: 1.6;

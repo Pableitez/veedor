@@ -1892,9 +1892,72 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+// Social Login Functions
+function loginWithGoogle() {
+    console.log('Iniciando login con Google Calendar...');
+    // Aquí se integrará con Google Calendar API
+    showNotification('Conectando con Google Calendar...', 'info');
+    
+    // Simulación de login exitoso
+    setTimeout(() => {
+        showNotification('¡Conectado con Google Calendar!', 'success');
+        hideAuth();
+        // Aquí se configurará la integración con Google Calendar
+        setupGoogleCalendarIntegration();
+    }, 2000);
+}
+
+function loginWithNotion() {
+    console.log('Iniciando login con Notion...');
+    showNotification('Conectando con Notion...', 'info');
+    
+    // Simulación de login exitoso
+    setTimeout(() => {
+        showNotification('¡Conectado con Notion!', 'success');
+        hideAuth();
+        // Aquí se configurará la integración con Notion
+        setupNotionIntegration();
+    }, 2000);
+}
+
+function loginWithGitHub() {
+    console.log('Iniciando login con GitHub...');
+    showNotification('Conectando con GitHub...', 'info');
+    
+    // Simulación de login exitoso
+    setTimeout(() => {
+        showNotification('¡Conectado con GitHub!', 'success');
+        hideAuth();
+        // Aquí se configurará la integración con GitHub
+        setupGitHubIntegration();
+    }, 2000);
+}
+
+// Integration Setup Functions
+function setupGoogleCalendarIntegration() {
+    console.log('Configurando integración con Google Calendar...');
+    // Aquí se implementará la integración real con Google Calendar API
+    // Para sincronizar eventos con gastos financieros
+}
+
+function setupNotionIntegration() {
+    console.log('Configurando integración con Notion...');
+    // Aquí se implementará la integración con Notion API
+    // Para sincronizar notas y documentos con el dashboard financiero
+}
+
+function setupGitHubIntegration() {
+    console.log('Configurando integración con GitHub...');
+    // Aquí se implementará la integración con GitHub API
+    // Para proyectos de desarrollo y tracking de tiempo
+}
+
 // Hacer funciones globales
 window.showAuth = showAuth;
 window.showAuthTab = showAuthTab;
 window.showForgotPassword = showForgotPassword;
 window.showProfile = showProfile;
 window.logout = logout;
+window.loginWithGoogle = loginWithGoogle;
+window.loginWithNotion = loginWithNotion;
+window.loginWithGitHub = loginWithGitHub;
