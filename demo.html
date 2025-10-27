@@ -184,33 +184,10 @@
                     <div class="tab-panel" id="transactions">
                         <div class="transactions-header">
                             <h3>Transacciones</h3>
-                            <button class="btn btn-primary" onclick="openTransactionModal()">Agregar Transacción</button>
+                            <button class="btn btn-primary" data-action="add-transaction">Agregar Transacción</button>
                         </div>
                         <div class="transactions-list">
-                            <div class="transaction-item">
-                                <div class="transaction-info">
-                                    <span class="transaction-category">Comida</span>
-                                    <span class="transaction-description">Supermercado</span>
-                                    <span class="transaction-date">15 Dic 2024</span>
-                                </div>
-                                <span class="transaction-amount negative">-€45.30</span>
-                            </div>
-                            <div class="transaction-item">
-                                <div class="transaction-info">
-                                    <span class="transaction-category">Transporte</span>
-                                    <span class="transaction-description">Gasolina</span>
-                                    <span class="transaction-date">14 Dic 2024</span>
-                                </div>
-                                <span class="transaction-amount negative">-€32.00</span>
-                            </div>
-                            <div class="transaction-item">
-                                <div class="transaction-info">
-                                    <span class="transaction-category">Salario</span>
-                                    <span class="transaction-description">Nómina</span>
-                                    <span class="transaction-date">1 Dic 2024</span>
-                                </div>
-                                <span class="transaction-amount positive">+€2,500.00</span>
-                            </div>
+                            <!-- Se llena dinámicamente -->
                         </div>
                     </div>
 
@@ -218,33 +195,10 @@
                     <div class="tab-panel" id="budgets">
                         <div class="budgets-header">
                             <h3>Presupuestos</h3>
-                            <button class="btn btn-primary" onclick="openBudgetModal()">Crear Presupuesto</button>
+                            <button class="btn btn-primary" data-action="add-budget">Crear Presupuesto</button>
                         </div>
                         <div class="budgets-grid">
-                            <div class="budget-card">
-                                <h4>Comida</h4>
-                                <div class="budget-amount">€180 / €200</div>
-                                <div class="budget-bar">
-                                    <div class="budget-fill" style="width: 90%"></div>
-                                </div>
-                                <div class="budget-status warning">90% usado</div>
-                            </div>
-                            <div class="budget-card">
-                                <h4>Transporte</h4>
-                                <div class="budget-amount">€120 / €150</div>
-                                <div class="budget-bar">
-                                    <div class="budget-fill" style="width: 80%"></div>
-                                </div>
-                                <div class="budget-status good">80% usado</div>
-                            </div>
-                            <div class="budget-card">
-                                <h4>Entretenimiento</h4>
-                                <div class="budget-amount">€45 / €100</div>
-                                <div class="budget-bar">
-                                    <div class="budget-fill" style="width: 45%"></div>
-                                </div>
-                                <div class="budget-status good">45% usado</div>
-                            </div>
+                            <!-- Se llena dinámicamente -->
                         </div>
                     </div>
 
@@ -252,25 +206,10 @@
                     <div class="tab-panel" id="goals">
                         <div class="goals-header">
                             <h3>Objetivos Financieros</h3>
-                            <button class="btn btn-primary" onclick="openGoalModal()">Crear Objetivo</button>
+                            <button class="btn btn-primary" data-action="add-goal">Crear Objetivo</button>
                         </div>
                         <div class="goals-grid">
-                            <div class="goal-card">
-                                <h4>Vacaciones</h4>
-                                <div class="goal-amount">€800 / €1,500</div>
-                                <div class="goal-bar">
-                                    <div class="goal-fill" style="width: 53%"></div>
-                                </div>
-                                <div class="goal-progress">53% completado</div>
-                            </div>
-                            <div class="goal-card">
-                                <h4>Fondo de Emergencia</h4>
-                                <div class="goal-amount">€2,000 / €5,000</div>
-                                <div class="goal-bar">
-                                    <div class="goal-fill" style="width: 40%"></div>
-                                </div>
-                                <div class="goal-progress">40% completado</div>
-                            </div>
+                            <!-- Se llena dinámicamente -->
                         </div>
                     </div>
 
@@ -443,160 +382,7 @@
         </div>
     </div>
 
-    <script>
-        // Script específico para demo.html - evitar conflictos con app.js
-        document.addEventListener('DOMContentLoaded', function() {
-            // Solo cargar tema, no inicializar auth ni dashboard
-            loadTheme();
-            
-            // Inicializar tabs del dashboard
-            initDemoTabs();
-        });
-        
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('veedor-theme');
-            if (savedTheme) {
-                document.documentElement.setAttribute('data-theme', savedTheme);
-                document.body.setAttribute('data-theme', savedTheme);
-                const themeIcon = document.querySelector('.theme-icon');
-                if (themeIcon) {
-                    themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-                }
-            } else {
-                const defaultTheme = 'dark';
-                document.documentElement.setAttribute('data-theme', defaultTheme);
-                document.body.setAttribute('data-theme', defaultTheme);
-                const themeIcon = document.querySelector('.theme-icon');
-                if (themeIcon) {
-                    themeIcon.textContent = '☀️';
-                }
-            }
-        }
-        
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            document.body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('veedor-theme', newTheme);
-            const themeIcon = document.querySelector('.theme-icon');
-            if (themeIcon) {
-                themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            }
-        }
-        
-        function initDemoTabs() {
-            const tabs = document.querySelectorAll('.tab-btn');
-            const panels = document.querySelectorAll('.tab-panel');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const targetTab = tab.textContent.toLowerCase();
-                    
-                    // Remover active de todos
-                    tabs.forEach(t => t.classList.remove('active'));
-                    panels.forEach(p => p.classList.remove('active'));
-                    
-                    // Activar el seleccionado
-                    tab.classList.add('active');
-                    const targetPanel = document.getElementById(targetTab);
-                    if (targetPanel) {
-                        targetPanel.classList.add('active');
-                    }
-                });
-            });
-        }
-        
-        function showTab(tabName) {
-            const tabs = document.querySelectorAll('.tab-btn');
-            const panels = document.querySelectorAll('.tab-panel');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            panels.forEach(panel => panel.classList.remove('active'));
-            
-            const targetTab = document.querySelector(`[onclick="showTab('${tabName}')"]`);
-            const targetPanel = document.getElementById(tabName);
-            
-            if (targetTab) targetTab.classList.add('active');
-            if (targetPanel) targetPanel.classList.add('active');
-        }
-        
-        function toggleUserMenu() {
-            const dropdown = document.querySelector('.nav-dropdown');
-            dropdown.classList.toggle('active');
-        }
-        
-        function showAuth() {
-            const authOverlay = document.getElementById('auth-overlay');
-            if (authOverlay) {
-                authOverlay.classList.add('show');
-            }
-        }
-        
-        function hideAuth() {
-            const authOverlay = document.getElementById('auth-overlay');
-            if (authOverlay) {
-                authOverlay.classList.remove('show');
-            }
-        }
-        
-        function switchAuthTab(tab) {
-            const loginForm = document.getElementById('login-form');
-            const registerForm = document.getElementById('register-form');
-            const tabs = document.querySelectorAll('.auth-tab');
-            
-            tabs.forEach(t => t.classList.remove('active'));
-            
-            if (tab === 'login') {
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
-                tabs[0].classList.add('active');
-            } else {
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
-                tabs[1].classList.add('active');
-            }
-        }
-        
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId + '-modal');
-            if (modal) {
-                modal.classList.add('show');
-            }
-        }
-        
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId + '-modal');
-            if (modal) {
-                modal.classList.remove('show');
-            }
-        }
-        
-        function downloadApp(platform) {
-            if (platform === 'ios') {
-                window.open('https://apps.apple.com/app/veedor', '_blank');
-            } else if (platform === 'android') {
-                window.open('https://play.google.com/store/apps/details?id=com.veedor', '_blank');
-            }
-        }
-        
-        function toggleMobileMenu() {
-            const navMenu = document.getElementById('nav-menu');
-            navMenu.classList.toggle('active');
-        }
-        
-        function closeMobileMenu() {
-            const navMenu = document.getElementById('nav-menu');
-            navMenu.classList.remove('active');
-        }
-        
-        // Cerrar menú al hacer click fuera
-        document.addEventListener('click', function(event) {
-            const dropdown = document.querySelector('.nav-dropdown');
-            if (dropdown && !dropdown.contains(event.target)) {
-                dropdown.classList.remove('active');
-            }
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="js/demo.js"></script>
 </body>
 </html>
