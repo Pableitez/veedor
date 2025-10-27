@@ -405,6 +405,13 @@ class VeedorFinanceCenter {
         // Actualizar contenido específico del tab
         this.updateTabContent(tabName);
         
+        // Si es la pestaña de analytics, forzar actualización de gráficas
+        if (tabName === 'analytics') {
+            setTimeout(() => {
+                this.updateAnalyticsTrends();
+            }, 100);
+        }
+        
         // Actualizar URL sin recargar
         history.pushState(null, null, `#${tabName}`);
         
@@ -1334,16 +1341,28 @@ class VeedorFinanceCenter {
             </div>
         `;
 
-        // Crear gráfica de evolución del patrimonio
-        this.createNetWorthChart();
-        
-        // Crear gráfica de tendencias de ahorro
-        this.createSavingsTrendChart();
+        // Esperar a que Chart.js esté disponible
+        if (typeof Chart !== 'undefined') {
+            this.createNetWorthChart();
+            this.createSavingsTrendChart();
+        } else {
+            // Si Chart.js no está disponible, mostrar mensaje
+            container.innerHTML = `
+                <div class="error">
+                    Error: Chart.js no está disponible. Las gráficas no se pueden mostrar.
+                </div>
+            `;
+        }
     }
 
     createNetWorthChart() {
         const ctx = document.getElementById('netWorthChart');
         if (!ctx) return;
+
+        // Limpiar gráfica existente si existe
+        if (window.netWorthChartInstance) {
+            window.netWorthChartInstance.destroy();
+        }
 
         // Generar datos históricos simulados
         const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -1413,11 +1432,69 @@ class VeedorFinanceCenter {
                 }
             }
         });
+
+        // Guardar instancia para poder destruirla después
+        window.netWorthChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Patrimonio Neto (€)',
+                    data: netWorthData,
+                    borderColor: 'rgb(147, 51, 234)',
+                    backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgb(147, 51, 234)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return '€' + value.toLocaleString();
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        hoverRadius: 8
+                    }
+                }
+            }
+        });
     }
 
     createSavingsTrendChart() {
         const ctx = document.getElementById('savingsTrendChart');
         if (!ctx) return;
+
+        // Limpiar gráfica existente si existe
+        if (window.savingsTrendChartInstance) {
+            window.savingsTrendChartInstance.destroy();
+        }
 
         // Generar datos de ahorro mensual
         const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -1446,7 +1523,8 @@ class VeedorFinanceCenter {
             savingsData.push(monthlySavings);
         }
 
-        new Chart(ctx, {
+        // Guardar instancia para poder destruirla después
+        window.savingsTrendChartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: months,
