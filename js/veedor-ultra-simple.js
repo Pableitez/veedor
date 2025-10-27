@@ -422,64 +422,50 @@ function setupEventListeners() {
     console.log('✅ Event listeners configurados');
 }
 
-// Función de debug completa
-function debugSystem() {
-    console.log('=== DEBUG SISTEMA COMPLETO ===');
+// Función de debug específica para verificar duplicados
+function checkDuplicates() {
+    console.log('=== VERIFICANDO DUPLICADOS ===');
     
-    // 1. Verificar Chart.js
-    console.log('1. Chart.js disponible:', typeof Chart !== 'undefined');
-    
-    // 2. Verificar elementos críticos
-    const criticalElements = [
-        '.balance-amount',
-        '.income-amount',
-        '.expenses-amount',
-        '.savings-amount',
-        '.recent-transactions',
-        '#net-worth-value',
-        '#net-worth-change',
-        '#total-assets',
-        '#total-liabilities',
-        '#overviewCategoryChart',
-        '#overviewTrendsChart',
-        '#overviewIncomeExpensesChart'
+    const chartIds = [
+        'overviewCategoryChart',
+        'overviewTrendsChart', 
+        'overviewIncomeExpensesChart'
     ];
     
-    console.log('2. Elementos críticos encontrados:');
-    criticalElements.forEach(selector => {
-        const element = document.querySelector(selector);
-        console.log(`   ${selector}:`, element ? '✅' : '❌');
+    chartIds.forEach(id => {
+        const elements = document.querySelectorAll(`#${id}`);
+        console.log(`${id}:`, elements.length, 'elementos encontrados');
+        
+        if (elements.length > 1) {
+            console.log('❌ DUPLICADO DETECTADO:', id);
+            elements.forEach((el, index) => {
+                console.log(`   Elemento ${index + 1}:`, el);
+            });
+        } else if (elements.length === 1) {
+            console.log('✅ Elemento único:', id);
+        } else {
+            console.log('❌ Elemento no encontrado:', id);
+        }
     });
     
-    // 3. Verificar botones de navegación
-    const navButtons = document.querySelectorAll('.nav-tab');
-    console.log('3. Botones de navegación encontrados:', navButtons.length);
-    navButtons.forEach(btn => {
-        const tabName = btn.getAttribute('data-tab');
-        console.log(`   ${tabName}:`, btn.textContent);
-    });
-    
-    // 4. Verificar pestañas
-    const tabs = document.querySelectorAll('.tab-panel');
-    console.log('4. Pestañas encontradas:', tabs.length);
-    tabs.forEach(tab => {
-        console.log(`   ${tab.id}:`, tab.classList.contains('active') ? 'ACTIVA' : 'inactiva');
-    });
-    
-    // 5. Verificar gráficas creadas
+    // Verificar si Chart.js está creando múltiples instancias
     const charts = [
         'overviewCategoryChart',
         'overviewTrendsChart',
         'overviewIncomeExpensesChart'
     ];
     
-    console.log('5. Gráficas creadas:');
+    console.log('Gráficas creadas en window:');
     charts.forEach(chartName => {
         const chart = window[chartName];
-        console.log(`   ${chartName}:`, chart ? '✅' : '❌');
+        console.log(`${chartName}:`, chart ? '✅ Creada' : '❌ No creada');
+        if (chart) {
+            console.log(`   Tipo:`, chart.config.type);
+            console.log(`   Datos:`, chart.data.datasets[0].data);
+        }
     });
     
-    console.log('=== DEBUG COMPLETADO ===');
+    console.log('=== VERIFICACIÓN COMPLETADA ===');
 }
 
 // Función principal de inicialización
@@ -509,6 +495,7 @@ function initializeSystem() {
 
 // Hacer funciones globales
 window.debugSystem = debugSystem;
+window.checkDuplicates = checkDuplicates;
 window.initializeSystem = initializeSystem;
 window.showTab = showTab;
 window.updateFinancialSummary = updateFinancialSummary;
