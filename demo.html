@@ -6,6 +6,47 @@
     <title>Demo - Veedor</title>
     <meta name="description" content="Demo de Veedor - Gestión financiera personal">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Estilos específicos para la página demo */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding-top: 0;
+            margin-top: 0;
+        }
+        
+        .dashboard-section {
+            padding: var(--space-xl) 0;
+            min-height: calc(100vh - 160px);
+        }
+        
+        .dashboard-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-lg);
+        }
+        
+        /* Asegurar que el dashboard se vea completo */
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .dashboard-tabs {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .tab-content {
+            min-height: 400px;
+        }
+    </style>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="assets/images/icon-192x192.png">
     <meta name="theme-color" content="#8B5CF6">
