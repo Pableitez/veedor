@@ -3763,6 +3763,86 @@ a:hover {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Responsive Modal */
+@media (max-width: 768px) {
+    .auth-modal {
+        max-width: 95%;
+        width: 95%;
+        max-height: 90vh;
+        border-radius: 16px;
+        margin: 1rem;
+    }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 480px) {
+    .auth-overlay {
+        padding: 0;
+        align-items: flex-start;
+    }
+    
+    .auth-modal {
+        max-width: 100%;
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        margin: 0;
+        transform: translateY(0);
+    }
+    
+    .auth-overlay.show .auth-modal {
+        transform: translateY(0);
+    }
+    
+    .auth-header {
+        padding: 1rem;
+        border-radius: 0;
+    }
+    
+    .auth-header h2 {
+        font-size: 1rem;
+    }
+    
+    .auth-tabs {
+        margin: 0;
+    }
+    
+    .auth-tab {
+        padding: 1rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .auth-form {
+        padding: 1rem;
+    }
+    
+    .auth-form .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .auth-form .form-group input {
+        padding: 0.875rem 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .auth-submit {
+        padding: 0.875rem 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .social-login h3 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .close-btn {
+        font-size: 1.5rem;
+        padding: 0.5rem;
+        width: 32px;
+        height: 32px;
+    }
+}
+
 .auth-overlay.show .auth-modal {
     transform: scale(1) translateY(0);
 }
@@ -3780,6 +3860,21 @@ a:hover {
     z-index: 10;
 }
 
+/* Responsive Header */
+@media (max-width: 768px) {
+    .auth-header {
+        padding: 1.5rem 1.5rem 1rem;
+        border-radius: 16px 16px 0 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-header {
+        padding: 1.25rem 1rem 0.75rem;
+        border-radius: 0;
+    }
+}
+
 .auth-header h2 {
     margin: 0;
     font-size: 1.25rem;
@@ -3792,11 +3887,37 @@ a:hover {
     background-clip: text;
 }
 
+/* Responsive Title */
+@media (max-width: 768px) {
+    .auth-header h2 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-header h2 {
+        font-size: 1rem;
+    }
+}
+
 .auth-tabs {
     display: flex;
     border-bottom: 1px solid var(--border-color);
     margin: 0 2rem;
     background: var(--card-bg);
+}
+
+/* Responsive Tabs */
+@media (max-width: 768px) {
+    .auth-tabs {
+        margin: 0 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-tabs {
+        margin: 0 1rem;
+    }
 }
 
 .auth-tab {
@@ -3828,6 +3949,19 @@ a:hover {
     padding: 2rem;
     display: none;
     animation: fadeInUp 0.4s ease-out;
+}
+
+/* Responsive Forms */
+@media (max-width: 768px) {
+    .auth-form {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-form {
+        padding: 1rem;
+    }
 }
 
 .auth-form.active {
@@ -4014,6 +4148,24 @@ a:hover {
     margin-bottom: 1.5rem;
 }
 
+/* Responsive Social Buttons */
+@media (max-width: 480px) {
+    .social-buttons {
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .social-btn {
+        padding: 0.875rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .social-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
 .social-btn {
     display: flex;
     align-items: center;
@@ -4098,6 +4250,28 @@ a:hover {
 
 [data-theme="dark"] .divider span {
     background: var(--bg-primary);
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .auth-modal {
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .auth-header {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(139, 92, 246, 0.03) 100%);
+}
+
+[data-theme="light"] .social-btn:hover {
+    background: rgba(139, 92, 246, 0.05);
+}
+
+[data-theme="light"] .auth-tab.active {
+    background: rgba(139, 92, 246, 0.08);
+}
+
+[data-theme="light"] .auth-tab:hover {
+    background: rgba(139, 92, 246, 0.03);
 }
 
 /* ========================================
