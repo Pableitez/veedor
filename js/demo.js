@@ -3307,6 +3307,7 @@ function logout() {
         
         const principal = parseFloat(document.getElementById('liability-amount').value);
         const rate = parseFloat(document.getElementById('liability-rate').value);
+        const tae = parseFloat(document.getElementById('liability-tae').value);
         const years = parseInt(document.getElementById('liability-years').value);
         const fees = parseFloat(document.getElementById('liability-fees').value) || 0;
         
@@ -3336,6 +3337,12 @@ function logout() {
         const totalInterestPaid = loanDetails.amortization.schedule.reduce((sum, p) => sum + p.interestPayment, 0);
         const totalPrincipalPaid = loanDetails.amortization.schedule.reduce((sum, p) => sum + p.principalPayment, 0);
         
+        // Calcular años y meses para mostrar
+        const totalYears = Math.floor(totalPayments / 12);
+        const totalMonths = totalPayments % 12;
+        const remainingYears = Math.floor(remainingPayments / 12);
+        const remainingMonths = remainingPayments % 12;
+        
         resultsDiv.innerHTML = `
             <div class="amortization-summary">
                 <h4>Resumen del Préstamo</h4>
@@ -3346,19 +3353,19 @@ function logout() {
                     </div>
                     <div class="summary-item">
                         <span class="label">TIN:</span>
-                        <span class="value">${loanDetails.nominalRate.toFixed(2)}%</span>
+                        <span class="value">${rate.toFixed(2)}%</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">TAE:</span>
-                        <span class="value">${loanDetails.tae.toFixed(2)}%</span>
+                        <span class="value">${tae ? tae.toFixed(2) : loanDetails.tae.toFixed(2)}%</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">Total Cuotas:</span>
-                        <span class="value">${totalPayments}</span>
+                        <span class="value">${totalPayments} (${totalYears}a ${totalMonths}m)</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">Cuotas Pendientes:</span>
-                        <span class="value">${remainingPayments}</span>
+                        <span class="value">${remainingPayments} (${remainingYears}a ${remainingMonths}m)</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">Intereses Totales:</span>
@@ -3532,6 +3539,7 @@ function logout() {
         // Calcular amortización con datos del pasivo
         const principal = liability.amount;
         const rate = liability.interestRate || 3.5; // Usar TIN del pasivo o por defecto
+        const tae = liability.tae || 0; // Usar TAE del pasivo
         const years = liability.years || 25; // Usar años del pasivo o por defecto
         const fees = liability.fees || 0; // Usar comisiones del pasivo
         
@@ -3554,6 +3562,12 @@ function logout() {
         const totalPayments = loanDetails.amortization.schedule.length;
         const remainingPayments = loanDetails.amortization.schedule.filter(p => p.remainingBalance > 0).length;
         
+        // Calcular años y meses para mostrar
+        const totalYears = Math.floor(totalPayments / 12);
+        const totalMonths = totalPayments % 12;
+        const remainingYears = Math.floor(remainingPayments / 12);
+        const remainingMonths = remainingPayments % 12;
+        
         resultsDiv.innerHTML = `
             <div class="amortization-summary">
                 <h4>Resumen del Préstamo</h4>
@@ -3564,19 +3578,19 @@ function logout() {
                     </div>
                     <div class="summary-item">
                         <span class="label">TIN:</span>
-                        <span class="value">${loanDetails.nominalRate.toFixed(2)}%</span>
+                        <span class="value">${rate.toFixed(2)}%</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">TAE:</span>
-                        <span class="value">${loanDetails.tae.toFixed(2)}%</span>
+                        <span class="value">${tae ? tae.toFixed(2) : loanDetails.tae.toFixed(2)}%</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">Total Cuotas:</span>
-                        <span class="value">${totalPayments}</span>
+                        <span class="value">${totalPayments} (${totalYears}a ${totalMonths}m)</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">Cuotas Pendientes:</span>
-                        <span class="value">${remainingPayments}</span>
+                        <span class="value">${remainingPayments} (${remainingYears}a ${remainingMonths}m)</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">Intereses Totales:</span>
