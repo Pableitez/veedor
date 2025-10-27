@@ -1566,12 +1566,26 @@ function showAuthRequired() {
 
 // Mostrar modal de autenticación
 function showAuth() {
-    document.getElementById('auth-overlay').style.display = 'flex';
+    const authOverlay = document.getElementById('auth-overlay');
+    if (authOverlay) {
+        authOverlay.style.display = 'flex';
+        authOverlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        console.log('Modal de autenticación abierto');
+    } else {
+        console.error('No se encontró el modal de autenticación');
+    }
 }
 
 // Ocultar modal de autenticación
 function hideAuth() {
-    document.getElementById('auth-overlay').style.display = 'none';
+    const authOverlay = document.getElementById('auth-overlay');
+    if (authOverlay) {
+        authOverlay.style.display = 'none';
+        authOverlay.classList.remove('show');
+        document.body.style.overflow = 'auto';
+        console.log('Modal de autenticación cerrado');
+    }
     // Limpiar formularios
     document.querySelectorAll('.auth-form').forEach(form => form.reset());
     document.querySelectorAll('.auth-error, .auth-success').forEach(el => el.style.display = 'none');
@@ -1920,19 +1934,6 @@ function loginWithNotion() {
     }, 2000);
 }
 
-function loginWithGitHub() {
-    console.log('Iniciando login con GitHub...');
-    showNotification('Conectando con GitHub...', 'info');
-    
-    // Simulación de login exitoso
-    setTimeout(() => {
-        showNotification('¡Conectado con GitHub!', 'success');
-        hideAuth();
-        // Aquí se configurará la integración con GitHub
-        setupGitHubIntegration();
-    }, 2000);
-}
-
 // Integration Setup Functions
 function setupGoogleCalendarIntegration() {
     console.log('Configurando integración con Google Calendar...');
@@ -1946,12 +1947,6 @@ function setupNotionIntegration() {
     // Para sincronizar notas y documentos con el dashboard financiero
 }
 
-function setupGitHubIntegration() {
-    console.log('Configurando integración con GitHub...');
-    // Aquí se implementará la integración con GitHub API
-    // Para proyectos de desarrollo y tracking de tiempo
-}
-
 // Hacer funciones globales
 window.showAuth = showAuth;
 window.showAuthTab = showAuthTab;
@@ -1960,4 +1955,3 @@ window.showProfile = showProfile;
 window.logout = logout;
 window.loginWithGoogle = loginWithGoogle;
 window.loginWithNotion = loginWithNotion;
-window.loginWithGitHub = loginWithGitHub;
