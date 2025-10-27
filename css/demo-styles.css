@@ -2930,11 +2930,11 @@
             }
             
             .financial-summary {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
             
             .envelope-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
             
             .assets-grid {
@@ -2944,10 +2944,10 @@
         
         @media (min-width: 1600px) {
             .financial-summary {
-                grid-template-columns: repeat(5, 1fr);
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             }
             
             .envelope-grid {
-                grid-template-columns: repeat(5, 1fr);
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             }
         }
