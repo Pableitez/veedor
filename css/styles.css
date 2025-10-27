@@ -3258,17 +3258,6 @@ a:hover {
 }
 
 /* Tema Oscuro para Modales */
-[data-theme="dark"] .modal-content {
-    background: #1a1a1a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="dark"] .modal-header {
-    background: #1a1a1a;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 [data-theme="dark"] .modal-form {
     background: #1a1a1a;
 }
@@ -3312,17 +3301,6 @@ a:hover {
 /* Tema Claro para Modales */
 [data-theme="light"] .modal {
     background-color: rgba(0, 0, 0, 0.3);
-}
-
-[data-theme="light"] .modal-content {
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-[data-theme="light"] .modal-header {
-    background: #ffffff;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="light"] .form-group .input,
@@ -4246,10 +4224,6 @@ a:hover {
 [data-theme="light"] .auth-modal {
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .auth-header {
-    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(139, 92, 246, 0.03) 100%);
 }
 
 [data-theme="light"] .social-btn:hover {
