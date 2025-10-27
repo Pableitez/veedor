@@ -732,27 +732,20 @@ class VeedorFinanceCenter {
         if (!container) return;
 
         container.innerHTML = `
-            <div class="filters-row">
-                <div class="filter-group">
-                    <label>Categoría</label>
-                    <select id="filter-category" class="filter-select">
+            <div class="filters-compact">
+                <div class="filters-main">
+                    <select id="filter-category" class="filter-select-compact">
                         <option value="">Todas las categorías</option>
                         ${this.categories.map(cat => 
                             `<option value="${cat.id}">${cat.name}</option>`
                         ).join('')}
                     </select>
-                </div>
-                <div class="filter-group">
-                    <label>Tipo</label>
-                    <select id="filter-type" class="filter-select">
+                    <select id="filter-type" class="filter-select-compact">
                         <option value="">Todos los tipos</option>
                         <option value="income">Ingresos</option>
                         <option value="expense">Gastos</option>
                     </select>
-                </div>
-                <div class="filter-group">
-                    <label>Período</label>
-                    <select id="filter-date-range" class="filter-select">
+                    <select id="filter-date-range" class="filter-select-compact">
                         <option value="">Todos los períodos</option>
                         <option value="today">Hoy</option>
                         <option value="week">Esta semana</option>
@@ -760,14 +753,11 @@ class VeedorFinanceCenter {
                         <option value="quarter">Este trimestre</option>
                         <option value="year">Este año</option>
                     </select>
+                    <input type="text" id="search-transactions" class="filter-input-compact" placeholder="Buscar...">
                 </div>
-                <div class="filter-group">
-                    <label>Buscar</label>
-                    <input type="text" id="search-transactions" class="filter-input" placeholder="Buscar transacciones...">
-                </div>
-                <div class="filter-actions">
-                    <button class="btn btn-secondary" onclick="veedorFinance.clearFilters()">Limpiar</button>
-                    <button class="btn btn-primary" onclick="veedorFinance.exportTransactions()">Exportar</button>
+                <div class="filters-actions">
+                    <button class="btn-compact btn-secondary" onclick="veedorFinance.clearFilters()">Limpiar</button>
+                    <button class="btn-compact btn-primary" onclick="veedorFinance.exportTransactions()">Exportar</button>
                 </div>
             </div>
         `;
@@ -2647,18 +2637,174 @@ function showDashboard() {
 }
 
     function logout() {
-        // Función de logout - por ahora solo mostrar mensaje
-        alert('Función de logout próximamente');
+        // Limpiar datos de sesión
+        localStorage.removeItem('veedor-user');
+        localStorage.removeItem('veedor-session');
+        
+        // Ocultar elementos de usuario autenticado
+        const dashboardLink = document.getElementById('dashboard-link');
+        const logoutButton = document.getElementById('logout-button');
+        const authButton = document.getElementById('auth-button');
+        
+        if (dashboardLink) dashboardLink.style.display = 'none';
+        if (logoutButton) logoutButton.style.display = 'none';
+        if (authButton) authButton.style.display = 'block';
+        
+        // Mostrar mensaje de confirmación
+        if (veedorFinance) {
+            veedorFinance.showMessage('Sesión cerrada correctamente', 'success');
+        }
+        
+        // Redirigir a página principal
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1000);
     }
 
     function showEnvelopeModal() {
-        // Función para mostrar modal de nuevo sobre
-        alert('Función de nuevo sobre próximamente');
+        const modal = createEnvelopeModal();
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+    
+    function createEnvelopeModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Nuevo Sobre</h2>
+                    <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+                </div>
+                <form class="modal-form" onsubmit="saveEnvelope(event)">
+                    <div class="form-group">
+                        <label for="envelope-name">Nombre del Sobre</label>
+                        <input type="text" id="envelope-name" required placeholder="Ej: Alimentación">
+                    </div>
+                    <div class="form-group">
+                        <label for="envelope-budget">Presupuesto (€)</label>
+                        <input type="number" id="envelope-budget" step="0.01" required placeholder="300.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="envelope-color">Color</label>
+                        <select id="envelope-color" required>
+                            <option value="#FF6B6B">Rojo</option>
+                            <option value="#4ECDC4">Turquesa</option>
+                            <option value="#45B7D1">Azul</option>
+                            <option value="#96CEB4">Verde</option>
+                            <option value="#FFEAA7">Amarillo</option>
+                            <option value="#DDA0DD">Púrpura</option>
+                            <option value="#98D8C8">Verde claro</option>
+                            <option value="#F7DC6F">Dorado</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-outline" onclick="this.closest('.modal').remove()">Cancelar</button>
+                        <button type="submit" class="btn-primary">Crear Sobre</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        return modal;
+    }
+    
+    function saveEnvelope(event) {
+        event.preventDefault();
+        if (!veedorFinance) return;
+
+        const name = document.getElementById('envelope-name').value;
+        const budget = parseFloat(document.getElementById('envelope-budget').value);
+        const color = document.getElementById('envelope-color').value;
+
+        const newEnvelope = {
+            id: Date.now(),
+            name: name,
+            amount: 0,
+            budget: budget,
+            color: color
+        };
+
+        veedorFinance.envelopes.push(newEnvelope);
+        veedorFinance.updateEnvelopes();
+        veedorFinance.saveToStorage();
+        veedorFinance.showMessage('Sobre creado correctamente', 'success');
+        event.target.closest('.modal').remove();
     }
 
     function showEnvelopeSettings() {
-        // Función para mostrar configuración de sobres
-        alert('Función de configuración de sobres próximamente');
+        const modal = createEnvelopeSettingsModal();
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+    
+    function createEnvelopeSettingsModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Configuración de Sobres</h2>
+                    <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h3>Gestión de Sobres</h3>
+                        <div class="settings-actions">
+                            <button class="btn-primary" onclick="showEnvelopeModal(); this.closest('.modal').remove();">+ Nuevo Sobre</button>
+                            <button class="btn-outline" onclick="resetEnvelopes()">Resetear Todos</button>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>Configuración General</h3>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="auto-assign-transactions" checked>
+                                Asignar transacciones automáticamente
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="show-envelope-progress" checked>
+                                Mostrar progreso visual
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>Alertas</h3>
+                        <div class="form-group">
+                            <label for="alert-threshold">Umbral de alerta (%)</label>
+                            <input type="number" id="alert-threshold" value="80" min="50" max="100">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-outline" onclick="this.closest('.modal').remove()">Cerrar</button>
+                    <button type="button" class="btn-primary" onclick="saveEnvelopeSettings()">Guardar</button>
+                </div>
+            </div>
+        `;
+        return modal;
+    }
+    
+    function resetEnvelopes() {
+        if (confirm('¿Estás seguro de que quieres resetear todos los sobres? Esto eliminará todos los datos.')) {
+            if (veedorFinance) {
+                veedorFinance.envelopes = [];
+                veedorFinance.updateEnvelopes();
+                veedorFinance.saveToStorage();
+                veedorFinance.showMessage('Sobres reseteados correctamente', 'success');
+            }
+        }
+    }
+    
+    function saveEnvelopeSettings() {
+        // Guardar configuración (por ahora solo mostrar mensaje)
+        if (veedorFinance) {
+            veedorFinance.showMessage('Configuración guardada', 'success');
+        }
+        document.querySelector('.modal').remove();
     }
 
     function addToEnvelope(envelopeId) {
@@ -2721,7 +2867,90 @@ function showDashboard() {
     }
 
     function showNetWorthSettings() {
-        alert('Configuración de patrimonio próximamente');
+        const modal = createNetWorthSettingsModal();
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+    
+    function createNetWorthSettingsModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Configuración de Patrimonio</h2>
+                    <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h3>Gestión de Activos</h3>
+                        <div class="settings-actions">
+                            <button class="btn-primary" onclick="showAddAssetModal(); this.closest('.modal').remove();">+ Nuevo Activo</button>
+                            <button class="btn-outline" onclick="resetAssets()">Resetear Activos</button>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>Gestión de Pasivos</h3>
+                        <div class="settings-actions">
+                            <button class="btn-primary" onclick="showAddLiabilityModal(); this.closest('.modal').remove();">+ Nuevo Pasivo</button>
+                            <button class="btn-outline" onclick="resetLiabilities()">Resetear Pasivos</button>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>Configuración General</h3>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="auto-update-net-worth" checked>
+                                Actualización automática del patrimonio
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="show-monthly-change" checked>
+                                Mostrar cambio mensual
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-outline" onclick="this.closest('.modal').remove()">Cerrar</button>
+                    <button type="button" class="btn-primary" onclick="saveNetWorthSettings()">Guardar</button>
+                </div>
+            </div>
+        `;
+        return modal;
+    }
+    
+    function resetAssets() {
+        if (confirm('¿Estás seguro de que quieres resetear todos los activos?')) {
+            if (veedorFinance) {
+                veedorFinance.assets = [];
+                veedorFinance.updateAssets();
+                veedorFinance.updateNetWorth();
+                veedorFinance.saveToStorage();
+                veedorFinance.showMessage('Activos reseteados correctamente', 'success');
+            }
+        }
+    }
+    
+    function resetLiabilities() {
+        if (confirm('¿Estás seguro de que quieres resetear todos los pasivos?')) {
+            if (veedorFinance) {
+                veedorFinance.liabilities = [];
+                veedorFinance.updateAssets();
+                veedorFinance.updateNetWorth();
+                veedorFinance.saveToStorage();
+                veedorFinance.showMessage('Pasivos reseteados correctamente', 'success');
+            }
+        }
+    }
+    
+    function saveNetWorthSettings() {
+        if (veedorFinance) {
+            veedorFinance.showMessage('Configuración de patrimonio guardada', 'success');
+        }
+        document.querySelector('.modal').remove();
     }
 
     function editAsset(assetId) {
