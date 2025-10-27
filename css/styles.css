@@ -33,6 +33,24 @@
     --modal-accent: #8b5cf6;
     --modal-accent-hover: #7c3aed;
     
+    /* === ESPACIADO ESPECÍFICO PARA MODALES === */
+    --modal-padding-xs: 8px;
+    --modal-padding-sm: 12px;
+    --modal-padding-md: 16px;
+    --modal-padding-lg: 20px;
+    --modal-padding-xl: 24px;
+    --modal-margin-xs: 4px;
+    --modal-margin-sm: 8px;
+    --modal-margin-md: 12px;
+    --modal-margin-lg: 16px;
+    --modal-margin-xl: 20px;
+    --modal-gap-sm: 8px;
+    --modal-gap-md: 12px;
+    --modal-gap-lg: 16px;
+    --modal-radius-sm: 8px;
+    --modal-radius-md: 12px;
+    --modal-radius-lg: 16px;
+    
     /* === SISTEMA DE BOTONES === */
     --btn-padding-sm: var(--space-sm) var(--space-md);
     --btn-padding-md: var(--space-md) var(--space-lg);
@@ -3055,7 +3073,7 @@ a:hover {
 /* Modal Content */
 .modal-content {
     background: var(--card-bg);
-    border-radius: 16px;
+    border-radius: var(--modal-radius-lg);
     width: 100%;
     max-width: 500px;
     max-height: 80vh;
@@ -3072,7 +3090,7 @@ a:hover {
 
 /* Modal Header */
 .modal-header {
-    padding: 20px 24px 16px;
+    padding: var(--modal-padding-lg) var(--modal-padding-xl) var(--modal-padding-md);
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
     display: flex;
@@ -3086,18 +3104,18 @@ a:hover {
     font-weight: 600;
     color: var(--text-primary);
     flex: 1;
-    margin-right: 16px;
+    margin-right: var(--modal-margin-lg);
 }
 
 /* Modal Body */
 .modal-body {
-    padding: 24px;
+    padding: var(--modal-padding-xl);
     max-height: 60vh;
     overflow-y: auto;
 }
 
 .modal-body p {
-    margin-bottom: 16px;
+    margin-bottom: var(--modal-margin-lg);
     line-height: 1.6;
     color: var(--text-primary);
     font-size: 0.95rem;
@@ -3105,8 +3123,8 @@ a:hover {
 
 /* Legal Sections */
 .legal-section {
-    margin-bottom: 20px;
-    padding-bottom: 16px;
+    margin-bottom: var(--modal-margin-xl);
+    padding-bottom: var(--modal-padding-md);
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -3116,7 +3134,7 @@ a:hover {
 }
 
 .legal-section h4 {
-    margin: 0 0 8px 0;
+    margin: 0 0 var(--modal-margin-sm) 0;
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--accent);
@@ -3136,8 +3154,8 @@ a:hover {
     font-size: 24px;
     cursor: pointer;
     color: var(--text-secondary);
-    padding: 8px;
-    border-radius: 8px;
+    padding: var(--modal-padding-sm);
+    border-radius: var(--modal-radius-sm);
     transition: all 0.2s ease;
     width: 40px;
     height: 40px;
@@ -3155,17 +3173,17 @@ a:hover {
 
 /* Modal Form */
 .modal-form {
-    padding: 24px;
+    padding: var(--modal-padding-xl);
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: var(--modal-margin-lg);
     position: relative;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: var(--modal-margin-sm);
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-primary);
@@ -3174,9 +3192,9 @@ a:hover {
 .form-group .input,
 .form-group select {
     width: 100%;
-    padding: 12px 16px;
+    padding: var(--modal-padding-md) var(--modal-padding-lg);
     border: 2px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: var(--modal-radius-md);
     background: var(--card-bg);
     color: var(--text-primary);
     font-size: 0.95rem;
@@ -3198,16 +3216,16 @@ a:hover {
 /* Form Actions */
 .form-actions {
     display: flex;
-    gap: 12px;
+    gap: var(--modal-gap-md);
     justify-content: flex-end;
-    margin-top: 24px;
-    padding-top: 20px;
+    margin-top: var(--modal-margin-xl);
+    padding-top: var(--modal-padding-lg);
     border-top: 1px solid var(--border-color);
 }
 
 .form-actions .btn {
-    padding: 12px 24px;
-    border-radius: 10px;
+    padding: var(--modal-padding-md) var(--modal-padding-xl);
+    border-radius: var(--modal-radius-sm);
     font-weight: 600;
     transition: all 0.2s ease;
     cursor: pointer;
@@ -3890,7 +3908,7 @@ a:hover {
 /* Auth Modal */
 .auth-modal {
     background: var(--card-bg);
-    border-radius: 16px;
+    border-radius: var(--modal-radius-lg);
     width: 100%;
     max-width: 400px;
     max-height: 70vh;
@@ -3907,7 +3925,7 @@ a:hover {
 
 /* Auth Header */
 .auth-header {
-    padding: 16px 20px 12px;
+    padding: var(--modal-padding-md) var(--modal-padding-lg) var(--modal-padding-sm);
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
     display: flex;
@@ -3921,7 +3939,7 @@ a:hover {
     font-weight: 600;
     color: var(--text-primary);
     flex: 1;
-    margin-right: 16px;
+    margin-right: var(--modal-margin-lg);
 }
 
 /* Auth Tabs */
@@ -3933,7 +3951,7 @@ a:hover {
 
 .auth-tab {
     flex: 1;
-    padding: 12px 16px;
+    padding: var(--modal-padding-sm) var(--modal-padding-md);
     background: none;
     border: none;
     color: var(--text-secondary);
@@ -3957,7 +3975,7 @@ a:hover {
 
 /* Auth Form */
 .auth-form {
-    padding: 20px;
+    padding: var(--modal-padding-lg);
     display: none;
     max-height: 50vh;
     overflow-y: auto;
@@ -3968,13 +3986,13 @@ a:hover {
 }
 
 .auth-form .form-group {
-    margin-bottom: 16px;
+    margin-bottom: var(--modal-margin-md);
     position: relative;
 }
 
 .auth-form .form-group label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: var(--modal-margin-xs);
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-primary);
@@ -3982,9 +4000,9 @@ a:hover {
 
 .auth-form .form-group input {
     width: 100%;
-    padding: 10px 12px;
+    padding: var(--modal-padding-sm) var(--modal-padding-md);
     border: 2px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: var(--modal-radius-sm);
     background: var(--card-bg);
     color: var(--text-primary);
     font-size: 0.9rem;
@@ -4020,12 +4038,12 @@ a:hover {
 /* Auth Submit */
 .auth-submit {
     width: 100%;
-    margin-bottom: 12px;
-    padding: 10px 16px;
+    margin-bottom: var(--modal-margin-sm);
+    padding: var(--modal-padding-sm) var(--modal-padding-md);
     background: var(--modal-accent);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--modal-radius-sm);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -4046,7 +4064,7 @@ a:hover {
 /* Auth Footer */
 .auth-footer {
     text-align: center;
-    margin-top: 12px;
+    margin-top: var(--modal-margin-sm);
 }
 
 .auth-footer a {
@@ -4063,18 +4081,18 @@ a:hover {
 .auth-error {
     background: var(--modal-error);
     color: white;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 16px;
+    padding: var(--modal-padding-sm) var(--modal-padding-md);
+    border-radius: var(--modal-radius-sm);
+    margin-bottom: var(--modal-margin-md);
     font-size: 0.9rem;
 }
 
 .auth-success {
     background: var(--modal-success);
     color: white;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 16px;
+    padding: var(--modal-padding-sm) var(--modal-padding-md);
+    border-radius: var(--modal-radius-sm);
+    margin-bottom: var(--modal-margin-md);
     font-size: 0.9rem;
 }
 
