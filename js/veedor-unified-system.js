@@ -782,7 +782,8 @@ class VeedorApp {
         const path = window.location.pathname;
         const filename = path.split('/').pop();
         
-        if (filename === 'demo.html' || filename === '') {
+        // Detectar por filename
+        if (filename === 'demo.html') {
             return 'dashboard';
         } else if (filename === 'index.html') {
             return 'home';
@@ -792,7 +793,23 @@ class VeedorApp {
             return 'profile';
         }
         
-        return 'unknown';
+        // Detectar por elementos del DOM
+        if (document.getElementById('overviewCategoryChart')) {
+            return 'dashboard';
+        }
+        
+        if (document.getElementById('dashboard-link')) {
+            return 'home';
+        }
+        
+        // Detectar por URL hash
+        const hash = window.location.hash.substring(1);
+        if (hash === 'dashboard' || hash === 'demo') {
+            return 'dashboard';
+        }
+        
+        console.log('❓ Página no detectada, usando modo dashboard por defecto');
+        return 'dashboard';
     }
     
     init() {
@@ -828,18 +845,49 @@ class VeedorApp {
     initDashboard() {
         console.log('📊 Inicializando dashboard...');
         
+        // Configurar navegación inmediatamente
+        this.setupNavigation();
+        
         // Esperar a que el DOM esté listo
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
                 this.loadDashboard();
             });
         } else {
-            this.loadDashboard();
+            // Si el DOM ya está listo, cargar inmediatamente
+            setTimeout(() => {
+                this.loadDashboard();
+            }, 100);
         }
     }
     
     loadDashboard() {
         console.log('🔄 Cargando dashboard...');
+        
+        // Verificar que los elementos necesarios existan
+        const requiredElements = [
+            '.balance-amount',
+            '.income-amount', 
+            '.expenses-amount',
+            '.savings-amount',
+            '#overviewCategoryChart',
+            '#overviewTrendsChart',
+            '#overviewIncomeExpensesChart'
+        ];
+        
+        const missingElements = requiredElements.filter(selector => !document.querySelector(selector));
+        if (missingElements.length > 0) {
+            console.log('❌ Elementos faltantes:', missingElements);
+            console.log('⏳ Esperando elementos del DOM...');
+            
+            // Reintentar después de un tiempo
+            setTimeout(() => {
+                this.loadDashboard();
+            }, 500);
+            return;
+        }
+        
+        console.log('✅ Todos los elementos del DOM encontrados');
         
         // Actualizar UI
         this.uiManager.updateAll();
@@ -849,15 +897,19 @@ class VeedorApp {
             console.log('⏳ Esperando Chart.js para gráficas...');
             const checkChartJS = () => {
                 if (this.chartManager.isChartJSAvailable) {
+                    console.log('✅ Chart.js disponible, creando gráficas...');
                     this.chartManager.updateAllCharts();
                 } else {
                     setTimeout(checkChartJS, 100);
                 }
             };
             checkChartJS();
+        } else {
+            console.log('✅ Chart.js disponible, creando gráficas...');
+            this.chartManager.updateAllCharts();
         }
         
-        console.log('✅ Dashboard cargado');
+        console.log('✅ Dashboard cargado completamente');
     }
     
     initHome() {
@@ -1214,13 +1266,14 @@ class VeedorApp {
 // ========================================
 
 function debugVeedor() {
-    console.log('=== DEBUG VEEDOR ===');
+    console.log('=== DEBUG VEEDOR COMPLETO ===');
     console.log('Configuración:', VEEDOR_CONFIG);
     console.log('Página actual:', window.location.pathname);
     console.log('Chart.js disponible:', typeof Chart !== 'undefined');
     console.log('VeedorApp disponible:', !!window.veedorApp);
     
     if (window.veedorApp) {
+        console.log('Página detectada:', window.veedorApp.currentPage);
         console.log('DataManager:', window.veedorApp.dataManager);
         console.log('ChartManager:', window.veedorApp.chartManager);
         console.log('UIManager:', window.veedorApp.uiManager);
@@ -1230,6 +1283,13 @@ function debugVeedor() {
         
         const summary = window.veedorApp.getFinancialSummary();
         console.log('Resumen financiero:', summary);
+        
+        // Verificar gráficas creadas
+        console.log('Gráficas creadas:', {
+            categoryChart: !!window.veedorApp.chartManager.charts.categoryChart,
+            trendsChart: !!window.veedorApp.chartManager.charts.trendsChart,
+            summaryChart: !!window.veedorApp.chartManager.charts.summaryChart
+        });
     }
     
     // Verificar elementos del DOM
@@ -1244,10 +1304,67 @@ function debugVeedor() {
         '#overviewIncomeExpensesChart'
     ];
     
+    console.log('=== ELEMENTOS DEL DOM ===');
     elements.forEach(selector => {
         const element = document.querySelector(selector);
         console.log(`${selector}:`, element ? '✅ Encontrado' : '❌ No encontrado');
+        if (element) {
+            console.log(`  - Texto: "${element.textContent?.substring(0, 50)}..."`);
+            console.log(`  - Dimensiones: ${element.offsetWidth}x${element.offsetHeight}`);
+        }
     });
+    
+    // Verificar tabs y botones
+    console.log('=== NAVEGACIÓN ===');
+    const tabs = document.querySelectorAll('.nav-tab');
+    console.log('Tabs encontrados:', tabs.length);
+    tabs.forEach(tab => {
+        console.log(`  - Tab: ${tab.textContent} (data-tab: ${tab.dataset.tab})`);
+    });
+    
+    const buttons = document.querySelectorAll('button');
+    console.log('Botones encontrados:', buttons.length);
+    
+    // Forzar recarga del dashboard
+    console.log('=== FORZANDO RECARGA ===');
+    if (window.veedorApp) {
+        window.veedorApp.loadDashboard();
+    }
+}
+
+// Función para forzar inicialización completa
+function forceInitVeedor() {
+    console.log('🚀 FORZANDO INICIALIZACIÓN COMPLETA DE VEEDOR');
+    
+    // Recrear la app si no existe
+    if (!window.veedorApp) {
+        console.log('📱 Recreando VeedorApp...');
+        window.veedorApp = new VeedorApp();
+    }
+    
+    // Forzar carga del dashboard
+    if (window.veedorApp.currentPage === 'dashboard') {
+        console.log('📊 Forzando carga del dashboard...');
+        window.veedorApp.loadDashboard();
+    }
+    
+    console.log('✅ Inicialización forzada completada');
+}
+
+// Función para recargar solo las gráficas
+function reloadCharts() {
+    console.log('📊 RECARGANDO GRÁFICAS');
+    
+    if (window.veedorApp && window.veedorApp.chartManager) {
+        if (window.veedorApp.chartManager.isChartJSAvailable) {
+            window.veedorApp.chartManager.updateAllCharts();
+            console.log('✅ Gráficas recargadas');
+        } else {
+            console.log('❌ Chart.js no disponible');
+        }
+    } else {
+        console.log('❌ ChartManager no disponible');
+    }
 }
 
 // ========================================
@@ -1259,6 +1376,8 @@ window.veedorApp = new VeedorApp();
 
 // Hacer funciones globales
 window.debugVeedor = debugVeedor;
+window.forceInitVeedor = forceInitVeedor;
+window.reloadCharts = reloadCharts;
 window.VEEDOR_CONFIG = VEEDOR_CONFIG;
 
 // Función para cambiar pestañas (compatibilidad)
