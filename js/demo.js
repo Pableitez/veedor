@@ -11,14 +11,14 @@ class VeedorFinanceCenter {
         this.assets = [];
         this.liabilities = [];
         this.categories = [
-            { id: 'food', name: 'Alimentación', icon: '🍽️', color: '#FF6B6B', budget: 300 },
-            { id: 'transport', name: 'Transporte', icon: '🚗', color: '#4ECDC4', budget: 150 },
-            { id: 'entertainment', name: 'Entretenimiento', icon: '🎬', color: '#45B7D1', budget: 100 },
-            { id: 'health', name: 'Salud', icon: '🏥', color: '#96CEB4', budget: 200 },
-            { id: 'shopping', name: 'Compras', icon: '🛍️', color: '#FFEAA7', budget: 200 },
-            { id: 'utilities', name: 'Servicios', icon: '⚡', color: '#DDA0DD', budget: 150 },
-            { id: 'income', name: 'Ingresos', icon: '💰', color: '#98D8C8', budget: 0 },
-            { id: 'other', name: 'Otros', icon: '📦', color: '#F7DC6F', budget: 100 }
+            { id: 'food', name: 'Alimentación', color: '#FF6B6B', budget: 300 },
+            { id: 'transport', name: 'Transporte', color: '#4ECDC4', budget: 150 },
+            { id: 'entertainment', name: 'Entretenimiento', color: '#45B7D1', budget: 100 },
+            { id: 'health', name: 'Salud', color: '#96CEB4', budget: 200 },
+            { id: 'shopping', name: 'Compras', color: '#FFEAA7', budget: 200 },
+            { id: 'utilities', name: 'Servicios', color: '#DDA0DD', budget: 150 },
+            { id: 'income', name: 'Ingresos', color: '#98D8C8', budget: 0 },
+            { id: 'other', name: 'Otros', color: '#F7DC6F', budget: 100 }
         ];
         
         this.filters = {
@@ -87,14 +87,14 @@ class VeedorFinanceCenter {
         // Generar sobres de demo (Goodbudget style)
         if (!this.envelopes || this.envelopes.length === 0) {
             this.envelopes = [
-                { id: 1, name: 'Alimentación', amount: 220.00, budget: 300, icon: '🍽️', color: '#FF6B6B' },
-                { id: 2, name: 'Transporte', amount: 75.80, budget: 150, icon: '🚗', color: '#4ECDC4' },
-                { id: 3, name: 'Entretenimiento', amount: 30.99, budget: 100, icon: '🎬', color: '#45B7D1' },
-                { id: 4, name: 'Salud', amount: 25.30, budget: 200, icon: '🏥', color: '#96CEB4' },
-                { id: 5, name: 'Compras', amount: 89.99, budget: 200, icon: '🛍️', color: '#FFEAA7' },
-                { id: 6, name: 'Servicios', amount: 85.20, budget: 150, icon: '⚡', color: '#DDA0DD' },
-                { id: 7, name: 'Ahorro', amount: 500.00, budget: 800, icon: '💰', color: '#98D8C8' },
-                { id: 8, name: 'Emergencias', amount: 200.00, budget: 500, icon: '🚨', color: '#F7DC6F' }
+                { id: 1, name: 'Alimentación', amount: 220.00, budget: 300, color: '#FF6B6B' },
+                { id: 2, name: 'Transporte', amount: 75.80, budget: 150, color: '#4ECDC4' },
+                { id: 3, name: 'Entretenimiento', amount: 30.99, budget: 100, color: '#45B7D1' },
+                { id: 4, name: 'Salud', amount: 25.30, budget: 200, color: '#96CEB4' },
+                { id: 5, name: 'Compras', amount: 89.99, budget: 200, color: '#FFEAA7' },
+                { id: 6, name: 'Servicios', amount: 85.20, budget: 150, color: '#DDA0DD' },
+                { id: 7, name: 'Ahorro', amount: 500.00, budget: 800, color: '#98D8C8' },
+                { id: 8, name: 'Emergencias', amount: 200.00, budget: 500, color: '#F7DC6F' }
             ];
         }
     }
@@ -494,7 +494,6 @@ class VeedorFinanceCenter {
         container.innerHTML = insights.map(insight => `
             <div class="insight-card ${insight.type}">
                 <div class="insight-header">
-                    <div class="insight-icon">${insight.icon}</div>
                     <div class="insight-title">${insight.title}</div>
                 </div>
                 <div class="insight-content">
@@ -1339,7 +1338,6 @@ class VeedorFinanceCenter {
         if (totals.balance > 0) {
             insights.push({
                 type: 'success',
-                icon: '💰',
                 title: 'Excelente Mes Financiero',
                 description: 'Has logrado un balance positivo este mes. ¡Sigue así!',
                 value: `€${totals.balance.toFixed(2)}`,
@@ -1354,7 +1352,6 @@ class VeedorFinanceCenter {
         if (savingsRate > 20) {
             insights.push({
                 type: 'success',
-                icon: '🎯',
                 title: 'Tasa de Ahorro Excelente',
                 description: 'Estás ahorrando más del 20% de tus ingresos. ¡Excelente disciplina financiera!',
                 value: `${savingsRate.toFixed(1)}%`,
@@ -1365,7 +1362,6 @@ class VeedorFinanceCenter {
         } else if (savingsRate < 10) {
             insights.push({
                 type: 'warning',
-                icon: '⚠️',
                 title: 'Tasa de Ahorro Baja',
                 description: 'Considera reducir gastos o aumentar ingresos para mejorar tu tasa de ahorro.',
                 value: `${savingsRate.toFixed(1)}%`,
@@ -1385,7 +1381,6 @@ class VeedorFinanceCenter {
             
             insights.push({
                 type: 'info',
-                icon: '📊',
                 title: 'Categoría Principal',
                 description: `${categoryName} representa el ${percentage.toFixed(1)}% de tus gastos totales.`,
                 value: `€${topCategory[1].toFixed(2)}`,
@@ -1403,7 +1398,6 @@ class VeedorFinanceCenter {
                 const categoryName = this.categories.find(c => c.id === criticalBudget.category)?.name || 'Otros';
                 insights.push({
                     type: 'critical',
-                    icon: '🚨',
                     title: 'Presupuesto Crítico',
                     description: `El presupuesto de ${categoryName} está al ${((criticalBudget.spent / criticalBudget.limit) * 100).toFixed(1)}% de su límite.`,
                     value: `${((criticalBudget.spent / criticalBudget.limit) * 100).toFixed(1)}%`,
@@ -1426,7 +1420,6 @@ class VeedorFinanceCenter {
             const progress = (closestGoal.current / closestGoal.target) * 100;
             insights.push({
                 type: 'info',
-                icon: '🎯',
                 title: 'Objetivo Más Cercano',
                 description: `"${closestGoal.name}" está al ${progress.toFixed(1)}% de completarse.`,
                 value: `${progress.toFixed(1)}%`,
@@ -1441,7 +1434,6 @@ class VeedorFinanceCenter {
         if (trends.income > 5) {
             insights.push({
                 type: 'success',
-                icon: '📈',
                 title: 'Crecimiento de Ingresos',
                 description: 'Tus ingresos han aumentado significativamente este mes.',
                 value: `+${trends.income.toFixed(1)}%`,
@@ -1490,7 +1482,7 @@ class VeedorFinanceCenter {
                 <div class="envelope-card">
                     <div class="envelope-header">
                         <div class="envelope-name">${envelope.name}</div>
-                        <div class="envelope-icon">${envelope.icon}</div>
+                        <div class="envelope-color" style="background-color: ${envelope.color}; width: 20px; height: 20px; border-radius: 50%;"></div>
                     </div>
                     <div class="envelope-amount">€${envelope.amount.toFixed(2)}</div>
                     <div class="envelope-progress">

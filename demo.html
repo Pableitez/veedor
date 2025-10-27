@@ -1750,6 +1750,27 @@
         .health-metric.poor .health-metric-value {
             color: #F44336;
         }
+        
+        /* Section Descriptions */
+        .section-description {
+            margin-bottom: var(--space-md);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--accent);
+        }
+        
+        .section-description p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        
+        .section-description strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
     </style>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="assets/images/icon-192x192.png">
@@ -1848,7 +1869,7 @@
                 <!-- Net Worth Tracking (Personal Capital Style) -->
                 <div class="net-worth-section">
                     <div class="net-worth-header">
-                        <h3>💰 Patrimonio Neto</h3>
+                        <h3>Patrimonio Neto</h3>
                         <div class="net-worth-value" id="net-worth-value">€45,230.00</div>
                         <div class="net-worth-change positive" id="net-worth-change">+€2,150.00 este mes</div>
                     </div>
@@ -1868,8 +1889,8 @@
                 <div class="dashboard-nav">
                     <button class="nav-tab active" data-tab="overview">Resumen</button>
                     <button class="nav-tab" data-tab="transactions">Transacciones</button>
-                    <button class="nav-tab" data-tab="budgets">Presupuestos</button>
-                    <button class="nav-tab" data-tab="envelopes">Sobres</button>
+                    <button class="nav-tab" data-tab="budgets">Límites de Gasto</button>
+                    <button class="nav-tab" data-tab="envelopes">Sobres de Dinero</button>
                     <button class="nav-tab" data-tab="goals">Objetivos</button>
                     <button class="nav-tab" data-tab="analytics">Análisis</button>
                 </div>
@@ -1944,8 +1965,11 @@
                     <!-- Budgets Tab -->
                     <div id="budgets" class="tab-panel">
                         <div class="budgets-header">
-                            <h3>Control de Presupuestos</h3>
-                            <button class="btn btn-primary" data-action="add-budget">+ Nuevo Presupuesto</button>
+                            <h3>Límites de Gasto</h3>
+                            <div class="section-description">
+                                <p>Establece límites máximos de gasto por categoría. Recibirás alertas cuando te acerques al límite.</p>
+                            </div>
+                            <button class="btn btn-primary" data-action="add-budget">+ Nuevo Límite</button>
                         </div>
                         
                         <div class="budgets-summary">
@@ -1965,10 +1989,13 @@
                     <div id="envelopes" class="tab-panel">
                         <div class="envelope-system">
                             <div class="section-header">
-                                <h3>💼 Sistema de Sobres</h3>
+                                <h3>Sobres de Dinero</h3>
+                                <div class="section-description">
+                                    <p>Asigna dinero real a categorías específicas. Solo puedes gastar lo que hay en cada sobre.</p>
+                                </div>
                                 <div class="envelope-controls">
                                     <button class="btn-primary" onclick="showEnvelopeModal()">+ Nuevo Sobre</button>
-                                    <button class="btn-outline" onclick="showEnvelopeSettings()">⚙️ Configurar</button>
+                                    <button class="btn-outline" onclick="showEnvelopeSettings()">Configurar</button>
                                 </div>
                             </div>
                             <div class="envelope-grid" id="envelope-grid">
