@@ -417,12 +417,23 @@ function initializeDemoWithData() {
 
 // Función limpia para inicializar gráficas
 function initializeCharts() {
-    if (window.dashboardManager && typeof Chart !== 'undefined') {
-        try {
-            window.dashboardManager.updateOverviewCharts();
-        } catch (error) {
-            console.error('Error inicializando gráficas:', error);
-        }
+    console.log('Inicializando gráficas...');
+    
+    if (!window.dashboardManager) {
+        console.error('DashboardManager no disponible');
+        return;
+    }
+    
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js no disponible');
+        return;
+    }
+    
+    try {
+        window.dashboardManager.updateOverviewCharts();
+        console.log('✅ Gráficas inicializadas correctamente');
+    } catch (error) {
+        console.error('❌ Error inicializando gráficas:', error);
     }
 }
 
@@ -435,16 +446,77 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // También inicializar cuando la ventana se carga completamente
 window.addEventListener('load', () => {
+    console.log('Ventana cargada completamente');
+    
+    // Esperar un poco más para asegurar que todo esté listo
     setTimeout(() => {
+        console.log('Verificando componentes...');
+        console.log('Chart.js:', typeof Chart !== 'undefined');
+        console.log('DashboardManager:', !!window.dashboardManager);
+        
         if (typeof Chart !== 'undefined' && window.dashboardManager) {
             initializeCharts();
+        } else {
+            console.log('Esperando componentes...');
+            // Reintentar después de más tiempo
+            setTimeout(() => {
+                if (typeof Chart !== 'undefined' && window.dashboardManager) {
+                    initializeCharts();
+                } else {
+                    console.error('No se pudieron cargar los componentes necesarios');
+                }
+            }, 1000);
         }
-    }, 200);
+    }, 500);
 });
 
-// Hacer las funciones globales (solo las necesarias)
-window.initializeDemoWithData = initializeDemoWithData;
-window.initializeCharts = initializeCharts;
+// Función de debug temporal para verificar el estado
+function debugCharts() {
+    console.log('=== DEBUG CHARTS ===');
+    console.log('Chart.js disponible:', typeof Chart !== 'undefined');
+    console.log('DashboardManager disponible:', !!window.dashboardManager);
+    
+    const canvas1 = document.getElementById('overviewCategoryChart');
+    const canvas2 = document.getElementById('overviewTrendsChart');
+    const canvas3 = document.getElementById('overviewIncomeExpensesChart');
+    
+    console.log('Canvas encontrados:', {
+        categoryChart: !!canvas1,
+        trendsChart: !!canvas2,
+        incomeExpensesChart: !!canvas3
+    });
+    
+    if (canvas1) console.log('Canvas 1 dimensions:', canvas1.width, 'x', canvas1.height);
+    if (canvas2) console.log('Canvas 2 dimensions:', canvas2.width, 'x', canvas2.height);
+    if (canvas3) console.log('Canvas 3 dimensions:', canvas3.width, 'x', canvas3.height);
+    
+    // Intentar crear una gráfica simple
+    if (typeof Chart !== 'undefined' && canvas1) {
+        try {
+            const ctx = canvas1.getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Test'],
+                    datasets: [{
+                        data: [100],
+                        backgroundColor: ['#8B5CF6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            console.log('✅ Gráfica de prueba creada exitosamente');
+        } catch (error) {
+            console.error('❌ Error creando gráfica de prueba:', error);
+        }
+    }
+}
+
+// Hacer la función global
+window.debugCharts = debugCharts;
 
 function loadTheme() {
     const savedTheme = localStorage.getItem('veedor-theme');
