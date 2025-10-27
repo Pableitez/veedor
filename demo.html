@@ -4,57 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo - Veedor</title>
-    <meta name="description" content="Descubre cómo funciona Veedor con nuestra demo interactiva">
-    <meta name="keywords" content="demo, finanzas personales, gestión de dinero, Veedor">
-    <meta name="author" content="Veedor">
-    <meta name="robots" content="index, follow">
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="Demo - Veedor">
-    <meta property="og:description" content="Descubre cómo funciona Veedor con nuestra demo interactiva">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://pableitez.github.io/veedor/demo.html">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Demo - Veedor">
-    <meta name="twitter:description" content="Descubre cómo funciona Veedor con nuestra demo interactiva">
-    
-    <!-- PWA -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <meta name="theme-color" content="#8b5cf6">
-    
+    <meta name="description" content="Demo de Veedor - Gestión financiera personal">
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/images/icon-192x192.png">
+    <meta name="theme-color" content="#8B5CF6">
 </head>
 <body data-theme="dark">
     <!-- Header -->
     <header class="header">
         <nav class="navbar">
             <div class="nav-brand">
-                <h1><a href="index.html">Veedor</a></h1>
+                <h1>Veedor</h1>
             </div>
             <ul class="nav-menu" id="nav-menu">
-                <!-- Botones fijos siempre visibles -->
                 <li><button class="nav-btn" onclick="window.location.href='index.html'">Inicio</button></li>
                 <li><button class="nav-btn" onclick="window.location.href='index.html#features'">Funciones</button></li>
-                
-                <!-- Menú desplegable para funcionalidades dinámicas -->
                 <li class="nav-dropdown">
-                    <button class="nav-btn nav-btn-dropdown" onclick="toggleUserMenu(); closeMobileMenu();">
+                    <button class="nav-btn nav-btn-dropdown" onclick="toggleUserMenu();">
                         <span id="user-menu-text">Mi Cuenta</span>
                         <span class="dropdown-arrow">▼</span>
                     </button>
                     <div class="nav-dropdown-content" id="nav-dropdown-content">
-                        <button class="nav-btn nav-btn-dropdown-item" id="dashboard-link" style="display: none;" onclick="window.location.href='dashboard.html'; closeMobileMenu();">Mis Finanzas</button>
-                        <button class="nav-btn nav-btn-dropdown-item" id="auth-button" onclick="showAuth(); closeMobileMenu();">Acceder</button>
-                        <button class="nav-btn nav-btn-dropdown-item" id="logout-button" style="display: none;" onclick="logout(); closeMobileMenu();">Cerrar Sesión</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="dashboard-link" style="display: none;" onclick="showDashboard();">Mis Finanzas</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="auth-button" onclick="showAuth();">Acceder</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="logout-button" style="display: none;" onclick="logout();">Cerrar Sesión</button>
                     </div>
                 </li>
             </ul>
-            
-            <!-- Hamburger menu button -->
             <button class="hamburger" onclick="toggleMobileMenu()">
                 <span></span>
                 <span></span>
@@ -63,26 +40,14 @@
         </nav>
     </header>
 
-    <!-- Botón de cambio de tema flotante -->
-    <button class="theme-toggle-floating" onclick="toggleTheme()" title="Cambiar tema">
-        <span class="theme-icon">☀️</span>
-    </button>
-
-    <!-- Demo Dashboard Section -->
-    <section class="dashboard-section" id="dashboard">
-        <div class="container">
-            <!-- Dashboard Header -->
+    <!-- Demo Dashboard -->
+    <main class="main-content">
+        <section class="dashboard-section" id="dashboard">
             <div class="dashboard-header">
-                <div class="dashboard-title">
-                    <h2>Mis Finanzas</h2>
-                    <p>Gestión completa de tu dinero</p>
-                </div>
-                <div class="dashboard-actions">
-                    <button class="btn btn-primary" onclick="showTransactionModal()">+ Nuevo Gasto</button>
-                </div>
+                <h2>Mis Finanzas</h2>
+                <p>Gestiona tu dinero de forma inteligente</p>
             </div>
 
-            <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <!-- Balance Overview -->
                 <div class="balance-overview">
@@ -105,315 +70,257 @@
 
                 <!-- Dashboard Tabs -->
                 <div class="dashboard-tabs">
-                    <button class="tab-btn active" onclick="showTab('transactions')">Transacciones</button>
-                    <button class="tab-btn" onclick="showTab('analytics')">Análisis</button>
+                    <button class="tab-btn active" onclick="showTab('overview')">Resumen</button>
+                    <button class="tab-btn" onclick="showTab('transactions')">Transacciones</button>
                     <button class="tab-btn" onclick="showTab('budgets')">Presupuestos</button>
                     <button class="tab-btn" onclick="showTab('goals')">Objetivos</button>
+                    <button class="tab-btn" onclick="showTab('analytics')">Análisis</button>
                 </div>
 
-                <!-- Transactions Tab -->
-                <div class="tab-content active" id="transactions-tab">
-                    <div class="transactions-header">
-                        <h3>Últimas Transacciones</h3>
-                        <div class="transactions-filters">
-                            <select class="filter-select">
-                                <option value="all">Todas las categorías</option>
-                                <option value="food">Alimentación</option>
-                                <option value="transport">Transporte</option>
-                                <option value="entertainment">Entretenimiento</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="transactions-list">
-                        <div class="transaction-item">
-                            <div class="transaction-icon">🍕</div>
-                            <div class="transaction-details">
-                                <div class="transaction-title">Pizza Delivery</div>
-                                <div class="transaction-category">Alimentación</div>
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Overview Tab -->
+                    <div class="tab-panel active" id="overview">
+                        <div class="overview-grid">
+                            <div class="overview-card">
+                                <h3>Últimas Transacciones</h3>
+                                <div class="transaction-list">
+                                    <div class="transaction-item">
+                                        <div class="transaction-info">
+                                            <span class="transaction-category">Comida</span>
+                                            <span class="transaction-description">Supermercado</span>
+                                        </div>
+                                        <span class="transaction-amount negative">-€45.30</span>
+                                    </div>
+                                    <div class="transaction-item">
+                                        <div class="transaction-info">
+                                            <span class="transaction-category">Transporte</span>
+                                            <span class="transaction-description">Gasolina</span>
+                                        </div>
+                                        <span class="transaction-amount negative">-€32.00</span>
+                                    </div>
+                                    <div class="transaction-item">
+                                        <div class="transaction-info">
+                                            <span class="transaction-category">Salario</span>
+                                            <span class="transaction-description">Nómina</span>
+                                        </div>
+                                        <span class="transaction-amount positive">+€2,500.00</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="transaction-amount negative">-€15.50</div>
-                        </div>
-                        <div class="transaction-item">
-                            <div class="transaction-icon">⛽</div>
-                            <div class="transaction-details">
-                                <div class="transaction-title">Gasolina</div>
-                                <div class="transaction-category">Transporte</div>
-                            </div>
-                            <div class="transaction-amount negative">-€45.00</div>
-                        </div>
-                        <div class="transaction-item">
-                            <div class="transaction-icon">💰</div>
-                            <div class="transaction-details">
-                                <div class="transaction-title">Salario</div>
-                                <div class="transaction-category">Ingresos</div>
-                            </div>
-                            <div class="transaction-amount positive">+€2,500.00</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Analytics Tab -->
-                <div class="tab-content" id="analytics-tab">
-                    <div class="analytics-grid">
-                        <div class="analytics-card">
-                            <h4>Gastos por Categoría</h4>
-                            <div class="chart-container">
-                                <canvas id="categoryChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="analytics-card">
-                            <h4>Tendencia Mensual</h4>
-                            <div class="chart-container">
-                                <canvas id="trendChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Budgets Tab -->
-                <div class="tab-content" id="budgets-tab">
-                    <div class="budgets-header">
-                        <h3>Presupuestos</h3>
-                        <button class="btn btn-secondary" onclick="showBudgetModal()">+ Nuevo Presupuesto</button>
-                    </div>
-                    <div class="budgets-list">
-                        <div class="budget-item">
-                            <div class="budget-info">
-                                <h4>Alimentación</h4>
-                                <p>€300 / €400</p>
-                            </div>
-                            <div class="budget-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 75%"></div>
+                            <div class="overview-card">
+                                <h3>Presupuestos</h3>
+                                <div class="budget-list">
+                                    <div class="budget-item">
+                                        <div class="budget-info">
+                                            <span class="budget-category">Comida</span>
+                                            <span class="budget-progress">€180 / €200</span>
+                                        </div>
+                                        <div class="budget-bar">
+                                            <div class="budget-fill" style="width: 90%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="budget-item">
+                                        <div class="budget-info">
+                                            <span class="budget-category">Transporte</span>
+                                            <span class="budget-progress">€120 / €150</span>
+                                        </div>
+                                        <div class="budget-bar">
+                                            <div class="budget-fill" style="width: 80%"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="budget-item">
-                            <div class="budget-info">
+                    </div>
+
+                    <!-- Transactions Tab -->
+                    <div class="tab-panel" id="transactions">
+                        <div class="transactions-header">
+                            <h3>Transacciones</h3>
+                            <button class="btn btn-primary" onclick="openTransactionModal()">Agregar Transacción</button>
+                        </div>
+                        <div class="transactions-list">
+                            <div class="transaction-item">
+                                <div class="transaction-info">
+                                    <span class="transaction-category">Comida</span>
+                                    <span class="transaction-description">Supermercado</span>
+                                    <span class="transaction-date">15 Dic 2024</span>
+                                </div>
+                                <span class="transaction-amount negative">-€45.30</span>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="transaction-info">
+                                    <span class="transaction-category">Transporte</span>
+                                    <span class="transaction-description">Gasolina</span>
+                                    <span class="transaction-date">14 Dic 2024</span>
+                                </div>
+                                <span class="transaction-amount negative">-€32.00</span>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="transaction-info">
+                                    <span class="transaction-category">Salario</span>
+                                    <span class="transaction-description">Nómina</span>
+                                    <span class="transaction-date">1 Dic 2024</span>
+                                </div>
+                                <span class="transaction-amount positive">+€2,500.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Budgets Tab -->
+                    <div class="tab-panel" id="budgets">
+                        <div class="budgets-header">
+                            <h3>Presupuestos</h3>
+                            <button class="btn btn-primary" onclick="openBudgetModal()">Crear Presupuesto</button>
+                        </div>
+                        <div class="budgets-grid">
+                            <div class="budget-card">
+                                <h4>Comida</h4>
+                                <div class="budget-amount">€180 / €200</div>
+                                <div class="budget-bar">
+                                    <div class="budget-fill" style="width: 90%"></div>
+                                </div>
+                                <div class="budget-status warning">90% usado</div>
+                            </div>
+                            <div class="budget-card">
                                 <h4>Transporte</h4>
-                                <p>€120 / €200</p>
-                            </div>
-                            <div class="budget-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 60%"></div>
+                                <div class="budget-amount">€120 / €150</div>
+                                <div class="budget-bar">
+                                    <div class="budget-fill" style="width: 80%"></div>
                                 </div>
+                                <div class="budget-status good">80% usado</div>
+                            </div>
+                            <div class="budget-card">
+                                <h4>Entretenimiento</h4>
+                                <div class="budget-amount">€45 / €100</div>
+                                <div class="budget-bar">
+                                    <div class="budget-fill" style="width: 45%"></div>
+                                </div>
+                                <div class="budget-status good">45% usado</div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Goals Tab -->
-                <div class="tab-content" id="goals-tab">
-                    <div class="goals-header">
-                        <h3>Objetivos Financieros</h3>
-                        <button class="btn btn-secondary" onclick="showGoalModal()">+ Nuevo Objetivo</button>
-                    </div>
-                    <div class="goals-list">
-                        <div class="goal-item">
-                            <div class="goal-info">
-                                <h4>Vacaciones de Verano</h4>
-                                <p>€800 / €1,500</p>
-                            </div>
-                            <div class="goal-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 53%"></div>
-                                </div>
-                            </div>
+                    <!-- Goals Tab -->
+                    <div class="tab-panel" id="goals">
+                        <div class="goals-header">
+                            <h3>Objetivos Financieros</h3>
+                            <button class="btn btn-primary" onclick="openGoalModal()">Crear Objetivo</button>
                         </div>
-                        <div class="goal-item">
-                            <div class="goal-info">
+                        <div class="goals-grid">
+                            <div class="goal-card">
+                                <h4>Vacaciones</h4>
+                                <div class="goal-amount">€800 / €1,500</div>
+                                <div class="goal-bar">
+                                    <div class="goal-fill" style="width: 53%"></div>
+                                </div>
+                                <div class="goal-progress">53% completado</div>
+                            </div>
+                            <div class="goal-card">
                                 <h4>Fondo de Emergencia</h4>
-                                <p>€2,000 / €5,000</p>
+                                <div class="goal-amount">€2,000 / €5,000</div>
+                                <div class="goal-bar">
+                                    <div class="goal-fill" style="width: 40%"></div>
+                                </div>
+                                <div class="goal-progress">40% completado</div>
                             </div>
-                            <div class="goal-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 40%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Tab -->
+                    <div class="tab-panel" id="analytics">
+                        <div class="analytics-header">
+                            <h3>Análisis Financiero</h3>
+                        </div>
+                        <div class="analytics-grid">
+                            <div class="analytics-card">
+                                <h4>Gastos por Categoría</h4>
+                                <div class="analytics-chart">
+                                    <div class="chart-bar">
+                                        <div class="bar-fill" style="width: 60%; background: var(--accent);"></div>
+                                        <span class="bar-label">Comida (€180)</span>
+                                    </div>
+                                    <div class="chart-bar">
+                                        <div class="bar-fill" style="width: 40%; background: var(--success);"></div>
+                                        <span class="bar-label">Transporte (€120)</span>
+                                    </div>
+                                    <div class="chart-bar">
+                                        <div class="bar-fill" style="width: 20%; background: var(--warning);"></div>
+                                        <span class="bar-label">Entretenimiento (€45)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="analytics-card">
+                                <h4>Tendencias Mensuales</h4>
+                                <div class="trend-info">
+                                    <div class="trend-item">
+                                        <span class="trend-label">Ingresos</span>
+                                        <span class="trend-value positive">+8.5%</span>
+                                    </div>
+                                    <div class="trend-item">
+                                        <span class="trend-label">Gastos</span>
+                                        <span class="trend-value negative">-3.2%</span>
+                                    </div>
+                                    <div class="trend-item">
+                                        <span class="trend-label">Ahorro</span>
+                                        <span class="trend-value positive">+15.7%</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Transaction Modal -->
-    <div class="modal" id="transaction-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Nuevo Gasto</h2>
-                <button class="close-btn" onclick="closeModal('transaction-modal')">&times;</button>
-            </div>
-            <div class="modal-form">
-                <div class="form-group">
-                    <label for="transaction-description">Descripción</label>
-                    <input type="text" id="transaction-description" placeholder="Ej: Pizza Delivery">
-                </div>
-                <div class="form-group">
-                    <label for="transaction-amount">Cantidad</label>
-                    <input type="number" id="transaction-amount" placeholder="15.50" step="0.01">
-                </div>
-                <div class="form-group">
-                    <label for="transaction-category">Categoría</label>
-                    <select id="transaction-category">
-                        <option value="food">Alimentación</option>
-                        <option value="transport">Transporte</option>
-                        <option value="entertainment">Entretenimiento</option>
-                        <option value="utilities">Servicios</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-primary" onclick="addTransaction()">Agregar Gasto</button>
-                    <button class="btn btn-secondary" onclick="closeModal('transaction-modal')">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Auth Modal -->
-    <div class="auth-overlay" id="auth-overlay">
-        <div class="auth-modal">
-            <div class="auth-header">
-                <h2 id="auth-title">Acceder</h2>
-                <button class="close-btn" onclick="hideAuth()">&times;</button>
-            </div>
-            
-            <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchAuthTab('login')">Acceder</button>
-                <button class="auth-tab" onclick="switchAuthTab('register')">Registrarse</button>
-            </div>
-            
-            <div class="auth-form" id="login-form">
-                <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" placeholder="tu@email.com" required>
-                    <div class="error-message" id="login-email-error"></div>
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Contraseña</label>
-                    <input type="password" id="login-password" placeholder="Tu contraseña" required>
-                    <div class="error-message" id="login-password-error"></div>
-                </div>
-                <button class="auth-submit" onclick="login()">Acceder</button>
-                
-                <div class="social-login">
-                    <h3>O accede con</h3>
-                    <div class="social-buttons">
-                        <button class="social-btn" onclick="loginWithGmail()">
-                            <svg class="social-icon" viewBox="0 0 24 24">
-                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                            </svg>
-                            Gmail
-                        </button>
-                        <button class="social-btn" onclick="loginWithNotion()">
-                            <svg class="social-icon" viewBox="0 0 24 24">
-                                <path fill="#000000" d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.904-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.466.326.747.7.747 1.214v15.177c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.68-1.632z"/>
-                            </svg>
-                            Notion
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="auth-form" id="register-form" style="display: none;">
-                <div class="form-group">
-                    <label for="register-name">Nombre completo</label>
-                    <input type="text" id="register-name" placeholder="Tu nombre completo" required>
-                    <div class="error-message" id="register-name-error"></div>
-                </div>
-                <div class="form-group">
-                    <label for="register-email">Email</label>
-                    <input type="email" id="register-email" placeholder="tu@email.com" required>
-                    <div class="error-message" id="register-email-error"></div>
-                </div>
-                <div class="form-group">
-                    <label for="register-password">Contraseña</label>
-                    <input type="password" id="register-password" placeholder="Mínimo 8 caracteres" required>
-                    <div class="error-message" id="register-password-error"></div>
-                </div>
-                <button class="auth-submit" onclick="register()">Registrarse</button>
-                
-                <div class="social-login">
-                    <h3>O regístrate con</h3>
-                    <div class="social-buttons">
-                        <button class="social-btn" onclick="loginWithGmail()">
-                            <svg class="social-icon" viewBox="0 0 24 24">
-                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                            </svg>
-                            Gmail
-                        </button>
-                        <button class="social-btn" onclick="loginWithNotion()">
-                            <svg class="social-icon" viewBox="0 0 24 24">
-                                <path fill="#000000" d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.904-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.466.326.747.7.747 1.214v15.177c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.68-1.632z"/>
-                            </svg>
-                            Notion
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Veedor</h3>
-                    <p>La gestión de finanzas personales más simple y efectiva.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><button onclick="openModal('privacy-modal')">Política de Privacidad</button></li>
-                        <li><button onclick="openModal('terms-modal')">Términos Legales</button></li>
-                        <li><button onclick="openModal('cookies-modal')">Política de Cookies</button></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Descargar App</h4>
-                    <div class="download-badges">
-                        <a href="https://apps.apple.com/app/veedor" target="_blank">
-                            <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the App Store" class="download-badge">
-                        </a>
-                        <a href="https://play.google.com/store/apps/details?id=com.veedor.app" target="_blank">
-                            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" class="download-badge">
-                        </a>
-                    </div>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Veedor</h3>
+                <p>Gestión financiera personal</p>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#" onclick="openModal('privacy')">Política de Privacidad</a></li>
+                    <li><a href="#" onclick="openModal('terms')">Términos Legales</a></li>
+                    <li><a href="#" onclick="openModal('cookies')">Política de Cookies</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Descargar App</h4>
+                <div class="download-badges">
+                    <a href="#" onclick="downloadApp('ios')">
+                        <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the App Store" class="download-badge">
+                    </a>
+                    <a href="#" onclick="downloadApp('android')">
+                        <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" class="download-badge">
+                    </a>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Veedor. Todos los derechos reservados.</p>
-            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Veedor. Todos los derechos reservados.</p>
         </div>
     </footer>
 
-    <!-- Legal Modals -->
+    <!-- Botón de cambio de tema flotante -->
+    <button class="theme-toggle-floating" onclick="toggleTheme()" title="Cambiar tema">
+        <span class="theme-icon">☀️</span>
+    </button>
+
+    <!-- Modales -->
     <div class="modal" id="privacy-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Política de Privacidad</h2>
-                <button class="close-btn" onclick="closeModal('privacy-modal')">&times;</button>
+                <button class="close-btn" onclick="closeModal('privacy')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="legal-section">
-                    <h3>Información que recopilamos</h3>
-                    <p>Recopilamos únicamente la información necesaria para proporcionar nuestros servicios financieros.</p>
-                </div>
-                <div class="legal-section">
-                    <h3>Cómo usamos tu información</h3>
-                    <p>Utilizamos tu información para mejorar nuestros servicios y proporcionarte una experiencia personalizada.</p>
-                </div>
-                <div class="legal-section">
-                    <h3>Protección de datos</h3>
-                    <p>Tus datos están protegidos con las mejores prácticas de seguridad y encriptación.</p>
-                </div>
+                <p>Respetamos tu privacidad y protegemos tus datos personales.</p>
             </div>
         </div>
     </div>
@@ -422,21 +329,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Términos Legales</h2>
-                <button class="close-btn" onclick="closeModal('terms-modal')">&times;</button>
+                <button class="close-btn" onclick="closeModal('terms')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="legal-section">
-                    <h3>Aceptación de términos</h3>
-                    <p>Al usar Veedor, aceptas estos términos de servicio.</p>
-                </div>
-                <div class="legal-section">
-                    <h3>Uso del servicio</h3>
-                    <p>Veedor es una herramienta de gestión financiera personal. Úsala responsablemente.</p>
-                </div>
-                <div class="legal-section">
-                    <h3>Limitación de responsabilidad</h3>
-                    <p>Veedor no se hace responsable de decisiones financieras basadas en la información proporcionada.</p>
-                </div>
+                <p>Términos y condiciones de uso de Veedor.</p>
             </div>
         </div>
     </div>
@@ -445,30 +341,66 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Política de Cookies</h2>
-                <button class="close-btn" onclick="closeModal('cookies-modal')">&times;</button>
+                <button class="close-btn" onclick="closeModal('cookies')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="legal-section">
-                    <h3>¿Qué son las cookies?</h3>
-                    <p>Las cookies son pequeños archivos que nos ayudan a mejorar tu experiencia en Veedor.</p>
+                <p>Utilizamos cookies para mejorar tu experiencia.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="auth-overlay" id="auth-overlay">
+        <div class="auth-modal">
+            <div class="auth-header">
+                <h2>Acceder</h2>
+                <button class="close-btn" onclick="hideAuth()">&times;</button>
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Iniciar Sesión</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">Registrarse</button>
+            </div>
+            <div class="auth-form" id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                    <div class="error-message"></div>
                 </div>
-                <div class="legal-section">
-                    <h3>Cómo las usamos</h3>
-                    <p>Utilizamos cookies para recordar tus preferencias y mejorar el rendimiento del sitio.</p>
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" required>
+                    <div class="error-message"></div>
                 </div>
-                <div class="legal-section">
-                    <h3>Control de cookies</h3>
-                    <p>Puedes controlar las cookies desde la configuración de tu navegador.</p>
+                <button class="auth-submit" onclick="login()">Iniciar Sesión</button>
+            </div>
+            <div class="auth-form" id="register-form" style="display: none;">
+                <div class="form-group">
+                    <label for="register-name">Nombre</label>
+                    <input type="text" id="register-name" required>
+                    <div class="error-message"></div>
                 </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" required>
+                    <div class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Contraseña</label>
+                    <input type="password" id="register-password" required>
+                    <div class="error-message"></div>
+                </div>
+                <button class="auth-submit" onclick="register()">Registrarse</button>
+            </div>
+            <div class="auth-footer">
+                <p>¿No tienes cuenta? <a href="#" onclick="switchAuthTab('register')">Regístrate aquí</a></p>
             </div>
         </div>
     </div>
 
     <!-- Scripts -->
-    <script src="js/config.js" defer></script>
     <script src="js/app.js" defer></script>
     <script src="js/dashboard.js" defer></script>
-    <script src="js/chart.js" defer></script>
+    <script src="js/ui.js" defer></script>
     <script src="js/validations.js" defer></script>
     <script src="js/tests.js" defer></script>
 </body>

@@ -1244,9 +1244,8 @@ function closeDemo() {
 }
 
 // Función para manejar la demo desde el botón "Ver Demo"
-// Función para mostrar demo (ahora redirige a demo.html)
 function showDemo() {
-    window.location.href = 'demo.html';
+    openDemo();
 }
 
 // Mostrar notificación de éxito de la demo
