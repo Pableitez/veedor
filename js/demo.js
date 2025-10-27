@@ -2633,16 +2633,13 @@ function closeMobileMenu() {
     navMenu.classList.remove('active');
 }
 
-function toggleUserMenu() {
-    const dropdown = document.querySelector('.nav-dropdown');
-    dropdown.classList.toggle('active');
-}
+// Función duplicada eliminada - ya existe arriba
 
 function showDashboard() {
     // Ya estamos en el dashboard, no hacer nada
 }
 
-    function logout() {
+function logout() {
         // Limpiar datos de sesión
         localStorage.removeItem('veedor-user');
         localStorage.removeItem('veedor-session');
