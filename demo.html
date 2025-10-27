@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo - Veedor</title>
-    <meta name="description" content="Demo de Veedor - Gestión financiera personal">
+    <meta name="description" content="Demo de Veedor - Centro de Finanzas Personal">
     <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Estilos específicos para la página demo */
         body {
@@ -17,7 +18,7 @@
         }
         
         .header {
-            position: relative !important; /* Cambiar de fixed a relative */
+            position: relative !important;
             top: auto !important;
         }
         
@@ -38,18 +39,1167 @@
             padding: 0 var(--space-lg);
         }
         
-        /* Asegurar que el dashboard se vea completo */
+        /* Dashboard Header */
         .dashboard-header {
             text-align: center;
             margin-bottom: var(--space-xl);
         }
         
+        .dashboard-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+            background: linear-gradient(135deg, var(--accent), #A855F7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .dashboard-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Financial Summary */
+        .financial-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .summary-card h3 {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .summary-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .summary-change {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .summary-change.positive {
+            color: #4CAF50;
+        }
+        
+        .summary-change.negative {
+            color: #F44336;
+        }
+        
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: var(--space-xs);
+        }
+        
+        /* Dashboard Navigation */
+        .dashboard-nav {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-sm);
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            background: none;
+            border: none;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        
+        .nav-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .nav-tab:hover:not(.active) {
+            background: var(--card-bg);
+        }
+        
+        /* Dashboard Tabs */
         .dashboard-tabs {
+            min-height: 600px;
+        }
+        
+        .tab-panel {
+            display: none;
+        }
+        
+        .tab-panel.active {
+            display: block;
+        }
+        
+        /* Overview Tab */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-lg);
+        }
+        
+        .overview-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+        
+        .overview-card.large {
+            grid-column: 1 / -1;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: var(--space-lg);
         }
         
-        .tab-content {
-            min-height: 400px;
+        .card-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        /* Recent Transactions */
+        .recent-transactions {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s ease;
+        }
+        
+        .transaction-item:hover {
+            background: var(--card-bg);
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .transaction-info {
+            flex: 1;
+        }
+        
+        .transaction-description {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .transaction-meta {
+            display: flex;
+            gap: var(--space-sm);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .transaction-amount {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .transaction-amount.positive {
+            color: #4CAF50;
+        }
+        
+        .transaction-amount.negative {
+            color: #F44336;
+        }
+        
+        /* Budgets Overview */
+        .budgets-overview {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .budget-item {
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .budget-item:last-child {
+            border-bottom: none;
+        }
+        
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .budget-category {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .budget-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        .budget-name {
+            font-weight: 500;
+        }
+        
+        .budget-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        
+        .budget-status.excellent {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .budget-status.good {
+            background: #FF9800;
+            color: white;
+        }
+        
+        .budget-status.warning {
+            background: #F44336;
+            color: white;
+        }
+        
+        .budget-progress {
+            margin-bottom: var(--space-sm);
+        }
+        
+        .budget-bar {
+            height: 8px;
+            background: var(--card-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .budget-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .budget-amounts {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .budget-remaining {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+        
+        /* Goals Overview */
+        .goals-overview {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .goal-item {
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .goal-item:last-child {
+            border-bottom: none;
+        }
+        
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .goal-name {
+            font-weight: 500;
+        }
+        
+        .goal-priority {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        
+        .goal-progress {
+            margin-bottom: var(--space-sm);
+        }
+        
+        .goal-bar {
+            height: 8px;
+            background: var(--card-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .goal-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8B5CF6, #A855F7);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .goal-percentage {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+        
+        .goal-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+        
+        /* Spending Chart */
+        .spending-chart {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .chart-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .chart-info {
+            min-width: 150px;
+        }
+        
+        .chart-category {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .chart-amount {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .chart-bar {
+            flex: 1;
+            height: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .chart-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Transactions Tab */
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .transactions-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            padding: var(--space-lg);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .summary-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .summary-value.positive {
+            color: #4CAF50;
+        }
+        
+        .summary-value.negative {
+            color: #F44336;
+        }
+        
+        .transactions-filters {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .filters-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            align-items: end;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+        
+        .filter-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .filter-select,
+        .filter-input {
+            padding: var(--space-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .transactions-list {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        
+        .transaction-actions {
+            display: flex;
+            gap: var(--space-xs);
+        }
+        
+        /* Budgets Tab */
+        .budgets-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .budgets-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            padding: var(--space-lg);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+        }
+        
+        .budgets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .budget-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+        
+        .budget-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+        
+        .budget-daily {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+        
+        .budget-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .budget-alerts {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .alert-item.warning {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+        
+        .alert-item.info {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+        
+        .alert-icon {
+            font-size: 1.2rem;
+        }
+        
+        .alert-title {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .alert-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Goals Tab */
+        .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .goals-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            padding: var(--space-lg);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+        }
+        
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .goal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+        
+        .goal-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .goals-progress {
+            margin-bottom: var(--space-lg);
+            padding: var(--space-lg);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+        
+        .progress-percentage {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: var(--card-bg);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8B5CF6, #A855F7);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Analytics Tab */
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .analytics-controls {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .analytics-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+        
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .card-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .metric-summary {
+            text-align: center;
+        }
+        
+        .metric-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .metric-value.positive {
+            color: #4CAF50;
+        }
+        
+        .metric-value.negative {
+            color: #F44336;
+        }
+        
+        .category-breakdown {
+            space-y: var(--space-md);
+        }
+        
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .category-info {
+            min-width: 120px;
+        }
+        
+        .category-name {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .category-percentage {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .category-bar {
+            flex: 1;
+            height: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .category-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .category-amount {
+            font-weight: 600;
+            min-width: 80px;
+            text-align: right;
+        }
+        
+        .trends-visualization {
+            margin-top: var(--space-lg);
+        }
+        
+        .trend-chart {
+            height: 200px;
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            position: relative;
+        }
+        
+        .trend-line {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .trend-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            transform: translate(-50%, 50%);
+        }
+        
+        .trend-point.active {
+            background: #F44336;
+            width: 12px;
+            height: 12px;
+        }
+        
+        .trend-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .trend-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+        
+        .trend-stat {
+            text-align: center;
+        }
+        
+        .trend-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .trend-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .comparison-visualization {
+            margin-top: var(--space-lg);
+        }
+        
+        .comparison-item {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .comparison-label {
+            font-weight: 500;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .comparison-bars {
+            display: flex;
+            gap: var(--space-md);
+            align-items: end;
+            height: 100px;
+        }
+        
+        .comparison-bar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .bar-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .bar-fill {
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.3s ease;
+        }
+        
+        .bar-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: var(--space-xs);
+        }
+        
+        .comparison-change {
+            text-align: center;
+            font-weight: 600;
+            margin-top: var(--space-sm);
+        }
+        
+        .income-expense-visualization {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+        
+        .balance-circle {
+            flex-shrink: 0;
+        }
+        
+        .circle-progress {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent) 0deg, var(--accent) 0deg, var(--card-bg) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .circle-content {
+            text-align: center;
+        }
+        
+        .balance-amount {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .balance-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .income-expense-breakdown {
+            flex: 1;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .breakdown-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .breakdown-content {
+            flex: 1;
+        }
+        
+        .breakdown-label {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .breakdown-amount {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .breakdown-percentage {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .analytics-insights {
+            margin-top: var(--space-lg);
+        }
+        
+        .insight-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .insight-item.success {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .insight-item.info {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+        
+        .insight-icon {
+            font-size: 1.2rem;
+        }
+        
+        .insight-title {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .insight-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .analytics-trends {
+            margin-top: var(--space-lg);
+        }
+        
+        .trends-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+        }
+        
+        .trend-summary-item {
+            text-align: center;
+            padding: var(--space-md);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+        }
+        
+        .trend-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .trend-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        /* Notifications */
+        .notifications-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .notification-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .notification-item.warning {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+        
+        .notification-item.info {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+        
+        .notification-item.success {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .notification-icon {
+            font-size: 1.2rem;
+        }
+        
+        .notification-title {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            margin-left: auto;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .financial-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-nav {
+                flex-wrap: wrap;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .budgets-grid,
+            .goals-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .financial-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .transactions-summary,
+            .budgets-summary,
+            .goals-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
     <link rel="manifest" href="manifest.json">
@@ -90,169 +1240,378 @@
     <main class="main-content">
         <section class="dashboard-section" id="dashboard">
             <div class="dashboard-header">
-                <h2>Mis Finanzas</h2>
-                <p>Gestiona tu dinero de forma inteligente</p>
+                <h2>Centro de Finanzas Personal</h2>
+                <p>Gestiona tu dinero de forma inteligente y profesional</p>
             </div>
 
             <div class="dashboard-content">
-                <!-- Balance Overview -->
-                <div class="balance-overview">
-                    <div class="balance-card">
+                <!-- Financial Summary -->
+                <div class="financial-summary">
+                    <div class="summary-card">
                         <h3>Balance Total</h3>
-                        <div class="balance-amount">€2,450.00</div>
-                        <div class="balance-change positive">+€150.00 este mes</div>
+                        <div class="summary-amount balance-amount">€2,450.00</div>
+                        <div class="summary-change positive">+€150.00 este mes</div>
                     </div>
-                    <div class="balance-card">
-                        <h3>Ingresos</h3>
-                        <div class="balance-amount">€3,200.00</div>
-                        <div class="balance-change positive">+€200.00 este mes</div>
+                    <div class="summary-card">
+                        <h3>Ingresos del Mes</h3>
+                        <div class="summary-amount income-amount">€2,800.00</div>
+                        <div class="summary-change positive">+€200.00 vs mes anterior</div>
                     </div>
-                    <div class="balance-card">
-                        <h3>Gastos</h3>
-                        <div class="balance-amount">€750.00</div>
-                        <div class="balance-change negative">-€50.00 este mes</div>
+                    <div class="summary-card">
+                        <h3>Gastos del Mes</h3>
+                        <div class="summary-amount expenses-amount">€1,350.00</div>
+                        <div class="summary-change negative">+€30.00 vs mes anterior</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Ahorro Mensual</h3>
+                        <div class="summary-amount savings-amount">€1,450.00</div>
+                        <div class="summary-change positive">52% tasa de ahorro</div>
                     </div>
                 </div>
 
-                <!-- Dashboard Tabs -->
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <span class="stat-number stat-transactions">24</span>
+                        <span class="stat-label">Transacciones este mes</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number stat-top-category">Alimentación</span>
+                        <span class="stat-label">€468.50</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number stat-days-left">12</span>
+                        <span class="stat-label">Días restantes</span>
+                    </div>
+                </div>
+
+                <!-- Dashboard Navigation -->
+                <div class="dashboard-nav">
+                    <button class="nav-tab active" data-tab="overview">Resumen</button>
+                    <button class="nav-tab" data-tab="transactions">Transacciones</button>
+                    <button class="nav-tab" data-tab="budgets">Presupuestos</button>
+                    <button class="nav-tab" data-tab="goals">Objetivos</button>
+                    <button class="nav-tab" data-tab="analytics">Análisis</button>
+                </div>
+
+                <!-- Dashboard Tabs Content -->
                 <div class="dashboard-tabs">
-                    <button class="tab-btn active" onclick="showTab('overview')">Resumen</button>
-                    <button class="tab-btn" onclick="showTab('transactions')">Transacciones</button>
-                    <button class="tab-btn" onclick="showTab('budgets')">Presupuestos</button>
-                    <button class="tab-btn" onclick="showTab('goals')">Objetivos</button>
-                    <button class="tab-btn" onclick="showTab('analytics')">Análisis</button>
-                </div>
-
-                <!-- Tab Content -->
-                <div class="tab-content">
                     <!-- Overview Tab -->
-                    <div class="tab-panel active" id="overview">
+                    <div id="overview" class="tab-panel active">
                         <div class="overview-grid">
                             <div class="overview-card">
-                                <h3>Últimas Transacciones</h3>
-                                <div class="transaction-list">
-                                    <div class="transaction-item">
-                                        <div class="transaction-info">
-                                            <span class="transaction-category">Comida</span>
-                                            <span class="transaction-description">Supermercado</span>
-                                        </div>
-                                        <span class="transaction-amount negative">-€45.30</span>
-                                    </div>
-                                    <div class="transaction-item">
-                                        <div class="transaction-info">
-                                            <span class="transaction-category">Transporte</span>
-                                            <span class="transaction-description">Gasolina</span>
-                                        </div>
-                                        <span class="transaction-amount negative">-€32.00</span>
-                                    </div>
-                                    <div class="transaction-item">
-                                        <div class="transaction-info">
-                                            <span class="transaction-category">Salario</span>
-                                            <span class="transaction-description">Nómina</span>
-                                        </div>
-                                        <span class="transaction-amount positive">+€2,500.00</span>
-                                    </div>
+                                <div class="card-header">
+                                    <h3>Transacciones Recientes</h3>
+                                    <button class="btn btn-sm btn-outline" onclick="showTab('transactions')">Ver todas</button>
+                                </div>
+                                <div class="recent-transactions">
+                                    <!-- Se llena dinámicamente -->
                                 </div>
                             </div>
+                            
                             <div class="overview-card">
-                                <h3>Presupuestos</h3>
-                                <div class="budget-list">
-                                    <div class="budget-item">
-                                        <div class="budget-info">
-                                            <span class="budget-category">Comida</span>
-                                            <span class="budget-progress">€180 / €200</span>
-                                        </div>
-                                        <div class="budget-bar">
-                                            <div class="budget-fill" style="width: 90%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="budget-item">
-                                        <div class="budget-info">
-                                            <span class="budget-category">Transporte</span>
-                                            <span class="budget-progress">€120 / €150</span>
-                                        </div>
-                                        <div class="budget-bar">
-                                            <div class="budget-fill" style="width: 80%"></div>
-                                        </div>
-                                    </div>
+                                <div class="card-header">
+                                    <h3>Presupuestos</h3>
+                                    <button class="btn btn-sm btn-outline" onclick="showTab('budgets')">Gestionar</button>
+                                </div>
+                                <div class="budgets-overview">
+                                    <!-- Se llena dinámicamente -->
+                                </div>
+                            </div>
+                            
+                            <div class="overview-card">
+                                <div class="card-header">
+                                    <h3>Objetivos</h3>
+                                    <button class="btn btn-sm btn-outline" onclick="showTab('goals')">Ver todos</button>
+                                </div>
+                                <div class="goals-overview">
+                                    <!-- Se llena dinámicamente -->
+                                </div>
+                            </div>
+                            
+                            <div class="overview-card">
+                                <div class="card-header">
+                                    <h3>Gastos por Categoría</h3>
+                                    <button class="btn btn-sm btn-outline" onclick="showTab('analytics')">Ver análisis</button>
+                                </div>
+                                <div class="spending-chart">
+                                    <!-- Se llena dinámicamente -->
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Transactions Tab -->
-                    <div class="tab-panel" id="transactions">
+                    <div id="transactions" class="tab-panel">
                         <div class="transactions-header">
-                            <h3>Transacciones</h3>
-                            <button class="btn btn-primary" data-action="add-transaction">Agregar Transacción</button>
+                            <h3>Gestión de Transacciones</h3>
+                            <button class="btn btn-primary" data-action="add-transaction">+ Nueva Transacción</button>
                         </div>
+                        
+                        <div class="transactions-summary">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                        
+                        <div class="transactions-filters">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                        
                         <div class="transactions-list">
                             <!-- Se llena dinámicamente -->
                         </div>
                     </div>
 
                     <!-- Budgets Tab -->
-                    <div class="tab-panel" id="budgets">
+                    <div id="budgets" class="tab-panel">
                         <div class="budgets-header">
-                            <h3>Presupuestos</h3>
-                            <button class="btn btn-primary" data-action="add-budget">Crear Presupuesto</button>
+                            <h3>Control de Presupuestos</h3>
+                            <button class="btn btn-primary" data-action="add-budget">+ Nuevo Presupuesto</button>
                         </div>
+                        
+                        <div class="budgets-summary">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                        
+                        <div class="budget-alerts">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                        
                         <div class="budgets-grid">
                             <!-- Se llena dinámicamente -->
                         </div>
                     </div>
 
                     <!-- Goals Tab -->
-                    <div class="tab-panel" id="goals">
+                    <div id="goals" class="tab-panel">
                         <div class="goals-header">
                             <h3>Objetivos Financieros</h3>
-                            <button class="btn btn-primary" data-action="add-goal">Crear Objetivo</button>
+                            <button class="btn btn-primary" data-action="add-goal">+ Nuevo Objetivo</button>
                         </div>
+                        
+                        <div class="goals-summary">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                        
+                        <div class="goals-progress">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                        
                         <div class="goals-grid">
                             <!-- Se llena dinámicamente -->
                         </div>
                     </div>
 
                     <!-- Analytics Tab -->
-                    <div class="tab-panel" id="analytics">
+                    <div id="analytics" class="tab-panel">
                         <div class="analytics-header">
                             <h3>Análisis Financiero</h3>
+                            <div class="analytics-controls">
+                                <select id="period-selector" class="input">
+                                    <option value="month">Este Mes</option>
+                                    <option value="quarter">Este Trimestre</option>
+                                    <option value="year">Este Año</option>
+                                    <option value="custom">Personalizado</option>
+                                </select>
+                                <button class="btn btn-outline" data-action="export-data">Exportar</button>
+                            </div>
                         </div>
+                        
                         <div class="analytics-grid">
                             <div class="analytics-card">
-                                <h4>Gastos por Categoría</h4>
-                                <div class="analytics-chart">
-                                    <div class="chart-bar">
-                                        <div class="bar-fill" style="width: 60%; background: var(--accent);"></div>
-                                        <span class="bar-label">Comida (€180)</span>
+                                <div class="card-header">
+                                    <h4>Distribución por Categorías</h4>
+                                    <span class="card-subtitle">Este mes</span>
+                                </div>
+                                <div class="card-metrics">
+                                    <div class="metric-summary">
+                                        <span class="metric-label">Total Gastado</span>
+                                        <span class="metric-value">€1,300</span>
                                     </div>
-                                    <div class="chart-bar">
-                                        <div class="bar-fill" style="width: 40%; background: var(--success);"></div>
-                                        <span class="bar-label">Transporte (€120)</span>
-                                    </div>
-                                    <div class="chart-bar">
-                                        <div class="bar-fill" style="width: 20%; background: var(--warning);"></div>
-                                        <span class="bar-label">Entretenimiento (€45)</span>
+                                    <div class="metric-summary">
+                                        <span class="metric-label">Categorías</span>
+                                        <span class="metric-value">5</span>
                                     </div>
                                 </div>
+                                <div class="category-breakdown">
+                                    <!-- Se llena dinámicamente -->
+                                </div>
                             </div>
+                            
                             <div class="analytics-card">
-                                <h4>Tendencias Mensuales</h4>
-                                <div class="trend-info">
-                                    <div class="trend-item">
-                                        <span class="trend-label">Ingresos</span>
-                                        <span class="trend-value positive">+8.5%</span>
+                                <div class="card-header">
+                                    <h4>Tendencias de Gastos</h4>
+                                    <span class="card-subtitle">Últimos 6 meses</span>
+                                </div>
+                                <div class="card-metrics">
+                                    <div class="metric-summary">
+                                        <span class="metric-label">Promedio Mensual</span>
+                                        <span class="metric-value">€1,325</span>
                                     </div>
-                                    <div class="trend-item">
-                                        <span class="trend-label">Gastos</span>
-                                        <span class="trend-value negative">-3.2%</span>
+                                    <div class="metric-summary">
+                                        <span class="metric-label">Tendencia</span>
+                                        <span class="metric-value positive">+2.3% ↗</span>
                                     </div>
-                                    <div class="trend-item">
-                                        <span class="trend-label">Ahorro</span>
-                                        <span class="trend-value positive">+15.7%</span>
+                                </div>
+                                <div class="trends-visualization">
+                                    <div class="trend-chart">
+                                        <div class="trend-line">
+                                            <div class="trend-point" style="left: 10%; bottom: 20%;" data-month="Jul" data-amount="€1,200"></div>
+                                            <div class="trend-point" style="left: 25%; bottom: 35%;" data-month="Ago" data-amount="€1,350"></div>
+                                            <div class="trend-point" style="left: 40%; bottom: 25%;" data-month="Sep" data-amount="€1,280"></div>
+                                            <div class="trend-point" style="left: 55%; bottom: 45%;" data-month="Oct" data-amount="€1,450"></div>
+                                            <div class="trend-point" style="left: 70%; bottom: 30%;" data-month="Nov" data-amount="€1,320"></div>
+                                            <div class="trend-point active" style="left: 85%; bottom: 40%;" data-month="Dic" data-amount="€1,350"></div>
+                                        </div>
+                                        <div class="trend-labels">
+                                            <span>Jul</span>
+                                            <span>Ago</span>
+                                            <span>Sep</span>
+                                            <span>Oct</span>
+                                            <span>Nov</span>
+                                            <span>Dic</span>
+                                        </div>
+                                    </div>
+                                    <div class="trend-summary">
+                                        <div class="trend-stat">
+                                            <span class="trend-label">Promedio mensual</span>
+                                            <span class="trend-value">€1,325</span>
+                                        </div>
+                                        <div class="trend-stat">
+                                            <span class="trend-label">Tendencia</span>
+                                            <span class="trend-value positive">+2.3% ↗</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div class="analytics-card">
+                                <div class="card-header">
+                                    <h4>Comparación Mensual</h4>
+                                    <span class="card-subtitle">Dic 2024 vs Nov 2024</span>
+                                </div>
+                                <div class="card-metrics">
+                                    <div class="metric-summary">
+                                        <span class="metric-label">Mejora en Ahorro</span>
+                                        <span class="metric-value positive">+€170</span>
+                                    </div>
+                                    <div class="metric-summary">
+                                        <span class="metric-label">Crecimiento</span>
+                                        <span class="metric-value positive">+13.3%</span>
+                                    </div>
+                                </div>
+                                <div class="comparison-visualization">
+                                    <div class="comparison-item">
+                                        <div class="comparison-label">Ingresos</div>
+                                        <div class="comparison-bars">
+                                            <div class="comparison-bar previous">
+                                                <span class="bar-label">Nov</span>
+                                                <div class="bar-fill" style="height: 70%; background: #4A2D1F;"></div>
+                                                <span class="bar-value">€2,600</span>
+                                            </div>
+                                            <div class="comparison-bar current">
+                                                <span class="bar-label">Dic</span>
+                                                <div class="bar-fill" style="height: 80%; background: #2D4A2D;"></div>
+                                                <span class="bar-value">€2,800</span>
+                                            </div>
+                                        </div>
+                                        <div class="comparison-change positive">+€200 (+7.7%)</div>
+                                    </div>
+                                    <div class="comparison-item">
+                                        <div class="comparison-label">Gastos</div>
+                                        <div class="comparison-bars">
+                                            <div class="comparison-bar previous">
+                                                <span class="bar-label">Nov</span>
+                                                <div class="bar-fill" style="height: 60%; background: #4A2D1F;"></div>
+                                                <span class="bar-value">€1,320</span>
+                                            </div>
+                                            <div class="comparison-bar current">
+                                                <span class="bar-label">Dic</span>
+                                                <div class="bar-fill" style="height: 65%; background: #3D1F1F;"></div>
+                                                <span class="bar-value">€1,350</span>
+                                            </div>
+                                        </div>
+                                        <div class="comparison-change negative">+€30 (+2.3%)</div>
+                                    </div>
+                                    <div class="comparison-item">
+                                        <div class="comparison-label">Ahorro</div>
+                                        <div class="comparison-bars">
+                                            <div class="comparison-bar previous">
+                                                <span class="bar-label">Nov</span>
+                                                <div class="bar-fill" style="height: 50%; background: #4A2D1F;"></div>
+                                                <span class="bar-value">€1,280</span>
+                                            </div>
+                                            <div class="comparison-bar current">
+                                                <span class="bar-label">Dic</span>
+                                                <div class="bar-fill" style="height: 70%; background: #2D4A2D;"></div>
+                                                <span class="bar-value">€1,450</span>
+                                            </div>
+                                        </div>
+                                        <div class="comparison-change positive">+€170 (+13.3%)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <div class="card-header">
+                                    <h4>Ingresos vs Gastos</h4>
+                                    <span class="card-subtitle">Balance mensual</span>
+                                </div>
+                                <div class="card-metrics">
+                                    <div class="metric-summary">
+                                        <span class="metric-label">Tasa de Ahorro</span>
+                                        <span class="metric-value positive">52%</span>
+                                    </div>
+                                    <div class="metric-summary">
+                                        <span class="metric-label">Balance</span>
+                                        <span class="metric-value">€1,450</span>
+                                    </div>
+                                </div>
+                                <div class="income-expense-visualization">
+                                    <div class="balance-circle">
+                                        <div class="circle-progress">
+                                            <div class="circle-fill" style="--progress: 48%;"></div>
+                                            <div class="circle-content">
+                                                <span class="balance-amount">€1,450</span>
+                                                <span class="balance-label">Balance</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="income-expense-breakdown">
+                                        <div class="breakdown-item income">
+                                            <div class="breakdown-icon">💰</div>
+                                            <div class="breakdown-content">
+                                                <span class="breakdown-label">Ingresos</span>
+                                                <span class="breakdown-amount">€2,800</span>
+                                                <span class="breakdown-percentage">100%</span>
+                                            </div>
+                                        </div>
+                                        <div class="breakdown-item expense">
+                                            <div class="breakdown-icon">💸</div>
+                                            <div class="breakdown-content">
+                                                <span class="breakdown-label">Gastos</span>
+                                                <span class="breakdown-amount">€1,350</span>
+                                                <span class="breakdown-percentage">48%</span>
+                                            </div>
+                                        </div>
+                                        <div class="breakdown-item savings">
+                                            <div class="breakdown-icon">🏦</div>
+                                            <div class="breakdown-content">
+                                                <span class="breakdown-label">Ahorro</span>
+                                                <span class="breakdown-amount">€1,450</span>
+                                                <span class="breakdown-percentage">52%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics-insights">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                        
+                        <div class="analytics-trends">
+                            <!-- Se llena dinámicamente -->
                         </div>
                     </div>
                 </div>
@@ -261,120 +1620,91 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Veedor</h3>
-                <p>Gestión financiera personal</p>
-            </div>
-            <div class="footer-section">
-                <h4>Legal</h4>
-                <ul>
-                    <li><a href="#" onclick="openModal('privacy')">Política de Privacidad</a></li>
-                    <li><a href="#" onclick="openModal('terms')">Términos Legales</a></li>
-                    <li><a href="#" onclick="openModal('cookies')">Política de Cookies</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Descargar App</h4>
-                <div class="download-badges">
-                    <a href="#" onclick="downloadApp('ios')">
-                        <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the App Store" class="download-badge">
-                    </a>
-                    <a href="#" onclick="downloadApp('android')">
-                        <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" class="download-badge">
-                    </a>
+    <footer id="footer" class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Veedor</h3>
+                    <p>La cuenta de la vieja, pero digital. Sin complicaciones, como toda la vida.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">Twitter</a>
+                        <a href="#" class="social-link">LinkedIn</a>
+                        <a href="#" class="social-link">GitHub</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#" onclick="openModal('privacy-modal'); return false;">Política de Privacidad</a></li>
+                        <li><a href="#" onclick="openModal('terms-modal'); return false;">Términos y Condiciones</a></li>
+                        <li><a href="#" onclick="openModal('cookies-modal'); return false;">Política de Cookies</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Descarga la App</h4>
+                    <div class="download-badges">
+                        <a href="#" class="download-badge app-store" onclick="downloadApp('ios')">
+                            <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&releaseDate=1609459200" 
+                                 alt="Descargar en App Store" 
+                                 class="badge-image">
+                        </a>
+                        <a href="#" class="download-badge google-play" onclick="downloadApp('android')">
+                            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
+                                 alt="Disponible en Google Play" 
+                                 class="badge-image">
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Veedor. Todos los derechos reservados.</p>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Veedor. Todos los derechos reservados.</p>
+            </div>
         </div>
     </footer>
 
-    <!-- Botón de cambio de tema flotante -->
-    <button class="theme-toggle-floating" onclick="toggleTheme()" title="Cambiar tema">
-        <span class="theme-icon">☀️</span>
-    </button>
-
-    <!-- Modales -->
-    <div class="modal" id="privacy-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Política de Privacidad</h2>
-                <button class="close-btn" onclick="closeModal('privacy')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Respetamos tu privacidad y protegemos tus datos personales.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="terms-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Términos Legales</h2>
-                <button class="close-btn" onclick="closeModal('terms')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Términos y condiciones de uso de Veedor.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="cookies-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Política de Cookies</h2>
-                <button class="close-btn" onclick="closeModal('cookies')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Utilizamos cookies para mejorar tu experiencia.</p>
-            </div>
-        </div>
+    <!-- Notifications Container -->
+    <div class="notifications-container">
+        <!-- Se llena dinámicamente -->
     </div>
 
     <!-- Auth Modal -->
-    <div class="auth-overlay" id="auth-overlay">
+    <div id="auth-overlay" class="auth-overlay">
         <div class="auth-modal">
             <div class="auth-header">
-                <h2>Acceder</h2>
+                <h2>Acceder a Veedor</h2>
                 <button class="close-btn" onclick="hideAuth()">&times;</button>
             </div>
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="switchAuthTab('login')">Iniciar Sesión</button>
                 <button class="auth-tab" onclick="switchAuthTab('register')">Registrarse</button>
             </div>
-            <div class="auth-form" id="login-form">
-                <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" required>
-                    <div class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Contraseña</label>
-                    <input type="password" id="login-password" required>
-                    <div class="error-message"></div>
-                </div>
-                <button class="auth-submit" onclick="login()">Iniciar Sesión</button>
-            </div>
-            <div class="auth-form" id="register-form" style="display: none;">
-                <div class="form-group">
-                    <label for="register-name">Nombre</label>
-                    <input type="text" id="register-name" required>
-                    <div class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="register-email">Email</label>
-                    <input type="email" id="register-email" required>
-                    <div class="error-message"></div>
-                </div>
-                <div class="form-group">
-                    <label for="register-password">Contraseña</label>
-                    <input type="password" id="register-password" required>
-                    <div class="error-message"></div>
-                </div>
-                <button class="auth-submit" onclick="register()">Registrarse</button>
+            <div class="auth-content">
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" class="input" required>
+                    </div>
+                    <button type="submit" class="auth-submit">Iniciar Sesión</button>
+                </form>
+                <form id="register-form" class="auth-form" style="display: none;">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" class="input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" class="input" required>
+                    </div>
+                    <button type="submit" class="auth-submit">Registrarse</button>
+                </form>
             </div>
             <div class="auth-footer">
                 <p>¿No tienes cuenta? <a href="#" onclick="switchAuthTab('register')">Regístrate aquí</a></p>
