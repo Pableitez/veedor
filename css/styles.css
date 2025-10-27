@@ -3981,7 +3981,7 @@ a:hover {
 
 /* Auth Form */
 .auth-form {
-    padding: var(--modal-padding-lg);
+    padding: var(--modal-padding-md);
     display: none;
     flex: 1;
     overflow-y: auto;
@@ -3994,7 +3994,7 @@ a:hover {
 }
 
 .auth-form .form-group {
-    margin-bottom: var(--modal-margin-md);
+    margin-bottom: var(--modal-margin-sm);
     position: relative;
     flex-shrink: 0;
 }
@@ -4009,12 +4009,12 @@ a:hover {
 
 .auth-form .form-group input {
     width: 100%;
-    padding: var(--modal-padding-sm) var(--modal-padding-md);
+    padding: var(--modal-padding-xs) var(--modal-padding-sm);
     border: 2px solid var(--border-color);
     border-radius: var(--modal-radius-sm);
     background: var(--card-bg);
     color: var(--text-primary);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: all 0.3s ease;
     box-sizing: border-box;
 }
@@ -4048,12 +4048,12 @@ a:hover {
 .auth-submit {
     width: 100%;
     margin-bottom: var(--modal-margin-sm);
-    padding: var(--modal-padding-sm) var(--modal-padding-md);
+    padding: var(--modal-padding-xs) var(--modal-padding-sm);
     background: var(--modal-accent);
     color: white;
     border: none;
     border-radius: var(--modal-radius-sm);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -4397,17 +4397,17 @@ a:hover {
 }
 
 .social-login h3 {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
-    margin-bottom: 1rem;
+    margin-bottom: var(--modal-margin-sm);
     font-weight: 600;
 }
 
 .social-buttons {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    gap: var(--modal-gap-sm);
+    margin-bottom: var(--modal-margin-md);
 }
 
 /* Responsive Social Buttons */
@@ -4432,14 +4432,14 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1rem;
+    gap: 0.4rem;
+    padding: 0.5rem 0.8rem;
     border: 2px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--card-bg);
     color: var(--text-primary);
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
@@ -4458,8 +4458,8 @@ a:hover {
 }
 
 .social-icon {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     flex-shrink: 0;
 }
 
