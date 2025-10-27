@@ -388,6 +388,9 @@ class VeedorFinanceCenter {
             case 'envelopes':
                 this.updateEnvelopes();
                 break;
+            case 'assets':
+                this.updateAssets();
+                break;
             case 'goals':
                 this.updateGoals();
                 break;
@@ -2688,6 +2691,241 @@ function showDashboard() {
         }
     }
 
+    // ========================================
+    // FUNCIONES GLOBALES PARA ACTIVOS Y PASIVOS
+    // ========================================
+    function showAddAssetModal() {
+        const modal = createAssetModal();
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function showAddLiabilityModal() {
+        const modal = createLiabilityModal();
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function showAssetsList() {
+        if (veedorFinance) {
+            veedorFinance.showTab('assets');
+        }
+    }
+
+    function showLiabilitiesList() {
+        if (veedorFinance) {
+            veedorFinance.showTab('assets');
+        }
+    }
+
+    function showNetWorthSettings() {
+        alert('Configuración de patrimonio próximamente');
+    }
+
+    function editAsset(assetId) {
+        if (veedorFinance) {
+            const asset = veedorFinance.assets.find(a => a.id === assetId);
+            if (asset) {
+                const modal = createAssetModal(asset);
+                document.body.appendChild(modal);
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('show'), 10);
+            }
+        }
+    }
+
+    function deleteAsset(assetId) {
+        if (veedorFinance && confirm('¿Estás seguro de que quieres eliminar este activo?')) {
+            veedorFinance.assets = veedorFinance.assets.filter(a => a.id !== assetId);
+            veedorFinance.updateAssets();
+            veedorFinance.updateNetWorth();
+            veedorFinance.saveToStorage();
+            veedorFinance.showMessage('Activo eliminado correctamente', 'success');
+        }
+    }
+
+    function editLiability(liabilityId) {
+        if (veedorFinance) {
+            const liability = veedorFinance.liabilities.find(l => l.id === liabilityId);
+            if (liability) {
+                const modal = createLiabilityModal(liability);
+                document.body.appendChild(modal);
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('show'), 10);
+            }
+        }
+    }
+
+    function deleteLiability(liabilityId) {
+        if (veedorFinance && confirm('¿Estás seguro de que quieres eliminar este pasivo?')) {
+            veedorFinance.liabilities = veedorFinance.liabilities.filter(l => l.id !== liabilityId);
+            veedorFinance.updateAssets();
+            veedorFinance.updateNetWorth();
+            veedorFinance.saveToStorage();
+            veedorFinance.showMessage('Pasivo eliminado correctamente', 'success');
+        }
+    }
+
+    function createAssetModal(asset = null) {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>${asset ? 'Editar Activo' : 'Nuevo Activo'}</h2>
+                    <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+                </div>
+                <form class="modal-form" onsubmit="saveAsset(event, ${asset ? asset.id : 'null'})">
+                    <div class="form-group">
+                        <label for="asset-name">Nombre</label>
+                        <input type="text" id="asset-name" value="${asset ? asset.name : ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="asset-amount">Valor (€)</label>
+                        <input type="number" id="asset-amount" step="0.01" value="${asset ? asset.amount : ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="asset-type">Tipo</label>
+                        <select id="asset-type" required>
+                            <option value="cash" ${asset && asset.type === 'cash' ? 'selected' : ''}>Efectivo</option>
+                            <option value="savings" ${asset && asset.type === 'savings' ? 'selected' : ''}>Ahorro</option>
+                            <option value="investment" ${asset && asset.type === 'investment' ? 'selected' : ''}>Inversión</option>
+                            <option value="property" ${asset && asset.type === 'property' ? 'selected' : ''}>Propiedad</option>
+                            <option value="vehicle" ${asset && asset.type === 'vehicle' ? 'selected' : ''}>Vehículo</option>
+                            <option value="other" ${asset && asset.type === 'other' ? 'selected' : ''}>Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="asset-institution">Institución</label>
+                        <input type="text" id="asset-institution" value="${asset ? asset.institution : ''}" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-outline" onclick="this.closest('.modal').remove()">Cancelar</button>
+                        <button type="submit" class="btn-primary">${asset ? 'Actualizar' : 'Crear'}</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        return modal;
+    }
+
+    function createLiabilityModal(liability = null) {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>${liability ? 'Editar Pasivo' : 'Nuevo Pasivo'}</h2>
+                    <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+                </div>
+                <form class="modal-form" onsubmit="saveLiability(event, ${liability ? liability.id : 'null'})">
+                    <div class="form-group">
+                        <label for="liability-name">Nombre</label>
+                        <input type="text" id="liability-name" value="${liability ? liability.name : ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="liability-amount">Valor (€)</label>
+                        <input type="number" id="liability-amount" step="0.01" value="${liability ? liability.amount : ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="liability-type">Tipo</label>
+                        <select id="liability-type" required>
+                            <option value="mortgage" ${liability && liability.type === 'mortgage' ? 'selected' : ''}>Hipoteca</option>
+                            <option value="loan" ${liability && liability.type === 'loan' ? 'selected' : ''}>Préstamo</option>
+                            <option value="credit" ${liability && liability.type === 'credit' ? 'selected' : ''}>Tarjeta de Crédito</option>
+                            <option value="debt" ${liability && liability.type === 'debt' ? 'selected' : ''}>Deuda</option>
+                            <option value="other" ${liability && liability.type === 'other' ? 'selected' : ''}>Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="liability-institution">Institución</label>
+                        <input type="text" id="liability-institution" value="${liability ? liability.institution : ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="liability-payment">Pago Mensual (€)</label>
+                        <input type="number" id="liability-payment" step="0.01" value="${liability ? liability.monthlyPayment || '' : ''}">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-outline" onclick="this.closest('.modal').remove()">Cancelar</button>
+                        <button type="submit" class="btn-primary">${liability ? 'Actualizar' : 'Crear'}</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        return modal;
+    }
+
+    function saveAsset(event, assetId) {
+        event.preventDefault();
+        if (!veedorFinance) return;
+
+        const formData = {
+            name: document.getElementById('asset-name').value,
+            amount: parseFloat(document.getElementById('asset-amount').value),
+            type: document.getElementById('asset-type').value,
+            institution: document.getElementById('asset-institution').value
+        };
+
+        if (assetId) {
+            // Editar activo existente
+            const assetIndex = veedorFinance.assets.findIndex(a => a.id === assetId);
+            if (assetIndex !== -1) {
+                veedorFinance.assets[assetIndex] = { ...veedorFinance.assets[assetIndex], ...formData };
+                veedorFinance.showMessage('Activo actualizado correctamente', 'success');
+            }
+        } else {
+            // Crear nuevo activo
+            const newAsset = {
+                id: Date.now(),
+                ...formData
+            };
+            veedorFinance.assets.push(newAsset);
+            veedorFinance.showMessage('Activo creado correctamente', 'success');
+        }
+
+        veedorFinance.updateAssets();
+        veedorFinance.updateNetWorth();
+        veedorFinance.saveToStorage();
+        event.target.closest('.modal').remove();
+    }
+
+    function saveLiability(event, liabilityId) {
+        event.preventDefault();
+        if (!veedorFinance) return;
+
+        const formData = {
+            name: document.getElementById('liability-name').value,
+            amount: parseFloat(document.getElementById('liability-amount').value),
+            type: document.getElementById('liability-type').value,
+            institution: document.getElementById('liability-institution').value,
+            monthlyPayment: parseFloat(document.getElementById('liability-payment').value) || 0
+        };
+
+        if (liabilityId) {
+            // Editar pasivo existente
+            const liabilityIndex = veedorFinance.liabilities.findIndex(l => l.id === liabilityId);
+            if (liabilityIndex !== -1) {
+                veedorFinance.liabilities[liabilityIndex] = { ...veedorFinance.liabilities[liabilityIndex], ...formData };
+                veedorFinance.showMessage('Pasivo actualizado correctamente', 'success');
+            }
+        } else {
+            // Crear nuevo pasivo
+            const newLiability = {
+                id: Date.now(),
+                ...formData
+            };
+            veedorFinance.liabilities.push(newLiability);
+            veedorFinance.showMessage('Pasivo creado correctamente', 'success');
+        }
+
+        veedorFinance.updateAssets();
+        veedorFinance.updateNetWorth();
+        veedorFinance.saveToStorage();
+        event.target.closest('.modal').remove();
+    }
+
 // Cerrar menú al hacer click fuera
 document.addEventListener('click', function(event) {
     const dropdown = document.querySelector('.nav-dropdown');
@@ -2997,4 +3235,102 @@ VeedorFinanceCenter.prototype.showMessage = function(message, type = 'info') {
         container.style.opacity = '0';
         setTimeout(() => container.remove(), 300);
     }, 3000);
+};
+
+// ========================================
+// FUNCIONES CRUD PARA ACTIVOS Y PASIVOS
+// ========================================
+VeedorFinanceCenter.prototype.updateAssets = function() {
+    this.updateAssetsList();
+    this.updateLiabilitiesList();
+};
+
+VeedorFinanceCenter.prototype.updateAssetsList = function() {
+    const container = document.querySelector('#assets-list');
+    if (!container) return;
+
+    if (this.assets.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-title">Sin activos</div>
+                <div class="empty-state-description">Añade tu primera cuenta, inversión o propiedad</div>
+                <button class="btn-primary" onclick="showAddAssetModal()">+ Añadir Activo</button>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = this.assets.map(asset => `
+        <div class="asset-item">
+            <div class="asset-header">
+                <div class="asset-name">${asset.name}</div>
+                <div class="asset-amount">€${asset.amount.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+            </div>
+            <div class="asset-details">
+                <div>Tipo: ${this.getAssetTypeName(asset.type)}</div>
+                <div>Institución: ${asset.institution}</div>
+            </div>
+            <div class="asset-actions">
+                <button class="edit-btn" onclick="editAsset(${asset.id})">Editar</button>
+                <button class="delete-btn" onclick="deleteAsset(${asset.id})">Eliminar</button>
+            </div>
+        </div>
+    `).join('');
+};
+
+VeedorFinanceCenter.prototype.updateLiabilitiesList = function() {
+    const container = document.querySelector('#liabilities-list');
+    if (!container) return;
+
+    if (this.liabilities.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-title">Sin pasivos</div>
+                <div class="empty-state-description">Añade tu primera deuda o préstamo</div>
+                <button class="btn-primary" onclick="showAddLiabilityModal()">+ Añadir Pasivo</button>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = this.liabilities.map(liability => `
+        <div class="liability-item">
+            <div class="liability-header">
+                <div class="liability-name">${liability.name}</div>
+                <div class="liability-amount">€${liability.amount.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</div>
+            </div>
+            <div class="liability-details">
+                <div>Tipo: ${this.getLiabilityTypeName(liability.type)}</div>
+                <div>Institución: ${liability.institution}</div>
+                ${liability.monthlyPayment ? `<div>Pago mensual: €${liability.monthlyPayment.toFixed(2)}</div>` : ''}
+            </div>
+            <div class="liability-actions">
+                <button class="edit-btn" onclick="editLiability(${liability.id})">Editar</button>
+                <button class="delete-btn" onclick="deleteLiability(${liability.id})">Eliminar</button>
+            </div>
+        </div>
+    `).join('');
+};
+
+VeedorFinanceCenter.prototype.getAssetTypeName = function(type) {
+    const types = {
+        'cash': 'Efectivo',
+        'savings': 'Ahorro',
+        'investment': 'Inversión',
+        'property': 'Propiedad',
+        'vehicle': 'Vehículo',
+        'other': 'Otro'
+    };
+    return types[type] || 'Otro';
+};
+
+VeedorFinanceCenter.prototype.getLiabilityTypeName = function(type) {
+    const types = {
+        'mortgage': 'Hipoteca',
+        'loan': 'Préstamo',
+        'credit': 'Tarjeta de Crédito',
+        'debt': 'Deuda',
+        'other': 'Otro'
+    };
+    return types[type] || 'Otro';
 };
