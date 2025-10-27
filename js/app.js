@@ -2,16 +2,18 @@
 // FUNCIONES DE MODAL (GLOBALES)
 // ========================================
 
+// ========================================
+// MODALES NUEVOS - FUNCIONES SIMPLIFICADAS
+// ========================================
+
 /**
  * Abre un modal específico por su ID
  * @param {string} modalId - ID del modal a abrir
- * @returns {void}
  */
 function openModal(modalId) {
     console.log('Opening modal:', modalId);
     const modal = document.getElementById(modalId);
     if (modal) {
-        modal.style.display = 'flex';
         modal.classList.add('show');
         document.body.style.overflow = 'hidden';
         console.log('Modal opened:', modalId);
@@ -23,22 +25,84 @@ function openModal(modalId) {
 /**
  * Cierra un modal específico por su ID
  * @param {string} modalId - ID del modal a cerrar
- * @returns {void}
  */
 function closeModal(modalId) {
     console.log('Closing modal:', modalId);
     const modal = document.getElementById(modalId);
     if (modal) {
-        modal.style.display = 'none';
         modal.classList.remove('show');
         document.body.style.overflow = 'auto';
         console.log('Modal closed:', modalId);
     }
 }
 
-// Hacer funciones globales inmediatamente
+/**
+ * Muestra el modal de autenticación
+ */
+function showAuth() {
+    console.log('showAuth called');
+    const authOverlay = document.getElementById('auth-overlay');
+    if (authOverlay) {
+        authOverlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        console.log('Auth modal opened');
+    } else {
+        console.error('Auth overlay not found');
+    }
+}
+
+/**
+ * Oculta el modal de autenticación
+ */
+function hideAuth() {
+    console.log('hideAuth called');
+    const authOverlay = document.getElementById('auth-overlay');
+    if (authOverlay) {
+        authOverlay.classList.remove('show');
+        document.body.style.overflow = 'auto';
+        console.log('Auth modal closed');
+    } else {
+        console.error('Auth overlay not found');
+    }
+}
+
+// Event listeners para cerrar modales
+document.addEventListener('DOMContentLoaded', function() {
+    // Cerrar modal al hacer click fuera
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal') || e.target.classList.contains('auth-overlay')) {
+            const modalId = e.target.id;
+            if (modalId === 'auth-overlay') {
+                hideAuth();
+            } else if (modalId.startsWith('modal')) {
+                closeModal(modalId);
+            }
+        }
+    });
+
+    // Cerrar modal con Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            // Cerrar auth modal si está abierto
+            const authOverlay = document.getElementById('auth-overlay');
+            if (authOverlay && authOverlay.classList.contains('show')) {
+                hideAuth();
+            }
+            
+            // Cerrar otros modales
+            const openModals = document.querySelectorAll('.modal.show');
+            openModals.forEach(modal => {
+                closeModal(modal.id);
+            });
+        }
+    });
+});
+
+// Hacer funciones globales
 window.openModal = openModal;
 window.closeModal = closeModal;
+window.showAuth = showAuth;
+window.hideAuth = hideAuth;
 
 // ========================================
 // APLICACIÓN PRINCIPAL
@@ -1571,41 +1635,6 @@ function showAuthRequired() {
     if (dashboardLink) dashboardLink.style.display = 'none';
     
     console.log('Mostrando mensaje de autenticación requerida');
-}
-
-// Mostrar modal de autenticación
-function showAuth() {
-    console.log('showAuth() llamado');
-    const authOverlay = document.getElementById('auth-overlay');
-    console.log('authOverlay encontrado:', authOverlay);
-    
-    if (authOverlay) {
-        console.log('Mostrando modal...');
-        authOverlay.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        
-        // Inicializar validaciones
-        setTimeout(() => {
-            initAuthValidations();
-        }, 100);
-        
-        console.log('Modal de autenticación abierto');
-    } else {
-        console.error('No se encontró el modal de autenticación');
-    }
-}
-
-// Ocultar modal de autenticación
-function hideAuth() {
-    const authOverlay = document.getElementById('auth-overlay');
-    if (authOverlay) {
-        authOverlay.classList.remove('show');
-        document.body.style.overflow = 'auto';
-        console.log('Modal de autenticación cerrado');
-    }
-    // Limpiar formularios
-    document.querySelectorAll('.auth-form').forEach(form => form.reset());
-    document.querySelectorAll('.auth-error, .auth-success').forEach(el => el.style.display = 'none');
 }
 
 // Cambiar pestaña de autenticación
