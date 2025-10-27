@@ -30,8 +30,8 @@
     --btn-transition: all 0.3s ease;
     
     --secondary: #5856D6;
-    --accent: #FF3B30;
-    --accent-light: #FF6961;
+    --accent: #8B5CF6;
+    --accent-light: #A855F7;
     
     /* === COLORES DE FONDO - MODO CLARO === */
     --bg-primary: #FFFFFF;
@@ -55,7 +55,7 @@
     
     /* === COLORES DE ESTADO === */
     --success: #34C759;
-    --error: #FF3B30;
+    --error: #8B5CF6;
     --warning: #FF9500;
     --info: #007AFF;
     
@@ -128,8 +128,8 @@
     --button-secondary: #8B5CF6;
     --button-gradient: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
     --secondary: #5E5CE6;
-    --accent: #FF453A;
-    --accent-light: #FF6961;
+    --accent: #8B5CF6;
+    --accent-light: #A855F7;
     
     /* === COLORES DE FONDO - MODO OSCURO === */
     --bg-primary: #000000;
@@ -290,7 +290,7 @@ a:hover {
     gap: var(--space-sm);
     margin-bottom: 0;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(135deg, var(--accent) 0%, #FF6B6B 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -3374,7 +3374,7 @@ a:hover {
     margin: 0;
     letter-spacing: -0.03em;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(135deg, var(--accent) 0%, #FF6B6B 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -3496,7 +3496,7 @@ a:hover {
     margin-bottom: var(--space-lg);
     text-align: center;
     box-shadow: 0 4px 20px var(--shadow-sm);
-    border: 2px solid var(--border-color);
+    border: 2px solid var(--hover-primary);
     transition: all 0.3s ease;
     position: relative;
 }
@@ -3585,7 +3585,7 @@ a:hover {
     margin-bottom: var(--space-lg);
     text-align: center;
     box-shadow: 0 4px 20px var(--shadow-sm);
-    border: 2px solid var(--border-color);
+    border: 2px solid var(--hover-primary);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
