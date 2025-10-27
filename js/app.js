@@ -1580,6 +1580,12 @@ function showAuth() {
         authOverlay.style.display = 'flex';
         authOverlay.classList.add('show');
         document.body.style.overflow = 'hidden';
+        
+        // Inicializar validaciones
+        setTimeout(() => {
+            initAuthValidations();
+        }, 100);
+        
         console.log('Modal de autenticación abierto');
     } else {
         console.error('No se encontró el modal de autenticación');
@@ -1915,18 +1921,102 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+// Auth Validations
+function initAuthValidations() {
+    // Validación de email
+    const emailInputs = document.querySelectorAll('input[type="email"]');
+    emailInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            validateEmail(this);
+        });
+    });
+
+    // Validación de contraseña
+    const passwordInputs = document.querySelectorAll('input[type="password"]');
+    passwordInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            validatePassword(this);
+        });
+    });
+
+    // Validación de nombre
+    const nameInputs = document.querySelectorAll('input[type="text"]');
+    nameInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            validateName(this);
+        });
+    });
+}
+
+function validateEmail(input) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValid = emailRegex.test(input.value);
+    const errorElement = document.getElementById(input.id + '-error');
+    
+    if (input.value && !isValid) {
+        showFieldError(input, errorElement, 'Email no válido');
+        return false;
+    } else {
+        hideFieldError(input, errorElement);
+        return true;
+    }
+}
+
+function validatePassword(input) {
+    const isValid = input.value.length >= 6;
+    const errorElement = document.getElementById(input.id + '-error');
+    
+    if (input.value && !isValid) {
+        showFieldError(input, errorElement, 'Mínimo 6 caracteres');
+        return false;
+    } else {
+        hideFieldError(input, errorElement);
+        return true;
+    }
+}
+
+function validateName(input) {
+    const isValid = input.value.length >= 2;
+    const errorElement = document.getElementById(input.id + '-error');
+    
+    if (input.value && !isValid) {
+        showFieldError(input, errorElement, 'Mínimo 2 caracteres');
+        return false;
+    } else {
+        hideFieldError(input, errorElement);
+        return true;
+    }
+}
+
+function showFieldError(input, errorElement, message) {
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.classList.add('show');
+    }
+    input.parentElement.classList.add('error');
+    input.parentElement.classList.remove('success');
+}
+
+function hideFieldError(input, errorElement) {
+    if (errorElement) {
+        errorElement.classList.remove('show');
+    }
+    input.parentElement.classList.remove('error');
+    input.parentElement.classList.add('success');
+}
+
 // Social Login Functions
-function loginWithGoogle() {
-    console.log('Iniciando login con Google Calendar...');
-    // Aquí se integrará con Google Calendar API
-    showNotification('Conectando con Google Calendar...', 'info');
+function loginWithGmail() {
+    console.log('Iniciando login con Gmail...');
+    // Aquí se integrará con Gmail API
+    showNotification('Conectando con Gmail...', 'info');
     
     // Simulación de login exitoso
     setTimeout(() => {
-        showNotification('¡Conectado con Google Calendar!', 'success');
+        showNotification('¡Conectado con Gmail!', 'success');
         hideAuth();
-        // Aquí se configurará la integración con Google Calendar
-        setupGoogleCalendarIntegration();
+        // Aquí se configurará la integración con Gmail
+        setupGmailIntegration();
     }, 2000);
 }
 
@@ -1944,10 +2034,10 @@ function loginWithNotion() {
 }
 
 // Integration Setup Functions
-function setupGoogleCalendarIntegration() {
-    console.log('Configurando integración con Google Calendar...');
-    // Aquí se implementará la integración real con Google Calendar API
-    // Para sincronizar eventos con gastos financieros
+function setupGmailIntegration() {
+    console.log('Configurando integración con Gmail...');
+    // Aquí se implementará la integración real con Gmail API
+    // Para sincronizar emails con gastos financieros
 }
 
 function setupNotionIntegration() {
@@ -1983,6 +2073,6 @@ window.showAuthTab = showAuthTab;
 window.showForgotPassword = showForgotPassword;
 window.showProfile = showProfile;
 window.logout = logout;
-window.loginWithGoogle = loginWithGoogle;
+window.loginWithGmail = loginWithGmail;
 window.loginWithNotion = loginWithNotion;
 window.downloadApp = downloadApp;
