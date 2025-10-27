@@ -3983,18 +3983,12 @@ a:hover {
 
 .badge-image {
     height: 50px;
-    width: auto;
+    width: 150px;
+    object-fit: contain;
     display: block;
     border-radius: 8px;
 }
 
-.app-store .badge-image {
-    height: 50px;
-}
-
-.google-play .badge-image {
-    height: 50px;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
