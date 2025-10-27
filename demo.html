@@ -2070,6 +2070,182 @@
             color: #ef4444;
         }
         
+        /* Estilos para insights en sección de activos/pasivos */
+        .amortization-insights-section {
+            margin: var(--space-lg) 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+        }
+        
+        .insights-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .insights-header h4 {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .insights-header p {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-md);
+        }
+        
+        .insights-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-md);
+        }
+        
+        .liability-insight-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            transition: all 0.2s ease;
+        }
+        
+        .liability-insight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .liability-insight-card.high {
+            border-left: 4px solid var(--error);
+        }
+        
+        .liability-insight-card.medium {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .liability-insight-card.low {
+            border-left: 4px solid var(--text-secondary);
+        }
+        
+        .liability-insight-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .liability-insight-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .liability-insight-icon {
+            font-size: 1.5rem;
+        }
+        
+        .liability-insight-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .liability-insight-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-xs);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .liability-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-xs);
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+        }
+        
+        .liability-metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .liability-metric-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .liability-insight-action {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .liability-insight-action .btn-outline {
+            font-size: 0.8rem;
+            padding: var(--space-xs) var(--space-sm);
+        }
+        
+        .insights-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .summary-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+        }
+        
+        .summary-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .liability-insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-md);
+        }
+        
+        .insights-footer {
+            text-align: center;
+            margin-top: var(--space-lg);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .insights-footer p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--accent);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: inherit;
+        }
+        
+        .btn-link:hover {
+            color: var(--error);
+        }
+        
         /* Estilos para insights de amortización */
         .amortization-insights {
             margin-top: var(--space-lg);
@@ -3086,6 +3262,21 @@
                                 <div class="assets-controls">
                                     <button class="btn-primary" onclick="showAddAssetModal()">+ Nuevo Activo</button>
                                     <button class="btn-outline" onclick="showAddLiabilityModal()">+ Nuevo Pasivo</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Insights Inteligentes de Amortización -->
+                            <div class="amortization-insights-section">
+                                <div class="insights-header">
+                                    <h4>Análisis Inteligente de Amortización</h4>
+                                    <p>Descubre qué pasivo amortizar primero para maximizar tu ahorro</p>
+                                    <button class="btn-outline" onclick="showSavingsConfiguration()">
+                                        Configurar Ahorro Disponible
+                                    </button>
+                                </div>
+                                
+                                <div class="insights-content" id="liability-insights">
+                                    <!-- Se llenará dinámicamente con JavaScript -->
                                 </div>
                             </div>
                             

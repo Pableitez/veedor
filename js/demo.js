@@ -4509,6 +4509,89 @@ VeedorFinanceCenter.prototype.showMessage = function(message, type = 'info') {
 VeedorFinanceCenter.prototype.updateAssets = function() {
     this.updateAssetsList();
     this.updateLiabilitiesList();
+    this.updateLiabilityInsights();
+};
+
+VeedorFinanceCenter.prototype.updateLiabilityInsights = function() {
+    const container = document.querySelector('#liability-insights');
+    if (!container) return;
+    
+    const analysis = this.calculateAmortizationAnalysis();
+    const savingsConfig = getSavingsConfiguration();
+    const availableSavings = savingsConfig ? savingsConfig.amount : 0;
+    
+    if (analysis.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-title">Sin análisis de amortización</div>
+                <div class="empty-state-description">Añade pasivos con datos financieros para ver recomendaciones inteligentes</div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Mostrar solo los primeros 3 pasivos más prioritarios
+    const topLiabilities = analysis.slice(0, 3);
+    
+    container.innerHTML = `
+        <div class="insights-summary">
+            <div class="summary-card">
+                <div class="summary-title">Ahorro Total Disponible</div>
+                <div class="summary-value">€${availableSavings.toFixed(0)}</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-title">Pasivos Analizados</div>
+                <div class="summary-value">${analysis.length}</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-title">Ahorro Potencial</div>
+                <div class="summary-value">€${analysis.reduce((sum, item) => sum + item.savings, 0).toFixed(0)}</div>
+            </div>
+        </div>
+        
+        <div class="liability-insights-grid">
+            ${topLiabilities.map((item, index) => `
+                <div class="liability-insight-card ${item.priority}">
+                    <div class="liability-insight-header">
+                        <div class="liability-insight-title">#${index + 1} ${item.name}</div>
+                        <div class="liability-insight-icon">${item.recommendation.icon}</div>
+                    </div>
+                    <div class="liability-insight-description">
+                        ${item.recommendation.description}
+                    </div>
+                    <div class="liability-insight-metrics">
+                        <div class="liability-metric">
+                            <span class="liability-metric-label">Score:</span>
+                            <span class="liability-metric-value">${item.priorityScore.toFixed(1)}/100</span>
+                        </div>
+                        <div class="liability-metric">
+                            <span class="liability-metric-label">Progreso:</span>
+                            <span class="liability-metric-value">${item.progress.toFixed(1)}%</span>
+                        </div>
+                        <div class="liability-metric">
+                            <span class="liability-metric-label">TIN:</span>
+                            <span class="liability-metric-value">${item.rate}%</span>
+                        </div>
+                        <div class="liability-metric">
+                            <span class="liability-metric-label">Ahorro:</span>
+                            <span class="liability-metric-value">€${item.savings.toFixed(0)}</span>
+                        </div>
+                    </div>
+                    <div class="liability-insight-action">
+                        <button class="btn-outline" onclick="showLiabilityAmortization('${item.id}')">
+                            Ver Análisis Completo
+                        </button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        
+        ${analysis.length > 3 ? `
+            <div class="insights-footer">
+                <p>Mostrando los 3 pasivos más prioritarios. <button class="btn-link" onclick="showTab('overview')">Ver ranking completo</button></p>
+            </div>
+        ` : ''}
+    `;
 };
 
 VeedorFinanceCenter.prototype.updateAssetsList = function() {

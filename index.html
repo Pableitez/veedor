@@ -390,7 +390,7 @@
                     <h2>Por qué funciona</h2>
                     <p>Lo que hace diferente a Veedor</p>
                 </div>
-                
+
                 <div class="benefits-grid">
                     <div class="benefit-card">
                         <div class="benefit-icon"></div>
@@ -419,6 +419,78 @@
             </div>
         </section>
 
+        <!-- Insights Inteligentes Section -->
+        <section class="insights-section">
+            <div class="container">
+                <div class="insights-header">
+                    <h2>Insights Inteligentes de Amortización</h2>
+                    <p>Descubre qué préstamo amortizar primero y optimiza tus finanzas con IA</p>
+                </div>
+
+                <div class="insights-grid">
+                    <div class="insight-card interactive">
+                        <div class="insight-icon">★</div>
+                        <div class="insight-content">
+                            <h3>Configura tu Ahorro</h3>
+                            <p>Indica cuánto dinero tienes disponible para amortizar y recibe recomendaciones personalizadas</p>
+                            <div class="savings-input">
+                                <input type="number" id="main-savings-input" placeholder="Ej: 15000" min="0" step="100">
+                                <button class="btn-primary" onclick="configureSavings()">Configurar</button>
+                        </div>
+                    </div>
+                </div>
+
+                    <div class="insight-card">
+                        <div class="insight-icon">▶</div>
+                        <div class="insight-content">
+                            <h3>Momento Óptimo</h3>
+                            <p>Los primeros años del préstamo son cuando más intereses pagas. Es el momento MÁS favorable para amortizar.</p>
+                            </div>
+                        </div>
+                        
+                    <div class="insight-card">
+                        <div class="insight-icon">€</div>
+                        <div class="insight-content">
+                            <h3>Ahorro Potencial</h3>
+                            <p>Con una hipoteca de €200,000 al 4.5% TIN, puedes ahorrar hasta €45,000 en intereses amortizando anticipadamente.</p>
+                    </div>
+                </div>
+
+                    <div class="insight-card">
+                        <div class="insight-icon">▲</div>
+                        <div class="insight-content">
+                            <h3>Prioridad Inteligente</h3>
+                            <p>Nuestro algoritmo analiza progreso, tasa de interés, cuota mensual y tu liquidez para recomendarte el mejor orden.</p>
+                            </div>
+                        </div>
+                        
+                    <div class="insight-card">
+                        <div class="insight-icon">◊</div>
+                        <div class="insight-content">
+                            <h3>Análisis Contextual</h3>
+                            <p>Consideramos tu tolerancia al riesgo, prioridades de uso del dinero y situación financiera personal.</p>
+                    </div>
+                </div>
+
+                    <div class="insight-card interactive">
+                        <div class="insight-icon">✓</div>
+                        <div class="insight-content">
+                            <h3>Recomendaciones en Tiempo Real</h3>
+                            <p>Recibe consejos actualizados basados en tu situación actual y objetivos financieros</p>
+                            <button class="btn-outline" onclick="showDemoInsights()">Ver Demo Completa</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insights-summary" id="insights-summary" style="display: none;">
+                    <h3>Tu Análisis Personalizado</h3>
+                    <div class="summary-content" id="summary-content">
+                        <!-- Contenido dinámico -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- CTA Section -->
         <section class="cta section section-gradient">
             <div class="container">
@@ -429,40 +501,40 @@
                         <div class="cta-actions">
                             <button class="btn btn-accent" onclick="window.open('demo.html', '_blank')">Ver Demo</button>
                             <button class="btn btn-outline" onclick="showAuth()">Comenzar</button>
-                        </div>
+                </div>
                     </div>
                     <div class="cta-visual">
                         <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
                              alt="Casa nueva con llaves - Tu hogar te espera" 
                              class="cta-image">
                     </div>
-                </div>
+                    </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer id="footer" class="footer">
-        <div class="container">
-            <div class="footer-content">
-        <div class="footer-section">
-            <h3>Veedor</h3>
+        <!-- Footer -->
+        <footer id="footer" class="footer">
+            <div class="container">
+                <div class="footer-content">
+            <div class="footer-section">
+                <h3>Veedor</h3>
             <p>La cuenta de la vieja, pero digital. Sin complicaciones, como toda la vida.</p>
-            <div class="social-links">
-                <a href="#" class="social-link">Twitter</a>
-                <a href="#" class="social-link">LinkedIn</a>
-                <a href="#" class="social-link">GitHub</a>
+                <div class="social-links">
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">LinkedIn</a>
+                    <a href="#" class="social-link">GitHub</a>
+                </div>
             </div>
-        </div>
-                <div class="footer-section">
+                    <div class="footer-section">
                     <h4>Legal</h4>
                     <ul>
                         <li><a href="#" onclick="openModal('privacy-modal'); return false;">Política de Privacidad</a></li>
                         <li><a href="#" onclick="openModal('terms-modal'); return false;">Términos y Condiciones</a></li>
                         <li><a href="#" onclick="openModal('cookies-modal'); return false;">Política de Cookies</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
+                        </ul>
+                    </div>
+                    <div class="footer-section">
                     <h4>Descarga la App</h4>
                     <div class="download-badges">
                         <a href="#" class="download-badge app-store" onclick="downloadApp('ios')">
@@ -475,10 +547,10 @@
                                  alt="Disponible en Google Play" 
                                  class="badge-image">
                         </a>
+                    </div>
+                    </div>
                 </div>
-                </div>
-                </div>
-            <div class="footer-bottom">
+                <div class="footer-bottom">
                 <p>&copy; 2025 Veedor. Todos los derechos reservados.</p>
             </div>
         </div>
@@ -544,7 +616,7 @@
                 <div class="legal-section">
                     <h4>¿Somos responsables de tus decisiones?</h4>
                     <p>No. Tú decides cómo gastar tu dinero.</p>
-                </div>
+                    </div>
                 
                 <div class="legal-contact">
                     <p><strong>Contacto:</strong> legal@veedor.com</p>
