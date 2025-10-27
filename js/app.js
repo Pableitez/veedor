@@ -1,4 +1,37 @@
 // ========================================
+// FUNCIONES DE MODAL (GLOBALES)
+// ========================================
+
+// Modal functions
+function openModal(modalId) {
+    console.log('Opening modal:', modalId);
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        console.log('Modal opened:', modalId);
+    } else {
+        console.error('Modal not found:', modalId);
+    }
+}
+
+function closeModal(modalId) {
+    console.log('Closing modal:', modalId);
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+        console.log('Modal closed:', modalId);
+    }
+}
+
+// Hacer funciones globales inmediatamente
+window.openModal = openModal;
+window.closeModal = closeModal;
+
+// ========================================
 // APLICACIÓN PRINCIPAL
 // ========================================
 
@@ -1843,31 +1876,13 @@ function showSuccess(elementId, message) {
     }, 3000);
 }
 
-// Modal functions
-function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-}
-
-// Close modal when clicking outside
+// Event listeners para modales
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('modal')) {
         closeModal(event.target.id);
     }
 });
 
-// Close modal with Escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         const openModal = document.querySelector('.modal[style*="flex"]');
@@ -1881,7 +1896,5 @@ document.addEventListener('keydown', function(event) {
 window.showAuth = showAuth;
 window.showAuthTab = showAuthTab;
 window.showForgotPassword = showForgotPassword;
-window.openModal = openModal;
-window.closeModal = closeModal;
 window.showProfile = showProfile;
 window.logout = logout;
