@@ -1179,7 +1179,7 @@ class VeedorFinanceCenter {
 
         container.innerHTML = insights.map(insight => `
             <div class="insight-item ${insight.type}">
-                <div class="insight-icon">${insight.icon}</div>
+                <div class="insight-icon">${insight.icon || '📊'}</div>
                 <div class="insight-content">
                     <div class="insight-title">${insight.title}</div>
                     <div class="insight-description">${insight.description}</div>
@@ -1642,10 +1642,12 @@ class VeedorFinanceCenter {
             .sort(([,a], [,b]) => b - a)[0];
         
         if (topCategory) {
+            const categoryName = this.categories.find(c => c.id === topCategory[0])?.name || 'Otros';
             insights.push({
                 type: 'info',
+                icon: '📊',
                 title: 'Categoría Principal',
-                description: `${this.categories.find(c => c.id === topCategory[0])?.name} representa el ${((topCategory[1] / totals.expenses) * 100).toFixed(1)}% de tus gastos`
+                description: `${categoryName} representa el ${((topCategory[1] / totals.expenses) * 100).toFixed(1)}% de tus gastos`
             });
         }
         
@@ -1663,6 +1665,7 @@ class VeedorFinanceCenter {
         // Insight sobre tendencias
         insights.push({
             type: 'info',
+            icon: '📈',
             title: 'Tendencia Positiva',
             description: 'Tus ingresos han aumentado un 8.5% este mes'
         });
