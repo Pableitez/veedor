@@ -1377,7 +1377,8 @@ async function initAuth() {
         showUserMenu();
         loadUserData();
         loadDevData(); // Cargar datos de ejemplo
-        showDashboard();
+        // No mostrar dashboard automáticamente en modo desarrollo
+        // showDashboard();
         return;
     }
 
