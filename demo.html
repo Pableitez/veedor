@@ -438,11 +438,160 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="js/app.js" defer></script>
-    <script src="js/dashboard.js" defer></script>
-    <script src="js/ui.js" defer></script>
-    <script src="js/validations.js" defer></script>
-    <script src="js/tests.js" defer></script>
+    <script>
+        // Script específico para demo.html - evitar conflictos con app.js
+        document.addEventListener('DOMContentLoaded', function() {
+            // Solo cargar tema, no inicializar auth ni dashboard
+            loadTheme();
+            
+            // Inicializar tabs del dashboard
+            initDemoTabs();
+        });
+        
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('veedor-theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.body.setAttribute('data-theme', savedTheme);
+                const themeIcon = document.querySelector('.theme-icon');
+                if (themeIcon) {
+                    themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+                }
+            } else {
+                const defaultTheme = 'dark';
+                document.documentElement.setAttribute('data-theme', defaultTheme);
+                document.body.setAttribute('data-theme', defaultTheme);
+                const themeIcon = document.querySelector('.theme-icon');
+                if (themeIcon) {
+                    themeIcon.textContent = '☀️';
+                }
+            }
+        }
+        
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('veedor-theme', newTheme);
+            const themeIcon = document.querySelector('.theme-icon');
+            if (themeIcon) {
+                themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            }
+        }
+        
+        function initDemoTabs() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const panels = document.querySelectorAll('.tab-panel');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.textContent.toLowerCase();
+                    
+                    // Remover active de todos
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panels.forEach(p => p.classList.remove('active'));
+                    
+                    // Activar el seleccionado
+                    tab.classList.add('active');
+                    const targetPanel = document.getElementById(targetTab);
+                    if (targetPanel) {
+                        targetPanel.classList.add('active');
+                    }
+                });
+            });
+        }
+        
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const panels = document.querySelectorAll('.tab-panel');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            panels.forEach(panel => panel.classList.remove('active'));
+            
+            const targetTab = document.querySelector(`[onclick="showTab('${tabName}')"]`);
+            const targetPanel = document.getElementById(tabName);
+            
+            if (targetTab) targetTab.classList.add('active');
+            if (targetPanel) targetPanel.classList.add('active');
+        }
+        
+        function toggleUserMenu() {
+            const dropdown = document.querySelector('.nav-dropdown');
+            dropdown.classList.toggle('active');
+        }
+        
+        function showAuth() {
+            const authOverlay = document.getElementById('auth-overlay');
+            if (authOverlay) {
+                authOverlay.classList.add('show');
+            }
+        }
+        
+        function hideAuth() {
+            const authOverlay = document.getElementById('auth-overlay');
+            if (authOverlay) {
+                authOverlay.classList.remove('show');
+            }
+        }
+        
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const tabs = document.querySelectorAll('.auth-tab');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'login') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                tabs[0].classList.add('active');
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                tabs[1].classList.add('active');
+            }
+        }
+        
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId + '-modal');
+            if (modal) {
+                modal.classList.add('show');
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId + '-modal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+        
+        function downloadApp(platform) {
+            if (platform === 'ios') {
+                window.open('https://apps.apple.com/app/veedor', '_blank');
+            } else if (platform === 'android') {
+                window.open('https://play.google.com/store/apps/details?id=com.veedor', '_blank');
+            }
+        }
+        
+        function toggleMobileMenu() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.toggle('active');
+        }
+        
+        function closeMobileMenu() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.remove('active');
+        }
+        
+        // Cerrar menú al hacer click fuera
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.nav-dropdown');
+            if (dropdown && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
