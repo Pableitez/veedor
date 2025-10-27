@@ -531,6 +531,76 @@ a:hover {
 }
 
 /* ========================================
+   MENÚ DESPLEGABLE DE NAVEGACIÓN
+   ======================================== */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.nav-btn-dropdown {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding-right: var(--space-sm);
+}
+
+.dropdown-arrow {
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-dropdown.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.nav-dropdown-content {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    padding: var(--space-xs) 0;
+}
+
+.nav-dropdown.active .nav-dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.nav-btn-dropdown-item {
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    padding: var(--space-sm) var(--space-md);
+    margin: 0;
+    min-width: auto;
+    text-align: left;
+    background: transparent;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-btn-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.nav-btn-dropdown-item:hover {
+    background: var(--bg-secondary);
+    transform: none;
+    box-shadow: none;
+}
+
+/* ========================================
    BOTÓN DE TEMA FLOTANTE
    ======================================== */
 .theme-toggle-floating {

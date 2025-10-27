@@ -52,6 +52,26 @@ window.addEventListener('resize', function() {
 });
 
 /**
+ * Toggle del menú desplegable de usuario
+ */
+function toggleUserMenu() {
+    const dropdown = document.querySelector('.nav-dropdown');
+    dropdown.classList.toggle('active');
+}
+
+/**
+ * Cerrar menú desplegable al hacer clic fuera
+ */
+document.addEventListener('click', function(event) {
+    const dropdown = document.querySelector('.nav-dropdown');
+    const dropdownContent = document.querySelector('.nav-dropdown-content');
+    
+    if (dropdown && !dropdown.contains(event.target)) {
+        dropdown.classList.remove('active');
+    }
+});
+
+/**
  * Cierra un modal específico por su ID
  * @param {string} modalId - ID del modal a cerrar
  */
@@ -1545,22 +1565,27 @@ async function initAuth() {
 
 // Mostrar botones de autenticación
 function showAuthButtons() {
-    document.getElementById('auth-buttons').style.display = 'block';
-    document.getElementById('user-menu').style.display = 'none';
+    // Mostrar botón de Acceder, ocultar otros
+    document.getElementById('auth-button').style.display = 'block';
+    document.getElementById('dashboard-link').style.display = 'none';
+    document.getElementById('logout-button').style.display = 'none';
+    
+    // Actualizar texto del menú
+    document.getElementById('user-menu-text').textContent = 'Mi Cuenta';
 }
 
 // Mostrar menú de usuario
 function showUserMenu() {
-    document.getElementById('auth-buttons').style.display = 'none';
-    document.getElementById('user-menu').style.display = 'flex';
+    // Ocultar botón de Acceder, mostrar otros
+    document.getElementById('auth-button').style.display = 'none';
+    document.getElementById('dashboard-link').style.display = 'block';
+    document.getElementById('logout-button').style.display = 'block';
     
     if (currentUser) {
         const name = currentUser.user_metadata?.full_name || currentUser.email;
-        document.getElementById('user-name-display').textContent = name;
         
-        // Generar avatar con iniciales
-        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        document.getElementById('user-avatar').textContent = initials;
+        // Actualizar texto del menú con el nombre del usuario
+        document.getElementById('user-menu-text').textContent = name.split(' ')[0] || 'Usuario';
     }
 }
 

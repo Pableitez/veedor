@@ -56,17 +56,20 @@
             </button>
             
             <ul class="nav-menu" id="nav-menu">
+                <!-- Botones fijos siempre visibles -->
                 <li><button class="nav-btn" onclick="showInicio(); closeMobileMenu();">Inicio</button></li>
-                <li><button class="nav-btn" id="dashboard-link" style="display: none;" onclick="showDashboard(); closeMobileMenu();">Mis Finanzas</button></li>
                 <li><button class="nav-btn" onclick="showFeatures(); closeMobileMenu();">Funciones</button></li>
-                <li id="auth-buttons">
-                    <button class="nav-btn nav-btn-primary" onclick="showAuth(); closeMobileMenu();">Acceder</button>
-                </li>
-                <li id="user-menu" style="display: none;">
-                    <div class="user-profile">
-                        <div class="user-avatar" id="user-avatar">U</div>
-                        <span id="user-name-display">Usuario</span>
-                        <button class="nav-btn nav-btn-secondary" onclick="logout(); closeMobileMenu();">Cerrar Sesión</button>
+                
+                <!-- Menú desplegable para funcionalidades dinámicas -->
+                <li class="nav-dropdown">
+                    <button class="nav-btn nav-btn-dropdown" onclick="toggleUserMenu(); closeMobileMenu();">
+                        <span id="user-menu-text">Mi Cuenta</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div class="nav-dropdown-content" id="nav-dropdown-content">
+                        <button class="nav-btn nav-btn-dropdown-item" id="dashboard-link" style="display: none;" onclick="showDashboard(); closeMobileMenu();">Mis Finanzas</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="auth-button" onclick="showAuth(); closeMobileMenu();">Acceder</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="logout-button" style="display: none;" onclick="logout(); closeMobileMenu();">Cerrar Sesión</button>
                     </div>
                 </li>
             </ul>
