@@ -4194,6 +4194,14 @@ a:hover {
     background: var(--accent-light);
 }
 
+.auth-form::-webkit-scrollbar-button {
+    display: none;
+}
+
+.auth-form::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
 /* ========================================
    AUTH MODAL - TEMAS CLARO Y OSCURO
    ======================================== */
@@ -4653,6 +4661,10 @@ a:hover {
     background: var(--accent-light);
 }
 
+::-webkit-scrollbar-button {
+    display: none;
+}
+
 ::-webkit-scrollbar-corner {
     background: var(--bg-secondary);
 }
@@ -4680,4 +4692,12 @@ a:hover {
 
 .auth-modal::-webkit-scrollbar-thumb:hover {
     background: var(--accent-light);
+}
+
+.auth-modal::-webkit-scrollbar-button {
+    display: none;
+}
+
+.auth-modal::-webkit-scrollbar-corner {
+    background: var(--card-bg);
 }
