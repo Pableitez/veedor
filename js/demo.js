@@ -521,18 +521,43 @@ class VeedorFinanceCenter {
         
         container.innerHTML = `
             <div class="analysis-header">
-                <h3>Análisis de Amortización</h3>
-                <p>Recomendaciones para optimizar tus pasivos</p>
+                <h3>Ranking de Amortización Inteligente</h3>
+                <p>Ordenado por prioridad de amortización basada en múltiples factores</p>
+                <button class="btn-outline" onclick="showSavingsConfiguration()" style="margin-top: var(--space-sm);">
+                    Configurar Ahorro Disponible
+                </button>
             </div>
             <div class="analysis-list">
-                ${analysis.map(item => `
+                ${analysis.map((item, index) => `
                     <div class="analysis-item ${item.priority}">
-                        <div class="analysis-title">${item.title}</div>
-                        <div class="analysis-description">${item.description}</div>
-                        <div class="analysis-savings">Ahorro potencial: €${item.savings.toFixed(2)}</div>
-                        <div class="analysis-action">
-                            <button class="btn-outline" onclick="showLiabilityAmortization(${item.liabilityId})">Ver Detalles</button>
+                        <div class="analysis-rank">#${index + 1}</div>
+                        <div class="analysis-content">
+                            <div class="analysis-title">${item.recommendation.title}</div>
+                            <div class="analysis-description">${item.recommendation.description}</div>
+                            <div class="analysis-metrics">
+                                <div class="metric">
+                                    <span class="metric-label">Score:</span>
+                                    <span class="metric-value">${item.priorityScore.toFixed(1)}/100</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Progreso:</span>
+                                    <span class="metric-value">${item.progress.toFixed(1)}%</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">TIN:</span>
+                                    <span class="metric-value">${item.rate}%</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Cuota:</span>
+                                    <span class="metric-value">€${item.monthlyPayment.toFixed(0)}</span>
+                                </div>
+                                <div class="metric ${item.affordable ? 'affordable' : 'not-affordable'}">
+                                    <span class="metric-label">Asequible:</span>
+                                    <span class="metric-value">${item.affordable ? 'Sí' : 'No'}</span>
+                                </div>
+                            </div>
                         </div>
+                        <div class="analysis-icon">${item.recommendation.icon}</div>
                     </div>
                 `).join('')}
             </div>
@@ -541,6 +566,8 @@ class VeedorFinanceCenter {
     
     calculateAmortizationAnalysis() {
         const analysis = [];
+        const savingsConfig = getSavingsConfiguration();
+        const availableSavings = savingsConfig ? savingsConfig.amount : 0;
         
         this.liabilities.forEach(liability => {
             if (!liability.interestRate || !liability.years) return;
@@ -550,56 +577,112 @@ class VeedorFinanceCenter {
             const years = liability.years;
             const fees = liability.fees || 0;
             
-            // Calcular coste total del préstamo
+            // Calcular detalles del préstamo
             const loanDetails = this.calculateLoanDetails(principal, rate, years, fees);
-            const totalCost = loanDetails.totalCost;
-            
-            // Calcular ahorro potencial por amortización anticipada
-            const earlyCancellationFee = liability.earlyCancellationFee || 0;
             const remainingPayments = loanDetails.amortization.schedule.filter(p => p.remainingBalance > 0).length;
+            const totalPayments = loanDetails.amortization.schedule.length;
+            const progressPercentage = ((totalPayments - remainingPayments) / totalPayments) * 100;
+            
             const remainingInterest = loanDetails.amortization.schedule
                 .filter(p => p.remainingBalance > 0)
                 .reduce((sum, p) => sum + p.interestPayment, 0);
             
-            const cancellationCost = (principal * earlyCancellationFee / 100);
-            const potentialSavings = remainingInterest - cancellationCost;
+            // Calcular score de prioridad más sofisticado
+            let priorityScore = 0;
             
-            // Determinar prioridad
-            let priority = 'low';
-            let title = '';
-            let description = '';
+            // Factor 1: Progreso del préstamo (menos progreso = más prioridad)
+            const progressFactor = (100 - progressPercentage) / 100;
+            priorityScore += progressFactor * 40;
             
-            if (potentialSavings > 5000) {
-                priority = 'high';
-                title = `Amortizar ${liability.name}`;
-                description = `Alto potencial de ahorro. Puedes ahorrar €${potentialSavings.toFixed(2)} amortizando anticipadamente.`;
-            } else if (potentialSavings > 1000) {
-                priority = 'medium';
-                title = `Considerar ${liability.name}`;
-                description = `Ahorro moderado de €${potentialSavings.toFixed(2)}. Evalúa si compensa la comisión de cancelación.`;
-            } else if (potentialSavings > 0) {
-                priority = 'low';
-                title = `Mantener ${liability.name}`;
-                description = `Ahorro limitado de €${potentialSavings.toFixed(2)}. Mejor mantener el préstamo actual.`;
-            } else {
-                priority = 'low';
-                title = `No amortizar ${liability.name}`;
-                description = `La comisión de cancelación supera el ahorro en intereses.`;
+            // Factor 2: Tasa de interés (mayor tasa = más prioridad)
+            const rateFactor = Math.min(rate / 6, 1); // Normalizar hasta 6%
+            priorityScore += rateFactor * 30;
+            
+            // Factor 3: Ahorro potencial (mayor ahorro = más prioridad)
+            const savingsFactor = Math.min(remainingInterest / 20000, 1); // Normalizar hasta €20k
+            priorityScore += savingsFactor * 20;
+            
+            // Factor 4: Cuota mensual (mayor cuota = más prioridad)
+            const paymentFactor = Math.min(loanDetails.monthlyPayment / 2000, 1); // Normalizar hasta €2000
+            priorityScore += paymentFactor * 10;
+            
+            // Factor 5: Viabilidad con ahorro disponible
+            let viabilityBonus = 0;
+            if (availableSavings > 0) {
+                const affordabilityRatio = Math.min(principal / availableSavings, 1);
+                if (affordabilityRatio <= 1) {
+                    viabilityBonus = (1 - affordabilityRatio) * 20; // Bonus si es asequible
+                }
             }
+            priorityScore += viabilityBonus;
+            
+            // Determinar prioridad basada en el score
+            let priority = 'low';
+            if (priorityScore > 70) priority = 'high';
+            else if (priorityScore > 40) priority = 'medium';
+            
+            // Generar recomendación específica considerando el ahorro disponible
+            const recommendation = this.generateLiabilityRecommendation(progressPercentage, rate, remainingInterest, priorityScore, liability.name, availableSavings, principal);
             
             analysis.push({
-                liabilityId: liability.id,
-                title,
-                description,
-                savings: potentialSavings,
-                priority,
-                totalCost,
-                remainingPayments
+                id: liability.id,
+                name: liability.name,
+                amount: principal,
+                rate: rate,
+                progress: progressPercentage,
+                remainingInterest: remainingInterest,
+                priority: priority,
+                priorityScore: priorityScore,
+                monthlyPayment: loanDetails.monthlyPayment,
+                savings: remainingInterest,
+                recommendation: recommendation,
+                affordable: availableSavings >= principal,
+                affordabilityRatio: availableSavings > 0 ? Math.min(principal / availableSavings, 1) : 1
             });
         });
         
-        // Ordenar por ahorro potencial descendente
-        return analysis.sort((a, b) => b.savings - a.savings);
+        return analysis.sort((a, b) => b.priorityScore - a.priorityScore);
+    }
+    
+    generateLiabilityRecommendation(progress, rate, remainingInterest, score, name, availableSavings = 0, principal = 0) {
+        const affordable = availableSavings >= principal;
+        const affordabilityRatio = availableSavings > 0 ? Math.min(principal / availableSavings, 1) : 1;
+        
+        if (score > 70) {
+            if (affordable) {
+                return {
+                    icon: '★',
+                    title: `AMORTIZAR ${name.toUpperCase()} PRIMERO`,
+                    description: `Prioridad máxima. Ahorro de €${remainingInterest.toFixed(0)} con ${rate}% TIN. Asequible con tu ahorro.`
+                };
+            } else {
+                return {
+                    icon: '★',
+                    title: `AMORTIZAR ${name.toUpperCase()} PRIMERO`,
+                    description: `Prioridad máxima. Ahorro de €${remainingInterest.toFixed(0)} con ${rate}% TIN. Necesitas €${(principal - availableSavings).toFixed(0)} más.`
+                };
+            }
+        } else if (score > 40) {
+            if (affordable) {
+                return {
+                    icon: '▲',
+                    title: `Considerar ${name}`,
+                    description: `Buena opción. Ahorro de €${remainingInterest.toFixed(0)}. Asequible con tu ahorro actual.`
+                };
+            } else {
+                return {
+                    icon: '▲',
+                    title: `Considerar ${name}`,
+                    description: `Buena opción. Ahorro de €${remainingInterest.toFixed(0)}. Necesitas €${(principal - availableSavings).toFixed(0)} más.`
+                };
+            }
+        } else {
+            return {
+                icon: '◊',
+                title: `Baja prioridad - ${name}`,
+                description: `Impacto limitado. Solo si tienes exceso de liquidez.`
+            };
+        }
     }
 
     updateInsightsCenter() {
@@ -3479,31 +3562,109 @@ function logout() {
         resultsDiv.style.display = 'block';
     }
     
-    function generateAmortizationInsights(progressPercentage, remainingInterest, remainingPayments, totalPayments, rate) {
+    function showSavingsConfiguration() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Configuración de Ahorro Disponible</h3>
+                    <button class="close-btn" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Indica cuánto dinero tienes disponible para amortizar préstamos. Esto nos ayudará a darte recomendaciones más precisas.</p>
+                    <div class="form-group">
+                        <label for="available-savings">Ahorro disponible (€):</label>
+                        <input type="number" id="available-savings" placeholder="Ej: 15000" min="0" step="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="savings-priority">Prioridad de uso:</label>
+                        <select id="savings-priority">
+                            <option value="amortization">Solo para amortizar préstamos</option>
+                            <option value="mixed">Amortizar + inversiones</option>
+                            <option value="emergency">Mantener como fondo de emergencia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="risk-tolerance">Tolerancia al riesgo:</label>
+                        <select id="risk-tolerance">
+                            <option value="conservative">Conservador (solo amortizar)</option>
+                            <option value="moderate">Moderado (amortizar + inversiones seguras)</option>
+                            <option value="aggressive">Agresivo (buscar mejores rendimientos)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button class="btn-primary" onclick="saveSavingsConfiguration()">Guardar Configuración</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        
+        // Cargar configuración existente
+        const savedSavings = localStorage.getItem('veedor-savings-config');
+        if (savedSavings) {
+            const config = JSON.parse(savedSavings);
+            document.getElementById('available-savings').value = config.amount || '';
+            document.getElementById('savings-priority').value = config.priority || 'amortization';
+            document.getElementById('risk-tolerance').value = config.riskTolerance || 'conservative';
+        }
+    }
+    
+    function saveSavingsConfiguration() {
+        const amount = parseFloat(document.getElementById('available-savings').value) || 0;
+        const priority = document.getElementById('savings-priority').value;
+        const riskTolerance = document.getElementById('risk-tolerance').value;
+        
+        const config = {
+            amount: amount,
+            priority: priority,
+            riskTolerance: riskTolerance,
+            lastUpdated: new Date().toISOString()
+        };
+        
+        localStorage.setItem('veedor-savings-config', JSON.stringify(config));
+        
+        // Actualizar el análisis con la nueva configuración
+        if (window.veedorFinance) {
+            window.veedorFinance.updateAmortizationAnalysis();
+        }
+        
+        closeModal();
+        showMessage('Configuración de ahorro guardada correctamente', 'success');
+    }
+    
+    function getSavingsConfiguration() {
+        const savedSavings = localStorage.getItem('veedor-savings-config');
+        return savedSavings ? JSON.parse(savedSavings) : null;
+    }
         // Determinar momento del préstamo
         let timing = {};
         if (progressPercentage < 20) {
             timing = {
                 priority: 'high',
-                icon: '🚀',
+                icon: '▶',
                 description: 'Inicio del préstamo. La mayoría de la cuota va a intereses. Es el momento MÁS favorable para amortizar.'
             };
         } else if (progressPercentage < 50) {
             timing = {
                 priority: 'medium',
-                icon: '⚖️',
+                icon: '◐',
                 description: 'Mitad del préstamo. Balance entre intereses y capital. Buen momento para amortizar si tienes liquidez.'
             };
         } else if (progressPercentage < 80) {
             timing = {
                 priority: 'low',
-                icon: '📉',
+                icon: '◑',
                 description: 'Final del préstamo. La mayoría va a capital. Amortizar tiene menos impacto financiero.'
             };
         } else {
             timing = {
                 priority: 'low',
-                icon: '🏁',
+                icon: '●',
                 description: 'Casi terminado. Amortizar no compensa económicamente. Mejor mantener el plan actual.'
             };
         }
@@ -3516,25 +3677,25 @@ function logout() {
         if (progressPercentage < 30 && rate > 4) {
             recommendation = {
                 priority: 'high',
-                icon: '💡',
+                icon: '★',
                 description: `AMORTIZAR AHORA. Con ${rate}% TIN, puedes ahorrar €${remainingInterest.toFixed(0)} en intereses.`
             };
         } else if (progressPercentage < 50 && rate > 3) {
             recommendation = {
                 priority: 'medium',
-                icon: '⚡',
+                icon: '▲',
                 description: `Considera amortizar. Ahorro potencial de €${remainingInterest.toFixed(0)}. Evalúa tu liquidez.`
             };
         } else if (progressPercentage < 70) {
             recommendation = {
                 priority: 'low',
-                icon: '🤔',
+                icon: '◊',
                 description: 'Amortizar tiene impacto moderado. Solo si tienes exceso de liquidez sin mejor inversión.'
             };
         } else {
             recommendation = {
                 priority: 'low',
-                icon: '✅',
+                icon: '✓',
                 description: 'Mantén el plan actual. Amortizar no compensa económicamente en esta fase.'
             };
         }
@@ -3547,19 +3708,19 @@ function logout() {
         if (potentialSavings > 10000) {
             savings = {
                 priority: 'high',
-                icon: '💰',
+                icon: '€',
                 description: `Ahorro ALTO: €${potentialSavings.toFixed(0)}. Amortizar puede ser muy rentable.`
             };
         } else if (potentialSavings > 5000) {
             savings = {
                 priority: 'medium',
-                icon: '💵',
+                icon: '$',
                 description: `Ahorro MODERADO: €${potentialSavings.toFixed(0)}. Evalúa otras opciones de inversión.`
             };
         } else {
             savings = {
                 priority: 'low',
-                icon: '💸',
+                icon: '¢',
                 description: `Ahorro LIMITADO: €${potentialSavings.toFixed(0)}. Mejor mantener el préstamo actual.`
             };
         }
