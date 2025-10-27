@@ -1575,9 +1575,16 @@ function showAuthRequired() {
 
 // Mostrar modal de autenticación
 function showAuth() {
+    console.log('showAuth() llamado');
     const authOverlay = document.getElementById('auth-overlay');
+    console.log('authOverlay encontrado:', authOverlay);
+    
     if (authOverlay) {
+        console.log('Añadiendo clase show...');
         authOverlay.classList.add('show');
+        // Forzar visibilidad temporalmente para debug
+        authOverlay.style.visibility = 'visible';
+        authOverlay.style.opacity = '1';
         document.body.style.overflow = 'hidden';
         
         // Ajustar modal según zoom
@@ -1597,6 +1604,9 @@ function hideAuth() {
     const authOverlay = document.getElementById('auth-overlay');
     if (authOverlay) {
         authOverlay.classList.remove('show');
+        // Limpiar estilos inline de debug
+        authOverlay.style.visibility = '';
+        authOverlay.style.opacity = '';
         document.body.style.overflow = 'auto';
         console.log('Modal de autenticación cerrado');
     }
