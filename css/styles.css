@@ -1257,7 +1257,7 @@ a:hover {
 
 /* Debug Analytics - Forzar estilos */
 #analytics-tab {
-    display: block !important;
+    display: block;
 }
 
 #analytics-tab .analytics-grid {
@@ -1275,7 +1275,7 @@ a:hover {
     box-shadow: 0 12px 40px var(--dashboard-shadow) !important;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     min-height: 250px !important;
-    display: block !important;
+    display: block;
     position: relative !important;
     overflow: hidden !important;
 }
@@ -1330,7 +1330,7 @@ a:hover {
 #analytics-tab .category-bar {
     flex: 1 !important;
     height: 8px !important;
-    background: #333 !important;
+    background: var(--bg-secondary);
     border-radius: 4px !important;
     overflow: hidden !important;
 }
@@ -1343,23 +1343,23 @@ a:hover {
 
 /* Colores específicos para las barras de categorías */
 #analytics-tab .category-fill[style*="background: #3D1F1F"] {
-    background: #1e293b !important;
+    background: var(--bg-tertiary);
 }
 
 #analytics-tab .category-fill[style*="background: #2D4A2D"] {
-    background: #065f46 !important;
+    background: var(--success);
 }
 
 #analytics-tab .category-fill[style*="background: #4A2D1F"] {
-    background: #92400e !important;
+    background: var(--warning);
 }
 
 #analytics-tab .category-fill[style*="background: #2F1F3D"] {
-    background: #7c3aed !important;
+    background: var(--accent);
 }
 
 #analytics-tab .category-fill[style*="background: #1F3D2F"] {
-    background: #059669 !important;
+    background: var(--success);
 }
 
 #analytics-tab .circle-progress {
@@ -1367,7 +1367,7 @@ a:hover {
     width: 120px !important;
     height: 120px !important;
     border-radius: 50% !important;
-    background: conic-gradient(#065f46 0deg 173deg, #444 173deg 360deg) !important;
+    background: conic-gradient(var(--success) 0deg 173deg, var(--bg-secondary) 173deg 360deg);
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -4798,7 +4798,7 @@ a:hover {
     min-height: 50px !important;
     max-width: 150px !important;
     max-height: 50px !important;
-    display: block !important;
+    display: block;
     position: relative !important;
     overflow: hidden !important;
 }
@@ -4809,7 +4809,7 @@ a:hover {
     height: 100% !important;
     object-fit: contain !important;
     object-position: center !important;
-    display: block !important;
+    display: block;
     background: transparent !important;
 }
 
