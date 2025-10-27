@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Finanzas - Veedor</title>
+    <meta name="description" content="Gestiona tus finanzas personales con Veedor">
+    <meta name="keywords" content="finanzas personales, gestión de dinero, presupuestos, objetivos financieros">
+    <meta name="author" content="Veedor">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Mis Finanzas - Veedor">
+    <meta property="og:description" content="Gestiona tus finanzas personales con Veedor">
+    <meta property="og:type" content="website">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#8b5cf6">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body data-theme="dark">
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1><a href="index.html">Veedor</a></h1>
+            </div>
+            <ul class="nav-menu" id="nav-menu">
+                <!-- Botones fijos siempre visibles -->
+                <li><button class="nav-btn" onclick="window.location.href='index.html'">Inicio</button></li>
+                <li><button class="nav-btn" onclick="window.location.href='index.html#features'">Funciones</button></li>
+                
+                <!-- Menú desplegable para funcionalidades dinámicas -->
+                <li class="nav-dropdown">
+                    <button class="nav-btn nav-btn-dropdown" onclick="toggleUserMenu(); closeMobileMenu();">
+                        <span id="user-menu-text">Mi Cuenta</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div class="nav-dropdown-content" id="nav-dropdown-content">
+                        <button class="nav-btn nav-btn-dropdown-item" id="dashboard-link" style="display: block;" onclick="window.location.href='dashboard.html'; closeMobileMenu();">Mis Finanzas</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="auth-button" style="display: none;" onclick="showAuth(); closeMobileMenu();">Acceder</button>
+                        <button class="nav-btn nav-btn-dropdown-item" id="logout-button" style="display: block;" onclick="logout(); closeMobileMenu();">Cerrar Sesión</button>
+                    </div>
+                </li>
+            </ul>
+            
+            <!-- Hamburger menu button -->
+            <button class="hamburger" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Botón de cambio de tema flotante -->
+    <button class="theme-toggle-floating" onclick="toggleTheme()" title="Cambiar tema">
+        <span class="theme-icon">☀️</span>
+    </button>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard-section" id="dashboard">
+        <div class="container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h2>Mis Finanzas</h2>
+                    <p>Gestión completa de tu dinero</p>
+                </div>
+                <div class="dashboard-actions">
+                    <button class="btn btn-primary" onclick="showTransactionModal()">+ Nuevo Gasto</button>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Balance Overview -->
+                <div class="balance-overview">
+                    <div class="balance-card">
+                        <h3>Balance Total</h3>
+                        <div class="balance-amount" id="total-balance">€0.00</div>
+                        <div class="balance-change" id="balance-change">Cargando...</div>
+                    </div>
+                    <div class="balance-card">
+                        <h3>Ingresos</h3>
+                        <div class="balance-amount" id="total-income">€0.00</div>
+                        <div class="balance-change" id="income-change">Este mes</div>
+                    </div>
+                    <div class="balance-card">
+                        <h3>Gastos</h3>
+                        <div class="balance-amount" id="total-expenses">€0.00</div>
+                        <div class="balance-change" id="expenses-change">Este mes</div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Tabs -->
+                <div class="dashboard-tabs">
+                    <button class="tab-btn active" onclick="showTab('transactions')">Transacciones</button>
+                    <button class="tab-btn" onclick="showTab('analytics')">Análisis</button>
+                    <button class="tab-btn" onclick="showTab('budgets')">Presupuestos</button>
+                    <button class="tab-btn" onclick="showTab('goals')">Objetivos</button>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div class="tab-content active" id="transactions-tab">
+                    <div class="transactions-header">
+                        <h3>Últimas Transacciones</h3>
+                        <div class="transactions-filters">
+                            <select class="filter-select" id="category-filter">
+                                <option value="all">Todas las categorías</option>
+                                <option value="food">Alimentación</option>
+                                <option value="transport">Transporte</option>
+                                <option value="entertainment">Entretenimiento</option>
+                                <option value="utilities">Servicios</option>
+                                <option value="health">Salud</option>
+                                <option value="shopping">Compras</option>
+                                <option value="income">Ingresos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="transactions-list" id="transactions-list">
+                        <!-- Las transacciones se cargarán dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div class="tab-content" id="analytics-tab">
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>Gastos por Categoría</h4>
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Tendencia Mensual</h4>
+                            <div class="chart-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budgets Tab -->
+                <div class="tab-content" id="budgets-tab">
+                    <div class="budgets-header">
+                        <h3>Presupuestos</h3>
+                        <button class="btn btn-secondary" onclick="showBudgetModal()">+ Nuevo Presupuesto</button>
+                    </div>
+                    <div class="budgets-list" id="budgets-list">
+                        <!-- Los presupuestos se cargarán dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Goals Tab -->
+                <div class="tab-content" id="goals-tab">
+                    <div class="goals-header">
+                        <h3>Objetivos Financieros</h3>
+                        <button class="btn btn-secondary" onclick="showGoalModal()">+ Nuevo Objetivo</button>
+                    </div>
+                    <div class="goals-list" id="goals-list">
+                        <!-- Los objetivos se cargarán dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Transaction Modal -->
+    <div class="modal" id="transaction-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nueva Transacción</h2>
+                <button class="close-btn" onclick="closeModal('transaction-modal')">&times;</button>
+            </div>
+            <div class="modal-form">
+                <div class="form-group">
+                    <label for="transaction-description">Descripción</label>
+                    <input type="text" id="transaction-description" placeholder="Ej: Pizza Delivery">
+                </div>
+                <div class="form-group">
+                    <label for="transaction-amount">Cantidad</label>
+                    <input type="number" id="transaction-amount" placeholder="15.50" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="transaction-category">Categoría</label>
+                    <select id="transaction-category">
+                        <option value="food">Alimentación</option>
+                        <option value="transport">Transporte</option>
+                        <option value="entertainment">Entretenimiento</option>
+                        <option value="utilities">Servicios</option>
+                        <option value="health">Salud</option>
+                        <option value="shopping">Compras</option>
+                        <option value="income">Ingresos</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-date">Fecha</label>
+                    <input type="date" id="transaction-date">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="addTransaction()">Agregar Transacción</button>
+                    <button class="btn btn-secondary" onclick="closeModal('transaction-modal')">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Modal -->
+    <div class="modal" id="budget-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Presupuesto</h2>
+                <button class="close-btn" onclick="closeModal('budget-modal')">&times;</button>
+            </div>
+            <div class="modal-form">
+                <div class="form-group">
+                    <label for="budget-name">Nombre del presupuesto</label>
+                    <input type="text" id="budget-name" placeholder="Ej: Alimentación">
+                </div>
+                <div class="form-group">
+                    <label for="budget-amount">Cantidad límite</label>
+                    <input type="number" id="budget-amount" placeholder="400.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="budget-category">Categoría</label>
+                    <select id="budget-category">
+                        <option value="food">Alimentación</option>
+                        <option value="transport">Transporte</option>
+                        <option value="entertainment">Entretenimiento</option>
+                        <option value="utilities">Servicios</option>
+                        <option value="health">Salud</option>
+                        <option value="shopping">Compras</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="addBudget()">Crear Presupuesto</button>
+                    <button class="btn btn-secondary" onclick="closeModal('budget-modal')">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goal Modal -->
+    <div class="modal" id="goal-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Objetivo</h2>
+                <button class="close-btn" onclick="closeModal('goal-modal')">&times;</button>
+            </div>
+            <div class="modal-form">
+                <div class="form-group">
+                    <label for="goal-name">Nombre del objetivo</label>
+                    <input type="text" id="goal-name" placeholder="Ej: Vacaciones de verano">
+                </div>
+                <div class="form-group">
+                    <label for="goal-target">Cantidad objetivo</label>
+                    <input type="number" id="goal-target" placeholder="1500.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="goal-current">Cantidad actual</label>
+                    <input type="number" id="goal-current" placeholder="0.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="goal-deadline">Fecha límite</label>
+                    <input type="date" id="goal-deadline">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="addGoal()">Crear Objetivo</button>
+                    <button class="btn btn-secondary" onclick="closeModal('goal-modal')">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Veedor</h3>
+                    <p>La gestión de finanzas personales más simple y efectiva.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><button onclick="openModal('privacy-modal')">Política de Privacidad</button></li>
+                        <li><button onclick="openModal('terms-modal')">Términos Legales</button></li>
+                        <li><button onclick="openModal('cookies-modal')">Política de Cookies</button></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Descargar App</h4>
+                    <div class="download-badges">
+                        <a href="https://apps.apple.com/app/veedor" target="_blank">
+                            <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the App Store" class="download-badge">
+                        </a>
+                        <a href="https://play.google.com/store/apps/details?id=com.veedor.app" target="_blank">
+                            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" class="download-badge">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Veedor. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Legal Modals -->
+    <div class="modal" id="privacy-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Política de Privacidad</h2>
+                <button class="close-btn" onclick="closeModal('privacy-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="legal-section">
+                    <h3>Información que recopilamos</h3>
+                    <p>Recopilamos únicamente la información necesaria para proporcionar nuestros servicios financieros.</p>
+                </div>
+                <div class="legal-section">
+                    <h3>Cómo usamos tu información</h3>
+                    <p>Utilizamos tu información para mejorar nuestros servicios y proporcionarte una experiencia personalizada.</p>
+                </div>
+                <div class="legal-section">
+                    <h3>Protección de datos</h3>
+                    <p>Tus datos están protegidos con las mejores prácticas de seguridad y encriptación.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="terms-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Términos Legales</h2>
+                <button class="close-btn" onclick="closeModal('terms-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="legal-section">
+                    <h3>Aceptación de términos</h3>
+                    <p>Al usar Veedor, aceptas estos términos de servicio.</p>
+                </div>
+                <div class="legal-section">
+                    <h3>Uso del servicio</h3>
+                    <p>Veedor es una herramienta de gestión financiera personal. Úsala responsablemente.</p>
+                </div>
+                <div class="legal-section">
+                    <h3>Limitación de responsabilidad</h3>
+                    <p>Veedor no se hace responsable de decisiones financieras basadas en la información proporcionada.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="cookies-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Política de Cookies</h2>
+                <button class="close-btn" onclick="closeModal('cookies-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="legal-section">
+                    <h3>¿Qué son las cookies?</h3>
+                    <p>Las cookies son pequeños archivos que nos ayudan a mejorar tu experiencia en Veedor.</p>
+                </div>
+                <div class="legal-section">
+                    <h3>Cómo las usamos</h3>
+                    <p>Utilizamos cookies para recordar tus preferencias y mejorar el rendimiento del sitio.</p>
+                </div>
+                <div class="legal-section">
+                    <h3>Control de cookies</h3>
+                    <p>Puedes controlar las cookies desde la configuración de tu navegador.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js" defer></script>
+    <script src="js/app.js" defer></script>
+    <script src="js/dashboard.js" defer></script>
+    <script src="js/chart.js" defer></script>
+    <script src="js/validations.js" defer></script>
+    <script src="js/tests.js" defer></script>
+</body>
+</html>

@@ -3,42 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veedor — La cuenta de la vieja digital</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Gestiona tus finanzas de forma simple y clara. La cuenta de la vieja, pero digital. Sin complicaciones, como toda la vida.">
-    <meta name="keywords" content="finanzas personales, gestión de dinero, presupuesto, gastos, ingresos, ahorro, economía personal">
+    <title>Demo - Veedor</title>
+    <meta name="description" content="Descubre cómo funciona Veedor con nuestra demo interactiva">
+    <meta name="keywords" content="demo, finanzas personales, gestión de dinero, Veedor">
     <meta name="author" content="Veedor">
     <meta name="robots" content="index, follow">
     
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Veedor — La cuenta de la vieja digital">
-    <meta property="og:description" content="Gestiona tus finanzas de forma simple y clara. La cuenta de la vieja, pero digital.">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Demo - Veedor">
+    <meta property="og:description" content="Descubre cómo funciona Veedor con nuestra demo interactiva">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://pableitez.github.io/veedor/">
-    <meta property="og:image" content="https://pableitez.github.io/veedor/assets/images/veedor-og.jpg">
-    <meta property="og:site_name" content="Veedor">
+    <meta property="og:url" content="https://pableitez.github.io/veedor/demo.html">
     
-    <!-- Twitter Card Meta Tags -->
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Veedor — La cuenta de la vieja digital">
-    <meta name="twitter:description" content="Gestiona tus finanzas de forma simple y clara. La cuenta de la vieja, pero digital.">
-    <meta name="twitter:image" content="https://pableitez.github.io/veedor/assets/images/veedor-og.jpg">
+    <meta name="twitter:title" content="Demo - Veedor">
+    <meta name="twitter:description" content="Descubre cómo funciona Veedor con nuestra demo interactiva">
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
-    
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#8B5CF6">
-    <meta name="msapplication-TileColor" content="#8B5CF6">
-    
-    <!-- PWA Manifest -->
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
-    
-    <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%238B5CF6' rx='22'/><text x='90' y='120' font-size='90' text-anchor='middle' fill='white'>💰</text></svg>">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#8b5cf6">
     
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body data-theme="dark">
     <!-- Header -->
@@ -80,114 +68,207 @@
         <span class="theme-icon">☀️</span>
     </button>
 
-    <!-- Main Content -->
-    <main>
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="container">
-                <div class="hero-content">
-                    <h1>La economía es más simple de lo que parece</h1>
-                    <p>Como cuando tu abuela llevaba las cuentas, sin perder ni una peseta.</p>
-                    <div class="hero-actions">
-                        <button class="btn btn-primary" onclick="window.location.href='demo.html'">Descubre Veedor</button>
-                        <button class="btn btn-secondary" onclick="showAuth()">Comenzar</button>
-                    </div>
+    <!-- Demo Dashboard Section -->
+    <section class="dashboard-section" id="dashboard">
+        <div class="container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h2>Mis Finanzas</h2>
+                    <p>Gestión completa de tu dinero</p>
+                </div>
+                <div class="dashboard-actions">
+                    <button class="btn btn-primary" onclick="showTransactionModal()">+ Nuevo Gasto</button>
                 </div>
             </div>
-        </section>
 
-        <!-- Features Section -->
-        <section class="features" id="features">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Las cuentas como siempre, pero sin papel</h2>
-                    <p>Lo simple hace el trabajo por ti</p>
-                </div>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">📊</div>
-                        <h3>Control Total</h3>
-                        <p>Ve exactamente dónde va tu dinero, sin sorpresas</p>
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Balance Overview -->
+                <div class="balance-overview">
+                    <div class="balance-card">
+                        <h3>Balance Total</h3>
+                        <div class="balance-amount">€2,450.00</div>
+                        <div class="balance-change positive">+€150.00 este mes</div>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🎯</div>
-                        <h3>Objetivos Claros</h3>
-                        <p>Define metas y ve cómo las alcanzas paso a paso</p>
+                    <div class="balance-card">
+                        <h3>Ingresos</h3>
+                        <div class="balance-amount">€3,200.00</div>
+                        <div class="balance-change positive">+€200.00 este mes</div>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📈</div>
-                        <h3>Análisis Simple</h3>
-                        <p>Gráficos que entiendes al primer vistazo</p>
+                    <div class="balance-card">
+                        <h3>Gastos</h3>
+                        <div class="balance-amount">€750.00</div>
+                        <div class="balance-change negative">-€50.00 este mes</div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- How It Works Section -->
-        <section class="how-it-works">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Así de fácil</h2>
-                    <p>En tres pasos tienes tus finanzas bajo control</p>
+                <!-- Dashboard Tabs -->
+                <div class="dashboard-tabs">
+                    <button class="tab-btn active" onclick="showTab('transactions')">Transacciones</button>
+                    <button class="tab-btn" onclick="showTab('analytics')">Análisis</button>
+                    <button class="tab-btn" onclick="showTab('budgets')">Presupuestos</button>
+                    <button class="tab-btn" onclick="showTab('goals')">Objetivos</button>
                 </div>
-                <div class="steps-grid">
-                    <div class="step-card">
-                        <div class="step-number">1</div>
-                        <h3>Regístrate</h3>
-                        <p>Crea tu cuenta en segundos</p>
-                    </div>
-                    <div class="step-card">
-                        <div class="step-number">2</div>
-                        <h3>Anota tus gastos</h3>
-                        <p>Introduce tus movimientos diarios</p>
-                    </div>
-                    <div class="step-card">
-                        <div class="step-number">3</div>
-                        <h3>Controla tu dinero</h3>
-                        <p>Ve cómo evoluciona tu economía</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Benefits Section -->
-        <section class="benefits">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Por qué elegir Veedor</h2>
-                    <p>La diferencia está en la simplicidad</p>
+                <!-- Transactions Tab -->
+                <div class="tab-content active" id="transactions-tab">
+                    <div class="transactions-header">
+                        <h3>Últimas Transacciones</h3>
+                        <div class="transactions-filters">
+                            <select class="filter-select">
+                                <option value="all">Todas las categorías</option>
+                                <option value="food">Alimentación</option>
+                                <option value="transport">Transporte</option>
+                                <option value="entertainment">Entretenimiento</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="transactions-list">
+                        <div class="transaction-item">
+                            <div class="transaction-icon">🍕</div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Pizza Delivery</div>
+                                <div class="transaction-category">Alimentación</div>
+                            </div>
+                            <div class="transaction-amount negative">-€15.50</div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-icon">⛽</div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Gasolina</div>
+                                <div class="transaction-category">Transporte</div>
+                            </div>
+                            <div class="transaction-amount negative">-€45.00</div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-icon">💰</div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Salario</div>
+                                <div class="transaction-category">Ingresos</div>
+                            </div>
+                            <div class="transaction-amount positive">+€2,500.00</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="benefits-grid">
-                    <div class="benefit-card">
-                        <h3>Sin complicaciones</h3>
-                        <p>Interfaz clara y directa, como siempre ha sido</p>
-                    </div>
-                    <div class="benefit-card">
-                        <h3>Privacidad total</h3>
-                        <p>Tus datos son solo tuyos, sin compartir con bancos</p>
-                    </div>
-                    <div class="benefit-card">
-                        <h3>Gratis para siempre</h3>
-                        <p>Sin suscripciones ni letra pequeña</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- CTA Section -->
-        <section class="cta">
-            <div class="container">
-                <div class="cta-content">
-                    <h2>La economía es más simple de lo que parece</h2>
-                    <p>Únete a miles de personas que ya controlan su dinero sin complicaciones</p>
-                    <div class="cta-actions">
-                        <button class="btn btn-primary" onclick="window.location.href='demo.html'">Ver Demo</button>
-                        <button class="btn btn-outline" onclick="showAuth()">Registrarse</button>
+                <!-- Analytics Tab -->
+                <div class="tab-content" id="analytics-tab">
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>Gastos por Categoría</h4>
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Tendencia Mensual</h4>
+                            <div class="chart-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budgets Tab -->
+                <div class="tab-content" id="budgets-tab">
+                    <div class="budgets-header">
+                        <h3>Presupuestos</h3>
+                        <button class="btn btn-secondary" onclick="showBudgetModal()">+ Nuevo Presupuesto</button>
+                    </div>
+                    <div class="budgets-list">
+                        <div class="budget-item">
+                            <div class="budget-info">
+                                <h4>Alimentación</h4>
+                                <p>€300 / €400</p>
+                            </div>
+                            <div class="budget-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="budget-info">
+                                <h4>Transporte</h4>
+                                <p>€120 / €200</p>
+                            </div>
+                            <div class="budget-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goals Tab -->
+                <div class="tab-content" id="goals-tab">
+                    <div class="goals-header">
+                        <h3>Objetivos Financieros</h3>
+                        <button class="btn btn-secondary" onclick="showGoalModal()">+ Nuevo Objetivo</button>
+                    </div>
+                    <div class="goals-list">
+                        <div class="goal-item">
+                            <div class="goal-info">
+                                <h4>Vacaciones de Verano</h4>
+                                <p>€800 / €1,500</p>
+                            </div>
+                            <div class="goal-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 53%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="goal-item">
+                            <div class="goal-info">
+                                <h4>Fondo de Emergencia</h4>
+                                <p>€2,000 / €5,000</p>
+                            </div>
+                            <div class="goal-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 40%"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
+
+    <!-- Transaction Modal -->
+    <div class="modal" id="transaction-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Gasto</h2>
+                <button class="close-btn" onclick="closeModal('transaction-modal')">&times;</button>
+            </div>
+            <div class="modal-form">
+                <div class="form-group">
+                    <label for="transaction-description">Descripción</label>
+                    <input type="text" id="transaction-description" placeholder="Ej: Pizza Delivery">
+                </div>
+                <div class="form-group">
+                    <label for="transaction-amount">Cantidad</label>
+                    <input type="number" id="transaction-amount" placeholder="15.50" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="transaction-category">Categoría</label>
+                    <select id="transaction-category">
+                        <option value="food">Alimentación</option>
+                        <option value="transport">Transporte</option>
+                        <option value="entertainment">Entretenimiento</option>
+                        <option value="utilities">Servicios</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="addTransaction()">Agregar Gasto</button>
+                    <button class="btn btn-secondary" onclick="closeModal('transaction-modal')">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Auth Modal -->
     <div class="auth-overlay" id="auth-overlay">
@@ -386,6 +467,8 @@
     <!-- Scripts -->
     <script src="js/config.js" defer></script>
     <script src="js/app.js" defer></script>
+    <script src="js/dashboard.js" defer></script>
+    <script src="js/chart.js" defer></script>
     <script src="js/validations.js" defer></script>
     <script src="js/tests.js" defer></script>
 </body>
