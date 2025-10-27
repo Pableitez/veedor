@@ -236,7 +236,7 @@ a:hover {
    LAYOUT PRINCIPAL
    ======================================== */
 .container {
-    max-width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 var(--space-lg);
 }
@@ -548,6 +548,7 @@ a:hover {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    line-height: 1.6;
 }
 
 .hero-actions {
@@ -555,13 +556,6 @@ a:hover {
     gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
-}
-
-.hero-subtitle {
-    font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: var(--space-xl);
-    line-height: 1.6;
 }
 
 /* ========================================
@@ -623,6 +617,27 @@ a:hover {
     opacity: 0.8;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+/* ========================================
+   SECTION HEADERS
+   ======================================== */
+.section-header {
+    text-align: center;
+    margin-bottom: var(--space-3xl);
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-lg);
+    color: var(--text-primary);
+}
+
+.section-header p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 /* ========================================
