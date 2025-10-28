@@ -1,0 +1,544 @@
+/* ========================================
+   SISTEMA DE TARJETAS
+   ======================================== */
+
+/* === TARJETAS BASE === */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-normal);
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent);
+}
+
+/* === CABECERA DE TARJETA === */
+.card-header {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.card-header p {
+    margin: var(--space-xs) 0 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* === CUERPO DE TARJETA === */
+.card-body {
+    padding: var(--space-lg);
+}
+
+.card-body h4 {
+    margin: 0 0 var(--space-md) 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.card-body p {
+    margin: 0 0 var(--space-md) 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.card-body p:last-child {
+    margin-bottom: 0;
+}
+
+/* === PIE DE TARJETA === */
+.card-footer {
+    padding: var(--space-lg);
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+/* === TARJETAS DE FUNCIONALIDAD === */
+.feature-card {
+    text-align: center;
+    padding: var(--space-xl);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent);
+    opacity: 0;
+    transition: var(--transition-normal);
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+}
+
+.feature-card:hover::before {
+    opacity: 1;
+}
+
+.feature-card .feature-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-lg);
+    color: var(--accent);
+    transition: var(--transition-normal);
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+    color: var(--accent-light);
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-lg);
+}
+
+/* === TARJETAS DE DASHBOARD === */
+.dashboard-card {
+    background: var(--dashboard-card-bg);
+    border: 1px solid var(--dashboard-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--dashboard-shadow);
+    transition: var(--transition-normal);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+}
+
+.dashboard-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+}
+
+.dashboard-card .metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: var(--space-sm);
+}
+
+.dashboard-card .metric-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+.dashboard-card .metric-change {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.dashboard-card .metric-change.positive {
+    color: var(--success);
+}
+
+.dashboard-card .metric-change.negative {
+    color: var(--error);
+}
+
+/* === TARJETAS DE TRANSACCIÓN === */
+.transaction-card {
+    background: var(--dashboard-transaction-bg);
+    border: 1px solid var(--dashboard-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    transition: var(--transition-normal);
+    box-shadow: var(--dashboard-transaction-shadow);
+}
+
+.transaction-card:hover {
+    background: var(--dashboard-hover-bg);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+}
+
+.transaction-card:last-child {
+    margin-bottom: 0;
+}
+
+.transaction-card .transaction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+}
+
+.transaction-card .transaction-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.transaction-card .transaction-amount {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.transaction-card .transaction-amount.positive {
+    color: var(--success);
+}
+
+.transaction-card .transaction-amount.negative {
+    color: var(--error);
+}
+
+.transaction-card .transaction-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* === TARJETAS DE PRESUPUESTO === */
+.budget-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    transition: var(--transition-normal);
+    position: relative;
+}
+
+.budget-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent);
+}
+
+.budget-card.warning {
+    border-left: 4px solid var(--warning);
+    background: linear-gradient(90deg, rgba(255, 152, 0, 0.05) 0%, transparent 100%);
+}
+
+.budget-card.critical {
+    border-left: 4px solid var(--error);
+    background: linear-gradient(90deg, rgba(244, 67, 54, 0.05) 0%, transparent 100%);
+}
+
+.budget-card.success {
+    border-left: 4px solid var(--success);
+    background: linear-gradient(90deg, rgba(76, 175, 80, 0.05) 0%, transparent 100%);
+}
+
+.budget-card .budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.budget-card .budget-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.budget-card .budget-amount {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+
+.budget-card .budget-progress {
+    margin-bottom: var(--space-md);
+}
+
+.budget-card .budget-bar {
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: var(--space-xs);
+}
+
+.budget-card .budget-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.budget-card .budget-fill.warning {
+    background: var(--warning);
+}
+
+.budget-card .budget-fill.critical {
+    background: var(--error);
+}
+
+.budget-card .budget-fill.success {
+    background: var(--success);
+}
+
+.budget-card .budget-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* === TARJETAS DE OBJETIVO === */
+.goal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    transition: var(--transition-normal);
+    position: relative;
+}
+
+.goal-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent);
+}
+
+.goal-card .goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.goal-card .goal-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.goal-card .goal-priority {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--text-white);
+}
+
+.goal-card .goal-progress {
+    margin-bottom: var(--space-md);
+}
+
+.goal-card .goal-bar {
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: var(--space-xs);
+}
+
+.goal-card .goal-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.goal-card .goal-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+/* === TARJETAS DE INSIGHT === */
+.insight-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.insight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent);
+}
+
+.insight-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent);
+    opacity: 0;
+    transition: var(--transition-normal);
+}
+
+.insight-card:hover::before {
+    opacity: 1;
+}
+
+.insight-card.success {
+    border-left: 4px solid var(--success);
+}
+
+.insight-card.warning {
+    border-left: 4px solid var(--warning);
+}
+
+.insight-card.info {
+    border-left: 4px solid var(--info);
+}
+
+.insight-card.critical {
+    border-left: 4px solid var(--error);
+}
+
+.insight-card .insight-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.insight-card .insight-icon {
+    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+}
+
+.insight-card .insight-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.insight-card .insight-content {
+    margin-bottom: var(--space-sm);
+}
+
+.insight-card .insight-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.insight-card .insight-metrics {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border-light);
+}
+
+.insight-card .insight-value {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.insight-card .insight-value.positive {
+    color: var(--success);
+}
+
+.insight-card .insight-value.negative {
+    color: var(--error);
+}
+
+.insight-card .insight-value.neutral {
+    color: var(--text-primary);
+}
+
+.insight-card .insight-action {
+    font-size: 0.8rem;
+    color: var(--accent);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.insight-card .insight-action:hover {
+    color: var(--accent-light);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .card-header,
+    .card-body,
+    .card-footer {
+        padding: var(--space-md);
+    }
+    
+    .feature-card {
+        padding: var(--space-lg);
+    }
+    
+    .dashboard-card {
+        padding: var(--space-md);
+    }
+    
+    .budget-card,
+    .goal-card {
+        padding: var(--space-md);
+    }
+    
+    .transaction-card .transaction-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-xs);
+    }
+    
+    .transaction-card .transaction-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-xs);
+    }
+}

@@ -1,0 +1,455 @@
+/* ========================================
+   SISTEMA DE LAYOUT
+   ======================================== */
+
+/* === LAYOUT PRINCIPAL === */
+.main-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-content {
+    flex: 1;
+    padding: var(--space-lg) var(--space-sm);
+    margin-top: 80px; /* Altura del header fijo */
+    background: var(--bg-primary);
+    max-width: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* === CONTAINER === */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+}
+
+.container-fluid {
+    width: 100%;
+    padding: 0 var(--space-md);
+}
+
+.container-sm {
+    max-width: 600px;
+}
+
+.container-md {
+    max-width: 800px;
+}
+
+.container-lg {
+    max-width: 1000px;
+}
+
+.container-xl {
+    max-width: 1200px;
+}
+
+/* === SECCIONES === */
+.section {
+    padding: var(--space-2xl) 0;
+}
+
+.section-sm {
+    padding: var(--space-xl) 0;
+}
+
+.section-lg {
+    padding: var(--space-3xl) 0;
+}
+
+.section-white {
+    background: var(--bg-primary);
+}
+
+.section-gradient {
+    background: var(--bg-gradient);
+}
+
+.section-secondary {
+    background: var(--bg-secondary);
+}
+
+/* === GRID SYSTEM === */
+.grid {
+    display: grid;
+    gap: var(--space-lg);
+}
+
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+.grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+.grid-auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grid-auto-fill {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+/* === FLEXBOX LAYOUT === */
+.flex-layout {
+    display: flex;
+    gap: var(--space-lg);
+}
+
+.flex-layout.column {
+    flex-direction: column;
+}
+
+.flex-layout.row {
+    flex-direction: row;
+}
+
+.flex-layout.wrap {
+    flex-wrap: wrap;
+}
+
+.flex-layout.nowrap {
+    flex-wrap: nowrap;
+}
+
+.flex-layout.justify-start {
+    justify-content: flex-start;
+}
+
+.flex-layout.justify-center {
+    justify-content: center;
+}
+
+.flex-layout.justify-end {
+    justify-content: flex-end;
+}
+
+.flex-layout.justify-between {
+    justify-content: space-between;
+}
+
+.flex-layout.justify-around {
+    justify-content: space-around;
+}
+
+.flex-layout.align-start {
+    align-items: flex-start;
+}
+
+.flex-layout.align-center {
+    align-items: center;
+}
+
+.flex-layout.align-end {
+    align-items: flex-end;
+}
+
+.flex-layout.align-stretch {
+    align-items: stretch;
+}
+
+/* === LAYOUT DE DASHBOARD === */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+    min-height: calc(100vh - 120px);
+}
+
+.dashboard-sidebar {
+    display: none;
+}
+
+.dashboard-main {
+    flex: 1;
+    padding: 0;
+}
+
+.dashboard-content {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* === LAYOUT DE DOS COLUMNAS === */
+.two-column-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    align-items: start;
+}
+
+.two-column-layout .main-column {
+    grid-column: 1;
+}
+
+.two-column-layout .sidebar-column {
+    grid-column: 2;
+}
+
+/* === LAYOUT DE TRES COLUMNAS === */
+.three-column-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: var(--space-lg);
+    align-items: start;
+}
+
+.three-column-layout .left-column {
+    grid-column: 1;
+}
+
+.three-column-layout .main-column {
+    grid-column: 2;
+}
+
+.three-column-layout .right-column {
+    grid-column: 3;
+}
+
+/* === LAYOUT DE PESTAÑAS === */
+.tabs-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 600px;
+}
+
+.tabs-nav {
+    display: flex;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-xl);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-sm);
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+}
+
+.tabs-content {
+    flex: 1;
+}
+
+/* === LAYOUT DE FORMULARIOS === */
+.form-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-layout.two-column {
+    grid-template-columns: 1fr 1fr;
+}
+
+.form-layout.three-column {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* === LAYOUT DE LISTAS === */
+.list-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.list-layout.horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.list-layout.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-md);
+}
+
+/* === LAYOUT DE CARDS === */
+.cards-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-lg);
+}
+
+.cards-layout.compact {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-md);
+}
+
+.cards-layout.large {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--space-xl);
+}
+
+/* === LAYOUT DE HERO === */
+.hero-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-3xl) 0;
+    min-height: 60vh;
+    background: var(--bg-gradient);
+}
+
+.hero-layout h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: var(--space-lg);
+    color: var(--text-primary);
+}
+
+.hero-layout p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+    max-width: 600px;
+}
+
+/* === LAYOUT DE FOOTER === */
+.footer-layout {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: var(--space-xl) 0;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.footer-section h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+}
+
+.footer-section p,
+.footer-section a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.footer-section a:hover {
+    color: var(--accent);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+}
+
+/* === RESPONSIVE LAYOUT === */
+@media (max-width: 1200px) {
+    .container {
+        padding: 0 var(--space-sm);
+    }
+    
+    .three-column-layout {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+    
+    .three-column-layout .left-column,
+    .three-column-layout .main-column,
+    .three-column-layout .right-column {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: var(--space-md) var(--space-sm);
+        margin-top: 70px;
+    }
+    
+    .section {
+        padding: var(--space-xl) 0;
+    }
+    
+    .section-sm {
+        padding: var(--space-lg) 0;
+    }
+    
+    .section-lg {
+        padding: var(--space-2xl) 0;
+    }
+    
+    .two-column-layout {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+    
+    .two-column-layout .main-column,
+    .two-column-layout .sidebar-column {
+        grid-column: 1;
+    }
+    
+    .form-layout.two-column,
+    .form-layout.three-column {
+        grid-template-columns: 1fr;
+    }
+    
+    .cards-layout {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+    
+    .hero-layout h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-layout p {
+        font-size: 1.1rem;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: var(--space-sm);
+        margin-top: 60px;
+    }
+    
+    .container {
+        padding: 0 var(--space-xs);
+    }
+    
+    .hero-layout {
+        padding: var(--space-2xl) 0;
+        min-height: 50vh;
+    }
+    
+    .hero-layout h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-layout p {
+        font-size: 1rem;
+    }
+    
+    .cards-layout.compact {
+        grid-template-columns: 1fr;
+    }
+}
