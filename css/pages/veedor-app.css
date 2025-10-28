@@ -1,0 +1,234 @@
+/* ========================================
+   VEEDOR-APP.HTML - MAIN APPLICATION STYLES
+   ======================================== */
+
+/* Dashboard Layout */
+.dashboard-section {
+    min-height: 100vh;
+    background: var(--gray-50);
+    padding: 2rem 0;
+}
+
+.dashboard-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.dashboard-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-header p {
+    font-size: 1.125rem;
+    color: var(--gray-600);
+}
+
+/* Financial Summary Cards */
+.financial-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    justify-items: stretch;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--gray-200);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.summary-card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.summary-card-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: white;
+}
+
+.summary-card-amount {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: 0.5rem;
+}
+
+.summary-change {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.summary-change.positive {
+    color: var(--green-600);
+}
+
+.summary-change.negative {
+    color: var(--red-600);
+}
+
+/* Dashboard Navigation */
+.dashboard-nav {
+    display: flex;
+    background: white;
+    border-radius: 1rem;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--gray-200);
+    overflow-x: auto;
+}
+
+.nav-tab {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    color: var(--gray-600);
+    font-weight: 600;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+.nav-tab:hover {
+    background: var(--gray-100);
+    color: var(--gray-900);
+}
+
+.nav-tab.active {
+    background: var(--primary-500);
+    color: white;
+}
+
+/* Tab Panels */
+.tab-panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Overview Tab */
+.overview-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.overview-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--gray-200);
+}
+
+.overview-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 1rem;
+}
+
+/* Quick Stats */
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.quick-stat {
+    background: var(--gray-50);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    text-align: center;
+}
+
+.quick-stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+}
+
+.quick-stat-label {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .overview-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .financial-summary {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-content {
+        padding: 0 0.5rem;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 2rem;
+    }
+    
+    .financial-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-tab {
+        min-width: 100px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+}
