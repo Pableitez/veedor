@@ -1,0 +1,278 @@
+/* ========================================
+   VEEDOR - SISTEMA DE TIPOGRAFÍA UNIVERSAL
+   ======================================== */
+
+/* ========================================
+   FAMILIAS DE FUENTES
+   ======================================== */
+
+.font-sans {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.font-serif {
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.font-mono {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+}
+
+/* ========================================
+   TAMAÑOS DE FUENTE
+   ======================================== */
+
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+.text-4xl { font-size: var(--text-4xl); }
+.text-5xl { font-size: var(--text-5xl); }
+.text-6xl { font-size: var(--text-6xl); }
+.text-7xl { font-size: var(--text-7xl); }
+
+/* ========================================
+   PESOS DE FUENTE
+   ======================================== */
+
+.font-thin { font-weight: var(--font-thin); }
+.font-light { font-weight: var(--font-light); }
+.font-normal { font-weight: var(--font-normal); }
+.font-medium { font-weight: var(--font-medium); }
+.font-semibold { font-weight: var(--font-semibold); }
+.font-bold { font-weight: var(--font-bold); }
+.font-extrabold { font-weight: var(--font-extrabold); }
+.font-black { font-weight: var(--font-black); }
+
+/* ========================================
+   ALTURAS DE LÍNEA
+   ======================================== */
+
+.leading-none { line-height: var(--leading-none); }
+.leading-tight { line-height: var(--leading-tight); }
+.leading-snug { line-height: var(--leading-snug); }
+.leading-normal { line-height: var(--leading-normal); }
+.leading-relaxed { line-height: var(--leading-relaxed); }
+.leading-loose { line-height: var(--leading-loose); }
+
+/* ========================================
+   ALINEACIÓN DE TEXTO
+   ======================================== */
+
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+/* ========================================
+   DECORACIÓN DE TEXTO
+   ======================================== */
+
+.underline { text-decoration: underline; }
+.line-through { text-decoration: line-through; }
+.no-underline { text-decoration: none; }
+
+/* ========================================
+   TRANSFORMACIÓN DE TEXTO
+   ======================================== */
+
+.uppercase { text-transform: uppercase; }
+.lowercase { text-transform: lowercase; }
+.capitalize { text-transform: capitalize; }
+.normal-case { text-transform: none; }
+
+/* ========================================
+   COLORES DE TEXTO
+   ======================================== */
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-inverse { color: var(--text-inverse); }
+.text-muted { color: var(--text-muted); }
+
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+.text-info { color: var(--info); }
+
+/* ========================================
+   CLASES DE TÍTULOS PREDEFINIDAS
+   ======================================== */
+
+.title-1 {
+  font-size: var(--text-5xl);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.title-2 {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.title-3 {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-snug);
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.title-4 {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-snug);
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.title-5 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.title-6 {
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+/* ========================================
+   CLASES DE PÁRRAFOS PREDEFINIDAS
+   ======================================== */
+
+.lead {
+  font-size: var(--text-xl);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+
+.body-large {
+  font-size: var(--text-lg);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.body {
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.body-small {
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-sm);
+}
+
+.caption {
+  font-size: var(--text-xs);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  color: var(--text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+/* ========================================
+   CLASES DE ENLACES PREDEFINIDAS
+   ======================================== */
+
+.link {
+  color: var(--primary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+.link-secondary {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.link-secondary:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.link-muted {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.link-muted:hover {
+  color: var(--text-secondary);
+  text-decoration: underline;
+}
+
+/* ========================================
+   CLASES DE CÓDIGO
+   ======================================== */
+
+.code {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  background-color: var(--bg-secondary);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.code-block {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  background-color: var(--bg-secondary);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* ========================================
+   RESPONSIVE TYPOGRAPHY
+   ======================================== */
+
+@media (max-width: 768px) {
+  .title-1 { font-size: var(--text-4xl); }
+  .title-2 { font-size: var(--text-3xl); }
+  .title-3 { font-size: var(--text-2xl); }
+  .title-4 { font-size: var(--text-xl); }
+  .title-5 { font-size: var(--text-lg); }
+  .title-6 { font-size: var(--text-base); }
+  
+  .lead { font-size: var(--text-lg); }
+  .body-large { font-size: var(--text-base); }
+}
