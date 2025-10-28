@@ -1,0 +1,206 @@
+/* ========================================
+   CHART COMPONENTS
+   ======================================== */
+
+.chart-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.chart-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.chart-canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Spending Chart */
+.spending-chart {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.chart-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.chart-info {
+    min-width: 150px;
+}
+
+.chart-category {
+    font-weight: 500;
+    margin-bottom: var(--space-xs);
+}
+
+.chart-amount {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.chart-bar {
+    flex: 1;
+    height: 20px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.chart-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+/* Amortization Chart */
+.amortization-chart-container {
+    margin-top: var(--space-lg);
+}
+
+.amortization-chart-container h4 {
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.chart-wrapper {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    height: 300px;
+    position: relative;
+}
+
+#amortizationChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.chart-insights {
+    position: relative;
+    margin-top: var(--space-sm);
+}
+
+.chart-marker {
+    position: absolute;
+    top: -10px;
+    transform: translateX(-50%);
+}
+
+.marker-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--error);
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary);
+    margin: 0 auto;
+}
+
+.marker-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 4px;
+    white-space: nowrap;
+}
+
+/* Trend Charts */
+.trend-chart {
+    height: 200px;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+    position: relative;
+}
+
+.trend-line {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.trend-point {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translate(-50%, 50%);
+}
+
+.trend-point.active {
+    background: #F44336;
+    width: 12px;
+    height: 12px;
+}
+
+.trend-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Comparison Charts */
+.comparison-bars {
+    display: flex;
+    gap: var(--space-md);
+    align-items: end;
+    height: 100px;
+}
+
+.comparison-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bar-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+.bar-fill {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s ease;
+}
+
+.bar-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: var(--space-xs);
+}
+
+.comparison-change {
+    text-align: center;
+    font-weight: 600;
+    margin-top: var(--space-sm);
+}

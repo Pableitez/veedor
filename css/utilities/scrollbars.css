@@ -1,0 +1,43 @@
+/* ========================================
+   CUSTOM SCROLLBARS
+   ======================================== */
+
+/* Scrollbars personalizados */
+.transactions-list::-webkit-scrollbar,
+.assets-list::-webkit-scrollbar,
+.liabilities-list::-webkit-scrollbar,
+.envelope-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.transactions-list::-webkit-scrollbar-track,
+.assets-list::-webkit-scrollbar-track,
+.liabilities-list::-webkit-scrollbar-track,
+.envelope-grid::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+}
+
+.transactions-list::-webkit-scrollbar-thumb,
+.assets-list::-webkit-scrollbar-thumb,
+.liabilities-list::-webkit-scrollbar-thumb,
+.envelope-grid::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: var(--radius-sm);
+}
+
+.transactions-list::-webkit-scrollbar-thumb:hover,
+.assets-list::-webkit-scrollbar-thumb:hover,
+.liabilities-list::-webkit-scrollbar-thumb:hover,
+.envelope-grid::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+}
+
+/* Firefox scrollbar */
+.transactions-list,
+.assets-list,
+.liabilities-list,
+.envelope-grid {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--bg-secondary);
+}
