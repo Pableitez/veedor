@@ -6,20 +6,18 @@ Supervisa, analiza y domina cada movimiento de tu dinero desde un solo lugar.
 
 ```
 Veedor/
-├── index.html              # Página de inicio
-├── veedor-app.html         # Aplicación principal (interfaz de usuario)
-├── auth.html              # Página de autenticación
-├── profile.html           # Página de perfil
+├── index.html              # Página principal
 ├── css/
-│   ├── veedor-app.css     # Estilos principales de la aplicación
-│   └── layout/            # Estilos de layout organizados
+│   └── styles.css          # Estilos con paleta de colores centralizada
 ├── js/
-│   ├── core/              # Funcionalidad central
-│   ├── modules/           # Módulos organizados por función
-│   ├── utils/             # Utilidades y validaciones
-│   └── veedor-app.js      # Punto de entrada de la aplicación
-├── assets/                # Recursos estáticos (imágenes, iconos, etc.)
-└── README.md             # Documentación del proyecto
+│   ├── config.js           # Configuración global de la aplicación
+│   ├── storage.js          # Gestión de almacenamiento local
+│   ├── validations.js      # Validaciones de formularios
+│   ├── ui.js              # Gestión de interfaz de usuario
+│   ├── gastos.js          # Lógica de negocio para gastos
+│   └── app.js             # Aplicación principal y inicialización
+├── assets/                 # Recursos estáticos (imágenes, iconos, etc.)
+└── README.md              # Documentación del proyecto
 ```
 
 ## 🎨 Paleta de Colores
