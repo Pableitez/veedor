@@ -1,5 +1,5 @@
 // ========================================
-// VEEDOR DEMO - ORGANIZED JAVASCRIPT
+// VEEDOR APP - MAIN APPLICATION JAVASCRIPT
 // ========================================
 
 // Importar módulos (en un entorno real, usaría import/export)
@@ -9,7 +9,7 @@
 // MAIN APPLICATION INITIALIZATION
 // ========================================
 
-class VeedorDemoApp {
+class VeedorApp {
     constructor() {
         this.core = null;
         this.modules = {};
@@ -273,7 +273,7 @@ window.logout = function() {
 
 // Inicializar la aplicación cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-    window.veedorApp = new VeedorDemoApp();
+    window.veedorApp = new VeedorApp();
     window.veedor = window.veedorApp.core; // Mantener compatibilidad
 });
 
