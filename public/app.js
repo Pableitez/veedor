@@ -1206,46 +1206,10 @@ async function addTransaction() {
             })
         });
         
-        // Si la transacción está asociada a una inversión, actualizar el monto invertido
-        if (investmentId) {
-            const investment = investments.find(inv => (inv._id || inv.id) === investmentId);
-            if (investment) {
-                let newAmount = investment.amount;
-                if (type === 'expense') {
-                    // Si es un gasto, se suma al monto invertido (dinero que se invierte)
-                    newAmount = investment.amount + Math.abs(amount);
-                } else if (type === 'income') {
-                    // Si es un ingreso, podría ser una retirada (restar) o un retorno (sumar al valor actual)
-                    // Por ahora, asumimos que es un retorno y actualizamos el valor actual
-                    const newCurrentValue = investment.current_value + amount;
-                    try {
-                        await apiRequest(`/investments/${investmentId}`, {
-                            method: 'PUT',
-                            body: JSON.stringify({
-                                ...investment,
-                                current_value: newCurrentValue
-                            })
-                        });
-                    } catch (error) {
-                        console.error('Error actualizando valor de inversión:', error);
-                    }
-                }
-                
-                if (type === 'expense') {
-                    try {
-                        await apiRequest(`/investments/${investmentId}`, {
-                            method: 'PUT',
-                            body: JSON.stringify({
-                                ...investment,
-                                amount: newAmount
-                            })
-                        });
-                        await loadUserData(); // Recargar datos para reflejar el cambio
-                    } catch (error) {
-                        console.error('Error actualizando inversión:', error);
-                    }
-                }
-            }
+        // Si la transacción está asociada a una inversión, el servidor ya maneja el registro del aporte
+        // Solo recargamos los datos para reflejar los cambios
+        if (investmentId && type === 'expense') {
+            await loadUserData();
         }
         
         // Agregar a la lista local

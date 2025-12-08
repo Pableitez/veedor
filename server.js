@@ -608,6 +608,9 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
                     });
                     
                     await investment.save();
+                } else {
+                    // Si no tiene aportes periódicos, solo guardar el aporte general
+                    await investment.save();
                 }
             }
         }
