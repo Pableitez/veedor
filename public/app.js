@@ -4669,7 +4669,7 @@ function updateFinancialHealthMetrics() {
         },
         {
             title: 'Servicio de Deuda',
-            value: debtServiceRatio.toFixed(1) + '%',
+            value: debtServiceRatio >= 999 ? '∞%' : debtServiceRatio.toFixed(1) + '%',
             description: `Pagos mensuales / Ingresos mensuales promedio`,
             status: debtServiceStatus,
             icon: '💳',
