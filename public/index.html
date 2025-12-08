@@ -255,7 +255,7 @@
                                 <span style="font-size: 20px;">📊</span>
                                 <h3 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--gray-900);">Presupuesto por Categoría</h3>
                             </div>
-                            <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 20px;">Establece un límite mensual para una categoría de gasto específica. Te avisaremos cuando te acerques al límite.</p>
+                            <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 20px;">Establece un límite para una categoría de gasto específica. Puedes elegir entre presupuesto semanal, mensual o anual.</p>
                             <form id="budgetForm">
                                 <div class="form-row">
                                     <div class="form-group">
@@ -268,14 +268,25 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="budgetMonth">Mes</label>
-                                        <input type="month" id="budgetMonth" required>
-                                        <small>Mes para el que aplica el presupuesto</small>
+                                        <label for="budgetPeriodType">Tipo de Período</label>
+                                        <select id="budgetPeriodType" required>
+                                            <option value="weekly">Semanal</option>
+                                            <option value="monthly" selected>Mensual</option>
+                                            <option value="yearly">Anual</option>
+                                        </select>
+                                        <small>Frecuencia del presupuesto</small>
                                     </div>
                                     <div class="form-group">
-                                        <label for="budgetAmount">Presupuesto Mensual (€)</label>
+                                        <label for="budgetPeriodValue" id="budgetPeriodValueLabel">Mes</label>
+                                        <input type="month" id="budgetPeriodValue" required>
+                                        <small id="budgetPeriodValueHelp">Selecciona el mes</small>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="budgetAmount" id="budgetAmountLabel">Presupuesto Mensual (€)</label>
                                         <input type="number" id="budgetAmount" step="0.01" min="0" required placeholder="0.00">
-                                        <small>Límite máximo de gasto para esta categoría</small>
+                                        <small id="budgetAmountHelp">Límite máximo de gasto para esta categoría</small>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn-primary" style="width: 100%; margin-top: 8px;">💾 Establecer Presupuesto</button>

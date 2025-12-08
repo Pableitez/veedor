@@ -814,12 +814,67 @@ function initializeForms() {
             await addBudget();
         });
         
-        // Inicializar mes actual
-        const budgetMonth = document.getElementById('budgetMonth');
-        if (budgetMonth) {
+        // Inicializar período actual
+        const budgetPeriodType = document.getElementById('budgetPeriodType');
+        const budgetPeriodValue = document.getElementById('budgetPeriodValue');
+        const budgetPeriodValueLabel = document.getElementById('budgetPeriodValueLabel');
+        const budgetPeriodValueHelp = document.getElementById('budgetPeriodValueHelp');
+        const budgetAmountLabel = document.getElementById('budgetAmountLabel');
+        const budgetAmountHelp = document.getElementById('budgetAmountHelp');
+        
+        if (budgetPeriodType && budgetPeriodValue) {
             const now = new Date();
             const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-            budgetMonth.value = currentMonth;
+            const currentYear = now.getFullYear().toString();
+            const currentWeek = getWeekStartDate(now);
+            
+            budgetPeriodValue.value = currentMonth;
+            
+            // Actualizar campos según tipo de período
+            budgetPeriodType.addEventListener('change', (e) => {
+                const periodType = e.target.value;
+                updateBudgetPeriodFields(periodType, budgetPeriodValue, budgetPeriodValueLabel, budgetPeriodValueHelp, budgetAmountLabel, budgetAmountHelp, now);
+            });
+            
+            // Inicializar campos
+            updateBudgetPeriodFields(budgetPeriodType.value, budgetPeriodValue, budgetPeriodValueLabel, budgetPeriodValueHelp, budgetAmountLabel, budgetAmountHelp, now);
+        }
+        
+        // Función para actualizar campos según período
+        function updateBudgetPeriodFields(periodType, periodValueInput, periodValueLabel, periodValueHelp, amountLabel, amountHelp, now) {
+            if (periodType === 'weekly') {
+                periodValueInput.type = 'date';
+                periodValueInput.value = getWeekStartDate(now);
+                periodValueLabel.textContent = 'Semana (Inicio)';
+                periodValueHelp.textContent = 'Selecciona el lunes de la semana';
+                amountLabel.textContent = 'Presupuesto Semanal (€)';
+                amountHelp.textContent = 'Límite máximo de gasto para esta semana';
+            } else if (periodType === 'monthly') {
+                periodValueInput.type = 'month';
+                periodValueInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                periodValueLabel.textContent = 'Mes';
+                periodValueHelp.textContent = 'Selecciona el mes';
+                amountLabel.textContent = 'Presupuesto Mensual (€)';
+                amountHelp.textContent = 'Límite máximo de gasto para este mes';
+            } else if (periodType === 'yearly') {
+                periodValueInput.type = 'number';
+                periodValueInput.min = '2000';
+                periodValueInput.max = '2100';
+                periodValueInput.value = now.getFullYear();
+                periodValueLabel.textContent = 'Año';
+                periodValueHelp.textContent = 'Selecciona el año';
+                amountLabel.textContent = 'Presupuesto Anual (€)';
+                amountHelp.textContent = 'Límite máximo de gasto para este año';
+            }
+        }
+        
+        // Función para obtener el lunes de la semana
+        function getWeekStartDate(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Ajustar al lunes
+            const monday = new Date(d.setDate(diff));
+            return monday.toISOString().split('T')[0];
         }
         
         // Llenar categorías de gastos en el selector
@@ -1173,12 +1228,18 @@ function updateEnvelopeSelect() {
 
 // Agregar presupuesto
 async function addBudget() {
-    const category = document.getElementById('budgetCategory').value;
+    const category_id = document.getElementById('budgetCategory').value;
     const amount = parseFloat(document.getElementById('budgetAmount').value);
-    const month = document.getElementById('budgetMonth').value;
+    const period_type = document.getElementById('budgetPeriodType').value;
+    const period_value = document.getElementById('budgetPeriodValue').value;
     
-    if (!category || !amount || !month) {
+    if (!category_id || !amount || !period_type || !period_value) {
         alert('Por favor completa todos los campos');
+        return;
+    }
+    
+    if (isNaN(amount) || amount <= 0) {
+        alert('El monto debe ser un número positivo');
         return;
     }
     
@@ -1186,24 +1247,30 @@ async function addBudget() {
         const budget = await apiRequest('/budgets', {
             method: 'POST',
             body: JSON.stringify({
-                category,
+                category_id,
                 amount,
-                month
+                period_type,
+                period_value
             })
         });
         
-        // Recargar presupuestos del mes actual
-        const now = new Date();
-        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        if (month === currentMonth) {
-            await loadUserData();
-        }
+        await loadUserData();
         updateDisplay();
-        document.getElementById('budgetForm').reset();
-        const budgetMonth = document.getElementById('budgetMonth');
-        if (budgetMonth) {
-            budgetMonth.value = currentMonth;
+        
+        // Resetear formulario pero mantener valores por defecto
+        const budgetForm = document.getElementById('budgetForm');
+        if (budgetForm) {
+            budgetForm.reset();
+            // Restaurar valores por defecto
+            const budgetPeriodType = document.getElementById('budgetPeriodType');
+            if (budgetPeriodType) budgetPeriodType.value = 'monthly';
+            const budgetPeriodValue = document.getElementById('budgetPeriodValue');
+            if (budgetPeriodValue) {
+                const now = new Date();
+                budgetPeriodValue.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            }
         }
+        
         alert('✅ Presupuesto establecido exitosamente');
     } catch (error) {
         alert('Error al establecer presupuesto: ' + error.message);

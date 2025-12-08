@@ -66,9 +66,10 @@ const envelopeSchema = new mongoose.Schema({
 
 const budgetSchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    category: { type: String, required: true }, // Categoría general
-    amount: { type: Number, required: true }, // Presupuesto mensual
-    month: { type: String, required: true }, // Formato: YYYY-MM
+    category_id: { type: String, required: true }, // ID de la categoría
+    amount: { type: Number, required: true }, // Presupuesto
+    period_type: { type: String, required: true, enum: ['weekly', 'monthly', 'yearly'] }, // Tipo de período
+    period_value: { type: String, required: true }, // Valor del período (YYYY-MM-DD para semanal, YYYY-MM para mensual, YYYY para anual)
     created_at: { type: Date, default: Date.now }
 });
 
@@ -600,6 +601,105 @@ app.delete('/api/loans/:id', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error eliminando préstamo:', error);
         res.status(500).json({ error: 'Error al eliminar préstamo' });
+    }
+});
+
+// ==================== RUTAS DE PRESUPUESTOS ====================
+
+// Obtener todos los presupuestos del usuario
+app.get('/api/budgets', authenticateToken, async (req, res) => {
+    try {
+        const budgets = await Budget.find({ user_id: req.user.userId })
+            .sort({ period_type: 1, period_value: -1, category_id: 1 });
+        res.json(budgets);
+    } catch (error) {
+        console.error('Error obteniendo presupuestos:', error);
+        res.status(500).json({ error: 'Error al obtener presupuestos' });
+    }
+});
+
+// Crear o actualizar presupuesto
+app.post('/api/budgets', authenticateToken, async (req, res) => {
+    try {
+        const { category_id, amount, period_type, period_value } = req.body;
+
+        if (!category_id || amount === undefined || !period_type || !period_value) {
+            return res.status(400).json({ error: 'Todos los campos son requeridos' });
+        }
+
+        // Buscar presupuesto existente para esta categoría y período
+        const existingBudget = await Budget.findOne({ 
+            user_id: req.user.userId, 
+            category_id, 
+            period_type, 
+            period_value 
+        });
+
+        if (existingBudget) {
+            // Actualizar presupuesto existente
+            existingBudget.amount = amount;
+            await existingBudget.save();
+            return res.status(200).json(existingBudget);
+        } else {
+            // Crear nuevo presupuesto
+            const budget = new Budget({
+                user_id: req.user.userId,
+                category_id,
+                amount,
+                period_type,
+                period_value
+            });
+            await budget.save();
+            return res.status(201).json(budget);
+        }
+    } catch (error) {
+        console.error('Error creando/actualizando presupuesto:', error);
+        res.status(500).json({ error: 'Error al guardar presupuesto' });
+    }
+});
+
+// Actualizar presupuesto
+app.put('/api/budgets/:id', authenticateToken, async (req, res) => {
+    try {
+        const { amount } = req.body;
+
+        if (amount === undefined) {
+            return res.status(400).json({ error: 'Monto requerido' });
+        }
+
+        const budget = await Budget.findOneAndUpdate(
+            { _id: req.params.id, user_id: req.user.userId },
+            { amount },
+            { new: true }
+        );
+
+        if (!budget) {
+            return res.status(404).json({ error: 'Presupuesto no encontrado' });
+        }
+
+        res.json(budget);
+    } catch (error) {
+        console.error('Error actualizando presupuesto:', error);
+        res.status(500).json({ error: 'Error al actualizar presupuesto' });
+    }
+});
+
+// Eliminar presupuesto
+app.delete('/api/budgets/:id', authenticateToken, async (req, res) => {
+    try {
+        const budget = await Budget.findOneAndDelete({
+            _id: req.params.id,
+            user_id: req.user.userId
+        });
+
+        if (!budget) {
+            return res.status(404).json({ error: 'Presupuesto no encontrado' });
+        }
+
+        res.json({ message: 'Presupuesto eliminado exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando presupuesto:', error);
+        res.status(500).json({ error: 'Error al eliminar presupuesto' });
     }
 });
 
