@@ -986,23 +986,29 @@ function switchToTab(targetTab) {
     if (targetTabBtn) targetTabBtn.classList.add('active');
     if (targetTabContent) {
         targetTabContent.classList.add('active');
-        // Scroll suave a la sección - esperar a que el DOM se actualice
+        // Scroll suave a la sección - esperar a que el DOM se actualice y el tab esté visible
         setTimeout(() => {
-            // Primero intentar hacer scroll al contenedor principal
+            // Obtener el contenedor main-content
             const mainContent = document.querySelector('.main-content');
-            if (mainContent) {
-                mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (mainContent && targetTabContent) {
+                // Calcular la posición exacta del tab dentro del main-content
+                const mainContentRect = mainContent.getBoundingClientRect();
+                const tabContentRect = targetTabContent.getBoundingClientRect();
+                
+                // Obtener altura del header sticky
+                const header = document.querySelector('header');
+                const headerHeight = header ? header.offsetHeight : 80;
+                
+                // Calcular posición de scroll: posición del main-content + offset del tab dentro del main-content - altura del header
+                const scrollPosition = mainContentRect.top + window.pageYOffset - headerHeight - 20; // 20px de margen adicional
+                
+                // Hacer scroll
+                window.scrollTo({ 
+                    top: Math.max(0, scrollPosition), 
+                    behavior: 'smooth' 
+                });
             }
-            // Luego hacer scroll fino al tab específico
-            setTimeout(() => {
-                if (targetTabContent) {
-                    const rect = targetTabContent.getBoundingClientRect();
-                    const headerHeight = 80; // Altura aproximada del header
-                    const scrollPosition = window.pageYOffset + rect.top - headerHeight;
-                    window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
-                }
-            }, 100);
-        }, 200);
+        }, 300);
     }
     
     // Actualizar items del dropdown
