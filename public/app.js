@@ -814,13 +814,19 @@ function initializeForms() {
         if (summaryYearInput) {
             summaryYearInput.addEventListener('change', () => {
                 if (summaryPeriod === 'year-select') {
-                    updateSummary();
+                    const yearValue = parseInt(summaryYearInput.value);
+                    if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
+                        updateSummary();
+                    }
                 }
             });
             
             summaryYearInput.addEventListener('input', () => {
                 if (summaryPeriod === 'year-select') {
-                    updateSummary();
+                    const yearValue = parseInt(summaryYearInput.value);
+                    if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
+                        updateSummary();
+                    }
                 }
             });
         }
