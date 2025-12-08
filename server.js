@@ -556,62 +556,51 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
                 
                 // Si tiene aportes periódicos activos, también registrar ahí
                 if (investment.periodic_contribution && investment.periodic_contribution.enabled) {
-                // Verificar si este aporte ya fue registrado en este período
-                const contributionDate = new Date(date);
-                
-                // Determinar el período según la frecuencia
-                let periodKey = '';
-                if (investment.periodic_contribution.frequency === 'weekly') {
-                    const weekStart = new Date(contributionDate);
-                    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-                    periodKey = weekStart.toISOString().split('T')[0];
-                } else if (investment.periodic_contribution.frequency === 'monthly') {
-                    periodKey = `${contributionDate.getFullYear()}-${String(contributionDate.getMonth() + 1).padStart(2, '0')}`;
-                } else if (investment.periodic_contribution.frequency === 'yearly') {
-                    periodKey = `${contributionDate.getFullYear()}`;
-                }
-                
-                // Verificar si ya existe un aporte para este período
-                const existingContribution = investment.periodic_contribution.completed_contributions?.find(c => {
-                    const cDate = new Date(c.date);
+                    // Verificar si este aporte ya fue registrado en este período
+                    const contributionDate = new Date(date);
+                    
+                    // Determinar el período según la frecuencia
+                    let periodKey = '';
                     if (investment.periodic_contribution.frequency === 'weekly') {
-                        const cWeekStart = new Date(cDate);
-                        cWeekStart.setDate(cWeekStart.getDate() - cWeekStart.getDay());
-                        return cWeekStart.toISOString().split('T')[0] === periodKey;
+                        const weekStart = new Date(contributionDate);
+                        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                        periodKey = weekStart.toISOString().split('T')[0];
                     } else if (investment.periodic_contribution.frequency === 'monthly') {
-                        return `${cDate.getFullYear()}-${String(cDate.getMonth() + 1).padStart(2, '0')}` === periodKey;
+                        periodKey = `${contributionDate.getFullYear()}-${String(contributionDate.getMonth() + 1).padStart(2, '0')}`;
                     } else if (investment.periodic_contribution.frequency === 'yearly') {
-                        return `${cDate.getFullYear()}` === periodKey;
+                        periodKey = `${contributionDate.getFullYear()}`;
                     }
-                    return false;
-                });
-                
-                // Si no existe, agregar el aporte completado
-                if (!existingContribution) {
-                    if (!investment.periodic_contribution.completed_contributions) {
-                        investment.periodic_contribution.completed_contributions = [];
-                    }
-                    investment.periodic_contribution.completed_contributions.push({
-                        date: date,
-                        amount: Math.abs(amount),
-                        transaction_id: transaction._id.toString()
+                    
+                    // Verificar si ya existe un aporte para este período
+                    const existingContribution = investment.periodic_contribution.completed_contributions?.find(c => {
+                        const cDate = new Date(c.date);
+                        if (investment.periodic_contribution.frequency === 'weekly') {
+                            const cWeekStart = new Date(cDate);
+                            cWeekStart.setDate(cWeekStart.getDate() - cWeekStart.getDay());
+                            return cWeekStart.toISOString().split('T')[0] === periodKey;
+                        } else if (investment.periodic_contribution.frequency === 'monthly') {
+                            return `${cDate.getFullYear()}-${String(cDate.getMonth() + 1).padStart(2, '0')}` === periodKey;
+                        } else if (investment.periodic_contribution.frequency === 'yearly') {
+                            return `${cDate.getFullYear()}` === periodKey;
+                        }
+                        return false;
                     });
                     
-                    // También agregar al historial de aportes general
-                    if (!investment.contributions) {
-                        investment.contributions = [];
+                    // Si no existe, agregar el aporte completado
+                    if (!existingContribution) {
+                        if (!investment.periodic_contribution.completed_contributions) {
+                            investment.periodic_contribution.completed_contributions = [];
+                        }
+                        investment.periodic_contribution.completed_contributions.push({
+                            date: date,
+                            amount: Math.abs(amount),
+                            transaction_id: transaction._id.toString()
+                        });
                     }
-                    investment.contributions.push({
-                        date: date,
-                        amount: Math.abs(amount),
-                        transaction_id: transaction._id.toString()
-                    });
-                    
-                    await investment.save();
-                } else {
-                    // Si no tiene aportes periódicos, solo guardar el aporte general
-                    await investment.save();
                 }
+                
+                // Guardar el aporte (ya agregado arriba al historial general)
+                await investment.save();
             }
         }
         
