@@ -3393,26 +3393,30 @@ function updateFinancialHealthMetrics() {
     const debtRatioStatus = debtToAssetsRatio < 0.3 ? 'excellent' : debtToAssetsRatio < 0.5 ? 'good' : debtToAssetsRatio < 0.7 ? 'warning' : 'danger';
     
     // 3. Ratio de Salud Financiera (Activos / Deudas)
-    const healthRatio = loansDebt > 0 ? (totalAssets / loansDebt) : (totalAssets > 0 ? 999 : 0);
-    const healthStatus = healthRatio > 3 ? 'excellent' : healthRatio > 2 ? 'good' : healthRatio > 1 ? 'warning' : 'danger';
+    const healthRatio = loansDebt > 0 ? (totalAssets / loansDebt) : (totalAssets > 0 ? 999 : (totalAssets < 0 ? -999 : 0));
+    // Si no hay deudas y hay activos positivos = excelente, si activos negativos = peligro
+    const healthStatus = loansDebt === 0 ? (totalAssets > 0 ? 'excellent' : (totalAssets < 0 ? 'danger' : 'warning')) : (healthRatio > 3 ? 'excellent' : healthRatio > 2 ? 'good' : healthRatio > 1 ? 'warning' : 'danger');
     
     // 4. Ratio de Cobertura de Deuda (Ingresos anuales / Deuda)
     const debtCoverageRatio = loansDebt > 0 ? (annualIncome / loansDebt) : (annualIncome > 0 ? 999 : 0);
-    const coverageStatus = debtCoverageRatio > 2 ? 'excellent' : debtCoverageRatio > 1 ? 'good' : debtCoverageRatio > 0.5 ? 'warning' : 'danger';
+    // Si no hay deudas = excelente, si hay deudas pero no ingresos = peligro
+    const coverageStatus = loansDebt === 0 ? 'excellent' : (debtCoverageRatio > 2 ? 'excellent' : debtCoverageRatio > 1 ? 'good' : debtCoverageRatio > 0.5 ? 'warning' : 'danger');
     
     // 5. Ratio de Ahorro (Ahorro del período / Ingresos del período)
     const savingsRatio = periodIncome > 0 ? (periodSavings / periodIncome) * 100 : (periodIncome === 0 && periodExpenses > 0 ? -100 : 0);
-    // Lógica corregida: 0% o negativo es malo, positivo es bueno
-    const savingsStatus = savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger';
+    // Lógica corregida: negativo = peligro, 0% = moderado, positivo = bueno
+    const savingsStatus = savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : (savingsRatio < 0 ? 'danger' : 'warning');
     
     // 6. Ratio de Liquidez (Activos líquidos / Gastos mensuales promedio del período)
     const avgMonthlyExpenses = monthsInPeriod > 0 ? periodExpenses / monthsInPeriod : periodExpenses;
-    const liquidityRatio = avgMonthlyExpenses > 0 ? (totalTransactionsBalance / avgMonthlyExpenses) : (totalTransactionsBalance > 0 ? 999 : 0);
-    const liquidityStatus = liquidityRatio >= 6 ? 'excellent' : liquidityRatio >= 3 ? 'good' : liquidityRatio >= 1 ? 'warning' : 'danger';
+    const liquidityRatio = avgMonthlyExpenses > 0 ? (totalTransactionsBalance / avgMonthlyExpenses) : (totalTransactionsBalance > 0 ? 999 : (totalTransactionsBalance < 0 ? -999 : 0));
+    // Si balance negativo = peligro, si no hay gastos y hay balance positivo = excelente
+    const liquidityStatus = totalTransactionsBalance < 0 ? 'danger' : (avgMonthlyExpenses === 0 && totalTransactionsBalance > 0 ? 'excellent' : (liquidityRatio >= 6 ? 'excellent' : liquidityRatio >= 3 ? 'good' : liquidityRatio >= 1 ? 'warning' : 'danger'));
     
     // 7. Ratio de Inversión (Inversiones / Activos totales)
-    const investmentRatio = totalAssets > 0 ? (investmentsValue / totalAssets) * 100 : 0;
-    const investmentStatus = investmentRatio > 20 ? 'excellent' : investmentRatio > 10 ? 'good' : investmentRatio > 5 ? 'warning' : 'danger';
+    const investmentRatio = totalAssets > 0 ? (investmentsValue / totalAssets) * 100 : (totalAssets < 0 ? 0 : 0);
+    // Si activos negativos o 0% = bajo, si positivo según porcentaje
+    const investmentStatus = totalAssets <= 0 ? 'danger' : (investmentRatio > 20 ? 'excellent' : investmentRatio > 10 ? 'good' : investmentRatio > 5 ? 'warning' : 'danger');
     
     // 8. Ratio de Servicio de Deuda (Pagos mensuales / Ingresos mensuales promedio del período)
     const avgMonthlyIncome = monthsInPeriod > 0 ? periodIncome / monthsInPeriod : 0;
@@ -3439,11 +3443,11 @@ function updateFinancialHealthMetrics() {
         },
         {
             title: 'Salud Financiera',
-            value: healthRatio > 999 ? '∞' : healthRatio.toFixed(2),
+            value: healthRatio > 999 ? '∞' : healthRatio < -999 ? '-∞' : healthRatio.toFixed(2),
             description: `Activos / Deudas`,
             status: healthStatus,
             icon: '💚',
-            detail: healthRatio > 3 ? 'Excelente' : healthRatio > 2 ? 'Buena' : healthRatio > 1 ? 'Moderada' : 'Baja'
+            detail: loansDebt === 0 ? (totalAssets > 0 ? 'Sin deudas, activos positivos' : (totalAssets < 0 ? 'Sin deudas, pero activos negativos' : 'Sin deudas ni activos')) : (healthRatio > 3 ? 'Excelente' : healthRatio > 2 ? 'Buena' : healthRatio > 1 ? 'Moderada' : 'Baja')
         },
         {
             title: 'Cobertura de Deuda',
@@ -3451,7 +3455,7 @@ function updateFinancialHealthMetrics() {
             description: `Ingresos anuales / Deuda`,
             status: coverageStatus,
             icon: '🛡️',
-            detail: debtCoverageRatio > 2 ? 'Excelente' : debtCoverageRatio > 1 ? 'Buena' : debtCoverageRatio > 0.5 ? 'Moderada' : 'Baja'
+            detail: loansDebt === 0 ? 'Sin deudas' : (debtCoverageRatio > 2 ? 'Excelente' : debtCoverageRatio > 1 ? 'Buena' : debtCoverageRatio > 0.5 ? 'Moderada' : 'Baja')
         },
         {
             title: 'Ratio de Ahorro',
@@ -3467,7 +3471,7 @@ function updateFinancialHealthMetrics() {
             description: `Activos líquidos / Gastos mensuales promedio`,
             status: liquidityStatus,
             icon: '💧',
-            detail: liquidityRatio > 999 ? 'Sin gastos' : liquidityRatio >= 6 ? 'Excelente' : liquidityRatio >= 3 ? 'Buena' : liquidityRatio >= 1 ? 'Moderada' : 'Baja'
+            detail: totalTransactionsBalance < 0 ? 'Balance negativo' : (avgMonthlyExpenses === 0 && totalTransactionsBalance > 0 ? 'Sin gastos, balance positivo' : (liquidityRatio >= 6 ? 'Excelente' : liquidityRatio >= 3 ? 'Buena' : liquidityRatio >= 1 ? 'Moderada' : 'Baja'))
         },
         {
             title: 'Ratio de Inversión',
@@ -3475,7 +3479,7 @@ function updateFinancialHealthMetrics() {
             description: `Inversiones / Activos totales`,
             status: investmentStatus,
             icon: '📈',
-            detail: formatCurrency(investmentsValue) + ' de ' + formatCurrency(totalAssets)
+            detail: totalAssets <= 0 ? 'Sin activos o activos negativos' : (formatCurrency(investmentsValue) + ' de ' + formatCurrency(totalAssets))
         },
         {
             title: 'Servicio de Deuda',
