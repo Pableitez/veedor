@@ -784,20 +784,32 @@ function updateCurrentDateDisplay() {
     }
 }
 
-// Toggle del menú desplegable de Panel de Mandos
-function toggleDashboardDropdown() {
-    const dropdown = document.getElementById('dashboardDropdown');
+// Toggle del menú desplegable principal de navegación
+function toggleMainNavDropdown() {
+    const dropdown = document.getElementById('mainNavDropdown');
     if (dropdown) {
         dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
     }
 }
 
+// Toggle del menú desplegable de Panel de Mandos (mantener para compatibilidad)
+function toggleDashboardDropdown() {
+    toggleMainNavDropdown(); // Redirigir al menú principal
+}
+
 // Cerrar dropdown al hacer clic fuera
 document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('dashboardDropdown');
-    const btn = document.getElementById('dashboardDropdownBtn');
-    if (dropdown && btn && !dropdown.contains(event.target) && !btn.contains(event.target)) {
-        dropdown.style.display = 'none';
+    const mainDropdown = document.getElementById('mainNavDropdown');
+    const mainBtn = document.getElementById('mainNavDropdownBtn');
+    const dashboardDropdown = document.getElementById('dashboardDropdown');
+    const dashboardBtn = document.getElementById('dashboardDropdownBtn');
+    
+    if (mainDropdown && mainBtn && !mainDropdown.contains(event.target) && !mainBtn.contains(event.target)) {
+        mainDropdown.style.display = 'none';
+    }
+    
+    if (dashboardDropdown && dashboardBtn && !dashboardDropdown.contains(event.target) && !dashboardBtn.contains(event.target)) {
+        dashboardDropdown.style.display = 'none';
     }
 });
 
