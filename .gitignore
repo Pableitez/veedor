@@ -4,6 +4,6 @@ veedor.db
 *.log
 .DS_Store
 nul
-configurar_firewall.bat
-verificar_servidor.bat
+*.bat
+package-lock.json
 

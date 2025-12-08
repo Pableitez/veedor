@@ -21,34 +21,49 @@ Una aplicación web completa para gestionar tus finanzas personales con servidor
 - **🔍 Búsqueda y Filtros**: Encuentra transacciones rápidamente
 - **🌐 API REST**: Acceso desde múltiples dispositivos
 
-## 🚀 Instalación
+## 🚀 Instalación y Despliegue
 
-### Requisitos Previos
+### Opción 1: Desplegar en la Nube (Recomendado - Datos en la nube)
 
-- Node.js (v14 o superior)
-- npm (viene con Node.js)
+**Usa Render.com + MongoDB Atlas (100% GRATIS)**
 
-### Pasos de Instalación
+1. **Crea cuenta en MongoDB Atlas** (gratis):
+   - Ve a https://www.mongodb.com/cloud/atlas/register
+   - Crea un cluster gratuito (M0)
+   - Crea usuario y obtén tu connection string
+
+2. **Despliega en Render.com**:
+   - Ve a https://render.com
+   - Conecta tu repositorio de GitHub
+   - Configura las variables de entorno:
+     - `MONGODB_URI`: Tu connection string de MongoDB
+     - `JWT_SECRET`: Un secreto aleatorio
+     - `PORT`: `10000`
+   - Render desplegará automáticamente
+
+3. **¡Listo!** Tus datos se guardarán en la nube y estarán accesibles desde cualquier dispositivo.
+
+Ver instrucciones detalladas en `DEPLOY.md`
+
+### Opción 2: Ejecutar Localmente
 
 1. **Instalar dependencias**:
    ```bash
    npm install
    ```
 
-2. **Configurar variables de entorno** (opcional):
-   ```bash
-   cp .env.example .env
-   ```
-   Edita `.env` y cambia `JWT_SECRET` por un secreto seguro.
+2. **Configurar MongoDB**:
+   - Crea cuenta en MongoDB Atlas (gratis) o usa MongoDB local
+   - Crea archivo `.env`:
+     ```
+     MONGODB_URI=tu_connection_string_aqui
+     JWT_SECRET=tu_secreto_seguro
+     PORT=3000
+     ```
 
 3. **Iniciar el servidor**:
    ```bash
    npm start
-   ```
-   
-   O para desarrollo con auto-reload:
-   ```bash
-   npm run dev
    ```
 
 4. **Abrir en el navegador**:

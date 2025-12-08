@@ -1,8 +1,5 @@
 // Configuración de la API
-// Si estás en localhost, usa el servidor local, sino usa la misma URL (servidor en la nube)
-const API_URL = window.location.origin.includes('localhost') 
-    ? 'http://localhost:3000/api' 
-    : '/api';
+const API_URL = '/api';
 
 // Categorías de gastos
 const categories = {

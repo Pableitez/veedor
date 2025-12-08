@@ -1,0 +1,37 @@
+╔══════════════════════════════════════════════════════════════╗
+║          🚀 Veedor - Acceso desde Otros Dispositivos        ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ SERVIDOR ESTÁ CORRIENDO
+   URL Local: http://localhost:3000
+   URL Red:   http://192.168.1.134:3000
+
+📱 PARA ACCEDER DESDE TU TELÉFONO/TABLET:
+
+   1. Configura el Firewall (IMPORTANTE):
+      → Haz doble clic en: configurar_firewall.bat
+      → Presiona Enter cuando se te pida
+   
+   2. Asegúrate de estar en la misma WiFi
+      → Tu computadora y teléfono deben estar en la misma red
+   
+   3. Abre el navegador en tu teléfono y ve a:
+      → http://192.168.1.134:3000
+   
+   4. ¡Listo! Deberías ver la pantalla de login
+
+🔧 SI NO FUNCIONA:
+
+   • Verifica que ambos dispositivos estén en la misma WiFi
+   • Ejecuta configurar_firewall.bat como Administrador
+     (Clic derecho > Ejecutar como administrador)
+   • Verifica que el servidor esté corriendo (deberías ver 
+     "Servidor corriendo" en la consola)
+
+📝 NOTA: Si cambias de WiFi, tu IP puede cambiar.
+   Para ver tu nueva IP, ejecuta: verificar_servidor.bat
+
+╔══════════════════════════════════════════════════════════════╗
+║  ¿Necesitas ayuda? Lee: GUIA_RAPIDA.md                      ║
+╚══════════════════════════════════════════════════════════════╝
+
