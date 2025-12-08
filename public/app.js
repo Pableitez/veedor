@@ -3431,11 +3431,12 @@ function updateCharts() {
     updateExpensesChart();
     updateIncomeExpenseChart();
     updateDistributionChart();
-    updateIncomeEvolutionChart();
-    updateExpensesEvolutionChart();
-    updateLoansPendingChart();
-    updateAssetsEvolutionChart();
-    updateAccountsBalanceChart();
+    // Actualizar gráficas de evolución (si existen)
+    if (typeof updateIncomeEvolutionChart === 'function') updateIncomeEvolutionChart();
+    if (typeof updateExpensesEvolutionChart === 'function') updateExpensesEvolutionChart();
+    if (typeof updateLoansOutstandingChart === 'function') updateLoansOutstandingChart();
+    if (typeof updateAssetsEvolutionChart === 'function') updateAssetsEvolutionChart();
+    if (typeof updateAccountsBalanceChart === 'function') updateAccountsBalanceChart();
     updateFinancialHealthMetrics();
     updateAnalysisTables();
 }
