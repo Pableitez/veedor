@@ -235,17 +235,49 @@ function initializeAuth() {
             
             if (loginForm && registerForm) {
                 if (targetTab === 'login') {
-                    loginForm.classList.add('active');
-                    loginForm.style.display = 'block';
+                    // Ocultar registro primero
                     registerForm.classList.remove('active');
                     registerForm.style.display = 'none';
+                    registerForm.style.setProperty('display', 'none', 'important');
+                    
+                    // Mostrar login
+                    loginForm.classList.add('active');
+                    loginForm.style.display = 'block';
+                    loginForm.style.setProperty('display', 'block', 'important');
+                    
                     console.log('✅ Mostrando formulario de login');
+                    console.log('🔍 Estado loginForm:', { 
+                        display: loginForm.style.display, 
+                        computed: window.getComputedStyle(loginForm).display,
+                        hasActive: loginForm.classList.contains('active') 
+                    });
+                    console.log('🔍 Estado registerForm:', { 
+                        display: registerForm.style.display,
+                        computed: window.getComputedStyle(registerForm).display,
+                        hasActive: registerForm.classList.contains('active') 
+                    });
                 } else if (targetTab === 'register') {
+                    // Ocultar login primero
                     loginForm.classList.remove('active');
                     loginForm.style.display = 'none';
+                    loginForm.style.setProperty('display', 'none', 'important');
+                    
+                    // Mostrar registro
                     registerForm.classList.add('active');
                     registerForm.style.display = 'block';
+                    registerForm.style.setProperty('display', 'block', 'important');
+                    
                     console.log('✅ Mostrando formulario de registro');
+                    console.log('🔍 Estado loginForm:', { 
+                        display: loginForm.style.display,
+                        computed: window.getComputedStyle(loginForm).display,
+                        hasActive: loginForm.classList.contains('active') 
+                    });
+                    console.log('🔍 Estado registerForm:', { 
+                        display: registerForm.style.display,
+                        computed: window.getComputedStyle(registerForm).display,
+                        hasActive: registerForm.classList.contains('active') 
+                    });
                 }
             } else {
                 console.error('❌ Formularios no encontrados:', { loginForm: !!loginForm, registerForm: !!registerForm });
