@@ -1405,57 +1405,61 @@ tbody tr:last-child td {
     }
 }
 
+/* ============================================
+   RESPONSIVIDAD MÓVIL PEQUEÑO - 480px
+   ============================================ */
 @media (max-width: 480px) {
     .container {
-        margin: 0;
-        border-radius: 0;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        width: 100% !important;
     }
     
+    /* Header más compacto */
     header {
-        padding: 12px 16px !important;
+        padding: 10px 12px !important;
+        min-height: 52px !important;
     }
     
     header h1 {
-        font-size: 18px;
+        font-size: 15px !important;
+        max-width: calc(100vw - 180px) !important;
     }
     
-    .header-actions .user-info {
-        font-size: 11px;
-        padding: 6px 10px;
-        max-width: 100px;
+    #mainNavDropdownBtn,
+    #settingsDropdownBtn {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
     }
     
-    .header-actions .user-info span {
-        display: none;
-    }
-    
-    .header-actions .btn-secondary {
-        font-size: 10px;
-        padding: 6px 10px;
-    }
-    
+    /* Cards más compactos */
     .summary-cards {
-        gap: 12px;
+        gap: 10px !important;
     }
     
-    .card {
-        padding: 16px;
+    .card,
+    .envelope-card {
+        padding: 14px !important;
     }
     
     .card .amount {
-        font-size: 20px;
+        font-size: 22px !important;
     }
     
+    .card h3 {
+        font-size: 12px !important;
+    }
+    
+    /* Modales más grandes */
     .modal-content {
-        margin: 10px auto !important;
         width: 98% !important;
         max-width: 98% !important;
+        margin: 5px auto !important;
+        max-height: 95vh !important;
     }
     
-    .modal-content > div:first-child {
-        padding: 16px !important;
-    }
-    
+    .modal-content > div:first-child,
     .modal-content > div:last-child,
     .modal-content form {
         padding: 16px !important;
@@ -1465,43 +1469,54 @@ tbody tr:last-child td {
         font-size: 18px !important;
     }
     
+    /* Tablas más compactas */
     .table-container {
-        border-radius: 0;
-        margin: 0 -12px;
-        padding: 0 12px;
+        margin: 0 -12px !important;
+        padding: 0 12px !important;
     }
     
     table {
-        font-size: 11px;
-        min-width: 500px;
+        font-size: 12px !important;
+        min-width: 500px !important;
     }
     
     th, td {
-        padding: 6px 4px;
+        padding: 8px 6px !important;
     }
     
-    .btn {
-        padding: 8px 14px;
-        font-size: 13px;
+    /* Botones más pequeños pero táctiles */
+    .btn,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        min-height: 44px !important;
     }
     
+    /* Formularios */
     .form-group input,
-    .form-group select {
-        padding: 8px 10px;
-        font-size: 13px;
+    .form-group select,
+    .form-group textarea {
+        padding: 12px 14px !important;
+        font-size: 16px !important;
+        min-height: 48px !important;
     }
     
+    /* Tabs más compactos */
     .tabs {
-        padding: 0 8px;
+        padding: 0 8px !important;
     }
     
     .tab-btn {
-        padding: 6px 10px;
-        font-size: 12px;
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+        min-height: 44px !important;
     }
     
+    /* Footer más compacto */
     footer {
-        padding: 16px 8px !important;
+        padding: 16px 10px !important;
     }
     
     footer h3,
@@ -1514,114 +1529,21 @@ tbody tr:last-child td {
     footer li {
         font-size: 11px !important;
     }
+    
+    /* Dashboard y contenido */
+    .dashboard,
+    .main-content {
+        padding: 12px 10px !important;
+    }
+    
+    .form-section {
+        padding: 16px 12px !important;
+    }
 }
 
-@media (max-width: 768px) {
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .summary-cards {
-        grid-template-columns: 1fr;
-    }
-    
-    .charts-container {
-        grid-template-columns: 1fr;
-    }
-    
-    header {
-        flex-direction: column;
-        gap: 16px;
-        padding: 16px 20px;
-    }
-    
-    .modal-content {
-        width: 95%;
-        padding: 20px;
-    }
-    
-    .header-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .dashboard {
-        padding: 20px;
-    }
-    
-    .main-content {
-        padding: 20px;
-    }
-    
-    .tabs {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    /* Botones dentro de cards en móvil */
-    .envelope-actions,
-    .envelope-card .envelope-actions,
-    .card .envelope-actions {
-        flex-direction: column !important;
-        gap: 10px !important;
-    }
-    
-    .envelope-actions button,
-    .envelope-card .envelope-actions button,
-    .card .envelope-actions button {
-        width: 100% !important;
-        flex: 1 1 100% !important;
-        min-height: 48px !important;
-        font-size: 14px !important;
-        padding: 14px 16px !important;
-        touch-action: manipulation;
-    }
-    
-    /* Desplegables en móvil - Solo ocultar cuando están cerrados */
-    #languageDropdown,
-    #authLanguageDropdown {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-    }
-    
-    /* Asegurar visibilidad de desplegables activos en móvil */
-    #mainNavDropdown[style*="display: block"],
-    #settingsDropdown[style*="display: block"] {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        position: absolute !important;
-        z-index: 10000 !important;
-        right: 0 !important;
-        left: auto !important;
-        min-width: 200px !important;
-        max-width: calc(100vw - 24px) !important;
-        margin-top: 8px !important;
-    }
-    
-    /* Mejorar área táctil de elementos interactivos */
-    select,
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    input[type="email"],
-    input[type="password"] {
-        min-height: 44px !important;
-        touch-action: manipulation;
-    }
-    
-    .btn-primary,
-    .btn-secondary,
-    .btn-danger {
-        min-height: 44px !important;
-        padding: 12px 16px !important;
-        font-size: 14px !important;
-        touch-action: manipulation;
-    }
-}
+/* ============================================
+   RESPONSIVIDAD MÓVIL MEJORADA - 768px
+   ============================================ */
 
 /* ============================================
    OCULTAR BOTONES DE IDIOMA TEMPORALMENTE
