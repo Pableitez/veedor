@@ -375,6 +375,67 @@ async function sendVerificationEmail(email, verificationToken) {
     }
 }
 
+// Función para enviar email de recuperación de contraseña
+async function sendPasswordResetEmail(email, resetToken) {
+    if (!emailTransporter) {
+        console.log('⚠️ Email transporter no configurado.');
+        console.log('📧 Token de recuperación generado:', resetToken);
+        console.log('💡 Para habilitar emails, configura en Render:');
+        console.log('   - EMAIL_HOST (ej: smtp.gmail.com)');
+        console.log('   - EMAIL_USER (tu email)');
+        console.log('   - EMAIL_PASS (tu contraseña de aplicación)');
+        console.log('   - EMAIL_PORT (587 para TLS, 465 para SSL)');
+        console.log('   - EMAIL_SECURE (true para SSL, false para TLS)');
+        console.log('   - APP_URL (URL de tu aplicación en Render)');
+        return false;
+    }
+
+    const resetUrl = `${process.env.APP_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+    
+    const mailOptions = {
+        from: `"Veedor" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: 'Recuperar Contraseña - Veedor',
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #6366F1;">Recuperar Contraseña</h2>
+                <p>Has solicitado restablecer tu contraseña. Usa el siguiente código para recuperar tu contraseña:</p>
+                <div style="background: #F3F4F6; border: 2px solid #6366F1; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
+                    <p style="font-size: 24px; font-weight: bold; color: #6366F1; letter-spacing: 4px; margin: 0; font-family: monospace;">${resetToken}</p>
+                </div>
+                <p>O haz clic en el siguiente enlace:</p>
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="${resetUrl}" style="background: #6366F1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Restablecer Contraseña</a>
+                </p>
+                <p>O copia y pega este enlace en tu navegador:</p>
+                <p style="word-break: break-all; color: #666; font-size: 12px;">${resetUrl}</p>
+                <p style="color: #999; font-size: 12px; margin-top: 30px;">Este código expirará en 1 hora. Si no solicitaste este cambio, ignora este email.</p>
+            </div>
+        `
+    };
+
+    try {
+        console.log('📧 Intentando enviar email de recuperación a:', email);
+        console.log('📧 Desde:', process.env.EMAIL_USER);
+        console.log('📧 Host:', process.env.EMAIL_HOST);
+        console.log('📧 Puerto:', process.env.EMAIL_PORT || '587');
+        
+        const info = await emailTransporter.sendMail(mailOptions);
+        console.log('✅ Email de recuperación enviado exitosamente a', email);
+        console.log('📧 Message ID:', info.messageId);
+        return true;
+    } catch (error) {
+        console.error('❌ Error enviando email de recuperación:', error);
+        console.error('❌ Detalles del error:', {
+            code: error.code,
+            command: error.command,
+            response: error.response,
+            responseCode: error.responseCode
+        });
+        return false;
+    }
+}
+
 // Inicializar transporter al iniciar
 setupEmailTransporter();
 
@@ -638,14 +699,25 @@ app.post('/api/forgot-password', async (req, res) => {
         
         console.log(`🔑 Token de recuperación generado para ${email}: ${resetToken.substring(0, 10)}...`);
         
-        // En producción, aquí enviarías un email con el token usando un servicio como SendGrid, Nodemailer, etc.
-        // Por ahora, devolvemos el token directamente (solo para desarrollo/pruebas)
-        // TODO: Implementar envío de email real con Nodemailer o servicio similar
-        res.json({ 
-            message: 'Código de recuperación generado exitosamente.',
-            token: resetToken, // Solo en desarrollo - eliminar en producción
-            expiresAt: resetTokenExpiry
-        });
+        // Enviar email de recuperación
+        const emailSent = await sendPasswordResetEmail(user.email, resetToken);
+        
+        if (emailSent) {
+            // Si el email se envió correctamente, no devolver el token por seguridad
+            res.json({ 
+                message: 'Si el email está registrado, recibirás un código de recuperación por email.',
+                token: null,
+                expiresAt: resetTokenExpiry
+            });
+        } else {
+            // Si el email no se pudo enviar (desarrollo o error), devolver el token para pruebas
+            console.log('⚠️ Email no enviado. Devolviendo token para desarrollo.');
+            res.json({ 
+                message: 'Código de recuperación generado. El email no pudo enviarse, pero aquí está el código para pruebas:',
+                token: resetToken, // Solo si el email falla - para desarrollo
+                expiresAt: resetTokenExpiry
+            });
+        }
     } catch (error) {
         console.error('Error en forgot-password:', error);
         res.status(500).json({ error: 'Error del servidor' });
