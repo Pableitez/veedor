@@ -72,17 +72,23 @@
         </header>
 
         <div class="dashboard">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
-                    <h2 style="font-size: 20px; font-weight: 700; color: var(--gray-900); margin: 0;">Panel de Mandos</h2>
-                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                        <label style="font-size: 14px; font-weight: 500; color: var(--gray-700);">Mes:</label>
-                        <input type="month" id="dashboardMonth" style="padding: 8px 16px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s;">
-                        <label style="font-size: 14px; font-weight: 500; color: var(--gray-700);">Vista:</label>
-                        <select id="summaryPeriod" style="padding: 8px 16px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s;">
-                            <option value="month">Este Mes</option>
-                            <option value="year">Este Año</option>
-                            <option value="all">Todos los Tiempos</option>
-                        </select>
+                <div style="margin-bottom: 24px;">
+                    <h2 style="font-size: 20px; font-weight: 700; color: var(--gray-900); margin: 0 0 20px 0;">Panel de Mandos</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div style="background: white; padding: 16px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">📅 Análisis del Mes</label>
+                            <input type="month" id="dashboardMonth" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s;">
+                            <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--gray-500);">Selecciona un mes para ver el análisis detallado</small>
+                        </div>
+                        <div style="background: white; padding: 16px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">📊 Vista de Resumen</label>
+                            <select id="summaryPeriod" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s;">
+                                <option value="month">Este Mes</option>
+                                <option value="year">Este Año</option>
+                                <option value="all">Todos los Tiempos</option>
+                            </select>
+                            <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--gray-500);">Período para las tarjetas de resumen</small>
+                        </div>
                     </div>
                 </div>
                 <div class="summary-cards">
@@ -483,6 +489,39 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar categoría personalizada -->
+    <div id="customCategoryModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="modal-close" id="closeCustomCategoryModal">&times;</span>
+            <h2>➕ Agregar Categoría Personalizada</h2>
+            <form id="customCategoryForm">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="customCategoryType">Tipo de Categoría</label>
+                    <select id="customCategoryType" required style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px;">
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="income">Ingreso</option>
+                        <option value="expense">Gasto</option>
+                    </select>
+                    <small style="color: var(--gray-500);">Elige si es una categoría de ingreso o gasto</small>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="customCategoryName">Nombre de la Categoría</label>
+                    <input type="text" id="customCategoryName" required placeholder="Ej: Suscripciones, Bonos, etc." style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px;">
+                    <small style="color: var(--gray-500);">Nombre descriptivo para tu categoría</small>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="customCategorySubcategories">Subcategorías (Opcional)</label>
+                    <input type="text" id="customCategorySubcategories" placeholder="Ej: Netflix, Spotify, Amazon Prime (separadas por comas)" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px;">
+                    <small style="color: var(--gray-500);">Separa las subcategorías con comas. Si no especificas ninguna, se creará una subcategoría "General"</small>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn-secondary" id="cancelCustomCategoryBtn">Cancelar</button>
+                    <button type="submit" class="btn-primary">✅ Crear Categoría</button>
+                </div>
+            </form>
         </div>
     </div>
 

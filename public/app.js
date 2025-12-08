@@ -2164,19 +2164,44 @@ function updateDistributionChart() {
 
 // Mostrar modal para agregar categoría personalizada
 function showAddCustomCategoryModal() {
-    const type = prompt('¿Qué tipo de categoría quieres crear?\n1 = Ingreso\n2 = Gasto');
-    if (!type || (type !== '1' && type !== '2')) return;
+    const modal = document.getElementById('customCategoryModal');
+    if (!modal) return;
     
-    const categoryType = type === '1' ? 'income' : 'expense';
-    const categoryName = prompt(`Nombre de la categoría de ${categoryType === 'income' ? 'ingreso' : 'gasto'}:`);
-    if (!categoryName || categoryName.trim() === '') return;
+    // Resetear formulario
+    const form = document.getElementById('customCategoryForm');
+    if (form) {
+        form.reset();
+    }
     
-    const subcategoriesInput = prompt('Subcategorías (separadas por comas, opcional):');
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de categoría personalizada
+function closeCustomCategoryModal() {
+    const modal = document.getElementById('customCategoryModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Agregar categoría personalizada desde el formulario
+async function addCustomCategory() {
+    const type = document.getElementById('customCategoryType')?.value;
+    const name = document.getElementById('customCategoryName')?.value?.trim();
+    const subcategoriesInput = document.getElementById('customCategorySubcategories')?.value?.trim();
+    
+    if (!type || !name) {
+        alert('Por favor, completa todos los campos requeridos.');
+        return;
+    }
+    
+    const categoryType = type;
     const subcategories = subcategoriesInput ? subcategoriesInput.split(',').map(s => s.trim()).filter(s => s) : [];
     
     const newCategory = {
         id: Date.now().toString(),
-        name: categoryName.trim(),
+        name: name,
         subcategories: subcategories.length > 0 ? subcategories : ['General']
     };
     
@@ -2188,7 +2213,10 @@ function showAddCustomCategoryModal() {
     // Recargar categorías
     initializeCategories();
     
-    alert(`✅ Categoría "${categoryName}" agregada exitosamente`);
+    // Cerrar modal
+    closeCustomCategoryModal();
+    
+    alert(`✅ Categoría "${name}" agregada exitosamente`);
 }
 
 // Cargar categorías personalizadas
