@@ -191,12 +191,24 @@ async function checkAuth() {
                 updateCharts();
             }, 200);
             updateUserInfo();
+            // Inicializar traducciones y seleccionar dashboard por defecto
+            if (typeof updateTranslations === 'function') {
+                updateTranslations();
+            }
+            // Seleccionar dashboard por defecto al entrar
+            setTimeout(() => {
+                scrollToDashboard();
+            }, 300);
         } catch (error) {
             console.error('Error verificando autenticación:', error);
             logout();
         }
     } else {
         showAuthScreen();
+        // Inicializar traducciones en la pantalla de auth también
+        if (typeof updateTranslations === 'function') {
+            updateTranslations();
+        }
     }
 }
 
@@ -6057,6 +6069,102 @@ function showFinancialHealthDetail(metric, index) {
     
     contentEl.innerHTML = detailContent;
     modal.style.display = 'flex';
+}
+
+// ==================== SISTEMA DE TRADUCCIÓN ====================
+
+// Función para actualizar todas las traducciones
+function updateTranslations() {
+    const lang = getLanguage ? getLanguage() : 'es';
+    
+    // Actualizar elementos con data-translate
+    document.querySelectorAll('[data-translate]').forEach(el => {
+        const key = el.getAttribute('data-translate');
+        if (key && typeof t === 'function') {
+            el.textContent = t(key, lang);
+        }
+    });
+    
+    // Actualizar placeholders
+    document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-translate-placeholder');
+        if (key && typeof t === 'function') {
+            el.placeholder = t(key, lang);
+        }
+    });
+    
+    // Actualizar títulos
+    document.querySelectorAll('[data-translate-title]').forEach(el => {
+        const key = el.getAttribute('data-translate-title');
+        if (key && typeof t === 'function') {
+            el.title = t(key, lang);
+        }
+    });
+    
+    // Actualizar bandera del idioma actual
+    const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
+    const flagEl = document.getElementById('currentLanguageFlag');
+    if (flagEl) {
+        flagEl.textContent = flags[lang] || flags['es'];
+    }
+    
+    // Actualizar selección en dropdown de idioma
+    document.querySelectorAll('#languageDropdown .nav-dropdown-item').forEach(item => {
+        const itemLang = item.getAttribute('data-lang');
+        if (itemLang === lang) {
+            item.style.background = 'var(--primary-light)';
+            item.style.color = 'var(--primary)';
+            item.style.fontWeight = '600';
+        } else {
+            item.style.background = 'transparent';
+            item.style.color = 'var(--gray-900)';
+            item.style.fontWeight = '400';
+        }
+    });
+}
+
+// Función para cambiar idioma
+function changeLanguage(lang) {
+    if (typeof setLanguage === 'function') {
+        setLanguage(lang);
+    }
+    updateTranslations();
+    // Recargar datos para actualizar formatos
+    if (typeof updateDisplay === 'function') {
+        updateDisplay();
+    }
+}
+
+// Función para toggle del dropdown de idioma
+function toggleLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    const mainNavDropdown = document.getElementById('mainNavDropdown');
+    const settingsDropdown = document.getElementById('settingsDropdown');
+    
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    // Cerrar otros dropdowns
+    if (mainNavDropdown && mainNavDropdown.style.display === 'block') {
+        mainNavDropdown.style.display = 'none';
+    }
+    if (settingsDropdown && settingsDropdown.style.display === 'block') {
+        settingsDropdown.style.display = 'none';
+    }
+}
+
+// Exponer funciones globalmente
+window.updateTranslations = updateTranslations;
+window.changeLanguage = changeLanguage;
+window.toggleLanguageDropdown = toggleLanguageDropdown;
+
+// Inicializar traducciones cuando se carga la app
+if (typeof getLanguage === 'function') {
+    const savedLang = getLanguage();
+    if (savedLang) {
+        document.documentElement.lang = savedLang;
+    }
 }
 
 // Cerrar el bloque de protección contra carga múltiple

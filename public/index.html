@@ -6,6 +6,7 @@
     <title>Veedor - Control de Finanzas Personales</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/translations.js"></script>
 </head>
 <body>
     <!-- Pantalla de Login/Registro -->
@@ -150,40 +151,60 @@
                         <span>☰</span>
                     </button>
                     <div id="mainNavDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 240px; z-index: 1000; overflow: hidden;">
-                        <a href="javascript:void(0);" onclick="switchToTab('transactions'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="transactions">
-                            💳 Transacciones
-                        </a>
-                        <a href="javascript:void(0);" onclick="switchToTab('accounts'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="accounts">
-                            🏦 Cuentas
-                        </a>
-                        <a href="javascript:void(0);" onclick="switchToTab('properties'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="properties">
-                            🏘️ Propiedades
-                        </a>
-                        <a href="javascript:void(0);" onclick="switchToTab('envelopes'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="envelopes">
-                            📦 Presupuestos
-                        </a>
-                        <a href="javascript:void(0);" onclick="switchToTab('loans'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="loans">
-                            🏦 Préstamos
-                        </a>
-                        <a href="javascript:void(0);" onclick="switchToTab('investments'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="investments">
-                            📈 Inversiones
-                        </a>
-                        <a href="javascript:void(0);" onclick="switchToTab('assets'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="assets">
-                            🏠 Patrimonio
-                        </a>
-                        <a href="javascript:void(0);" onclick="switchToTab('charts'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="charts">
-                            📊 Análisis
+                        <a href="javascript:void(0);" onclick="scrollToDashboard(); toggleMainNavDropdown();" class="nav-dropdown-item" id="nav-dashboard" style="font-weight: 600; background: var(--primary-light); color: var(--primary);">
+                            📊 <span data-translate="nav.dashboard">Panel de Mandos Principal</span>
                         </a>
                         <div style="border-top: 1px solid var(--gray-200); margin-top: 4px; padding-top: 4px;">
-                            <a href="javascript:void(0);" onclick="scrollToDashboard(); toggleMainNavDropdown();" class="nav-dropdown-item">
-                                📊 Panel de Mandos Principal
+                            <a href="javascript:void(0);" onclick="switchToTab('transactions'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="transactions" id="nav-transactions">
+                                💳 <span data-translate="nav.transactions">Transacciones</span>
+                            </a>
+                            <a href="javascript:void(0);" onclick="switchToTab('accounts'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="accounts" id="nav-accounts">
+                                🏦 <span data-translate="nav.accounts">Cuentas</span>
+                            </a>
+                            <a href="javascript:void(0);" onclick="switchToTab('properties'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="properties" id="nav-properties">
+                                🏘️ <span data-translate="nav.properties">Propiedades</span>
+                            </a>
+                            <a href="javascript:void(0);" onclick="switchToTab('envelopes'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="envelopes" id="nav-budgets">
+                                📦 <span data-translate="nav.budgets">Presupuestos</span>
+                            </a>
+                            <a href="javascript:void(0);" onclick="switchToTab('loans'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="loans" id="nav-loans">
+                                🏦 <span data-translate="nav.loans">Préstamos</span>
+                            </a>
+                            <a href="javascript:void(0);" onclick="switchToTab('investments'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="investments" id="nav-investments">
+                                📈 <span data-translate="nav.investments">Inversiones</span>
+                            </a>
+                            <a href="javascript:void(0);" onclick="switchToTab('assets'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="assets" id="nav-assets">
+                                🏠 <span data-translate="nav.assets">Patrimonio</span>
+                            </a>
+                            <a href="javascript:void(0);" onclick="switchToTab('charts'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="charts" id="nav-analysis">
+                                📊 <span data-translate="nav.analysis">Análisis</span>
                             </a>
                         </div>
                     </div>
                 </div>
+                <!-- Selector de Idioma -->
+                <div style="position: relative; flex-shrink: 0;">
+                    <button id="languageDropdownBtn" onclick="toggleLanguageDropdown()" style="padding: 6px 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'" title="Idioma">
+                        <span id="currentLanguageFlag" style="font-size: 18px;">🇪🇸</span>
+                    </button>
+                    <div id="languageDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 180px; z-index: 1000; overflow: hidden;">
+                        <a href="javascript:void(0);" onclick="changeLanguage('es'); toggleLanguageDropdown();" class="nav-dropdown-item" data-lang="es" style="display: flex; align-items: center; gap: 8px;">
+                            <span>🇪🇸</span> <span>Español</span>
+                        </a>
+                        <a href="javascript:void(0);" onclick="changeLanguage('en'); toggleLanguageDropdown();" class="nav-dropdown-item" data-lang="en" style="display: flex; align-items: center; gap: 8px;">
+                            <span>🇬🇧</span> <span>English</span>
+                        </a>
+                        <a href="javascript:void(0);" onclick="changeLanguage('de'); toggleLanguageDropdown();" class="nav-dropdown-item" data-lang="de" style="display: flex; align-items: center; gap: 8px;">
+                            <span>🇩🇪</span> <span>Deutsch</span>
+                        </a>
+                        <a href="javascript:void(0);" onclick="changeLanguage('fr'); toggleLanguageDropdown();" class="nav-dropdown-item" data-lang="fr" style="display: flex; align-items: center; gap: 8px;">
+                            <span>🇫🇷</span> <span>Français</span>
+                        </a>
+                    </div>
+                </div>
                 <!-- Menú de Configuración (Settings) -->
                 <div style="position: relative; flex-shrink: 0;">
-                    <button id="settingsDropdownBtn" onclick="toggleSettingsDropdown()" style="padding: 6px 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'" title="Configuración">
+                    <button id="settingsDropdownBtn" onclick="toggleSettingsDropdown()" style="padding: 6px 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'" title="Configuración">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
                             <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
                             <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
