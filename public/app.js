@@ -6080,18 +6080,35 @@ function updateTranslations() {
     // Verificar que las funciones de traducción estén disponibles
     if (typeof getLanguage === 'undefined' || typeof t === 'undefined') {
         console.warn('⚠️ Funciones de traducción no disponibles aún');
+        // Intentar cargar desde localStorage directamente
+        const savedLang = localStorage.getItem('veedor_language') || 'es';
+        if (typeof window !== 'undefined' && window.translations && window.translations[savedLang]) {
+            // Usar traducciones directamente si están disponibles
+            const lang = savedLang;
+            const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
+            const flagEl = document.getElementById('currentLanguageFlag');
+            if (flagEl) flagEl.textContent = flags[lang] || flags['es'];
+            const authFlagEl = document.getElementById('authCurrentLanguageFlag');
+            if (authFlagEl) authFlagEl.textContent = flags[lang] || flags['es'];
+            document.documentElement.lang = lang;
+        }
         return;
     }
     
     const lang = getLanguage();
+    console.log('🔄 Actualizando traducciones para:', lang);
     
-    // Actualizar elementos con data-translate
+    // Actualizar elementos con data-translate (incluyendo elementos dinámicos)
     document.querySelectorAll('[data-translate]').forEach(el => {
         const key = el.getAttribute('data-translate');
         if (key && typeof t === 'function') {
-            const translation = t(key, lang);
-            if (translation && translation !== key) {
-                el.textContent = translation;
+            try {
+                const translation = t(key, lang);
+                if (translation && translation !== key) {
+                    el.textContent = translation;
+                }
+            } catch (e) {
+                console.warn('Error traduciendo:', key, e);
             }
         }
     });
@@ -6100,9 +6117,13 @@ function updateTranslations() {
     document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
         const key = el.getAttribute('data-translate-placeholder');
         if (key && typeof t === 'function') {
-            const translation = t(key, lang);
-            if (translation && translation !== key) {
-                el.placeholder = translation;
+            try {
+                const translation = t(key, lang);
+                if (translation && translation !== key) {
+                    el.placeholder = translation;
+                }
+            } catch (e) {
+                console.warn('Error traduciendo placeholder:', key, e);
             }
         }
     });
@@ -6111,9 +6132,13 @@ function updateTranslations() {
     document.querySelectorAll('[data-translate-title]').forEach(el => {
         const key = el.getAttribute('data-translate-title');
         if (key && typeof t === 'function') {
-            const translation = t(key, lang);
-            if (translation && translation !== key) {
-                el.title = translation;
+            try {
+                const translation = t(key, lang);
+                if (translation && translation !== key) {
+                    el.title = translation;
+                }
+            } catch (e) {
+                console.warn('Error traduciendo title:', key, e);
             }
         }
     });
@@ -6161,27 +6186,107 @@ function updateTranslations() {
     
     // Actualizar atributo lang del HTML
     document.documentElement.lang = lang;
+    
+    // Forzar actualización de elementos dinámicos que puedan tener texto hardcodeado
+    // Esto se ejecutará después de que se actualicen los elementos estáticos
+    setTimeout(() => {
+        // Actualizar tabs activos
+        const activeTab = document.querySelector('.tab-btn.active');
+        if (activeTab) {
+            const tabKey = activeTab.getAttribute('data-translate');
+            if (tabKey && typeof t === 'function') {
+                try {
+                    const translation = t(tabKey, lang);
+                    if (translation) {
+                        const span = activeTab.querySelector('span[data-translate]');
+                        if (span) span.textContent = translation;
+                    }
+                } catch (e) {}
+            }
+        }
+        
+        // Actualizar navegación
+        document.querySelectorAll('.nav-dropdown-item span[data-translate]').forEach(span => {
+            const key = span.getAttribute('data-translate');
+            if (key && typeof t === 'function') {
+                try {
+                    const translation = t(key, lang);
+                    if (translation) span.textContent = translation;
+                } catch (e) {}
+            }
+        });
+    }, 100);
 }
 
 // Función para cambiar idioma
 function changeLanguage(lang) {
     console.log('🌐 Cambiando idioma a:', lang);
+    
+    // Guardar idioma
     if (typeof setLanguage === 'function') {
         setLanguage(lang);
     } else {
         // Fallback: guardar en localStorage directamente
         localStorage.setItem('veedor_language', lang);
+        // Actualizar variable global si existe
+        if (typeof window !== 'undefined') {
+            window.currentLanguage = lang;
+        }
     }
     
-    // Actualizar traducciones inmediatamente
+    // Actualizar traducciones inmediatamente (múltiples intentos para asegurar que funcione)
+    updateTranslations();
     setTimeout(() => {
         updateTranslations();
-    }, 100);
+    }, 50);
+    setTimeout(() => {
+        updateTranslations();
+    }, 200);
+    setTimeout(() => {
+        updateTranslations();
+    }, 500);
     
     // Recargar datos para actualizar formatos (solo si estamos en la app principal)
     if (typeof updateDisplay === 'function' && document.getElementById('mainApp') && document.getElementById('mainApp').style.display !== 'none') {
-        updateDisplay();
+        setTimeout(() => {
+            updateDisplay();
+        }, 300);
     }
+    
+    // Forzar actualización de todos los elementos dinámicos
+    if (typeof updateCharts === 'function') {
+        setTimeout(() => {
+            updateCharts();
+        }, 400);
+    }
+    
+    // Actualizar tabs y navegación
+    setTimeout(() => {
+        // Actualizar todos los tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            const span = btn.querySelector('span[data-translate]');
+            if (span) {
+                const key = span.getAttribute('data-translate');
+                if (key && typeof t === 'function') {
+                    try {
+                        const translation = t(key, lang);
+                        if (translation) span.textContent = translation;
+                    } catch (e) {}
+                }
+            }
+        });
+        
+        // Actualizar navegación dropdown
+        document.querySelectorAll('#mainNavDropdown .nav-dropdown-item span[data-translate]').forEach(span => {
+            const key = span.getAttribute('data-translate');
+            if (key && typeof t === 'function') {
+                try {
+                    const translation = t(key, lang);
+                    if (translation) span.textContent = translation;
+                } catch (e) {}
+            }
+        });
+    }, 600);
 }
 
 // Función para toggle del dropdown de idioma (header)
