@@ -726,6 +726,36 @@ function initializeForms() {
         addCustomCategoryBtn.addEventListener('click', showAddCustomCategoryModal);
     }
     
+    // Modal de categoría personalizada
+    const customCategoryModal = document.getElementById('customCategoryModal');
+    const closeCustomCategoryModalBtn = document.getElementById('closeCustomCategoryModal');
+    const cancelCustomCategoryBtn = document.getElementById('cancelCustomCategoryBtn');
+    const customCategoryForm = document.getElementById('customCategoryForm');
+    
+    if (closeCustomCategoryModalBtn) {
+        closeCustomCategoryModalBtn.addEventListener('click', closeCustomCategoryModal);
+    }
+    
+    if (cancelCustomCategoryBtn) {
+        cancelCustomCategoryBtn.addEventListener('click', closeCustomCategoryModal);
+    }
+    
+    if (customCategoryForm) {
+        customCategoryForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addCustomCategory();
+        });
+    }
+    
+    // Cerrar modal al hacer clic fuera
+    if (customCategoryModal) {
+        customCategoryModal.addEventListener('click', (e) => {
+            if (e.target === customCategoryModal) {
+                closeCustomCategoryModal();
+            }
+        });
+    }
+    
     // Botón para establecer meta de ahorro
     const setSavingsGoalBtn = document.getElementById('setSavingsGoalBtn');
     if (setSavingsGoalBtn) {
@@ -2648,6 +2678,207 @@ function formatDate(date) {
         month: 'short',
         day: 'numeric'
     });
+}
+
+// Actualizar tablas de análisis
+function updateAnalysisTables() {
+    const periodTransactions = getTransactionsByPeriod();
+    const expenses = periodTransactions.filter(t => t.type === 'expense');
+    const income = periodTransactions.filter(t => t.type === 'income');
+    
+    // Top Gastos
+    const topExpenses = [...expenses]
+        .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount))
+        .slice(0, 10);
+    
+    const topExpensesBody = document.getElementById('topExpensesBody');
+    if (topExpensesBody) {
+        topExpensesBody.innerHTML = '';
+        if (topExpenses.length === 0) {
+            topExpensesBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos en este período</td></tr>';
+        } else {
+            topExpenses.forEach(t => {
+                const row = document.createElement('tr');
+                const category = categories.expense.find(c => c.id === t.categoryGeneral) || 
+                               customCategories.expense.find(c => c.id === t.categoryGeneral);
+                const categoryName = category ? category.name : t.categoryGeneral;
+                row.innerHTML = `
+                    <td>${formatDate(new Date(t.date))}</td>
+                    <td>${categoryName}</td>
+                    <td>${t.description || '-'}</td>
+                    <td style="color: var(--danger); font-weight: 600;">${formatCurrency(Math.abs(t.amount))}</td>
+                `;
+                topExpensesBody.appendChild(row);
+            });
+        }
+    }
+    
+    // Gastos Recurrentes
+    const categoryTotals = {};
+    const categoryCounts = {};
+    expenses.forEach(t => {
+        const catId = t.categoryGeneral;
+        if (!categoryTotals[catId]) {
+            categoryTotals[catId] = 0;
+            categoryCounts[catId] = 0;
+        }
+        categoryTotals[catId] += Math.abs(t.amount);
+        categoryCounts[catId]++;
+    });
+    
+    const recurringExpensesBody = document.getElementById('recurringExpensesBody');
+    if (recurringExpensesBody) {
+        recurringExpensesBody.innerHTML = '';
+        const recurring = Object.entries(categoryTotals)
+            .map(([catId, total]) => {
+                const category = categories.expense.find(c => c.id === catId) || 
+                               customCategories.expense.find(c => c.id === catId);
+                const categoryName = category ? category.name : catId;
+                const count = categoryCounts[catId];
+                const months = getMonthsInPeriod();
+                const avgMonthly = months > 0 ? total / months : total;
+                return { categoryName, count, avgMonthly, total };
+            })
+            .sort((a, b) => b.total - a.total)
+            .slice(0, 10);
+        
+        if (recurring.length === 0) {
+            recurringExpensesBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos recurrentes</td></tr>';
+        } else {
+            recurring.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.categoryName}</td>
+                    <td>${item.count} transacciones</td>
+                    <td>${formatCurrency(item.avgMonthly)}</td>
+                    <td style="font-weight: 600;">${formatCurrency(item.total)}</td>
+                `;
+                recurringExpensesBody.appendChild(row);
+            });
+        }
+    }
+    
+    // Comparativa Mensual
+    const monthlyData = {};
+    periodTransactions.forEach(t => {
+        const date = new Date(t.date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        if (!monthlyData[monthKey]) {
+            monthlyData[monthKey] = { income: 0, expenses: 0 };
+        }
+        if (t.type === 'income') {
+            monthlyData[monthKey].income += t.amount;
+        } else {
+            monthlyData[monthKey].expenses += Math.abs(t.amount);
+        }
+    });
+    
+    const monthlyComparisonBody = document.getElementById('monthlyComparisonBody');
+    if (monthlyComparisonBody) {
+        monthlyComparisonBody.innerHTML = '';
+        const sortedMonths = Object.entries(monthlyData)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .reverse();
+        
+        if (sortedMonths.length === 0) {
+            monthlyComparisonBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray-500);">No hay datos para este período</td></tr>';
+        } else {
+            sortedMonths.forEach(([monthKey, data]) => {
+                const [year, month] = monthKey.split('-');
+                const monthName = new Date(year, month - 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                const savings = data.income - data.expenses;
+                const savingsPercent = data.income > 0 ? (savings / data.income) * 100 : 0;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight: 600;">${monthName}</td>
+                    <td style="color: var(--success);">${formatCurrency(data.income)}</td>
+                    <td style="color: var(--danger);">${formatCurrency(data.expenses)}</td>
+                    <td style="color: ${savings >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 600;">${formatCurrency(savings)}</td>
+                    <td style="color: ${savingsPercent >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 600;">${savingsPercent.toFixed(1)}%</td>
+                `;
+                monthlyComparisonBody.appendChild(row);
+            });
+        }
+    }
+    
+    // Análisis por Categoría
+    const categoryAnalysis = {};
+    expenses.forEach(t => {
+        const catId = t.categoryGeneral;
+        if (!categoryAnalysis[catId]) {
+            categoryAnalysis[catId] = { total: 0, count: 0 };
+        }
+        categoryAnalysis[catId].total += Math.abs(t.amount);
+        categoryAnalysis[catId].count++;
+    });
+    
+    const totalExpenses = expenses.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const months = getMonthsInPeriod();
+    
+    const categoryAnalysisBody = document.getElementById('categoryAnalysisBody');
+    if (categoryAnalysisBody) {
+        categoryAnalysisBody.innerHTML = '';
+        const sorted = Object.entries(categoryAnalysis)
+            .map(([catId, data]) => {
+                const category = categories.expense.find(c => c.id === catId) || 
+                               customCategories.expense.find(c => c.id === catId);
+                const categoryName = category ? category.name : catId;
+                const percent = totalExpenses > 0 ? (data.total / totalExpenses) * 100 : 0;
+                const avgMonthly = months > 0 ? data.total / months : data.total;
+                return { categoryName, total: data.total, percent, avgMonthly, count: data.count };
+            })
+            .sort((a, b) => b.total - a.total);
+        
+        if (sorted.length === 0) {
+            categoryAnalysisBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos por categoría</td></tr>';
+        } else {
+            sorted.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight: 600;">${item.categoryName}</td>
+                    <td>${formatCurrency(item.total)}</td>
+                    <td>${item.percent.toFixed(1)}%</td>
+                    <td>${formatCurrency(item.avgMonthly)}</td>
+                    <td>${item.count}</td>
+                `;
+                categoryAnalysisBody.appendChild(row);
+            });
+        }
+    }
+}
+
+// Obtener transacciones según período seleccionado
+function getTransactionsByPeriod() {
+    const chartPeriod = document.getElementById('chartPeriod')?.value || '6';
+    const now = new Date();
+    
+    if (chartPeriod === 'all') {
+        return transactions;
+    }
+    
+    const months = parseInt(chartPeriod);
+    const startDate = new Date(now.getFullYear(), now.getMonth() - months, 1);
+    
+    return transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate >= startDate;
+    });
+}
+
+// Obtener número de meses en el período
+function getMonthsInPeriod() {
+    const chartPeriod = document.getElementById('chartPeriod')?.value || '6';
+    if (chartPeriod === 'all') {
+        const dates = transactions.map(t => new Date(t.date));
+        if (dates.length === 0) return 1;
+        const minDate = new Date(Math.min(...dates));
+        const maxDate = new Date(Math.max(...dates));
+        const diffTime = Math.abs(maxDate - minDate);
+        const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44));
+        return Math.max(1, diffMonths);
+    }
+    return parseInt(chartPeriod);
 }
 
 // Cerrar el bloque de protección contra carga múltiple

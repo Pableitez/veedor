@@ -470,22 +470,110 @@
                     </select>
                     <button id="addCustomCategoryBtn" class="btn-secondary" style="margin-left: auto;">➕ Agregar Categoría Personalizada</button>
                 </div>
-                <div class="charts-container">
-                    <div class="chart-card">
-                        <h3>Evolución de Ahorro</h3>
-                        <canvas id="savingsChart"></canvas>
+                
+                <!-- Tablas de Análisis -->
+                <div style="margin-bottom: 32px;">
+                    <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--gray-900);">📊 Análisis Detallado</h2>
+                    
+                    <!-- Top Gastos -->
+                    <div class="table-section" style="margin-bottom: 32px;">
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--gray-800);">🔥 Top Gastos del Período</h3>
+                        <div class="table-container">
+                            <table id="topExpensesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Categoría</th>
+                                        <th>Descripción</th>
+                                        <th>Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="topExpensesBody">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="chart-card">
-                        <h3>Gastos por Categoría</h3>
-                        <canvas id="expensesChart"></canvas>
+                    
+                    <!-- Gastos Recurrentes -->
+                    <div class="table-section" style="margin-bottom: 32px;">
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--gray-800);">🔄 Gastos Recurrentes</h3>
+                        <div class="table-container">
+                            <table id="recurringExpensesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Categoría</th>
+                                        <th>Frecuencia</th>
+                                        <th>Promedio Mensual</th>
+                                        <th>Total Período</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recurringExpensesBody">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="chart-card">
-                        <h3>Ingresos vs Gastos</h3>
-                        <canvas id="incomeExpenseChart"></canvas>
+                    
+                    <!-- Comparativa Mensual -->
+                    <div class="table-section" style="margin-bottom: 32px;">
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--gray-800);">📅 Comparativa Mensual</h3>
+                        <div class="table-container">
+                            <table id="monthlyComparisonTable">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th>Ingresos</th>
+                                        <th>Gastos</th>
+                                        <th>Ahorro</th>
+                                        <th>% Ahorro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="monthlyComparisonBody">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="chart-card">
-                        <h3>Distribución de Gastos</h3>
-                        <canvas id="distributionChart"></canvas>
+                    
+                    <!-- Análisis por Categoría -->
+                    <div class="table-section" style="margin-bottom: 32px;">
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--gray-800);">📋 Análisis por Categoría</h3>
+                        <div class="table-container">
+                            <table id="categoryAnalysisTable">
+                                <thead>
+                                    <tr>
+                                        <th>Categoría</th>
+                                        <th>Total</th>
+                                        <th>% del Total</th>
+                                        <th>Promedio Mensual</th>
+                                        <th>Transacciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categoryAnalysisBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gráficas -->
+                <div>
+                    <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--gray-900);">📈 Gráficas</h2>
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h3>Evolución de Ahorro</h3>
+                            <canvas id="savingsChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Gastos por Categoría</h3>
+                            <canvas id="expensesChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Ingresos vs Gastos</h3>
+                            <canvas id="incomeExpenseChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Distribución de Gastos</h3>
+                            <canvas id="distributionChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
