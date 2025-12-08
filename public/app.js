@@ -852,11 +852,41 @@ document.addEventListener('click', function(event) {
 // Mostrar panel de mandos del mes
 function showMonthDashboard() {
     const monthDashboard = document.getElementById('monthDashboard');
-    const monthSelect = document.getElementById('monthSelect');
-    if (monthDashboard && monthSelect) {
-        monthSelect.dispatchEvent(new Event('change'));
-        monthDashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const dashboardMonthInput = document.getElementById('dashboardMonth');
+    
+    if (!monthDashboard || !dashboardMonthInput) {
+        console.error('No se encontró monthDashboard o dashboardMonthInput');
+        return;
     }
+    
+    // Si no hay mes seleccionado, establecer el mes actual
+    if (!dashboardMonthInput.value) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        dashboardMonthInput.value = `${year}-${month}`;
+    }
+    
+    // Mostrar el panel
+    monthDashboard.style.display = 'block';
+    
+    // Actualizar el contenido del panel
+    updateMonthDashboard();
+    
+    // Hacer scroll al dashboard
+    setTimeout(() => {
+        const dashboard = document.querySelector('.dashboard');
+        if (dashboard) {
+            const rect = dashboard.getBoundingClientRect();
+            const header = document.querySelector('header');
+            const headerHeight = header ? header.offsetHeight : 80;
+            const scrollPosition = rect.top + window.pageYOffset - headerHeight - 20;
+            window.scrollTo({ 
+                top: Math.max(0, scrollPosition), 
+                behavior: 'smooth' 
+            });
+        }
+    }, 300);
 }
 
 // Scroll al dashboard principal
