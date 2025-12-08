@@ -47,13 +47,17 @@ const Transaction = mongoose.model('Transaction', transactionSchema);
 const Envelope = mongoose.model('Envelope', envelopeSchema);
 
 // Conectar a MongoDB
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+})
     .then(() => {
         console.log('✅ Conectado a MongoDB');
     })
     .catch((err) => {
         console.error('❌ Error conectando a MongoDB:', err.message);
         console.log('💡 Asegúrate de configurar MONGODB_URI en las variables de entorno');
+        // No detener el servidor si falla la conexión inicial, intentará reconectar
     });
 
 // Middleware de autenticación
