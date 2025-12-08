@@ -1103,6 +1103,67 @@ function initializeForms() {
         });
     }
     
+    // Inicializar formulario de meta de ahorro
+    const savingsGoalForm = document.getElementById('savingsGoalForm');
+    if (savingsGoalForm) {
+        savingsGoalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('savingsGoalInput');
+            if (!input || !input.value || isNaN(input.value) || parseFloat(input.value) <= 0) {
+                alert('Por favor ingresa una cantidad válida');
+                return;
+            }
+            
+            try {
+                savingsGoal = parseFloat(input.value);
+                await apiRequest('/user/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify({ savingsGoal })
+                });
+                updateSummary();
+                closeSavingsGoalModal();
+            } catch (error) {
+                alert('Error al guardar la meta de ahorro: ' + error.message);
+            }
+        });
+    }
+    
+    // Inicializar formulario de añadir dinero a inversión
+    const addMoneyInvestmentForm = document.getElementById('addMoneyInvestmentForm');
+    if (addMoneyInvestmentForm) {
+        addMoneyInvestmentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processAddMoneyToInvestment();
+        });
+    }
+    
+    // Inicializar formulario de actualizar valor de inversión
+    const updateInvestmentValueForm = document.getElementById('updateInvestmentValueForm');
+    if (updateInvestmentValueForm) {
+        updateInvestmentValueForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processUpdateInvestmentValue();
+        });
+    }
+    
+    // Inicializar formulario de actualizar saldo de cuenta
+    const updateAccountBalanceForm = document.getElementById('updateAccountBalanceForm');
+    if (updateAccountBalanceForm) {
+        updateAccountBalanceForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processUpdateAccountBalance();
+        });
+    }
+    
+    // Inicializar formulario de actualizar valor de bien
+    const updateAssetValueForm = document.getElementById('updateAssetValueForm');
+    if (updateAssetValueForm) {
+        updateAssetValueForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processUpdateAssetValue();
+        });
+    }
+    
     // Botón de perfil de usuario ya se maneja con onclick en HTML
     
     // Selector de período en dashboard
@@ -3050,33 +3111,7 @@ function updateAccounts() {
 
 // Editar cuenta (actualizar saldo)
 async function editAccount(id) {
-    const account = accounts.find(a => (a._id || a.id) === id);
-    if (!account) return;
-    
-    const newBalance = prompt(`Actualizar saldo de "${account.name}":`, account.balance);
-    if (newBalance === null) return;
-    
-    const balance = parseFloat(newBalance);
-    if (isNaN(balance)) {
-        alert('Por favor ingresa un número válido');
-        return;
-    }
-    
-    try {
-        await apiRequest(`/accounts/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                ...account,
-                balance
-            })
-        });
-        
-        await loadUserData();
-        updateDisplay();
-        alert('✅ Saldo actualizado exitosamente');
-    } catch (error) {
-        alert('Error al actualizar cuenta: ' + error.message);
-    }
+    showUpdateAccountBalanceModal(id);
 }
 
 // Eliminar cuenta
