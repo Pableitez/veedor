@@ -424,9 +424,10 @@ function updateUserInfo() {
 // Cargar datos del usuario actual
 async function loadUserData() {
     try {
-        const [transactionsData, envelopesData] = await Promise.all([
+        const [transactionsData, envelopesData, loansData] = await Promise.all([
             apiRequest('/transactions'),
-            apiRequest('/envelopes')
+            apiRequest('/envelopes'),
+            apiRequest('/loans')
         ]);
         
         transactions = transactionsData.map(t => ({
@@ -436,6 +437,7 @@ async function loadUserData() {
         }));
         
         envelopes = envelopesData;
+        loans = loansData;
         
         // Cargar categorías personalizadas
         loadCustomCategories();
@@ -656,27 +658,10 @@ function initializeForms() {
         });
     }
     
-    // Botones de exportar/importar
+    // Botón de exportar CSV
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) {
         exportBtn.addEventListener('click', exportData);
-    }
-    
-    const importBtn = document.getElementById('importBtn');
-    if (importBtn) {
-        importBtn.addEventListener('click', () => {
-            let importFile = document.getElementById('importFile');
-            if (!importFile) {
-                importFile = document.createElement('input');
-                importFile.type = 'file';
-                importFile.id = 'importFile';
-                importFile.accept = '.json';
-                importFile.style.display = 'none';
-                importFile.addEventListener('change', importData);
-                document.body.appendChild(importFile);
-            }
-            importFile.click();
-        });
     }
 }
 
@@ -748,6 +733,7 @@ function updateDisplay() {
     updateTransactionsTable();
     updateEnvelopes();
     updateEnvelopeSelect();
+    updateLoans();
     updateMonthFilter();
 }
 
@@ -772,16 +758,40 @@ function updateSummary() {
         return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
     });
     
+    // Transacciones del año
+    const yearTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getFullYear() === currentYear;
+    });
+    
+    // Cálculos del mes
     const totalBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
     const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
     const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
     const monthSavings = monthIncome - monthExpenses;
     
+    // Cálculos del año
+    const yearIncome = yearTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const yearExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    const yearSavings = yearIncome - yearExpenses;
+    
+    // Actualizar elementos del mes
     document.getElementById('totalBalance').textContent = formatCurrency(totalBalance);
     document.getElementById('monthIncome').textContent = formatCurrency(monthIncome);
     document.getElementById('monthExpenses').textContent = formatCurrency(monthExpenses);
     document.getElementById('monthSavings').textContent = formatCurrency(monthSavings);
     document.getElementById('monthSavings').className = monthSavings >= 0 ? 'amount positive' : 'amount negative';
+    
+    // Actualizar elementos del año
+    const yearIncomeEl = document.getElementById('yearIncome');
+    const yearExpensesEl = document.getElementById('yearExpenses');
+    const yearSavingsEl = document.getElementById('yearSavings');
+    if (yearIncomeEl) yearIncomeEl.textContent = formatCurrency(yearIncome);
+    if (yearExpensesEl) yearExpensesEl.textContent = formatCurrency(yearExpenses);
+    if (yearSavingsEl) {
+        yearSavingsEl.textContent = formatCurrency(yearSavings);
+        yearSavingsEl.className = yearSavings >= 0 ? 'amount positive' : 'amount negative';
+    }
     
     // Actualizar meta de ahorro
     const savingsGoalEl = document.getElementById('savingsGoal');
@@ -917,7 +927,7 @@ function updateEnvelopes() {
                 <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%"></div>
             </div>
             <div class="envelope-actions">
-                <button class="btn-danger" onclick="deleteEnvelope(${envelope.id})">Eliminar</button>
+                <button class="btn-danger" onclick="deleteEnvelope('${envelope._id || envelope.id}')">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -983,10 +993,116 @@ async function deleteEnvelope(id) {
     
     try {
         await apiRequest(`/envelopes/${id}`, { method: 'DELETE' });
-        envelopes = envelopes.filter(e => e.id !== id);
+        // Recargar datos desde el servidor
+        await loadUserData();
         updateDisplay();
     } catch (error) {
-        alert('Error al eliminar sobre: ' + error.message);
+        console.error('Error eliminando sobre:', error);
+        alert('Error al eliminar sobre: ' + (error.message || 'Error desconocido'));
+    }
+}
+
+// Agregar préstamo
+async function addLoan() {
+    const name = document.getElementById('loanName').value.trim();
+    const principal = parseFloat(document.getElementById('loanPrincipal').value);
+    const interestRate = parseFloat(document.getElementById('loanInterestRate').value);
+    const startDate = document.getElementById('loanStartDate').value;
+    const endDate = document.getElementById('loanEndDate').value;
+    const monthlyPayment = parseFloat(document.getElementById('loanMonthlyPayment').value);
+    const type = document.getElementById('loanType').value;
+    const description = document.getElementById('loanDescription').value.trim();
+    
+    if (!name || !principal || !interestRate || !startDate || !endDate || !monthlyPayment || !type) {
+        alert('Por favor completa todos los campos requeridos');
+        return;
+    }
+    
+    try {
+        const loan = await apiRequest('/loans', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                principal,
+                interest_rate: interestRate,
+                start_date: startDate,
+                end_date: endDate,
+                monthly_payment: monthlyPayment,
+                type,
+                description: description || null
+            })
+        });
+        
+        loans.push(loan);
+        updateDisplay();
+        document.getElementById('loanForm').reset();
+        alert('✅ Préstamo agregado exitosamente');
+    } catch (error) {
+        alert('Error al crear préstamo: ' + error.message);
+    }
+}
+
+// Actualizar préstamos
+function updateLoans() {
+    const grid = document.getElementById('loansGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (loans.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay préstamos registrados</p>';
+        return;
+    }
+    
+    loans.forEach(loan => {
+        const startDate = new Date(loan.start_date);
+        const endDate = new Date(loan.end_date);
+        const today = new Date();
+        const monthsRemaining = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24 * 30)));
+        const totalMonths = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 30));
+        const monthsPaid = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24 * 30)));
+        const totalPaid = monthsPaid * loan.monthly_payment;
+        const remaining = Math.max(0, loan.principal - totalPaid + (loan.principal * (loan.interest_rate / 100) * (monthsPaid / 12)));
+        const totalInterest = (loan.principal * (loan.interest_rate / 100) * (totalMonths / 12));
+        const totalAmount = loan.principal + totalInterest;
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.border = loan.type === 'debt' ? '2px solid #ef4444' : '2px solid #10b981';
+        card.innerHTML = `
+            <h3>${loan.name} <span style="font-size: 12px; color: ${loan.type === 'debt' ? '#ef4444' : '#10b981'}">(${loan.type === 'debt' ? 'Debo' : 'Me deben'})</span></h3>
+            <div style="margin: 10px 0;">
+                <div><strong>Principal:</strong> ${formatCurrency(loan.principal)}</div>
+                <div><strong>Tasa de Interés:</strong> ${loan.interest_rate}% anual</div>
+                <div><strong>Pago Mensual:</strong> ${formatCurrency(loan.monthly_payment)}</div>
+            </div>
+            <div style="margin: 10px 0; padding: 10px; background: #f3f4f6; border-radius: 6px;">
+                <div><strong>Total a Pagar:</strong> ${formatCurrency(totalAmount)}</div>
+                <div><strong>Interés Total:</strong> ${formatCurrency(totalInterest)}</div>
+                <div><strong>Pagado:</strong> ${formatCurrency(totalPaid)}</div>
+                <div><strong>Restante:</strong> <span style="color: ${remaining > 0 ? '#ef4444' : '#10b981'}">${formatCurrency(remaining)}</span></div>
+                <div><strong>Meses Restantes:</strong> ${monthsRemaining}</div>
+            </div>
+            ${loan.description ? `<div style="margin: 10px 0; font-size: 12px; color: #666;">${loan.description}</div>` : ''}
+            <div class="envelope-actions">
+                <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Eliminar préstamo
+async function deleteLoan(id) {
+    if (!confirm('¿Estás seguro de eliminar este préstamo?')) return;
+    
+    try {
+        await apiRequest(`/loans/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+    } catch (error) {
+        console.error('Error eliminando préstamo:', error);
+        alert('Error al eliminar préstamo: ' + (error.message || 'Error desconocido'));
     }
 }
 
@@ -1407,73 +1523,6 @@ function exportData() {
     URL.revokeObjectURL(jsonUrl);
 }
 
-// Importar datos
-async function importData(event) {
-    if (!currentUser) return;
-    
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        try {
-            const data = JSON.parse(e.target.result);
-            
-            // Importar categorías personalizadas
-            if (data.customCategories) {
-                customCategories = data.customCategories;
-                localStorage.setItem('veedor_customCategories', JSON.stringify(customCategories));
-            }
-            
-            // Importar transacciones
-            if (data.transactions) {
-                for (const transaction of data.transactions) {
-                    try {
-                        await apiRequest('/transactions', {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                type: transaction.type,
-                                date: transaction.date,
-                                amount: Math.abs(transaction.amount),
-                                categoryGeneral: transaction.categoryGeneral || transaction.category_general,
-                                categorySpecific: transaction.categorySpecific || transaction.category_specific,
-                                envelope: transaction.envelope,
-                                description: transaction.description
-                            })
-                        });
-                    } catch (error) {
-                        console.error('Error importando transacción:', error);
-                    }
-                }
-            }
-            
-            // Importar sobres
-            if (data.envelopes) {
-                for (const envelope of data.envelopes) {
-                    try {
-                        await apiRequest('/envelopes', {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                name: envelope.name,
-                                budget: envelope.budget
-                            })
-                        });
-                    } catch (error) {
-                        console.error('Error importando sobre:', error);
-                    }
-                }
-            }
-            
-            await loadUserData();
-            updateDisplay();
-            alert('Datos importados correctamente');
-        } catch (error) {
-            alert('Error al importar datos: ' + error.message);
-        }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
-}
 
 // Utilidades
 function formatCurrency(amount) {

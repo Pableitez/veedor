@@ -67,8 +67,7 @@
             <div class="header-actions">
                 <span id="currentUser" class="user-info"></span>
                 <button id="switchUserBtn" class="btn-secondary">👤 Cambiar Usuario</button>
-                <button id="exportBtn" class="btn-secondary">📥 Exportar</button>
-                <button id="importBtn" class="btn-secondary">📤 Importar</button>
+                <button id="exportBtn" class="btn-secondary">📥 Exportar CSV</button>
             </div>
         </header>
 
@@ -77,31 +76,51 @@
                     <div class="card">
                         <h3>Balance Total</h3>
                         <p class="amount" id="totalBalance">$0.00</p>
+                        <small style="color: #666;">Todos los tiempos</small>
                     </div>
                     <div class="card">
                         <h3>Ingresos del Mes</h3>
                         <p class="amount positive" id="monthIncome">$0.00</p>
+                        <small style="color: #666;">Este mes</small>
                     </div>
                     <div class="card">
                         <h3>Gastos del Mes</h3>
                         <p class="amount negative" id="monthExpenses">$0.00</p>
+                        <small style="color: #666;">Este mes</small>
                     </div>
                     <div class="card">
                         <h3>Ahorro del Mes</h3>
                         <p class="amount" id="monthSavings">$0.00</p>
+                        <small style="color: #666;">Este mes</small>
+                    </div>
+                    <div class="card">
+                        <h3>Ingresos del Año</h3>
+                        <p class="amount positive" id="yearIncome">$0.00</p>
+                        <small style="color: #666;">Este año</small>
+                    </div>
+                    <div class="card">
+                        <h3>Gastos del Año</h3>
+                        <p class="amount negative" id="yearExpenses">$0.00</p>
+                        <small style="color: #666;">Este año</small>
+                    </div>
+                    <div class="card">
+                        <h3>Ahorro del Año</h3>
+                        <p class="amount" id="yearSavings">$0.00</p>
+                        <small style="color: #666;">Este año</small>
                     </div>
                     <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                         <h3>Meta de Ahorro</h3>
                         <p class="amount" id="savingsGoal">Sin meta</p>
-                        <button id="setSavingsGoalBtn" class="btn-secondary" style="margin-top: 10px; font-size: 12px; padding: 5px 10px;">Establecer Meta</button>
+                        <button id="setSavingsGoalBtn" class="btn-secondary" style="margin-top: 10px; font-size: 12px; padding: 5px 10px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);">Establecer Meta</button>
                     </div>
                 </div>
         </div>
 
         <div class="main-content">
-            <div class="tabs">
+                <div class="tabs">
                 <button class="tab-btn active" data-tab="transactions">📝 Transacciones</button>
                 <button class="tab-btn" data-tab="envelopes">✉️ Sobres</button>
+                <button class="tab-btn" data-tab="loans">💰 Préstamos</button>
                 <button class="tab-btn" data-tab="charts">📊 Gráficas</button>
             </div>
 
@@ -207,6 +226,61 @@
                     </form>
                 </div>
                 <div class="envelopes-grid" id="envelopesGrid">
+                </div>
+            </div>
+
+            <!-- Tab: Préstamos -->
+            <div class="tab-content" id="loans-tab">
+                <div class="form-section">
+                    <h2>Gestionar Préstamos</h2>
+                    <form id="loanForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="loanName">Nombre del Préstamo</label>
+                                <input type="text" id="loanName" placeholder="Ej: Préstamo personal" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanType">Tipo</label>
+                                <select id="loanType" required>
+                                    <option value="debt">Deuda (Debo)</option>
+                                    <option value="credit">Crédito (Me deben)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="loanPrincipal">Monto Principal</label>
+                                <input type="number" id="loanPrincipal" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanInterestRate">Tasa de Interés Anual (%)</label>
+                                <input type="number" id="loanInterestRate" step="0.01" min="0" max="100" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="loanStartDate">Fecha de Inicio</label>
+                                <input type="date" id="loanStartDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanEndDate">Fecha de Fin</label>
+                                <input type="date" id="loanEndDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanMonthlyPayment">Pago Mensual</label>
+                                <input type="number" id="loanMonthlyPayment" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="loanDescription">Descripción (Opcional)</label>
+                                <input type="text" id="loanDescription" placeholder="Ej: Préstamo del banco XYZ">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Agregar Préstamo</button>
+                    </form>
+                </div>
+                <div class="loans-grid" id="loansGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 30px;">
                 </div>
             </div>
 

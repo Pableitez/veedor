@@ -64,9 +64,23 @@ const envelopeSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 });
 
+const loanSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    principal: { type: Number, required: true }, // Monto principal
+    interest_rate: { type: Number, required: true }, // Tasa de interés anual (%)
+    start_date: { type: String, required: true },
+    end_date: { type: String, required: true },
+    monthly_payment: { type: Number, required: true },
+    type: { type: String, enum: ['debt', 'credit'], required: true }, // Deuda que debo o crédito que me deben
+    description: { type: String, default: null },
+    created_at: { type: Date, default: Date.now }
+});
+
 const User = mongoose.model('User', userSchema);
 const Transaction = mongoose.model('Transaction', transactionSchema);
 const Envelope = mongoose.model('Envelope', envelopeSchema);
+const Loan = mongoose.model('Loan', loanSchema);
 
 // Conectar a MongoDB
 console.log('=== CONFIGURACIÓN MONGODB ===');
@@ -430,6 +444,68 @@ app.delete('/api/envelopes/:id', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error eliminando sobre:', error);
         res.status(500).json({ error: 'Error al eliminar sobre' });
+    }
+});
+
+// ==================== RUTAS DE PRÉSTAMOS ====================
+
+// Obtener todos los préstamos del usuario
+app.get('/api/loans', authenticateToken, async (req, res) => {
+    try {
+        const loans = await Loan.find({ user_id: req.user.userId })
+            .sort({ created_at: -1 });
+        res.json(loans);
+    } catch (error) {
+        console.error('Error obteniendo préstamos:', error);
+        res.status(500).json({ error: 'Error al obtener préstamos' });
+    }
+});
+
+// Crear préstamo
+app.post('/api/loans', authenticateToken, async (req, res) => {
+    try {
+        const { name, principal, interest_rate, start_date, end_date, monthly_payment, type, description } = req.body;
+
+        if (!name || principal === undefined || interest_rate === undefined || !start_date || !end_date || monthly_payment === undefined || !type) {
+            return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes' });
+        }
+
+        const loan = new Loan({
+            user_id: req.user.userId,
+            name,
+            principal,
+            interest_rate,
+            start_date,
+            end_date,
+            monthly_payment,
+            type,
+            description: description || null
+        });
+
+        await loan.save();
+        res.status(201).json(loan);
+    } catch (error) {
+        console.error('Error creando préstamo:', error);
+        res.status(500).json({ error: 'Error al crear préstamo' });
+    }
+});
+
+// Eliminar préstamo
+app.delete('/api/loans/:id', authenticateToken, async (req, res) => {
+    try {
+        const loan = await Loan.findOneAndDelete({
+            _id: req.params.id,
+            user_id: req.user.userId
+        });
+
+        if (!loan) {
+            return res.status(404).json({ error: 'Préstamo no encontrado' });
+        }
+
+        res.json({ message: 'Préstamo eliminado exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando préstamo:', error);
+        res.status(500).json({ error: 'Error al eliminar préstamo' });
     }
 });
 
