@@ -1061,24 +1061,33 @@ tbody tr:last-child td {
     }
 }
 
+/* ============================================
+   RESPONSIVIDAD MÓVIL COMPLETA - 768px
+   ============================================ */
 @media (max-width: 768px) {
+    /* Layout general */
     .form-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
     }
     
     .summary-cards {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
     }
     
     .charts-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
     }
     
+    /* Header mejorado */
     header {
         padding: 10px 12px !important;
-        flex-wrap: nowrap;
-        gap: 6px;
-        align-items: center;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        align-items: center !important;
+        min-height: 56px !important;
     }
     
     header > div:first-child {
