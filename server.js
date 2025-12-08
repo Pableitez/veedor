@@ -47,25 +47,41 @@ const Transaction = mongoose.model('Transaction', transactionSchema);
 const Envelope = mongoose.model('Envelope', envelopeSchema);
 
 // Conectar a MongoDB
-console.log('Intentando conectar a MongoDB...');
+console.log('=== CONFIGURACIÓN MONGODB ===');
 console.log('MONGODB_URI configurado:', MONGODB_URI ? 'Sí' : 'No');
+if (MONGODB_URI) {
+    // Ocultar la contraseña en los logs
+    const uriForLog = MONGODB_URI.replace(/:[^:@]+@/, ':****@');
+    console.log('MONGODB_URI (sin contraseña):', uriForLog);
+}
 
+if (!MONGODB_URI || MONGODB_URI === 'mongodb://localhost:27017/veedor') {
+    console.error('❌ MONGODB_URI no está configurado correctamente!');
+    console.error('💡 Configura MONGODB_URI en las variables de entorno de Render');
+}
+
+// Intentar conectar
+console.log('Intentando conectar a MongoDB...');
 mongoose.connect(MONGODB_URI, {
     serverSelectionTimeoutMS: 30000,
     socketTimeoutMS: 45000,
     retryWrites: true,
-    w: 'majority'
+    w: 'majority',
+    maxPoolSize: 10
 })
     .then(() => {
         console.log('✅ Conectado a MongoDB exitosamente');
         console.log('Estado de conexión:', mongoose.connection.readyState);
+        console.log('Base de datos:', mongoose.connection.db.databaseName);
     })
     .catch((err) => {
         console.error('❌ Error conectando a MongoDB:', err.message);
         console.error('Error completo:', err);
+        console.error('Código de error:', err.code);
         console.log('💡 Asegúrate de configurar MONGODB_URI en las variables de entorno');
         console.log('💡 Verifica que tu IP esté en la whitelist de MongoDB Atlas (0.0.0.0/0)');
         console.log('💡 Verifica que el usuario y contraseña sean correctos en MONGODB_URI');
+        console.log('💡 Formato esperado: mongodb+srv://usuario:password@cluster.mongodb.net/veedor');
     });
 
 // Manejar eventos de conexión
@@ -95,6 +111,21 @@ function authenticateToken(req, res, next) {
     });
 }
 
+// ==================== RUTAS DE HEALTH CHECK ====================
+
+// Health check
+app.get('/api/health', (req, res) => {
+    const mongoStatus = mongoose.connection.readyState;
+    const status = {
+        server: 'ok',
+        mongodb: mongoStatus === 1 ? 'connected' : mongoStatus === 2 ? 'connecting' : 'disconnected',
+        mongodbState: mongoStatus,
+        hasMongoURI: !!MONGODB_URI,
+        mongoURILength: MONGODB_URI ? MONGODB_URI.length : 0
+    };
+    res.json(status);
+});
+
 // ==================== RUTAS DE AUTENTICACIÓN ====================
 
 // Registro
@@ -103,12 +134,37 @@ app.post('/api/register', async (req, res) => {
         console.log('=== INTENTO DE REGISTRO ===');
         console.log('Estado MongoDB:', mongoose.connection.readyState);
         console.log('Body recibido:', { username: req.body.username, password: req.body.password ? '***' : 'no proporcionada' });
+        console.log('MONGODB_URI configurado:', MONGODB_URI ? 'Sí' : 'No');
+        
+        // Verificar que MONGODB_URI esté configurado
+        if (!MONGODB_URI || MONGODB_URI === 'mongodb://localhost:27017/veedor') {
+            console.error('❌ MONGODB_URI no está configurado en Render');
+            return res.status(500).json({ error: 'Servidor no configurado correctamente. Contacta al administrador.' });
+        }
         
         // Verificar conexión a MongoDB
         if (mongoose.connection.readyState !== 1) {
             console.log('❌ MongoDB no está conectado. Estado:', mongoose.connection.readyState);
             console.log('Estados: 0=desconectado, 1=conectado, 2=conectando, 3=desconectando');
-            return res.status(503).json({ error: 'Base de datos no disponible. Intenta de nuevo en unos momentos.' });
+            
+            // Intentar reconectar
+            if (mongoose.connection.readyState === 0) {
+                console.log('Intentando reconectar a MongoDB...');
+                try {
+                    await mongoose.connect(MONGODB_URI, {
+                        serverSelectionTimeoutMS: 10000,
+                        socketTimeoutMS: 45000,
+                        retryWrites: true,
+                        w: 'majority'
+                    });
+                    console.log('✅ Reconectado exitosamente');
+                } catch (reconnectError) {
+                    console.error('❌ Error al reconectar:', reconnectError.message);
+                    return res.status(503).json({ error: 'Base de datos no disponible. Verifica la configuración de MongoDB.' });
+                }
+            } else {
+                return res.status(503).json({ error: 'Base de datos no disponible. Intenta de nuevo en unos momentos.' });
+            }
         }
 
         const { username, password } = req.body;
