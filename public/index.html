@@ -195,9 +195,12 @@
                             </div>
                             <div class="form-group">
                                 <label for="categorySpecific">Categoría Específica</label>
-                                <select id="categorySpecific" required>
-                                    <option value="">Seleccionar...</option>
-                                </select>
+                                <div style="display: flex; gap: 8px;">
+                                    <select id="categorySpecific" required style="flex: 1;">
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                    <button type="button" id="addCustomCategoryBtn" class="btn-secondary" style="white-space: nowrap; padding: 10px 12px;" title="Agregar categoría personalizada">➕</button>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="envelope">Sobre (Opcional)</label>
