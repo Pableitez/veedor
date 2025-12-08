@@ -1010,15 +1010,67 @@ async function deleteEnvelope(id) {
 window.deleteEnvelope = deleteEnvelope;
 
 // Agregar préstamo
+// Calcular cuota mensual usando fórmula de amortización francesa
+function calculateMonthlyPayment(principal, annualRate, months) {
+    if (annualRate === 0) return principal / months;
+    const monthlyRate = annualRate / 100 / 12;
+    return principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+}
+
+// Calcular tabla de amortización
+function calculateAmortizationTable(principal, annualRate, monthlyPayment, startDate, totalPaid = 0, earlyPayments = []) {
+    const monthlyRate = annualRate / 100 / 12;
+    let balance = principal;
+    let totalInterest = 0;
+    const table = [];
+    const start = new Date(startDate);
+    let currentDate = new Date(start);
+    
+    // Aplicar pagos anticipados
+    earlyPayments.forEach(ep => {
+        balance -= ep.amount;
+        totalInterest += ep.commission || 0;
+    });
+    
+    // Restar lo ya pagado
+    balance -= totalPaid;
+    
+    let month = 0;
+    while (balance > 0.01 && month < 600) { // Máximo 50 años
+        month++;
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        
+        const interest = balance * monthlyRate;
+        const principalPayment = Math.min(monthlyPayment - interest, balance);
+        balance -= principalPayment;
+        totalInterest += interest;
+        
+        table.push({
+            month,
+            date: new Date(currentDate),
+            payment: monthlyPayment,
+            principal: principalPayment,
+            interest,
+            balance: Math.max(0, balance)
+        });
+    }
+    
+    return { table, totalInterest, finalBalance: balance };
+}
+
 async function addLoan() {
     const name = document.getElementById('loanName').value.trim();
     const principal = parseFloat(document.getElementById('loanPrincipal').value);
     const interestRate = parseFloat(document.getElementById('loanInterestRate').value);
+    const tae = document.getElementById('loanTAE').value ? parseFloat(document.getElementById('loanTAE').value) : null;
     const startDate = document.getElementById('loanStartDate').value;
     const endDate = document.getElementById('loanEndDate').value;
     const monthlyPayment = parseFloat(document.getElementById('loanMonthlyPayment').value);
     const type = document.getElementById('loanType').value;
     const description = document.getElementById('loanDescription').value.trim();
+    const openingCommission = parseFloat(document.getElementById('loanOpeningCommission').value) || 0;
+    const earlyPaymentCommission = parseFloat(document.getElementById('loanEarlyPaymentCommission').value) || 0;
+    const paymentDay = parseInt(document.getElementById('loanPaymentDay').value) || 1;
     
     if (!name || !principal || !interestRate || !startDate || !endDate || !monthlyPayment || !type) {
         alert('Por favor completa todos los campos requeridos');
@@ -1032,24 +1084,33 @@ async function addLoan() {
                 name,
                 principal,
                 interest_rate: interestRate,
+                tae: tae,
                 start_date: startDate,
                 end_date: endDate,
                 monthly_payment: monthlyPayment,
                 type,
-                description: description || null
+                description: description || null,
+                opening_commission: openingCommission,
+                early_payment_commission: earlyPaymentCommission,
+                payment_day: paymentDay
             })
         });
         
         loans.push(loan);
         updateDisplay();
         document.getElementById('loanForm').reset();
+        const loanStartDate = document.getElementById('loanStartDate');
+        if (loanStartDate) {
+            const today = new Date().toISOString().split('T')[0];
+            loanStartDate.value = today;
+        }
         alert('✅ Préstamo agregado exitosamente');
     } catch (error) {
         alert('Error al crear préstamo: ' + error.message);
     }
 }
 
-// Actualizar préstamos
+// Actualizar préstamos con cálculos avanzados
 function updateLoans() {
     const grid = document.getElementById('loansGrid');
     if (!grid) return;
@@ -1065,39 +1126,171 @@ function updateLoans() {
         const startDate = new Date(loan.start_date);
         const endDate = new Date(loan.end_date);
         const today = new Date();
-        const monthsRemaining = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24 * 30)));
-        const totalMonths = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 30));
-        const monthsPaid = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24 * 30)));
-        const totalPaid = monthsPaid * loan.monthly_payment;
-        const remaining = Math.max(0, loan.principal - totalPaid + (loan.principal * (loan.interest_rate / 100) * (monthsPaid / 12)));
-        const totalInterest = (loan.principal * (loan.interest_rate / 100) * (totalMonths / 12));
-        const totalAmount = loan.principal + totalInterest;
+        today.setHours(0, 0, 0, 0);
+        
+        // Calcular meses
+        const totalMonths = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 30.44));
+        const monthsElapsed = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24 * 30.44)));
+        const monthsRemaining = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24 * 30.44)));
+        
+        // Calcular amortización
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        
+        // Calcular totales
+        const totalPaid = (loan.total_paid || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
+        const remainingPrincipal = amortization.finalBalance;
+        const totalInterestPaid = amortization.totalInterest;
+        const totalInterestProjected = amortization.totalInterest;
+        const totalAmount = loan.principal + totalInterestProjected + (loan.opening_commission || 0);
+        const totalCommissions = (loan.opening_commission || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + (ep.commission || 0), 0);
+        
+        // Calcular próximo pago
+        const nextPaymentDate = new Date(startDate);
+        nextPaymentDate.setMonth(nextPaymentDate.getMonth() + monthsElapsed + 1);
+        nextPaymentDate.setDate(loan.payment_day || 1);
         
         const card = document.createElement('div');
         card.className = 'envelope-card';
         card.style.border = loan.type === 'debt' ? '2px solid #ef4444' : '2px solid #10b981';
+        card.style.position = 'relative';
         card.innerHTML = `
             <h3>${loan.name} <span style="font-size: 12px; color: ${loan.type === 'debt' ? '#ef4444' : '#10b981'}">(${loan.type === 'debt' ? 'Debo' : 'Me deben'})</span></h3>
-            <div style="margin: 10px 0;">
-                <div><strong>Principal:</strong> ${formatCurrency(loan.principal)}</div>
-                <div><strong>Tasa de Interés:</strong> ${loan.interest_rate}% anual</div>
-                <div><strong>Pago Mensual:</strong> ${formatCurrency(loan.monthly_payment)}</div>
+            
+            <div style="margin: 10px 0; padding: 10px; background: ${loan.type === 'debt' ? '#fef2f2' : '#f0fdf4'}; border-radius: 6px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                    <div><strong>Principal:</strong></div>
+                    <div>${formatCurrency(loan.principal)}</div>
+                    <div><strong>Interés Anual:</strong></div>
+                    <div>${loan.interest_rate}%</div>
+                    ${loan.tae ? `<div><strong>TAE:</strong></div><div>${loan.tae}%</div>` : ''}
+                    <div><strong>Cuota Mensual:</strong></div>
+                    <div>${formatCurrency(loan.monthly_payment)}</div>
+                    ${loan.opening_commission > 0 ? `<div><strong>Com. Apertura:</strong></div><div>${formatCurrency(loan.opening_commission)}</div>` : ''}
+                </div>
             </div>
+            
             <div style="margin: 10px 0; padding: 10px; background: #f3f4f6; border-radius: 6px;">
-                <div><strong>Total a Pagar:</strong> ${formatCurrency(totalAmount)}</div>
-                <div><strong>Interés Total:</strong> ${formatCurrency(totalInterest)}</div>
-                <div><strong>Pagado:</strong> ${formatCurrency(totalPaid)}</div>
-                <div><strong>Restante:</strong> <span style="color: ${remaining > 0 ? '#ef4444' : '#10b981'}">${formatCurrency(remaining)}</span></div>
-                <div><strong>Meses Restantes:</strong> ${monthsRemaining}</div>
+                <div style="font-size: 13px; line-height: 1.8;">
+                    <div><strong>Capital Restante:</strong> <span style="color: ${remainingPrincipal > 0 ? '#ef4444' : '#10b981'; font-size: 16px; font-weight: bold;">${formatCurrency(remainingPrincipal)}</span></div>
+                    <div><strong>Total Pagado:</strong> ${formatCurrency(totalPaid)}</div>
+                    <div><strong>Intereses Pagados:</strong> ${formatCurrency(totalInterestPaid)}</div>
+                    <div><strong>Comisiones Totales:</strong> ${formatCurrency(totalCommissions)}</div>
+                    <div><strong>Total a Pagar:</strong> ${formatCurrency(totalAmount)}</div>
+                    <div><strong>Progreso:</strong> ${((totalPaid / totalAmount) * 100).toFixed(1)}%</div>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
+                        <div><strong>Meses Transcurridos:</strong> ${monthsElapsed} / ${totalMonths}</div>
+                        <div><strong>Meses Restantes:</strong> ${monthsRemaining}</div>
+                        <div><strong>Próximo Pago:</strong> ${formatDate(nextPaymentDate)}</div>
+                    </div>
+                </div>
             </div>
-            ${loan.description ? `<div style="margin: 10px 0; font-size: 12px; color: #666;">${loan.description}</div>` : ''}
-            <div class="envelope-actions">
-                <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')">Eliminar</button>
+            
+            ${loan.early_payments && loan.early_payments.length > 0 ? `
+                <div style="margin: 10px 0; padding: 8px; background: #fef3c7; border-radius: 6px; font-size: 12px;">
+                    <strong>Amortizaciones Anticipadas:</strong> ${loan.early_payments.length}
+                    <div style="margin-top: 4px;">
+                        ${loan.early_payments.map(ep => 
+                            `${formatDate(new Date(ep.date))}: ${formatCurrency(ep.amount)}${ep.commission > 0 ? ` (+ ${formatCurrency(ep.commission)} comisión)` : ''}`
+                        ).join('<br>')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            ${loan.description ? `<div style="margin: 10px 0; font-size: 12px; color: #666; font-style: italic;">${loan.description}</div>` : ''}
+            
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 10px;">
+                <button class="btn-secondary" onclick="showLoanDetails('${loan._id || loan.id}')" style="flex: 1;">📊 Detalles</button>
+                <button class="btn-secondary" onclick="showEarlyPaymentModal('${loan._id || loan.id}')" style="flex: 1;">💰 Amortizar</button>
+                <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')" style="flex: 1;">🗑️ Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
     });
 }
+
+// Mostrar detalles del préstamo
+function showLoanDetails(loanId) {
+    const loan = loans.find(l => (l._id || l.id) === loanId);
+    if (!loan) return;
+    
+    const amortization = calculateAmortizationTable(
+        loan.principal,
+        loan.interest_rate,
+        loan.monthly_payment,
+        loan.start_date,
+        loan.total_paid || 0,
+        loan.early_payments || []
+    );
+    
+    let tableHTML = '<table style="width: 100%; border-collapse: collapse; margin-top: 10px;"><thead><tr style="background: #f3f4f6;"><th style="padding: 8px; text-align: left;">Mes</th><th style="padding: 8px; text-align: right;">Cuota</th><th style="padding: 8px; text-align: right;">Capital</th><th style="padding: 8px; text-align: right;">Interés</th><th style="padding: 8px; text-align: right;">Restante</th></tr></thead><tbody>';
+    
+    amortization.table.slice(0, 12).forEach(row => {
+        tableHTML += `<tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 6px;">${row.month}</td>
+            <td style="padding: 6px; text-align: right;">${formatCurrency(row.payment)}</td>
+            <td style="padding: 6px; text-align: right;">${formatCurrency(row.principal)}</td>
+            <td style="padding: 6px; text-align: right;">${formatCurrency(row.interest)}</td>
+            <td style="padding: 6px; text-align: right;">${formatCurrency(row.balance)}</td>
+        </tr>`;
+    });
+    
+    if (amortization.table.length > 12) {
+        tableHTML += `<tr><td colspan="5" style="padding: 8px; text-align: center; color: #666;">... y ${amortization.table.length - 12} meses más</td></tr>`;
+    }
+    
+    tableHTML += '</tbody></table>';
+    
+    alert(`Tabla de Amortización - ${loan.name}\n\n(Se muestran los primeros 12 meses)\n\nTotal de meses: ${amortization.table.length}\nInterés total: ${formatCurrency(amortization.totalInterest)}`);
+}
+
+// Mostrar modal de amortización anticipada
+function showEarlyPaymentModal(loanId) {
+    const loan = loans.find(l => (l._id || l.id) === loanId);
+    if (!loan) return;
+    
+    const amount = prompt(`Amortización Anticipada - ${loan.name}\n\nCapital restante: ${formatCurrency(loan.principal - (loan.total_paid || 0))}\n\nIngresa el monto a amortizar (€):`);
+    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) return;
+    
+    const paymentAmount = parseFloat(amount);
+    const commission = loan.early_payment_commission > 0 
+        ? (paymentAmount * loan.early_payment_commission / 100) 
+        : 0;
+    
+    if (confirm(`¿Confirmar amortización anticipada de ${formatCurrency(paymentAmount)}?\n\nComisión: ${formatCurrency(commission)}\nTotal: ${formatCurrency(paymentAmount + commission)}`)) {
+        registerLoanPayment(loanId, paymentAmount, true);
+    }
+}
+
+// Registrar pago de préstamo
+async function registerLoanPayment(loanId, amount, isEarlyPayment = false) {
+    try {
+        const loan = await apiRequest(`/loans/${loanId}/payment`, {
+            method: 'POST',
+            body: JSON.stringify({
+                amount,
+                date: new Date().toISOString().split('T')[0],
+                is_early_payment: isEarlyPayment
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Pago registrado exitosamente');
+    } catch (error) {
+        alert('Error al registrar pago: ' + error.message);
+    }
+}
+
+// Exponer funciones globales
+window.showLoanDetails = showLoanDetails;
+window.showEarlyPaymentModal = showEarlyPaymentModal;
 
 // Eliminar préstamo
 async function deleteLoan(id) {
@@ -1500,7 +1693,8 @@ function exportData() {
     transactions.forEach(t => {
         const date = new Date(t.date).toLocaleDateString('es-ES');
         const type = t.type === 'income' ? 'Ingreso' : 'Gasto';
-        csv += `"${date}","${type}","${t.categoryGeneral}","${t.categorySpecific}","${t.description || ''}","${t.envelope || ''}","${t.amount}"\n`;
+        const description = (t.description || '').replace(/"/g, '""');
+        csv += `"${date}","${type}","${t.categoryGeneral}","${t.categorySpecific}","${description}","${t.envelope || ''}","${t.amount}"\n`;
     });
     
     // Descargar CSV
@@ -1514,23 +1708,6 @@ function exportData() {
     csvLink.click();
     document.body.removeChild(csvLink);
     URL.revokeObjectURL(csvUrl);
-    
-    // También exportar JSON completo
-    const data = {
-        username: currentUser,
-        transactions,
-        envelopes,
-        customCategories,
-        exportDate: new Date().toISOString()
-    };
-    
-    const jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const jsonUrl = URL.createObjectURL(jsonBlob);
-    const jsonLink = document.createElement('a');
-    jsonLink.href = jsonUrl;
-    jsonLink.download = `veedor_backup_${currentUser}_${new Date().toISOString().split('T')[0]}.json`;
-    jsonLink.click();
-    URL.revokeObjectURL(jsonUrl);
 }
 
 

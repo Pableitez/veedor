@@ -69,11 +69,23 @@ const loanSchema = new mongoose.Schema({
     name: { type: String, required: true },
     principal: { type: Number, required: true }, // Monto principal
     interest_rate: { type: Number, required: true }, // Tasa de interés anual (%)
+    tae: { type: Number, default: null }, // TAE (Tasa Anual Equivalente) - incluye comisiones
     start_date: { type: String, required: true },
     end_date: { type: String, required: true },
     monthly_payment: { type: Number, required: true },
     type: { type: String, enum: ['debt', 'credit'], required: true }, // Deuda que debo o crédito que me deben
     description: { type: String, default: null },
+    opening_commission: { type: Number, default: 0 }, // Comisión de apertura
+    early_payment_commission: { type: Number, default: 0 }, // Comisión por amortización anticipada (%)
+    payment_frequency: { type: String, enum: ['monthly', 'quarterly', 'yearly'], default: 'monthly' },
+    payment_day: { type: Number, default: 1 }, // Día del mes en que se paga
+    total_paid: { type: Number, default: 0 }, // Total pagado hasta ahora
+    last_payment_date: { type: String, default: null },
+    early_payments: [{ // Amortizaciones anticipadas
+        date: { type: String, required: true },
+        amount: { type: Number, required: true },
+        commission: { type: Number, default: 0 }
+    }],
     created_at: { type: Date, default: Date.now }
 });
 
@@ -464,7 +476,10 @@ app.get('/api/loans', authenticateToken, async (req, res) => {
 // Crear préstamo
 app.post('/api/loans', authenticateToken, async (req, res) => {
     try {
-        const { name, principal, interest_rate, start_date, end_date, monthly_payment, type, description } = req.body;
+        const { 
+            name, principal, interest_rate, tae, start_date, end_date, monthly_payment, type, description,
+            opening_commission, early_payment_commission, payment_frequency, payment_day
+        } = req.body;
 
         if (!name || principal === undefined || interest_rate === undefined || !start_date || !end_date || monthly_payment === undefined || !type) {
             return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes' });
@@ -475,11 +490,16 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
             name,
             principal,
             interest_rate,
+            tae: tae || null,
             start_date,
             end_date,
             monthly_payment,
             type,
-            description: description || null
+            description: description || null,
+            opening_commission: opening_commission || 0,
+            early_payment_commission: early_payment_commission || 0,
+            payment_frequency: payment_frequency || 'monthly',
+            payment_day: payment_day || 1
         });
 
         await loan.save();
@@ -487,6 +507,59 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error creando préstamo:', error);
         res.status(500).json({ error: 'Error al crear préstamo' });
+    }
+});
+
+// Registrar pago de préstamo
+app.post('/api/loans/:id/payment', authenticateToken, async (req, res) => {
+    try {
+        const { amount, date, is_early_payment } = req.body;
+        const loan = await Loan.findOne({ _id: req.params.id, user_id: req.user.userId });
+
+        if (!loan) {
+            return res.status(404).json({ error: 'Préstamo no encontrado' });
+        }
+
+        if (is_early_payment) {
+            const commission = loan.early_payment_commission > 0 
+                ? (amount * loan.early_payment_commission / 100) 
+                : 0;
+            
+            loan.early_payments.push({
+                date: date || new Date().toISOString().split('T')[0],
+                amount,
+                commission
+            });
+        }
+
+        loan.total_paid += amount;
+        loan.last_payment_date = date || new Date().toISOString().split('T')[0];
+        await loan.save();
+
+        res.json(loan);
+    } catch (error) {
+        console.error('Error registrando pago:', error);
+        res.status(500).json({ error: 'Error al registrar pago' });
+    }
+});
+
+// Actualizar préstamo
+app.put('/api/loans/:id', authenticateToken, async (req, res) => {
+    try {
+        const loan = await Loan.findOneAndUpdate(
+            { _id: req.params.id, user_id: req.user.userId },
+            req.body,
+            { new: true }
+        );
+
+        if (!loan) {
+            return res.status(404).json({ error: 'Préstamo no encontrado' });
+        }
+
+        res.json(loan);
+    } catch (error) {
+        console.error('Error actualizando préstamo:', error);
+        res.status(500).json({ error: 'Error al actualizar préstamo' });
     }
 });
 

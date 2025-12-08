@@ -232,12 +232,12 @@
             <!-- Tab: Préstamos -->
             <div class="tab-content" id="loans-tab">
                 <div class="form-section">
-                    <h2>Gestionar Préstamos</h2>
+                    <h2>Gestionar Préstamos e Hipotecas</h2>
                     <form id="loanForm">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="loanName">Nombre del Préstamo</label>
-                                <input type="text" id="loanName" placeholder="Ej: Préstamo personal" required>
+                                <input type="text" id="loanName" placeholder="Ej: Hipoteca vivienda" required>
                             </div>
                             <div class="form-group">
                                 <label for="loanType">Tipo</label>
@@ -249,12 +249,17 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="loanPrincipal">Monto Principal</label>
+                                <label for="loanPrincipal">Monto Principal (€)</label>
                                 <input type="number" id="loanPrincipal" step="0.01" min="0" required>
                             </div>
                             <div class="form-group">
                                 <label for="loanInterestRate">Tasa de Interés Anual (%)</label>
                                 <input type="number" id="loanInterestRate" step="0.01" min="0" max="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanTAE">TAE - Tasa Anual Equivalente (%)</label>
+                                <input type="number" id="loanTAE" step="0.01" min="0" max="100" placeholder="Opcional">
+                                <small style="color: #666;">Incluye comisiones y gastos</small>
                             </div>
                         </div>
                         <div class="form-row">
@@ -267,20 +272,34 @@
                                 <input type="date" id="loanEndDate" required>
                             </div>
                             <div class="form-group">
-                                <label for="loanMonthlyPayment">Pago Mensual</label>
+                                <label for="loanMonthlyPayment">Pago Mensual (€)</label>
                                 <input type="number" id="loanMonthlyPayment" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="loanOpeningCommission">Comisión de Apertura (€)</label>
+                                <input type="number" id="loanOpeningCommission" step="0.01" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="loanEarlyPaymentCommission">Comisión Amortización Anticipada (%)</label>
+                                <input type="number" id="loanEarlyPaymentCommission" step="0.01" min="0" max="100" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="loanPaymentDay">Día de Pago del Mes</label>
+                                <input type="number" id="loanPaymentDay" min="1" max="31" value="1" required>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group full-width">
                                 <label for="loanDescription">Descripción (Opcional)</label>
-                                <input type="text" id="loanDescription" placeholder="Ej: Préstamo del banco XYZ">
+                                <input type="text" id="loanDescription" placeholder="Ej: Hipoteca banco XYZ, cuenta 1234">
                             </div>
                         </div>
                         <button type="submit" class="btn-primary">Agregar Préstamo</button>
                     </form>
                 </div>
-                <div class="loans-grid" id="loansGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 30px;">
+                <div class="loans-grid" id="loansGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; margin-top: 30px;">
                 </div>
             </div>
 
