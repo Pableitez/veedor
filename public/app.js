@@ -6276,31 +6276,36 @@ function updateTranslations() {
     // Forzar actualización de elementos dinámicos que puedan tener texto hardcodeado
     // Esto se ejecutará después de que se actualicen los elementos estáticos
     setTimeout(() => {
-        // Actualizar tabs activos
-        const activeTab = document.querySelector('.tab-btn.active');
-        if (activeTab) {
-            const tabKey = activeTab.getAttribute('data-translate');
-            if (tabKey && typeof t === 'function') {
-                try {
-                    const translation = t(tabKey, lang);
-                    if (translation) {
-                        const span = activeTab.querySelector('span[data-translate]');
-                        if (span) span.textContent = translation;
-                    }
-                } catch (e) {}
+        // Actualizar tabs activos usando tFunc
+        const tFuncForDynamic = window.t || (typeof t !== 'undefined' ? t : null);
+        if (tFuncForDynamic) {
+            const activeTab = document.querySelector('.tab-btn.active');
+            if (activeTab) {
+                const tabKey = activeTab.getAttribute('data-translate');
+                if (tabKey) {
+                    try {
+                        const translation = tFuncForDynamic(tabKey, lang);
+                        if (translation && translation !== tabKey) {
+                            const span = activeTab.querySelector('span[data-translate]');
+                            if (span) span.textContent = translation;
+                        }
+                    } catch (e) {}
+                }
             }
+            
+            // Actualizar navegación
+            document.querySelectorAll('.nav-dropdown-item span[data-translate]').forEach(span => {
+                const key = span.getAttribute('data-translate');
+                if (key) {
+                    try {
+                        const translation = tFuncForDynamic(key, lang);
+                        if (translation && translation !== key) {
+                            span.textContent = translation;
+                        }
+                    } catch (e) {}
+                }
+            });
         }
-        
-        // Actualizar navegación
-        document.querySelectorAll('.nav-dropdown-item span[data-translate]').forEach(span => {
-            const key = span.getAttribute('data-translate');
-            if (key && typeof t === 'function') {
-                try {
-                    const translation = t(key, lang);
-                    if (translation) span.textContent = translation;
-                } catch (e) {}
-            }
-        });
     }, 100);
 }
 
@@ -6423,12 +6428,57 @@ window.changeLanguage = changeLanguage;
 window.toggleLanguageDropdown = toggleLanguageDropdown;
 
 // Inicializar traducciones cuando se carga la app
-if (typeof getLanguage === 'function') {
-    const savedLang = getLanguage();
-    if (savedLang) {
-        document.documentElement.lang = savedLang;
+function initializeTranslationsOnLoad() {
+    // Esperar a que translations.js se cargue completamente
+    const checkAndInit = () => {
+        const getLangFunc = window.getLanguage || (typeof getLanguage !== 'undefined' ? getLanguage : null);
+        const savedLang = localStorage.getItem('veedor_language') || 'es';
+        
+        if (window.translations) {
+            console.log('✅ translations.js cargado');
+            
+            // Establecer idioma si la función está disponible
+            if (getLangFunc && typeof getLangFunc === 'function') {
+                try {
+                    const currentLang = getLangFunc();
+                    if (currentLang !== savedLang && window.setLanguage) {
+                        window.setLanguage(savedLang);
+                    }
+                } catch (e) {
+                    console.warn('Error obteniendo idioma:', e);
+                }
+            } else if (window.setLanguage && typeof window.setLanguage === 'function') {
+                try {
+                    window.setLanguage(savedLang);
+                } catch (e) {
+                    console.warn('Error estableciendo idioma:', e);
+                }
+            }
+            
+            document.documentElement.lang = savedLang;
+            
+            // Actualizar traducciones después de un delay
+            setTimeout(() => {
+                if (typeof updateTranslations === 'function') {
+                    console.log('🔄 Inicializando traducciones al cargar...');
+                    updateTranslations();
+                }
+            }, 200);
+        } else {
+            console.log('⏳ Esperando a que translations.js se cargue...');
+            setTimeout(checkAndInit, 100);
+        }
+    };
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkAndInit);
+    } else {
+        checkAndInit();
     }
 }
+
+// Inicializar traducciones
+initializeTranslationsOnLoad();
 
 // Cerrar el bloque de protección contra carga múltiple
 }
