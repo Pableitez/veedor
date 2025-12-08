@@ -408,7 +408,9 @@ header h1 {
     border: 1px solid var(--border-color);
     transition: all 0.2s;
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* Cambiado de hidden a visible para que no corte contenido */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .card::before {
@@ -1269,15 +1271,26 @@ tbody tr:last-child td {
     
     /* Desplegables en móvil */
     #mainNavDropdown,
-    #languageDropdown,
-    #settingsDropdown,
-    #authLanguageDropdown {
+    #settingsDropdown {
         min-width: 200px !important;
         max-width: calc(100vw - 24px) !important;
         right: 0 !important;
         left: auto !important;
-        position: fixed !important;
+        position: absolute !important;
         margin-top: 8px !important;
+        z-index: 10000 !important;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+        background: white !important;
+        border-radius: 12px !important;
+    }
+    
+    /* Asegurar que los desplegables sean visibles cuando están abiertos */
+    #mainNavDropdown[style*="display: block"],
+    #settingsDropdown[style*="display: block"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
     }
     
     /* Cards en móvil */
@@ -1285,6 +1298,38 @@ tbody tr:last-child td {
     .card {
         padding: 16px !important;
         margin-bottom: 12px !important;
+        overflow: visible !important; /* No cortar contenido */
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        min-height: auto !important;
+    }
+    
+    /* Texto dentro de cards en móvil */
+    .card h3,
+    .card .amount,
+    .card small,
+    .envelope-card h3,
+    .envelope-card .envelope-budget,
+    .envelope-card .envelope-spent,
+    .envelope-card .envelope-remaining {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+    
+    /* Asegurar que los botones dentro de cards sean visibles */
+    .card button,
+    .card .btn,
+    .envelope-card button,
+    .envelope-card .btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow: visible !important;
+        margin-top: 8px !important;
     }
     
     /* Botones de acción en tablas móviles */
@@ -1529,15 +1574,29 @@ tbody tr:last-child td {
         touch-action: manipulation;
     }
     
-    /* Desplegables en móvil */
-    #mainNavDropdown,
+    /* Desplegables en móvil - Solo ocultar cuando están cerrados */
     #languageDropdown,
-    /* Solo ocultar el dropdown cuando está cerrado, no el botón */
     #authLanguageDropdown {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
         pointer-events: none !important;
+    }
+    
+    /* Asegurar visibilidad de desplegables activos en móvil */
+    #mainNavDropdown[style*="display: block"],
+    #settingsDropdown[style*="display: block"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        position: absolute !important;
+        z-index: 10000 !important;
+        right: 0 !important;
+        left: auto !important;
+        min-width: 200px !important;
+        max-width: calc(100vw - 24px) !important;
+        margin-top: 8px !important;
     }
     
     /* Mejorar área táctil de elementos interactivos */
