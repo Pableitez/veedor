@@ -1,5 +1,5 @@
 // Evitar cargar múltiples veces
-// Versión: 2.0.1 - Fix budgetsData
+// Versión: 2.1.0 - Cuentas bancarias y presupuestos de ingresos
 if (window.VEEDOR_LOADED) {
     console.warn('⚠️ app.js ya fue cargado, evitando carga duplicada');
 } else {
