@@ -28,7 +28,14 @@ const translations = {
             forgotPassword: "¿Olvidaste tu contraseña?",
             backToLogin: "Volver a Iniciar Sesión",
             welcome: "¡Bienvenido a Veedor!",
-            subtitle: "Control total de tus finanzas personales"
+            subtitle: "Control total de tus finanzas personales",
+            recoverPassword: "Recuperar Contraseña",
+            sendRecoveryLink: "Enviar Enlace de Recuperación",
+            enterRecoveryCode: "Ingresa el código de recuperación y tu nueva contraseña",
+            recoveryCode: "Código de Recuperación",
+            pasteRecoveryCode: "Pega el código copiado arriba",
+            newPassword: "Nueva Contraseña",
+            resetPassword: "Restablecer Contraseña"
         },
         // Dashboard
         dashboard: {
@@ -77,7 +84,8 @@ const translations = {
             noTransactions: "No hay transacciones registradas",
             search: "Buscar transacciones...",
             filterByCategory: "Filtrar por categoría",
-            filterByMonth: "Filtrar por mes"
+            filterByMonth: "Filtrar por mes",
+            addCustomCategory: "Agregar categoría personalizada"
         },
         // Cuentas
         accounts: {
@@ -253,6 +261,7 @@ const translations = {
             title: "Configuración",
             profile: "Mi Perfil",
             logout: "Salir",
+            user: "Usuario",
             language: "Idioma",
             spanish: "Español",
             english: "English",
