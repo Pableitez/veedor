@@ -1142,7 +1142,7 @@ function initializeCategories() {
 }
 
 // Función para cambiar de tab (reutilizable)
-function switchToTab(targetTab) {
+function switchToTab(targetTab, doScroll = false) {
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     const navItems = document.querySelectorAll('.nav-item');
@@ -1157,29 +1157,32 @@ function switchToTab(targetTab) {
     if (targetTabBtn) targetTabBtn.classList.add('active');
     if (targetTabContent) {
         targetTabContent.classList.add('active');
-        // Scroll suave a la sección - esperar a que el DOM se actualice y el tab esté visible
-        setTimeout(() => {
-            // Obtener el contenedor main-content
-            const mainContent = document.querySelector('.main-content');
-            if (mainContent && targetTabContent) {
-                // Calcular la posición exacta del tab dentro del main-content
-                const mainContentRect = mainContent.getBoundingClientRect();
-                const tabContentRect = targetTabContent.getBoundingClientRect();
-                
-                // Obtener altura del header sticky
-                const header = document.querySelector('header');
-                const headerHeight = header ? header.offsetHeight : 80;
-                
-                // Calcular posición de scroll: posición del main-content + offset del tab dentro del main-content - altura del header
-                const scrollPosition = mainContentRect.top + window.pageYOffset - headerHeight - 20; // 20px de margen adicional
-                
-                // Hacer scroll
-                window.scrollTo({ 
-                    top: Math.max(0, scrollPosition), 
-                    behavior: 'smooth' 
-                });
-            }
-        }, 300);
+        // Solo hacer scroll si se solicita explícitamente (doScroll = true)
+        if (doScroll) {
+            // Scroll suave a la sección - esperar a que el DOM se actualice y el tab esté visible
+            setTimeout(() => {
+                // Obtener el contenedor main-content
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent && targetTabContent) {
+                    // Calcular la posición exacta del tab dentro del main-content
+                    const mainContentRect = mainContent.getBoundingClientRect();
+                    const tabContentRect = targetTabContent.getBoundingClientRect();
+                    
+                    // Obtener altura del header sticky
+                    const header = document.querySelector('header');
+                    const headerHeight = header ? header.offsetHeight : 80;
+                    
+                    // Calcular posición de scroll: posición del main-content + offset del tab dentro del main-content - altura del header
+                    const scrollPosition = mainContentRect.top + window.pageYOffset - headerHeight - 20; // 20px de margen adicional
+                    
+                    // Hacer scroll
+                    window.scrollTo({ 
+                        top: Math.max(0, scrollPosition), 
+                        behavior: 'smooth' 
+                    });
+                }
+            }, 300);
+        }
     }
     
     // Actualizar items del dropdown
