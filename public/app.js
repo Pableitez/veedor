@@ -428,7 +428,7 @@ async function loadUserData() {
             apiRequest('/transactions'),
             apiRequest('/envelopes'),
             apiRequest('/loans'),
-            apiRequest('/investments')
+            apiRequest('/investments').catch(() => [])
         ]);
         
         transactions = transactionsData.map(t => ({
