@@ -314,10 +314,11 @@ header h1 {
    ============================================ */
 
 .dashboard {
-    padding: 40px;
+    padding: 20px 40px;
     background: var(--bg-secondary);
     transition: background-color 0.3s;
     max-width: 1400px;
+    margin-top: 0;
     margin: 0 auto;
     width: 100%;
 }
