@@ -118,10 +118,17 @@
         <header style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0, 117, 255, 0.25); border-bottom: none; width: 100%; box-sizing: border-box; margin: 0; left: 0; right: 0;">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
-                    <rect width="40" height="40" rx="12" fill="white" fill-opacity="0.2"/>
-                    <path d="M20 10L12 16V28H28V16L20 10Z" fill="white" fill-opacity="0.9"/>
-                    <path d="M16 22H24M16 26H24" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="20" cy="18" r="2" fill="white"/>
+                    <defs>
+                        <linearGradient id="headerLogoGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#818CF8"/>
+                            <stop offset="100%" stop-color="#6366F1"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="20" cy="20" r="18" fill="url(#headerLogoGradient)"/>
+                    <circle cx="20" cy="20" r="12" fill="white" opacity="0.95"/>
+                    <circle cx="20" cy="20" r="7" fill="url(#headerLogoGradient)"/>
+                    <path d="M20 4 L20 8 M20 32 L20 36 M4 20 L8 20 M32 20 L36 20" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+                    <path d="M10 10 L13 13 M30 10 L27 13 M10 30 L13 27 M30 30 L27 27" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
                 </svg>
                 <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Veedor</h1>
             </div>
@@ -957,7 +964,7 @@
                 </div>
             </div>
             
-            <form id="userProfileForm" style="padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+            <form id="userProfileForm" style="padding: 32px; display: flex; flex-direction: column; gap: 24px; max-height: calc(90vh - 100px); overflow-y: auto;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                     <div class="form-group">
                         <label for="profileFirstName">Nombre</label>
@@ -1201,8 +1208,8 @@
     <!-- Cargar aplicación JavaScript directamente -->
     <script src="/app.js?v=2.12.0"></script>
     
-    <!-- Footer -->
-    <footer style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: rgba(255,255,255,0.9); padding: 16px 20px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2);">
+    <!-- Footer (solo visible en la app principal, no en welcome page) -->
+    <footer id="mainFooter" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: rgba(255,255,255,0.9); padding: 16px 20px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); display: none;">
         <div style="max-width: 1200px; margin: 0 auto;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 12px;">
                 <div>

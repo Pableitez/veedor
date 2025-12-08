@@ -637,6 +637,9 @@ function showAuthScreen() {
     const mainApp = document.getElementById('mainApp');
     if (authScreen) {
         authScreen.style.display = 'flex';
+        // Ocultar footer en welcome page
+        const footer = document.getElementById('mainFooter');
+        if (footer) footer.style.display = 'none';
     }
     if (mainApp) {
         mainApp.style.display = 'none';
@@ -653,6 +656,9 @@ function showAuthScreen() {
 function showMainApp() {
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
+    // Mostrar footer en la app principal
+    const footer = document.getElementById('mainFooter');
+    if (footer) footer.style.display = 'block';
 }
 
 // Actualizar información del usuario
