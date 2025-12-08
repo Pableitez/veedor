@@ -73,24 +73,29 @@
         </header>
 
         <div class="dashboard">
-            <div class="summary-cards">
-                <div class="card">
-                    <h3>Balance Total</h3>
-                    <p class="amount" id="totalBalance">$0.00</p>
+                <div class="summary-cards">
+                    <div class="card">
+                        <h3>Balance Total</h3>
+                        <p class="amount" id="totalBalance">$0.00</p>
+                    </div>
+                    <div class="card">
+                        <h3>Ingresos del Mes</h3>
+                        <p class="amount positive" id="monthIncome">$0.00</p>
+                    </div>
+                    <div class="card">
+                        <h3>Gastos del Mes</h3>
+                        <p class="amount negative" id="monthExpenses">$0.00</p>
+                    </div>
+                    <div class="card">
+                        <h3>Ahorro del Mes</h3>
+                        <p class="amount" id="monthSavings">$0.00</p>
+                    </div>
+                    <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <h3>Meta de Ahorro</h3>
+                        <p class="amount" id="savingsGoal">Sin meta</p>
+                        <button id="setSavingsGoalBtn" class="btn-secondary" style="margin-top: 10px; font-size: 12px; padding: 5px 10px;">Establecer Meta</button>
+                    </div>
                 </div>
-                <div class="card">
-                    <h3>Ingresos del Mes</h3>
-                    <p class="amount positive" id="monthIncome">$0.00</p>
-                </div>
-                <div class="card">
-                    <h3>Gastos del Mes</h3>
-                    <p class="amount negative" id="monthExpenses">$0.00</p>
-                </div>
-                <div class="card">
-                    <h3>Ahorro del Mes</h3>
-                    <p class="amount" id="monthSavings">$0.00</p>
-                </div>
-            </div>
         </div>
 
         <div class="main-content">
@@ -207,17 +212,29 @@
 
             <!-- Tab: Gráficas -->
             <div class="tab-content" id="charts-tab">
+                <div class="chart-controls" style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <label style="font-weight: 600;">Período:</label>
+                    <select id="chartPeriod" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                        <option value="1">Último mes</option>
+                        <option value="3">Últimos 3 meses</option>
+                        <option value="6" selected>Últimos 6 meses</option>
+                        <option value="12">Último año</option>
+                        <option value="24">Últimos 2 años</option>
+                        <option value="all">Todo el historial</option>
+                    </select>
+                    <button id="addCustomCategoryBtn" class="btn-secondary" style="margin-left: auto;">➕ Agregar Categoría Personalizada</button>
+                </div>
                 <div class="charts-container">
                     <div class="chart-card">
                         <h3>Evolución de Ahorro</h3>
                         <canvas id="savingsChart"></canvas>
                     </div>
                     <div class="chart-card">
-                        <h3>Gastos por Categoría (Este Mes)</h3>
+                        <h3>Gastos por Categoría</h3>
                         <canvas id="expensesChart"></canvas>
                     </div>
                     <div class="chart-card">
-                        <h3>Ingresos vs Gastos (Últimos 6 Meses)</h3>
+                        <h3>Ingresos vs Gastos</h3>
                         <canvas id="incomeExpenseChart"></canvas>
                     </div>
                     <div class="chart-card">
