@@ -4,5 +4,6 @@ veedor.db
 *.log
 .DS_Store
 nul
-*.bat
+configurar_firewall.bat
+verificar_servidor.bat
 
