@@ -35,23 +35,37 @@ async function apiRequest(endpoint, options = {}) {
         headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    const response = await fetch(`${API_URL}${endpoint}`, {
-        ...options,
-        headers
-    });
+    try {
+        const response = await fetch(`${API_URL}${endpoint}`, {
+            ...options,
+            headers
+        });
 
-    if (response.status === 401 || response.status === 403) {
-        logout();
-        throw new Error('Sesión expirada');
+        let data;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            throw new Error(text || 'Error en la respuesta del servidor');
+        }
+
+        if (response.status === 401 || response.status === 403) {
+            logout();
+            throw new Error('Sesión expirada');
+        }
+        
+        if (!response.ok) {
+            throw new Error(data.error || `Error ${response.status}: ${response.statusText}`);
+        }
+
+        return data;
+    } catch (error) {
+        if (error.message) {
+            throw error;
+        }
+        throw new Error('Error de conexión. Verifica tu internet y que el servidor esté funcionando.');
     }
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-        throw new Error(data.error || 'Error en la petición');
-    }
-
-    return data;
 }
 
 // Inicialización

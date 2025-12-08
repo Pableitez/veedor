@@ -93,10 +93,20 @@ function authenticateToken(req, res, next) {
 // Registro
 app.post('/api/register', async (req, res) => {
     try {
+        // Verificar conexión a MongoDB
+        if (mongoose.connection.readyState !== 1) {
+            console.log('MongoDB no está conectado. Estado:', mongoose.connection.readyState);
+            return res.status(503).json({ error: 'Base de datos no disponible. Intenta de nuevo en unos momentos.' });
+        }
+
         const { username, password } = req.body;
 
         if (!username || !password) {
             return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
+        }
+
+        if (username.trim().length === 0) {
+            return res.status(400).json({ error: 'El usuario no puede estar vacío' });
         }
 
         if (password.length < 4) {
@@ -104,7 +114,7 @@ app.post('/api/register', async (req, res) => {
         }
 
         // Verificar si el usuario ya existe
-        const existingUser = await User.findOne({ username });
+        const existingUser = await User.findOne({ username: username.trim() });
         if (existingUser) {
             return res.status(400).json({ error: 'El usuario ya existe' });
         }
@@ -113,21 +123,27 @@ app.post('/api/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Crear usuario
-        const user = new User({ username, password: hashedPassword });
+        const user = new User({ 
+            username: username.trim(), 
+            password: hashedPassword 
+        });
         await user.save();
 
         // Generar token
-        const token = jwt.sign({ userId: user._id, username }, JWT_SECRET, { expiresIn: '30d' });
+        const token = jwt.sign({ userId: user._id.toString(), username: user.username }, JWT_SECRET, { expiresIn: '30d' });
 
         res.status(201).json({
             message: 'Usuario creado exitosamente',
             token,
-            user: { id: user._id, username: user.username }
+            user: { id: user._id.toString(), username: user.username }
         });
     } catch (error) {
         console.error('Error en registro:', error);
         if (error.code === 11000) {
             return res.status(400).json({ error: 'El usuario ya existe' });
+        }
+        if (error.name === 'MongoServerError') {
+            return res.status(500).json({ error: 'Error de base de datos. Verifica la conexión a MongoDB.' });
         }
         res.status(500).json({ error: error.message || 'Error del servidor' });
     }
@@ -136,13 +152,17 @@ app.post('/api/register', async (req, res) => {
 // Login
 app.post('/api/login', async (req, res) => {
     try {
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(503).json({ error: 'Base de datos no disponible. Intenta de nuevo en unos momentos.' });
+        }
+
         const { username, password } = req.body;
 
         if (!username || !password) {
             return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
         }
 
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ username: username.trim() });
         if (!user) {
             return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
         }
@@ -152,28 +172,32 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
         }
 
-        const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '30d' });
+        const token = jwt.sign({ userId: user._id.toString(), username: user.username }, JWT_SECRET, { expiresIn: '30d' });
 
         res.json({
             message: 'Login exitoso',
             token,
-            user: { id: user._id, username: user.username }
+            user: { id: user._id.toString(), username: user.username }
         });
     } catch (error) {
         console.error('Error en login:', error);
-        res.status(500).json({ error: 'Error del servidor' });
+        res.status(500).json({ error: error.message || 'Error del servidor' });
     }
 });
 
 // Verificar token
 app.get('/api/verify', authenticateToken, async (req, res) => {
     try {
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(503).json({ error: 'Base de datos no disponible' });
+        }
         const user = await User.findById(req.user.userId);
         if (!user) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
-        res.json({ user: { id: user._id, username: user.username } });
+        res.json({ user: { id: user._id.toString(), username: user.username } });
     } catch (error) {
+        console.error('Error verificando token:', error);
         res.status(500).json({ error: 'Error del servidor' });
     }
 });
