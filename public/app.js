@@ -974,16 +974,32 @@ function initializeForms() {
             return monday.toISOString().split('T')[0];
         }
         
-        // Llenar categorías de gastos en el selector
+        // Actualizar categorías según tipo de presupuesto
+        const budgetType = document.getElementById('budgetType');
         const budgetCategory = document.getElementById('budgetCategory');
-        if (budgetCategory) {
-            categories.expense.forEach(cat => {
+        
+        const updateBudgetCategories = () => {
+            if (!budgetCategory || !budgetType) return;
+            budgetCategory.innerHTML = '<option value="">Seleccionar categoría...</option>';
+            
+            const type = budgetType.value;
+            const categoryList = type === 'income' ? categories.income : categories.expense;
+            const customList = type === 'income' ? customCategories.income : customCategories.expense;
+            
+            [...categoryList, ...customList].forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat.id;
                 option.textContent = cat.name;
                 budgetCategory.appendChild(option);
             });
+        };
+        
+        if (budgetType) {
+            budgetType.addEventListener('change', updateBudgetCategories);
         }
+        
+        // Inicializar categorías
+        updateBudgetCategories();
     }
 }
 
@@ -1511,10 +1527,9 @@ function updateBudgets() {
         return;
     }
     
-    // Calcular gastos por categoría según período
-    const expensesByCategory = {};
+    // Calcular transacciones por categoría según período (ingresos y gastos)
+    const transactionsByCategory = {};
     transactions.forEach(t => {
-        if (t.type !== 'expense') return;
         const tDate = new Date(t.date);
         
         // Verificar si la transacción está en algún período activo
@@ -1534,18 +1549,36 @@ function updateBudgets() {
         
         if (isInActivePeriod) {
             const catId = t.categoryGeneral;
-            expensesByCategory[catId] = (expensesByCategory[catId] || 0) + Math.abs(t.amount);
+            if (!transactionsByCategory[catId]) {
+                transactionsByCategory[catId] = { income: 0, expense: 0 };
+            }
+            if (t.type === 'income') {
+                transactionsByCategory[catId].income += t.amount;
+            } else {
+                transactionsByCategory[catId].expense += Math.abs(t.amount);
+            }
         }
     });
     
     activeBudgets.forEach(budget => {
-        const category = categories.expense.find(c => c.id === budget.category_id) || 
-                        customCategories.expense.find(c => c.id === budget.category_id);
+        // Determinar si es presupuesto de ingreso o gasto buscando en ambas categorías
+        let category = categories.expense.find(c => c.id === budget.category_id) || 
+                      customCategories.expense.find(c => c.id === budget.category_id);
+        let isIncome = false;
+        
+        if (!category) {
+            category = categories.income.find(c => c.id === budget.category_id) || 
+                      customCategories.income.find(c => c.id === budget.category_id);
+            isIncome = true;
+        }
+        
         const categoryName = category ? category.name : budget.category_id;
-        const spent = expensesByCategory[budget.category_id] || 0;
-        const remaining = budget.amount - spent;
-        const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
-        const isOverBudget = spent > budget.amount;
+        const actual = isIncome ? 
+            (transactionsByCategory[budget.category_id]?.income || 0) : 
+            (transactionsByCategory[budget.category_id]?.expense || 0);
+        const difference = isIncome ? (actual - budget.amount) : (budget.amount - actual);
+        const percentage = budget.amount > 0 ? (actual / budget.amount) * 100 : 0;
+        const isOverBudget = isIncome ? (actual < budget.amount) : (actual > budget.amount);
         
         // Obtener etiqueta del período
         let periodLabel = '';
@@ -1571,13 +1604,13 @@ function updateBudgets() {
                     <span style="font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span style="font-size: 13px; color: var(--gray-600);">Gastado:</span>
-                    <span style="font-weight: 600; color: ${isOverBudget ? 'var(--danger)' : 'var(--gray-900)'};">${formatCurrency(spent)}</span>
+                    <span style="font-size: 13px; color: var(--gray-600);">${isIncome ? 'Ingresado:' : 'Gastado:'}</span>
+                    <span style="font-weight: 600; color: ${isOverBudget ? 'var(--danger)' : 'var(--gray-900)'};">${formatCurrency(actual)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <span style="font-size: 13px; color: var(--gray-600);">Restante:</span>
-                    <span style="font-weight: 700; font-size: 16px; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">
-                        ${formatCurrency(remaining)}
+                    <span style="font-size: 13px; color: var(--gray-600);">${isIncome ? 'Falta:' : 'Restante:'}</span>
+                    <span style="font-weight: 700; font-size: 16px; color: ${difference >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                        ${formatCurrency(Math.abs(difference))}
                     </span>
                 </div>
             </div>
@@ -1592,7 +1625,10 @@ function updateBudgets() {
                     <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%; background: ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'};"></div>
                 </div>
             </div>
-            ${isOverBudget ? '<div style="padding: 8px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 12px; font-weight: 600; margin-top: 8px;">⚠️ Presupuesto excedido</div>' : ''}
+            ${isOverBudget ? `<div style="padding: 8px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 12px; font-weight: 600; margin-top: 8px;">⚠️ ${isIncome ? 'Por debajo del presupuesto' : 'Presupuesto excedido'}</div>` : ''}
+            <div style="margin-top: 8px; padding: 6px; background: ${isIncome ? 'var(--success-light)' : 'var(--gray-50)'}; border-radius: var(--radius); font-size: 11px; color: var(--gray-700);">
+                ${isIncome ? '💰 Ingreso' : '💸 Gasto'}
+            </div>
             <div class="envelope-actions" style="margin-top: 12px;">
                 <button class="btn-danger" onclick="deleteBudget('${budget._id || budget.id}')" style="width: 100%;">Eliminar</button>
             </div>
@@ -3029,8 +3065,8 @@ function updateMonthDashboard() {
         }
     }
     
-    // Estado de presupuestos del mes
-    const monthBudgets = budgets.filter(b => b.month === selectedMonth);
+    // Estado de presupuestos del mes (ingresos y gastos)
+    const monthBudgets = budgets.filter(b => b.period_type === 'monthly' && b.period_value === selectedMonth);
     const budgetsStatusContainer = document.getElementById('monthBudgetsStatus');
     if (budgetsStatusContainer) {
         budgetsStatusContainer.innerHTML = '';
@@ -3038,15 +3074,116 @@ function updateMonthDashboard() {
         if (monthBudgets.length === 0) {
             budgetsStatusContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay presupuestos establecidos para este mes</div>';
         } else {
+            // Separar presupuestos de ingresos y gastos
+            const incomeBudgets = [];
+            const expenseBudgets = [];
+            
             monthBudgets.forEach(budget => {
-                const category = categories.expense.find(c => c.id === budget.category_id) || 
-                               customCategories.expense.find(c => c.id === budget.category_id);
-                const categoryName = category ? category.name : budget.category_id;
+                // Determinar si es ingreso o gasto
+                let category = categories.expense.find(c => c.id === budget.category_id) || 
+                              customCategories.expense.find(c => c.id === budget.category_id);
+                if (category) {
+                    expenseBudgets.push({ budget, category, isIncome: false });
+                } else {
+                    category = categories.income.find(c => c.id === budget.category_id) || 
+                              customCategories.income.find(c => c.id === budget.category_id);
+                    if (category) {
+                        incomeBudgets.push({ budget, category, isIncome: true });
+                    }
+                }
+            });
+            
+            // Mostrar resumen general primero
+            const totalIncomeBudget = incomeBudgets.reduce((sum, b) => sum + b.budget.amount, 0);
+            const totalExpenseBudget = expenseBudgets.reduce((sum, b) => sum + b.budget.amount, 0);
+            const totalIncomeActual = monthIncome.reduce((sum, t) => sum + t.amount, 0);
+            const totalExpenseActual = monthExpenses.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            
+            if (totalIncomeBudget > 0 || totalExpenseBudget > 0) {
+                const summaryCard = document.createElement('div');
+                summaryCard.style.cssText = 'background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px; border-radius: var(--radius); border: none; box-shadow: var(--shadow-light); color: white; grid-column: 1/-1;';
+                summaryCard.innerHTML = `
+                    <h5 style="font-size: 18px; font-weight: 700; margin: 0 0 20px 0; color: white;">📊 Resumen del Mes</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div>
+                            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Ingresos</div>
+                            <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalIncomeBudget)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalIncomeActual)}</div>
+                            <div style="font-size: 12px; margin-top: 4px; color: ${totalIncomeActual >= totalIncomeBudget ? '#D1FAE5' : '#FEE2E2'};">
+                                ${totalIncomeBudget > 0 ? ((totalIncomeActual / totalIncomeBudget) * 100).toFixed(1) + '%' : '-'}
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Gastos</div>
+                            <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalExpenseBudget)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalExpenseActual)}</div>
+                            <div style="font-size: 12px; margin-top: 4px; color: ${totalExpenseActual <= totalExpenseBudget ? '#D1FAE5' : '#FEE2E2'};">
+                                ${totalExpenseBudget > 0 ? ((totalExpenseActual / totalExpenseBudget) * 100).toFixed(1) + '%' : '-'}
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Ahorro Previsto</div>
+                            <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalIncomeBudget - totalExpenseBudget)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalIncomeActual - totalExpenseActual)}</div>
+                        </div>
+                    </div>
+                `;
+                budgetsStatusContainer.appendChild(summaryCard);
+            }
+            
+            // Mostrar presupuestos de ingresos
+            incomeBudgets.forEach(({ budget, category, isIncome }) => {
+                const categoryIncome = monthIncome.filter(t => t.categoryGeneral === budget.category_id);
+                const actual = categoryIncome.reduce((sum, t) => sum + t.amount, 0);
+                const difference = actual - budget.amount;
+                const percentage = budget.amount > 0 ? (actual / budget.amount) * 100 : 0;
+                const isUnderBudget = actual < budget.amount;
                 
+                let progressColor = '#10b981';
+                if (percentage < 80) {
+                    progressColor = '#fbbf24';
+                } else if (percentage < 100) {
+                    progressColor = '#10b981';
+                }
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); border-left: 4px solid var(--success);';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${category.name}</h5>
+                        <span style="font-size: 11px; padding: 4px 8px; background: var(--success-light); border-radius: var(--radius); color: var(--success-dark); font-weight: 600;">💰 Ingreso</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">Presupuesto:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">Ingresado:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--success);">${formatCurrency(actual)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">Diferencia:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: ${difference >= 0 ? 'var(--success)' : 'var(--warning)'};">${formatCurrency(Math.abs(difference))}</span>
+                    </div>
+                    <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
+                        <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <small style="font-size: 11px; color: var(--gray-500);">${categoryIncome.length} transacciones</small>
+                        <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
+                    </div>
+                    ${isUnderBudget ? '<div style="margin-top: 8px; padding: 6px; background: #FEF3C7; border-radius: var(--radius); color: var(--warning-dark); font-size: 11px; font-weight: 600;">⚠️ Por debajo del presupuesto</div>' : ''}
+                `;
+                budgetsStatusContainer.appendChild(card);
+            });
+            
+            // Mostrar presupuestos de gastos
+            expenseBudgets.forEach(({ budget, category, isIncome }) => {
                 const categoryExpenses = monthExpenses.filter(t => t.categoryGeneral === budget.category_id);
                 const spent = categoryExpenses.reduce((sum, t) => sum + Math.abs(t.amount), 0);
                 const remaining = budget.amount - spent;
-                const percentage = (spent / budget.amount) * 100;
+                const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
+                const isOverBudget = spent > budget.amount;
                 
                 let progressColor = '#10b981';
                 if (percentage > 80 && percentage <= 100) {
@@ -3056,20 +3193,23 @@ function updateMonthDashboard() {
                 }
                 
                 const card = document.createElement('div');
-                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);';
+                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); border-left: 4px solid ' + (isOverBudget ? 'var(--danger)' : progressColor) + ';';
                 card.innerHTML = `
-                    <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: var(--gray-900);">${categoryName}</h5>
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${category.name}</h5>
+                        <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600;">💸 Gasto</span>
+                    </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <span style="font-size: 14px; color: var(--gray-600);">Presupuesto:</span>
                         <span style="font-size: 14px; font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <span style="font-size: 14px; color: var(--gray-600);">Gastado:</span>
-                        <span style="font-size: 14px; font-weight: 600; color: var(--danger-color);">${formatCurrency(spent)}</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--danger);">${formatCurrency(spent)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
                         <span style="font-size: 14px; color: var(--gray-600);">Restante:</span>
-                        <span style="font-size: 14px; font-weight: 600; color: ${remaining >= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">${formatCurrency(remaining)}</span>
+                        <span style="font-size: 14px; font-weight: 600; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(remaining)}</span>
                     </div>
                     <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
                         <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
@@ -3078,6 +3218,7 @@ function updateMonthDashboard() {
                         <small style="font-size: 11px; color: var(--gray-500);">${categoryExpenses.length} transacciones</small>
                         <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}% usado</small>
                     </div>
+                    ${isOverBudget ? '<div style="margin-top: 8px; padding: 6px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 11px; font-weight: 600;">⚠️ Presupuesto excedido</div>' : ''}
                 `;
                 budgetsStatusContainer.appendChild(card);
             });

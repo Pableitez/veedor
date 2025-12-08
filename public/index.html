@@ -260,11 +260,19 @@
                                 <span style="font-size: 20px;">📊</span>
                                 <h3 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--gray-900);">Presupuesto por Categoría</h3>
                             </div>
-                            <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 20px;">Establece un límite para una categoría de gasto específica. Puedes elegir entre presupuesto semanal, mensual o anual.</p>
+                            <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 20px;">Establece un presupuesto para una categoría de ingreso o gasto. Puedes elegir entre presupuesto semanal, mensual o anual.</p>
                             <form id="budgetForm">
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="budgetCategory">Categoría de Gasto</label>
+                                        <label for="budgetType">Tipo de Presupuesto</label>
+                                        <select id="budgetType" required>
+                                            <option value="expense">Gasto</option>
+                                            <option value="income">Ingreso</option>
+                                        </select>
+                                        <small>Elige si es un presupuesto de ingreso o gasto</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="budgetCategory">Categoría</label>
                                         <select id="budgetCategory" required>
                                             <option value="">Seleccionar categoría...</option>
                                         </select>
