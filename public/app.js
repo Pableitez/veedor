@@ -442,6 +442,7 @@ async function loadUserData() {
         envelopes = envelopesData;
         loans = loansData;
         investments = investmentsData || [];
+        budgets = budgetsData || [];
         
         // Cargar categorías personalizadas
         loadCustomCategories();
@@ -916,32 +917,50 @@ function updateSummary() {
         return sum + amortization.finalBalance;
     }, 0);
     const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt;
-    const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-    const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
-    const monthSavings = monthIncome - monthExpenses;
+    // Calcular según período seleccionado
+    let periodIncome, periodExpenses, periodSavings, periodLabel;
     
-    // Cálculos del año
-    const yearIncome = yearTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-    const yearExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
-    const yearSavings = yearIncome - yearExpenses;
-    
-    // Actualizar elementos del mes
-    document.getElementById('totalBalance').textContent = formatCurrency(totalBalance);
-    document.getElementById('monthIncome').textContent = formatCurrency(monthIncome);
-    document.getElementById('monthExpenses').textContent = formatCurrency(monthExpenses);
-    document.getElementById('monthSavings').textContent = formatCurrency(monthSavings);
-    document.getElementById('monthSavings').className = monthSavings >= 0 ? 'amount positive' : 'amount negative';
-    
-    // Actualizar elementos del año
-    const yearIncomeEl = document.getElementById('yearIncome');
-    const yearExpensesEl = document.getElementById('yearExpenses');
-    const yearSavingsEl = document.getElementById('yearSavings');
-    if (yearIncomeEl) yearIncomeEl.textContent = formatCurrency(yearIncome);
-    if (yearExpensesEl) yearExpensesEl.textContent = formatCurrency(yearExpenses);
-    if (yearSavingsEl) {
-        yearSavingsEl.textContent = formatCurrency(yearSavings);
-        yearSavingsEl.className = yearSavings >= 0 ? 'amount positive' : 'amount negative';
+    if (summaryPeriod === 'month') {
+        periodIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        periodExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        periodSavings = periodIncome - periodExpenses;
+        periodLabel = 'Este mes';
+    } else if (summaryPeriod === 'year') {
+        periodIncome = yearTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        periodExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        periodSavings = periodIncome - periodExpenses;
+        periodLabel = 'Este año';
+    } else { // 'all'
+        periodIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        periodExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        periodSavings = periodIncome - periodExpenses;
+        periodLabel = 'Todos los tiempos';
     }
+    
+    // Actualizar elementos según período
+    const totalBalanceEl = document.getElementById('totalBalance');
+    const totalBalancePeriodEl = document.getElementById('totalBalancePeriod');
+    const periodIncomeEl = document.getElementById('periodIncome');
+    const periodIncomeLabelEl = document.getElementById('periodIncomeLabel');
+    const periodExpensesEl = document.getElementById('periodExpenses');
+    const periodExpensesLabelEl = document.getElementById('periodExpensesLabel');
+    const periodSavingsEl = document.getElementById('periodSavings');
+    const periodSavingsLabelEl = document.getElementById('periodSavingsLabel');
+    
+    if (totalBalanceEl) totalBalanceEl.textContent = formatCurrency(totalBalance);
+    if (totalBalancePeriodEl) totalBalancePeriodEl.textContent = 'Todos los tiempos';
+    
+    if (periodIncomeEl) periodIncomeEl.textContent = formatCurrency(periodIncome);
+    if (periodIncomeLabelEl) periodIncomeLabelEl.textContent = periodLabel;
+    
+    if (periodExpensesEl) periodExpensesEl.textContent = formatCurrency(periodExpenses);
+    if (periodExpensesLabelEl) periodExpensesLabelEl.textContent = periodLabel;
+    
+    if (periodSavingsEl) {
+        periodSavingsEl.textContent = formatCurrency(periodSavings);
+        periodSavingsEl.className = periodSavings >= 0 ? 'amount positive' : 'amount negative';
+    }
+    if (periodSavingsLabelEl) periodSavingsLabelEl.textContent = periodLabel;
     
     // Actualizar meta de ahorro
     const savingsGoalEl = document.getElementById('savingsGoal');
