@@ -3067,6 +3067,71 @@ function updateInvestments() {
     grid.insertBefore(summaryCard, grid.firstChild);
 }
 
+// Variable global para almacenar el ID de la inversión actual
+let currentInvestmentId = null;
+
+// Mostrar modal para añadir dinero a inversión
+function showAddMoneyInvestmentModal(id) {
+    currentInvestmentId = id;
+    const modal = document.getElementById('addMoneyInvestmentModal');
+    const titleEl = document.getElementById('addMoneyInvestmentTitle');
+    const infoEl = document.getElementById('addMoneyInvestmentInfo');
+    
+    if (!modal || !titleEl || !infoEl) return;
+    
+    // Buscar la inversión
+    const investment = investments.find(inv => (inv._id || inv.id) === id);
+    if (investment) {
+        titleEl.textContent = `💰 Añadir Dinero a ${investment.name}`;
+        infoEl.innerHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
+                <div><strong>Valor Actual:</strong></div>
+                <div style="text-align: right; font-weight: 600;">${formatCurrency(investment.current_value || 0)}</div>
+                <div><strong>Total Invertido:</strong></div>
+                <div style="text-align: right; font-weight: 600;">${formatCurrency(investment.contributions?.reduce((sum, c) => sum + c.amount, 0) || 0)}</div>
+            </div>
+        `;
+    }
+    
+    modal.style.display = 'flex';
+    document.getElementById('addMoneyAmount').value = '';
+}
+
+// Cerrar modal de añadir dinero
+function closeAddMoneyInvestmentModal() {
+    const modal = document.getElementById('addMoneyInvestmentModal');
+    if (modal) modal.style.display = 'none';
+    currentInvestmentId = null;
+}
+
+// Mostrar modal para actualizar valor de inversión
+function showUpdateInvestmentValueModal(id) {
+    currentInvestmentId = id;
+    const modal = document.getElementById('updateInvestmentValueModal');
+    const titleEl = document.getElementById('updateInvestmentValueTitle');
+    
+    if (!modal || !titleEl) return;
+    
+    // Buscar la inversión
+    const investment = investments.find(inv => (inv._id || inv.id) === id);
+    if (investment) {
+        titleEl.textContent = `📊 Actualizar Valor de ${investment.name}`;
+        const input = document.getElementById('updateInvestmentValueInput');
+        if (input) {
+            input.value = investment.current_value || 0;
+        }
+    }
+    
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de actualizar valor
+function closeUpdateInvestmentValueModal() {
+    const modal = document.getElementById('updateInvestmentValueModal');
+    if (modal) modal.style.display = 'none';
+    currentInvestmentId = null;
+}
+
 // Añadir dinero a una inversión (hucha)
 async function addMoneyToInvestment(id) {
     showAddMoneyInvestmentModal(id);
@@ -3075,6 +3140,36 @@ async function addMoneyToInvestment(id) {
 // Actualizar valor actual de la inversión
 async function updateInvestmentValue(id) {
     showUpdateInvestmentValueModal(id);
+}
+
+// Procesar añadir dinero a inversión desde el modal
+async function processAddMoneyToInvestment() {
+    if (!currentInvestmentId) return;
+    
+    const input = document.getElementById('addMoneyAmount');
+    if (!input || !input.value || isNaN(input.value) || parseFloat(input.value) <= 0) {
+        alert('Por favor ingresa una cantidad válida mayor a 0');
+        return;
+    }
+    
+    const amount = parseFloat(input.value);
+    
+    try {
+        await apiRequest(`/investments/${currentInvestmentId}/contribution`, {
+            method: 'POST',
+            body: JSON.stringify({
+                amount: amount,
+                date: new Date().toISOString().split('T')[0]
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        closeAddMoneyInvestmentModal();
+        alert('✅ Dinero añadido exitosamente');
+    } catch (error) {
+        alert('Error al añadir dinero: ' + error.message);
+    }
 }
 
 // Procesar actualización de valor de inversión desde el modal
@@ -5485,6 +5580,12 @@ window.showSavingsGoalModal = showSavingsGoalModal;
 window.closeSavingsGoalModal = closeSavingsGoalModal;
 window.deleteSavingsGoal = deleteSavingsGoal;
 window.showFinancialHealthDetail = showFinancialHealthDetail;
+window.showAddMoneyInvestmentModal = showAddMoneyInvestmentModal;
+window.closeAddMoneyInvestmentModal = closeAddMoneyInvestmentModal;
+window.showUpdateInvestmentValueModal = showUpdateInvestmentValueModal;
+window.closeUpdateInvestmentValueModal = closeUpdateInvestmentValueModal;
+window.addMoneyToInvestment = addMoneyToInvestment;
+window.updateInvestmentValue = updateInvestmentValue;
 
 // Mostrar detalles de métrica de salud financiera
 function showFinancialHealthDetail(metric, index) {
