@@ -267,7 +267,116 @@ function initializeAuth() {
         });
     }
     
+    // Enlaces de recuperación de contraseña
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const backToLoginLink = document.getElementById('backToLoginLink');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const loginForm = document.getElementById('loginForm');
+    
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (loginForm) loginForm.style.display = 'none';
+            if (forgotPasswordForm) forgotPasswordForm.style.display = 'block';
+        });
+    }
+    
+    if (backToLoginLink) {
+        backToLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
+            if (loginForm) loginForm.style.display = 'block';
+        });
+    }
+    
+    // Formulario de solicitud de token
+    const forgotPasswordFormElement = document.getElementById('forgotPasswordFormElement');
+    if (forgotPasswordFormElement) {
+        forgotPasswordFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await requestPasswordReset();
+        });
+    }
+    
+    // Formulario de reset de contraseña
+    const resetPasswordFormElement = document.getElementById('resetPasswordFormElement');
+    if (resetPasswordFormElement) {
+        resetPasswordFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await resetPassword();
+        });
+    }
+    
     console.log('Autenticación inicializada');
+}
+
+// Solicitar recuperación de contraseña
+async function requestPasswordReset() {
+    const username = document.getElementById('forgotUsername').value.trim();
+    const errorMsg = document.getElementById('forgotPasswordError');
+    const successMsg = document.getElementById('forgotPasswordSuccess');
+    const resetSection = document.getElementById('resetPasswordSection');
+    
+    if (errorMsg) errorMsg.textContent = '';
+    if (successMsg) successMsg.style.display = 'none';
+    
+    if (!username) {
+        if (errorMsg) errorMsg.textContent = 'Por favor ingresa tu usuario';
+        return;
+    }
+    
+    try {
+        const data = await apiRequest('/forgot-password', {
+            method: 'POST',
+            body: JSON.stringify({ username })
+        });
+        
+        if (successMsg) {
+            successMsg.textContent = `Token generado: ${data.token} (válido por 1 hora). Copia este token para restablecer tu contraseña.`;
+            successMsg.style.display = 'block';
+        }
+        if (resetSection) resetSection.style.display = 'block';
+    } catch (error) {
+        if (errorMsg) errorMsg.textContent = error.message || 'Error al solicitar recuperación';
+    }
+}
+
+// Resetear contraseña
+async function resetPassword() {
+    const token = document.getElementById('resetToken').value.trim();
+    const newPassword = document.getElementById('resetNewPassword').value;
+    const errorMsg = document.getElementById('resetPasswordError');
+    
+    if (errorMsg) errorMsg.textContent = '';
+    
+    if (!token || !newPassword) {
+        if (errorMsg) errorMsg.textContent = 'Por favor completa todos los campos';
+        return;
+    }
+    
+    if (newPassword.length < 4) {
+        if (errorMsg) errorMsg.textContent = 'La contraseña debe tener al menos 4 caracteres';
+        return;
+    }
+    
+    try {
+        await apiRequest('/reset-password', {
+            method: 'POST',
+            body: JSON.stringify({ token, newPassword })
+        });
+        
+        alert('✅ Contraseña actualizada exitosamente. Ahora puedes iniciar sesión.');
+        const forgotForm = document.getElementById('forgotPasswordFormElement');
+        const resetForm = document.getElementById('resetPasswordFormElement');
+        if (forgotForm) forgotForm.reset();
+        if (resetForm) resetForm.reset();
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const loginForm = document.getElementById('loginForm');
+        if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
+        if (loginForm) loginForm.style.display = 'block';
+    } catch (error) {
+        if (errorMsg) errorMsg.textContent = error.message || 'Error al restablecer contraseña';
+    }
 }
 
 // Registrar nuevo usuario
