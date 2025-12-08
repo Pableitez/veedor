@@ -1106,9 +1106,9 @@ app.get('/api/investments', authenticateToken, async (req, res) => {
 // Crear inversión
 app.post('/api/investments', authenticateToken, async (req, res) => {
     try {
-        const { name, type, amount, current_value, date, description } = req.body;
+        const { name, type, current_value, description, periodic_contribution } = req.body;
 
-        if (!name || amount === undefined || current_value === undefined || !date || !type) {
+        if (!name || current_value === undefined || !type) {
             return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes' });
         }
 
@@ -1116,10 +1116,17 @@ app.post('/api/investments', authenticateToken, async (req, res) => {
             user_id: req.user.userId,
             name,
             type,
-            amount,
-            current_value,
-            date,
-            description: description || null
+            current_value: current_value || 0,
+            description: description || null,
+            contributions: [], // Inicialmente vacío
+            periodic_contribution: periodic_contribution || {
+                enabled: false,
+                frequency: 'monthly',
+                amount: 0,
+                start_date: null,
+                end_date: null,
+                completed_contributions: []
+            }
         });
 
         await investment.save();
@@ -1127,6 +1134,39 @@ app.post('/api/investments', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error creando inversión:', error);
         res.status(500).json({ error: 'Error al crear inversión' });
+    }
+});
+
+// Añadir aporte a una inversión
+app.post('/api/investments/:id/contribution', authenticateToken, async (req, res) => {
+    try {
+        const { amount, date } = req.body;
+        
+        if (!amount || amount <= 0 || !date) {
+            return res.status(400).json({ error: 'Monto y fecha son requeridos' });
+        }
+        
+        const investment = await Investment.findOne({ _id: req.params.id, user_id: req.user.userId });
+        if (!investment) {
+            return res.status(404).json({ error: 'Inversión no encontrada' });
+        }
+        
+        // Agregar el aporte al historial
+        if (!investment.contributions) {
+            investment.contributions = [];
+        }
+        
+        investment.contributions.push({
+            date: date,
+            amount: parseFloat(amount),
+            transaction_id: null
+        });
+        
+        await investment.save();
+        res.json(investment);
+    } catch (error) {
+        console.error('Error añadiendo aporte:', error);
+        res.status(500).json({ error: 'Error al añadir aporte' });
     }
 });
 
