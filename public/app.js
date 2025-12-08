@@ -3304,8 +3304,30 @@ function updateFinancialHealthMetrics() {
     console.log('📊 Actualizando métricas de salud financiera...');
     container.innerHTML = '';
     
-    // Calcular activos totales
-    const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    // Usar el mismo período que el análisis detallado
+    const periodTransactions = getTransactionsByPeriod();
+    const period = getSelectedPeriod();
+    const now = new Date();
+    
+    // Calcular meses en el período para proyecciones
+    let monthsInPeriod = 1;
+    if (period === 999) { // "all"
+        const dates = periodTransactions.map(t => new Date(t.date));
+        if (dates.length > 0) {
+            const minDate = new Date(Math.min(...dates));
+            const maxDate = new Date(Math.max(...dates));
+            const diffTime = Math.abs(maxDate - minDate);
+            monthsInPeriod = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44)));
+        }
+    } else {
+        monthsInPeriod = period;
+    }
+    
+    // Calcular balance del período (no total acumulado)
+    const periodBalance = periodTransactions.reduce((sum, t) => sum + t.amount, 0);
+    
+    // Activos totales (histórico acumulado para contexto)
+    const totalTransactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
     const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
     const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
         const amortization = calculateAmortizationTable(
@@ -3319,9 +3341,9 @@ function updateFinancialHealthMetrics() {
         return sum + amortization.finalBalance;
     }, 0);
     
-    const totalAssets = transactionsBalance + investmentsValue + loansCredit;
+    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit;
     
-    // Calcular deudas totales
+    // Calcular deudas totales (histórico)
     const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
         const amortization = calculateAmortizationTable(
             loan.principal,
@@ -3334,15 +3356,15 @@ function updateFinancialHealthMetrics() {
         return sum + amortization.finalBalance;
     }, 0);
     
-    // Calcular ingresos y gastos anuales
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const yearTransactions = transactions.filter(t => {
-        const tDate = new Date(t.date);
-        return tDate.getFullYear() === currentYear;
-    });
-    const annualIncome = yearTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-    const annualExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    // Calcular ingresos y gastos del período seleccionado
+    const periodIncome = periodTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const periodExpenses = Math.abs(periodTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    const periodSavings = periodIncome - periodExpenses;
+    
+    // Proyectar a anual para comparaciones
+    const annualIncome = monthsInPeriod > 0 ? (periodIncome / monthsInPeriod) * 12 : 0;
+    const annualExpenses = monthsInPeriod > 0 ? (periodExpenses / monthsInPeriod) * 12 : 0;
+    const annualSavings = annualIncome - annualExpenses;
     
     // 1. Porcentaje de Deuda Pendiente
     const debtPercentage = totalAssets > 0 ? (loansDebt / totalAssets) * 100 : (loansDebt > 0 ? 100 : 0);
@@ -3360,24 +3382,24 @@ function updateFinancialHealthMetrics() {
     const debtCoverageRatio = loansDebt > 0 ? (annualIncome / loansDebt) : (annualIncome > 0 ? 999 : 0);
     const coverageStatus = debtCoverageRatio > 2 ? 'excellent' : debtCoverageRatio > 1 ? 'good' : debtCoverageRatio > 0.5 ? 'warning' : 'danger';
     
-    // 5. Ratio de Ahorro (Ahorro anual / Ingresos anuales)
-    const annualSavings = annualIncome - annualExpenses;
-    const savingsRatio = annualIncome > 0 ? (annualSavings / annualIncome) * 100 : 0;
-    const savingsStatus = savingsRatio > 20 ? 'excellent' : savingsRatio > 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger';
+    // 5. Ratio de Ahorro (Ahorro del período / Ingresos del período)
+    const savingsRatio = periodIncome > 0 ? (periodSavings / periodIncome) * 100 : (periodIncome === 0 && periodExpenses > 0 ? -100 : 0);
+    // Lógica corregida: 0% o negativo es malo, positivo es bueno
+    const savingsStatus = savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger';
     
-    // 6. Ratio de Liquidez (Activos líquidos / Gastos mensuales)
-    const monthlyExpenses = annualExpenses / 12;
-    const liquidityRatio = monthlyExpenses > 0 ? (transactionsBalance / monthlyExpenses) : (transactionsBalance > 0 ? 999 : 0);
-    const liquidityStatus = liquidityRatio > 6 ? 'excellent' : liquidityRatio > 3 ? 'good' : liquidityRatio > 1 ? 'warning' : 'danger';
+    // 6. Ratio de Liquidez (Activos líquidos / Gastos mensuales promedio del período)
+    const avgMonthlyExpenses = monthsInPeriod > 0 ? periodExpenses / monthsInPeriod : periodExpenses;
+    const liquidityRatio = avgMonthlyExpenses > 0 ? (totalTransactionsBalance / avgMonthlyExpenses) : (totalTransactionsBalance > 0 ? 999 : 0);
+    const liquidityStatus = liquidityRatio >= 6 ? 'excellent' : liquidityRatio >= 3 ? 'good' : liquidityRatio >= 1 ? 'warning' : 'danger';
     
     // 7. Ratio de Inversión (Inversiones / Activos totales)
     const investmentRatio = totalAssets > 0 ? (investmentsValue / totalAssets) * 100 : 0;
     const investmentStatus = investmentRatio > 20 ? 'excellent' : investmentRatio > 10 ? 'good' : investmentRatio > 5 ? 'warning' : 'danger';
     
-    // 8. Ratio de Servicio de Deuda (Pagos mensuales / Ingresos mensuales)
-    const monthlyIncome = annualIncome / 12;
+    // 8. Ratio de Servicio de Deuda (Pagos mensuales / Ingresos mensuales promedio del período)
+    const avgMonthlyIncome = monthsInPeriod > 0 ? periodIncome / monthsInPeriod : 0;
     const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
-    const debtServiceRatio = monthlyIncome > 0 ? (monthlyLoanPayments / monthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 100 : 0);
+    const debtServiceRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 100 : 0);
     const debtServiceStatus = debtServiceRatio < 20 ? 'excellent' : debtServiceRatio < 30 ? 'good' : debtServiceRatio < 40 ? 'warning' : 'danger';
     
     const metrics = [
@@ -3416,18 +3438,18 @@ function updateFinancialHealthMetrics() {
         {
             title: 'Ratio de Ahorro',
             value: savingsRatio.toFixed(1) + '%',
-            description: `Ahorro anual / Ingresos`,
+            description: `Ahorro del período / Ingresos del período`,
             status: savingsStatus,
             icon: '💰',
-            detail: formatCurrency(annualSavings) + ' de ' + formatCurrency(annualIncome)
+            detail: formatCurrency(periodSavings) + ' de ' + formatCurrency(periodIncome) + (periodIncome === 0 ? ' (sin ingresos)' : '')
         },
         {
             title: 'Liquidez',
-            value: liquidityRatio > 999 ? '∞' : liquidityRatio.toFixed(1) + ' meses',
-            description: `Activos líquidos / Gastos mensuales`,
+            value: liquidityRatio > 999 ? '∞' : liquidityRatio < 0 ? '0.0 meses' : liquidityRatio.toFixed(1) + ' meses',
+            description: `Activos líquidos / Gastos mensuales promedio`,
             status: liquidityStatus,
             icon: '💧',
-            detail: liquidityRatio > 6 ? 'Excelente' : liquidityRatio > 3 ? 'Buena' : liquidityRatio > 1 ? 'Moderada' : 'Baja'
+            detail: liquidityRatio > 999 ? 'Sin gastos' : liquidityRatio >= 6 ? 'Excelente' : liquidityRatio >= 3 ? 'Buena' : liquidityRatio >= 1 ? 'Moderada' : 'Baja'
         },
         {
             title: 'Ratio de Inversión',
@@ -3440,10 +3462,10 @@ function updateFinancialHealthMetrics() {
         {
             title: 'Servicio de Deuda',
             value: debtServiceRatio.toFixed(1) + '%',
-            description: `Pagos mensuales / Ingresos mensuales`,
+            description: `Pagos mensuales / Ingresos mensuales promedio`,
             status: debtServiceStatus,
             icon: '💳',
-            detail: formatCurrency(monthlyLoanPayments) + ' de ' + formatCurrency(monthlyIncome)
+            detail: formatCurrency(monthlyLoanPayments) + ' de ' + formatCurrency(avgMonthlyIncome) + (avgMonthlyIncome === 0 ? ' (sin ingresos)' : '')
         }
     ];
     
