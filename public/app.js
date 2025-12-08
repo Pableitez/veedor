@@ -654,11 +654,12 @@ function showMainApp() {
 
 // Actualizar información del usuario
 function updateUserInfo() {
-    const currentUserEl = document.getElementById('currentUser');
-    if (currentUserEl) {
-        const displayName = userProfile.firstName || currentUser;
-        currentUserEl.textContent = `👤 ${displayName}`;
-        currentUserEl.title = `Haz clic para ver tu perfil`;
+    const currentUserTextEl = document.getElementById('currentUserText');
+    if (currentUserTextEl) {
+        const displayName = userProfile.firstName || userProfile.lastName 
+            ? `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim()
+            : currentUser;
+        currentUserTextEl.textContent = displayName;
     }
 }
 
@@ -1097,34 +1098,8 @@ function initializeForms() {
     // Botón para establecer meta de ahorro
     const setSavingsGoalBtn = document.getElementById('setSavingsGoalBtn');
     if (setSavingsGoalBtn) {
-        setSavingsGoalBtn.addEventListener('click', async () => {
-            const currentGoal = savingsGoal ? savingsGoal.toString() : '';
-            const newGoal = prompt('Establece tu meta de ahorro (en euros):', currentGoal);
-            if (newGoal && !isNaN(newGoal) && parseFloat(newGoal) > 0) {
-                try {
-                    savingsGoal = parseFloat(newGoal);
-                    await apiRequest('/user/profile', {
-                        method: 'PUT',
-                        body: JSON.stringify({ savingsGoal })
-                    });
-                    updateSummary();
-                    alert('✅ Meta de ahorro establecida');
-                } catch (error) {
-                    alert('Error al guardar la meta de ahorro: ' + error.message);
-                }
-            } else if (newGoal === '') {
-                // Eliminar meta
-                try {
-                    savingsGoal = null;
-                    await apiRequest('/user/profile', {
-                        method: 'PUT',
-                        body: JSON.stringify({ savingsGoal: null })
-                    });
-                    updateSummary();
-                } catch (error) {
-                    alert('Error al eliminar la meta de ahorro: ' + error.message);
-                }
-            }
+        setSavingsGoalBtn.addEventListener('click', () => {
+            showSavingsGoalModal();
         });
     }
     
@@ -2932,23 +2907,30 @@ async function addMoneyToInvestment(id) {
 
 // Actualizar valor actual de la inversión
 async function updateInvestmentValue(id) {
-    const investment = investments.find(inv => (inv._id || inv.id) === id);
-    if (!investment) return;
+    showUpdateInvestmentValueModal(id);
+}
+
+// Procesar actualización de valor de inversión desde el modal
+async function processUpdateInvestmentValue() {
+    if (!currentInvestmentId) return;
     
-    const newValue = prompt(`📊 Actualizar valor de "${investment.name}"\n\nValor actual: ${formatCurrency(investment.current_value)}\n\nNuevo valor (€):`, investment.current_value);
-    if (!newValue || isNaN(newValue)) return;
+    const input = document.getElementById('updateInvestmentValueInput');
+    if (!input || !input.value || isNaN(input.value)) {
+        alert('Por favor ingresa un valor válido');
+        return;
+    }
     
     try {
-        await apiRequest(`/investments/${id}`, {
+        await apiRequest(`/investments/${currentInvestmentId}`, {
             method: 'PUT',
             body: JSON.stringify({
-                current_value: parseFloat(newValue)
+                current_value: parseFloat(input.value)
             })
         });
         
         await loadUserData();
         updateDisplay();
-        alert('✅ Valor actualizado');
+        closeUpdateInvestmentValueModal();
     } catch (error) {
         alert('Error al actualizar valor: ' + error.message);
     }
@@ -3302,20 +3284,26 @@ function updateAssets() {
 
 // Editar bien (actualizar valor)
 async function editAsset(id) {
-    const asset = assets.find(a => (a._id || a.id) === id);
+    showUpdateAssetValueModal(id);
+}
+
+// Procesar actualización de valor de bien desde el modal
+async function processUpdateAssetValue() {
+    if (!currentAssetId) return;
+    
+    const asset = assets.find(a => (a._id || a.id) === currentAssetId);
     if (!asset) return;
     
-    const newValue = prompt(`Actualizar valor actual de "${asset.name}":`, asset.current_value);
-    if (newValue === null) return;
-    
-    const currentValue = parseFloat(newValue);
-    if (isNaN(currentValue)) {
+    const input = document.getElementById('updateAssetValueInput');
+    if (!input || !input.value || isNaN(input.value)) {
         alert('Por favor ingresa un número válido');
         return;
     }
     
+    const currentValue = parseFloat(input.value);
+    
     try {
-        await apiRequest(`/assets/${id}`, {
+        await apiRequest(`/assets/${currentAssetId}`, {
             method: 'PUT',
             body: JSON.stringify({
                 ...asset,
@@ -3326,7 +3314,7 @@ async function editAsset(id) {
         
         await loadUserData();
         updateDisplay();
-        alert('✅ Valor actualizado exitosamente');
+        closeUpdateAssetValueModal();
     } catch (error) {
         alert('Error al actualizar bien: ' + error.message);
     }
