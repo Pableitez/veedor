@@ -514,26 +514,32 @@
                     </div>
                     
                     <!-- Modal para amortización anticipada -->
-                    <div id="earlyPaymentModal" class="modal">
-                        <div class="modal-content" style="max-width: 500px;">
-                            <span class="modal-close" id="closeEarlyPaymentModal">&times;</span>
-                            <h2>💰 Amortización Anticipada</h2>
-                            <div id="earlyPaymentLoanInfo" style="margin-bottom: 20px; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
+                    <div id="earlyPaymentModal" class="modal" style="display: none;">
+                        <div class="modal-content" style="max-width: 600px;">
+                            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">💰 Amortización Anticipada</h2>
+                                    <button id="closeEarlyPaymentModal" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                                </div>
                             </div>
-                            <form id="earlyPaymentForm">
-                                <div class="form-group" style="margin-bottom: 20px;">
-                                    <label for="earlyPaymentAmount">Monto a Amortizar (€)</label>
-                                    <input type="number" id="earlyPaymentAmount" step="0.01" min="0.01" required placeholder="0.00">
-                                    <small>Ingresa el monto que deseas amortizar anticipadamente</small>
+                            <div style="padding: 32px;">
+                                <div id="earlyPaymentLoanInfo" style="margin-bottom: 24px; padding: 20px; background: var(--gray-50); border-radius: 12px; border-left: 4px solid var(--primary);">
                                 </div>
-                                <div id="earlyPaymentCommissionInfo" style="margin-bottom: 20px; padding: 12px; background: var(--warning-light, #FEF3C7); border-radius: var(--radius); display: none;">
-                                    <strong>Comisión:</strong> <span id="earlyPaymentCommissionAmount">0,00 €</span>
-                                </div>
-                                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-                                    <button type="button" class="btn-secondary" id="cancelEarlyPaymentBtn">Cancelar</button>
-                                    <button type="submit" class="btn-primary">✅ Confirmar Amortización</button>
-                                </div>
-                            </form>
+                                <form id="earlyPaymentForm" style="display: flex; flex-direction: column; gap: 20px;">
+                                    <div class="form-group">
+                                        <label for="earlyPaymentAmount">Monto a Amortizar (€)</label>
+                                        <input type="number" id="earlyPaymentAmount" step="0.01" min="0.01" required placeholder="0.00" style="width: 100%; padding: 14px 18px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 15px;">
+                                        <small style="color: var(--gray-500); margin-top: 6px; display: block;">Ingresa el monto que deseas amortizar anticipadamente</small>
+                                    </div>
+                                    <div id="earlyPaymentCommissionInfo" style="padding: 16px; background: #FEF3C7; border-radius: 12px; border-left: 4px solid var(--warning); display: none;">
+                                        <strong style="color: var(--gray-900);">Comisión:</strong> <span id="earlyPaymentCommissionAmount" style="color: var(--gray-700);">0,00 €</span>
+                                    </div>
+                                    <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                                        <button type="button" class="btn-secondary" id="cancelEarlyPaymentBtn">Cancelar</button>
+                                        <button type="submit" class="btn-primary">✅ Confirmar Amortización</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px;">
