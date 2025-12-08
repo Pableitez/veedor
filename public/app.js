@@ -2185,26 +2185,159 @@ function loadCustomCategories() {
 function exportData() {
     if (!currentUser) return;
     
-    // Crear CSV para Excel
-    let csv = 'Fecha,Tipo,Categoría General,Categoría Específica,Descripción,Sobre,Monto\n';
+    const date = new Date().toISOString().split('T')[0];
+    const timestamp = new Date().toISOString();
+    
+    // Crear CSV completo con múltiples secciones
+    let csv = `VEEDOR - EXPORTACIÓN COMPLETA DE DATOS FINANCIEROS\n`;
+    csv += `Usuario: ${currentUser}\n`;
+    csv += `Fecha de exportación: ${new Date().toLocaleDateString('es-ES')}\n`;
+    csv += `\n`;
+    
+    // ========== TRANSACCIONES ==========
+    csv += `\n========== TRANSACCIONES ==========\n`;
+    csv += `Fecha,Tipo,Categoría General,Categoría Específica,Descripción,Sobre,Monto (€)\n`;
     transactions.forEach(t => {
-        const date = new Date(t.date).toLocaleDateString('es-ES');
+        const transDate = new Date(t.date).toLocaleDateString('es-ES');
         const type = t.type === 'income' ? 'Ingreso' : 'Gasto';
         const description = (t.description || '').replace(/"/g, '""');
-        csv += `"${date}","${type}","${t.categoryGeneral}","${t.categorySpecific}","${description}","${t.envelope || ''}","${t.amount}"\n`;
+        csv += `"${transDate}","${type}","${t.categoryGeneral}","${t.categorySpecific}","${description}","${t.envelope || ''}","${t.amount}"\n`;
     });
+    
+    // ========== PRESUPUESTOS ==========
+    csv += `\n========== PRESUPUESTOS MENSUALES ==========\n`;
+    csv += `Mes,Categoría,Presupuesto (€),Gastado (€),Restante (€),% Usado\n`;
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const monthBudgets = budgets.filter(b => b.month === currentMonth);
+    const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === now.getMonth() && 
+               tDate.getFullYear() === now.getFullYear() &&
+               t.type === 'expense';
+    });
+    const expensesByCategory = {};
+    monthTransactions.forEach(t => {
+        expensesByCategory[t.categoryGeneral] = (expensesByCategory[t.categoryGeneral] || 0) + Math.abs(t.amount);
+    });
+    
+    monthBudgets.forEach(budget => {
+        const spent = expensesByCategory[budget.category] || 0;
+        const remaining = budget.amount - spent;
+        const percentage = budget.amount > 0 ? ((spent / budget.amount) * 100) : 0;
+        const category = categories.expense.find(c => c.id === budget.category) || 
+                        customCategories.expense.find(c => c.id === budget.category);
+        const categoryName = category ? category.name : budget.category;
+        csv += `"${budget.month}","${categoryName}","${budget.amount}","${spent}","${remaining}","${percentage.toFixed(2)}"\n`;
+    });
+    
+    // ========== SOBRES ==========
+    csv += `\n========== SOBRES (PRESUPUESTOS FLEXIBLES) ==========\n`;
+    csv += `Nombre,Presupuesto Mensual (€),Gastado Este Mes (€),Restante (€)\n`;
+    envelopes.forEach(envelope => {
+        const monthExpenses = monthTransactions.filter(t => t.envelope === envelope.name);
+        const spent = monthExpenses.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+        const remaining = envelope.budget - spent;
+        csv += `"${envelope.name}","${envelope.budget}","${spent}","${remaining}"\n`;
+    });
+    
+    // ========== PRÉSTAMOS ==========
+    csv += `\n========== PRÉSTAMOS E HIPOTECAS ==========\n`;
+    csv += `Nombre,Tipo,Principal (€),Interés Anual (%),TAE (%),Pago Mensual (€),Capital Restante (€),Total Pagado (€),Meses Restantes\n`;
+    loans.forEach(loan => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        const startDate = new Date(loan.start_date);
+        const endDate = new Date(loan.end_date);
+        const today = new Date();
+        const monthsRemaining = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24 * 30.44)));
+        const totalPaid = (loan.total_paid || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
+        
+        csv += `"${loan.name}","${loan.type === 'debt' ? 'Deuda' : 'Crédito'}","${loan.principal}","${loan.interest_rate}","${loan.tae || ''}","${loan.monthly_payment}","${amortization.finalBalance.toFixed(2)}","${totalPaid.toFixed(2)}","${monthsRemaining}"\n`;
+    });
+    
+    // ========== INVERSIONES ==========
+    csv += `\n========== INVERSIONES ==========\n`;
+    csv += `Nombre,Tipo,Monto Invertido (€),Valor Actual (€),Ganancia/Pérdida (€),Rentabilidad (%),Fecha Inversión\n`;
+    investments.forEach(investment => {
+        const profit = investment.current_value - investment.amount;
+        const returnPercent = investment.amount > 0 ? ((profit / investment.amount) * 100) : 0;
+        const typeNames = {
+            stocks: 'Acciones',
+            bonds: 'Bonos',
+            crypto: 'Criptomonedas',
+            funds: 'Fondos',
+            real_estate: 'Inmuebles',
+            other: 'Otros'
+        };
+        const invDate = new Date(investment.date).toLocaleDateString('es-ES');
+        csv += `"${investment.name}","${typeNames[investment.type] || investment.type}","${investment.amount}","${investment.current_value}","${profit.toFixed(2)}","${returnPercent.toFixed(2)}","${invDate}"\n`;
+    });
+    
+    // ========== RESUMEN ==========
+    csv += `\n========== RESUMEN FINANCIERO ==========\n`;
+    const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const totalExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    const totalSavings = totalIncome - totalExpenses;
+    const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
+    const totalInvestmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const totalInvestmentsProfit = totalInvestmentsValue - totalInvested;
+    
+    csv += `Concepto,Valor (€)\n`;
+    csv += `"Total Ingresos","${totalIncome.toFixed(2)}"\n`;
+    csv += `"Total Gastos","${totalExpenses.toFixed(2)}"\n`;
+    csv += `"Ahorro Total","${totalSavings.toFixed(2)}"\n`;
+    csv += `"Total Invertido","${totalInvested.toFixed(2)}"\n`;
+    csv += `"Valor Actual Inversiones","${totalInvestmentsValue.toFixed(2)}"\n`;
+    csv += `"Ganancia/Pérdida Inversiones","${totalInvestmentsProfit.toFixed(2)}"\n`;
+    
+    // Calcular balance total
+    const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    const calculatedBalance = transactionsBalance + totalInvestmentsValue + loansCredit - loansDebt;
+    
+    csv += `"Balance Total","${calculatedBalance.toFixed(2)}"\n`;
     
     // Descargar CSV
     const csvBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const csvLink = document.createElement('a');
     const csvUrl = URL.createObjectURL(csvBlob);
     csvLink.setAttribute('href', csvUrl);
-    csvLink.setAttribute('download', `veedor_${currentUser}_${new Date().toISOString().split('T')[0]}.csv`);
+    csvLink.setAttribute('download', `veedor_${currentUser}_${date}.csv`);
     csvLink.style.visibility = 'hidden';
     document.body.appendChild(csvLink);
     csvLink.click();
     document.body.removeChild(csvLink);
     URL.revokeObjectURL(csvUrl);
+    
+    alert(`✅ Exportación completada\n\nEl archivo incluye:\n- ${transactions.length} transacciones\n- ${monthBudgets.length} presupuestos\n- ${envelopes.length} sobres\n- ${loans.length} préstamos\n- ${investments.length} inversiones\n- Resumen financiero completo`);
 }
 
 
