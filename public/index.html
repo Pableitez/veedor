@@ -231,20 +231,6 @@
 
     <!-- Cargar aplicación JavaScript directamente -->
     <script src="/app.js"></script>
-    <script>
-        // Verificación después de cargar
-        console.log('✅ HTML completamente cargado');
-        console.log('Verificando carga de app.js...');
-        
-        // Verificar después de un momento
-        setTimeout(() => {
-            console.log('register function disponible:', typeof register !== 'undefined' ? '✅ SÍ' : '❌ NO');
-            if (typeof register === 'undefined') {
-                console.error('❌ app.js no se cargó correctamente');
-                console.error('Verifica en la pestaña Network si app.js se descargó');
-            }
-        }, 1000);
-    </script>
 </body>
 </html>
 

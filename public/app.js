@@ -1,10 +1,16 @@
-// Configuración de la API
-const API_URL = '/api';
+// Evitar cargar múltiples veces
+if (window.VEEDOR_LOADED) {
+    console.warn('⚠️ app.js ya fue cargado, evitando carga duplicada');
+} else {
+    window.VEEDOR_LOADED = true;
+    
+    // Configuración de la API
+    const API_URL = '/api';
 
-// Log inicial para verificar que el script se carga
-console.log('🚀 app.js cargado correctamente');
-console.log('API_URL:', API_URL);
-console.log('URL actual:', window.location.href);
+    // Log inicial para verificar que el script se carga
+    console.log('🚀 app.js cargado correctamente');
+    console.log('API_URL:', API_URL);
+    console.log('URL actual:', window.location.href);
 
 // Categorías de gastos
 const categories = {
@@ -1120,5 +1126,8 @@ function formatDate(date) {
         month: 'short',
         day: 'numeric'
     });
+}
+
+// Cerrar el bloque de protección contra carga múltiple
 }
 
