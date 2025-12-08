@@ -2979,7 +2979,7 @@ function updateMonthDashboard() {
                 const categoryName = category ? category.name : catId;
                 
                 // Buscar presupuesto para esta categoría en este mes
-                const budget = budgets.find(b => b.month === selectedMonth && b.category_id === catId);
+                const budget = budgets.find(b => b.period_type === 'monthly' && b.period_value === selectedMonth && b.category_id === catId);
                 const budgetAmount = budget ? budget.amount : 0;
                 const percentage = budgetAmount > 0 ? (data.amount / budgetAmount) * 100 : 0;
                 
