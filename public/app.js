@@ -1639,7 +1639,6 @@ function updateLoans() {
         // Calcular costo real usando TAE si está disponible, sino TIN
         const effectiveRate = loan.tae || loan.interest_rate;
         const monthlyEffectiveRate = effectiveRate / 100 / 12;
-        const totalMonths = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 30.44));
         
         // Calcular interés total proyectado con TAE
         let totalInterestProjected = 0;
@@ -2402,35 +2401,84 @@ function closeCustomCategoryModal() {
 // Agregar categoría personalizada desde el formulario
 async function addCustomCategory() {
     const type = document.getElementById('customCategoryType')?.value;
+    const parentValue = document.getElementById('customCategoryParent')?.value;
     const name = document.getElementById('customCategoryName')?.value?.trim();
     const subcategoriesInput = document.getElementById('customCategorySubcategories')?.value?.trim();
     
-    if (!type || !name) {
-        alert('Por favor, completa todos los campos requeridos.');
+    if (!type) {
+        alert('Por favor, selecciona el tipo de categoría (Ingreso o Gasto).');
         return;
     }
     
     const categoryType = type;
-    const subcategories = subcategoriesInput ? subcategoriesInput.split(',').map(s => s.trim()).filter(s => s) : [];
     
-    const newCategory = {
-        id: Date.now().toString(),
-        name: name,
-        subcategories: subcategories.length > 0 ? subcategories : ['General']
-    };
-    
-    customCategories[categoryType].push(newCategory);
-    
-    // Guardar en localStorage (temporalmente, hasta que agreguemos API)
-    localStorage.setItem('veedor_customCategories', JSON.stringify(customCategories));
-    
-    // Recargar categorías
-    initializeCategories();
-    
-    // Cerrar modal
-    closeCustomCategoryModal();
-    
-    alert(`✅ Categoría "${name}" agregada exitosamente`);
+    // Si se seleccionó una categoría padre, agregar subcategorías
+    if (parentValue) {
+        const [parentType, parentId] = parentValue.split('_');
+        const parentCategory = customCategories[parentType].find(c => c.id === parentId);
+        
+        if (!parentCategory) {
+            alert('Error: Categoría padre no encontrada.');
+            return;
+        }
+        
+        if (!subcategoriesInput || !subcategoriesInput.trim()) {
+            alert('Por favor, ingresa al menos una subcategoría.');
+            return;
+        }
+        
+        const newSubcategories = subcategoriesInput.split(',').map(s => s.trim()).filter(s => s);
+        
+        // Agregar subcategorías a la categoría existente
+        if (!parentCategory.subcategories) {
+            parentCategory.subcategories = [];
+        }
+        
+        // Agregar solo las subcategorías que no existan
+        newSubcategories.forEach(sub => {
+            if (!parentCategory.subcategories.includes(sub)) {
+                parentCategory.subcategories.push(sub);
+            }
+        });
+        
+        // Guardar en localStorage
+        localStorage.setItem('veedor_customCategories', JSON.stringify(customCategories));
+        
+        // Recargar categorías
+        initializeCategories();
+        
+        // Cerrar modal
+        closeCustomCategoryModal();
+        
+        alert(`✅ ${newSubcategories.length} subcategoría(s) agregada(s) a "${parentCategory.name}"`);
+    } else {
+        // Crear nueva categoría
+        if (!name) {
+            alert('Por favor, ingresa un nombre para la categoría.');
+            return;
+        }
+        
+        const subcategories = subcategoriesInput ? subcategoriesInput.split(',').map(s => s.trim()).filter(s => s) : [];
+        
+        const newCategory = {
+            id: Date.now().toString(),
+            name: name,
+            subcategories: subcategories.length > 0 ? subcategories : ['General']
+        };
+        
+        customCategories[categoryType].push(newCategory);
+        
+        // Guardar en localStorage
+        localStorage.setItem('veedor_customCategories', JSON.stringify(customCategories));
+        
+        // Recargar categorías
+        initializeCategories();
+        
+        // Cerrar modal
+        closeCustomCategoryModal();
+        
+        alert(`✅ Categoría "${name}" agregada exitosamente`);
+    }
 }
 
 // Cargar categorías personalizadas
