@@ -82,12 +82,20 @@
                         </div>
                         <div style="background: white; padding: 16px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
                             <label style="display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">📊 Vista de Resumen</label>
-                            <select id="summaryPeriod" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s;">
+                            <select id="summaryPeriod" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s; margin-bottom: 8px;">
                                 <option value="month">Este Mes</option>
                                 <option value="year">Este Año</option>
+                                <option value="year-select">Año Específico</option>
                                 <option value="all">Todos los Tiempos</option>
                             </select>
+                            <input type="number" id="summaryYear" min="2000" max="2100" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s; display: none;" placeholder="Año">
                             <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--gray-500);">Período para las tarjetas de resumen</small>
+                        </div>
+                        <div style="background: white; padding: 16px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">🌙 Tema</label>
+                            <button id="themeToggle" class="btn-secondary" style="width: 100%; justify-content: center;">
+                                <span id="themeIcon">🌙</span> <span id="themeText">Modo Oscuro</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -355,13 +363,14 @@
                                 <input type="number" id="loanPrincipal" step="0.01" min="0" required>
                             </div>
                             <div class="form-group">
-                                <label for="loanInterestRate">Tasa de Interés Anual (%)</label>
+                                <label for="loanInterestRate">TIN - Tipo de Interés Nominal (%)</label>
                                 <input type="number" id="loanInterestRate" step="0.01" min="0" max="100" required>
+                                <small style="color: #666;">Interés puro sin comisiones</small>
                             </div>
                             <div class="form-group">
                                 <label for="loanTAE">TAE - Tasa Anual Equivalente (%)</label>
                                 <input type="number" id="loanTAE" step="0.01" min="0" max="100" placeholder="Opcional">
-                                <small style="color: #666;">Incluye comisiones y gastos</small>
+                                <small style="color: #666; font-weight: 600;">⚠️ IMPORTANTE: Incluye comisiones y gastos. Es el costo REAL del préstamo.</small>
                             </div>
                         </div>
                         <div class="form-row">

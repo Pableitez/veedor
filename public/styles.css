@@ -49,13 +49,49 @@
     --radius-full: 9999px;
 }
 
+:root {
+    /* Colores de fondo y texto base (modo claro) */
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F9FAFB;
+    --bg-tertiary: #F3F4F6;
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-tertiary: #6B7280;
+    --border-color: #E5E7EB;
+}
+
+/* Modo oscuro */
+body.dark-mode {
+    --bg-primary: #1F2937;
+    --bg-secondary: #111827;
+    --bg-tertiary: #0F172A;
+    --text-primary: #F9FAFB;
+    --text-secondary: #E5E7EB;
+    --text-tertiary: #9CA3AF;
+    --border-color: #374151;
+    
+    --gray-50: #1F2937;
+    --gray-100: #111827;
+    --gray-200: #374151;
+    --gray-300: #4B5563;
+    --gray-400: #6B7280;
+    --gray-500: #9CA3AF;
+    --gray-600: #D1D5DB;
+    --gray-700: #E5E7EB;
+    --gray-800: #F3F4F6;
+    --gray-900: #F9FAFB;
+    
+    --primary-light: #1E3A5F;
+}
+
 body {
     font-family: var(--font-sans);
-    background: var(--gray-50);
-    color: var(--gray-900);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 /* ============================================
@@ -72,12 +108,13 @@ body {
 }
 
 .auth-container {
-    background: white;
+    background: var(--bg-primary);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-xl);
     padding: 48px;
     max-width: 420px;
     width: 100%;
+    transition: background-color 0.3s;
 }
 
 .auth-header {
@@ -411,11 +448,12 @@ header h1 {
    ============================================ */
 
 .form-section {
-    background: var(--gray-50);
+    background: var(--bg-tertiary);
     padding: 24px;
     border-radius: var(--radius-md);
     margin-bottom: 32px;
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .form-section h2 {
@@ -452,11 +490,12 @@ header h1 {
 .form-group input,
 .form-group select {
     padding: 12px 16px;
-    border: 1.5px solid var(--gray-300);
+    border: 1.5px solid var(--border-color);
     border-radius: var(--radius);
     font-size: 15px;
     transition: all 0.2s;
-    background: white;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     font-family: var(--font-sans);
 }
 
@@ -594,8 +633,9 @@ table {
 }
 
 thead {
-    background: var(--gray-50);
-    border-bottom: 2px solid var(--gray-200);
+    background: var(--bg-tertiary);
+    border-bottom: 2px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 th {
@@ -756,11 +796,12 @@ tbody tr:last-child td {
 }
 
 .chart-card {
-    background: white;
+    background: var(--bg-primary);
     padding: 24px;
     border-radius: var(--radius-md);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .chart-card h3 {
@@ -798,7 +839,7 @@ tbody tr:last-child td {
 }
 
 .modal-content {
-    background-color: white;
+    background-color: var(--bg-primary);
     margin: auto;
     padding: 30px;
     border-radius: var(--radius-md);
@@ -807,6 +848,7 @@ tbody tr:last-child td {
     box-shadow: var(--shadow-xl);
     position: relative;
     animation: fadeIn 0.3s;
+    transition: background-color 0.3s;
 }
 
 .modal-close {

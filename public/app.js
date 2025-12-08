@@ -23,6 +23,8 @@ const categories = {
         { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros'] },
         { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula'] },
         { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios'] },
+        { id: 'insurance', name: 'Seguros', subcategories: ['Seguro de coche', 'Seguro de hogar', 'Seguro de vida', 'Seguro de salud', 'Otros seguros'] },
+        { id: 'fines', name: 'Multas y Sanciones', subcategories: ['Multa de tráfico', 'Multa administrativa', 'Sanció', 'Otros'] },
         { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros'] },
         { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos'] }
     ],
@@ -980,15 +982,22 @@ function updateSummary() {
         }
     }
     
+    // Obtener año seleccionado si aplica
+    const summaryYearInput = document.getElementById('summaryYear');
+    let selectedYear = currentYear;
+    if (summaryYearInput && summaryPeriod === 'year-select') {
+        selectedYear = parseInt(summaryYearInput.value) || currentYear;
+    }
+    
     const monthTransactions = transactions.filter(t => {
         const tDate = new Date(t.date);
         return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
     });
     
-    // Transacciones del año
+    // Transacciones del año (actual o seleccionado)
     const yearTransactions = transactions.filter(t => {
         const tDate = new Date(t.date);
-        return tDate.getFullYear() === currentYear;
+        return tDate.getFullYear() === selectedYear;
     });
     
     // Cálculos del mes
@@ -1626,9 +1635,26 @@ function updateLoans() {
         const totalPaid = (loan.total_paid || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
         const remainingPrincipal = amortization.finalBalance;
         const totalInterestPaid = amortization.totalInterest;
-        const totalInterestProjected = amortization.totalInterest;
+        
+        // Calcular costo real usando TAE si está disponible, sino TIN
+        const effectiveRate = loan.tae || loan.interest_rate;
+        const monthlyEffectiveRate = effectiveRate / 100 / 12;
+        const totalMonths = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 30.44));
+        
+        // Calcular interés total proyectado con TAE
+        let totalInterestProjected = 0;
+        let testBalance = loan.principal;
+        for (let i = 0; i < totalMonths && testBalance > 0.01; i++) {
+            const interest = testBalance * monthlyEffectiveRate;
+            const principalPayment = Math.min(loan.monthly_payment - interest, testBalance);
+            testBalance -= principalPayment;
+            totalInterestProjected += interest;
+        }
+        
         const totalAmount = loan.principal + totalInterestProjected + (loan.opening_commission || 0);
         const totalCommissions = (loan.opening_commission || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + (ep.commission || 0), 0);
+        const realCost = totalInterestProjected + totalCommissions; // Costo real del préstamo
+        const totalCost = totalAmount - loan.principal; // Costo total (intereses + comisiones)
         
         // Calcular próximo pago
         const nextPaymentDate = new Date(startDate);
@@ -1642,31 +1668,73 @@ function updateLoans() {
         card.innerHTML = `
             <h3>${loan.name} <span style="font-size: 12px; color: ${loan.type === 'debt' ? '#ef4444' : '#10b981'}">(${loan.type === 'debt' ? 'Debo' : 'Me deben'})</span></h3>
             
-            <div style="margin: 10px 0; padding: 10px; background: ${loan.type === 'debt' ? '#fef2f2' : '#f0fdf4'}; border-radius: 6px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+            <div style="margin: 10px 0; padding: 12px; background: ${loan.type === 'debt' ? '#fef2f2' : '#f0fdf4'}; border-radius: 6px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; margin-bottom: 12px;">
                     <div><strong>Principal:</strong></div>
-                    <div>${formatCurrency(loan.principal)}</div>
-                    <div><strong>Interés Anual:</strong></div>
+                    <div style="font-weight: 600;">${formatCurrency(loan.principal)}</div>
+                    <div><strong>TIN (Interés Nominal):</strong></div>
                     <div>${loan.interest_rate}%</div>
-                    ${loan.tae ? `<div><strong>TAE:</strong></div><div>${loan.tae}%</div>` : ''}
+                    ${loan.tae ? `
+                        <div><strong>TAE (Costo Real):</strong></div>
+                        <div style="color: ${loan.tae > loan.interest_rate ? '#ef4444' : '#10b981'}; font-weight: 700;">${loan.tae}%</div>
+                        <div style="grid-column: 1/-1; font-size: 11px; color: #666; margin-top: 4px; padding: 6px; background: rgba(255,255,255,0.7); border-radius: 4px;">
+                            ⚠️ Diferencia: ${(loan.tae - loan.interest_rate).toFixed(2)}% adicional por comisiones y gastos
+                        </div>
+                    ` : ''}
                     <div><strong>Cuota Mensual:</strong></div>
-                    <div>${formatCurrency(loan.monthly_payment)}</div>
+                    <div style="font-weight: 600;">${formatCurrency(loan.monthly_payment)}</div>
                     ${loan.opening_commission > 0 ? `<div><strong>Com. Apertura:</strong></div><div>${formatCurrency(loan.opening_commission)}</div>` : ''}
                 </div>
             </div>
             
-            <div style="margin: 10px 0; padding: 10px; background: #f3f4f6; border-radius: 6px;">
+            <div style="margin: 10px 0; padding: 12px; background: #f3f4f6; border-radius: 6px;">
                 <div style="font-size: 13px; line-height: 1.8;">
-                    <div><strong>Capital Restante:</strong> <span style="color: ${remainingPrincipal > 0 ? '#ef4444' : '#10b981'}; font-size: 16px; font-weight: bold;">${formatCurrency(remainingPrincipal)}</span></div>
-                    <div><strong>Total Pagado:</strong> ${formatCurrency(totalPaid)}</div>
-                    <div><strong>Intereses Pagados:</strong> ${formatCurrency(totalInterestPaid)}</div>
-                    <div><strong>Comisiones Totales:</strong> ${formatCurrency(totalCommissions)}</div>
-                    <div><strong>Total a Pagar:</strong> ${formatCurrency(totalAmount)}</div>
-                    <div><strong>Progreso:</strong> ${((totalPaid / totalAmount) * 100).toFixed(1)}%</div>
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
-                        <div><strong>Meses Transcurridos:</strong> ${monthsElapsed} / ${totalMonths}</div>
-                        <div><strong>Meses Restantes:</strong> ${monthsRemaining}</div>
-                        <div><strong>Próximo Pago:</strong> ${formatDate(nextPaymentDate)}</div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <strong>Capital Restante:</strong>
+                        <span style="color: ${remainingPrincipal > 0 ? '#ef4444' : '#10b981'}; font-size: 18px; font-weight: bold;">${formatCurrency(remainingPrincipal)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>Total Pagado:</strong>
+                        <span>${formatCurrency(totalPaid)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>Intereses Totales:</strong>
+                        <span>${formatCurrency(totalInterestProjected)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>Comisiones Totales:</strong>
+                        <span>${formatCurrency(totalCommissions)}</span>
+                    </div>
+                    <div style="margin-top: 8px; padding: 8px; background: ${loan.type === 'debt' ? '#fee2e2' : '#dcfce7'}; border-radius: 4px; border-left: 3px solid ${loan.type === 'debt' ? '#ef4444' : '#10b981'};">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 4px;">
+                            <span>💰 Costo Real del Préstamo:</span>
+                            <span style="color: ${loan.type === 'debt' ? '#ef4444' : '#10b981'}; font-size: 16px;">${formatCurrency(realCost)}</span>
+                        </div>
+                        <div style="font-size: 11px; color: #666;">
+                            Intereses (${formatCurrency(totalInterestProjected)}) + Comisiones (${formatCurrency(totalCommissions)})
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                        <strong>Total a Pagar:</strong>
+                        <span style="font-weight: 700;">${formatCurrency(totalAmount)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>Progreso:</strong>
+                        <span>${((totalPaid / totalAmount) * 100).toFixed(1)}%</span>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #ddd;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong>Meses Transcurridos:</strong>
+                            <span>${monthsElapsed} / ${totalMonths}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong>Meses Restantes:</strong>
+                            <span>${monthsRemaining}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>Próximo Pago:</strong>
+                            <span>${formatDate(nextPaymentDate)}</span>
+                        </div>
                     </div>
                 </div>
             </div>
