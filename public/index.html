@@ -1041,40 +1041,46 @@
     </div>
 
     <!-- Modal para agregar categoría personalizada -->
-    <div id="customCategoryModal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <span class="modal-close" id="closeCustomCategoryModal">&times;</span>
-            <h2>➕ Agregar Categoría Personalizada</h2>
-               <form id="customCategoryForm">
-                   <div class="form-group" style="margin-bottom: 20px;">
-                       <label for="customCategoryType">Tipo de Categoría</label>
-                       <select id="customCategoryType" required style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px;">
-                           <option value="">Seleccionar tipo...</option>
-                           <option value="income">Ingreso</option>
-                           <option value="expense">Gasto</option>
-                       </select>
-                       <small style="color: var(--gray-500);">Elige si es una categoría de ingreso o gasto</small>
-                   </div>
-                   <div class="form-group" style="margin-bottom: 20px;">
-                       <label for="customCategoryParent">Categoría Padre (Opcional)</label>
-                       <select id="customCategoryParent" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px;">
-                           <option value="">Crear nueva categoría</option>
-                       </select>
-                       <small style="color: var(--gray-500);">Selecciona una categoría existente para agregar subcategorías, o déjalo vacío para crear una nueva categoría</small>
-                   </div>
-                   <div class="form-group" style="margin-bottom: 20px;" id="newCategoryGroup">
-                       <label for="customCategoryName">Nombre de la Categoría</label>
-                       <input type="text" id="customCategoryName" placeholder="Ej: Suscripciones, Bonos, etc." style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px;">
-                       <small style="color: var(--gray-500);">Nombre descriptivo para tu categoría</small>
-                   </div>
-                   <div class="form-group" style="margin-bottom: 20px;" id="subcategoryGroup" style="display: none;">
-                       <label for="customCategorySubcategories">Nueva Subcategoría</label>
-                       <input type="text" id="customCategorySubcategories" placeholder="Ej: Netflix, Spotify, Amazon Prime (separadas por comas)" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px;">
-                       <small style="color: var(--gray-500);">Separa las subcategorías con comas. Se agregarán a la categoría seleccionada</small>
-                   </div>
-                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-                    <button type="button" class="btn-secondary" id="cancelCustomCategoryBtn">Cancelar</button>
-                    <button type="submit" class="btn-primary">✅ Crear Categoría</button>
+    <div id="customCategoryModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 550px; padding: 0;">
+            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px 28px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border-radius: 12px 12px 0 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: white; letter-spacing: -0.5px;">➕ Agregar Categoría Personalizada</h2>
+                    <button id="closeCustomCategoryModal" onclick="closeCustomCategoryModal()" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                </div>
+            </div>
+            <form id="customCategoryForm" style="padding: 28px; display: flex; flex-direction: column; gap: 20px;">
+                <div class="form-group">
+                    <label for="customCategoryType" style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--gray-700); font-size: 14px;">Tipo de Categoría</label>
+                    <select id="customCategoryType" required style="width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="income">Ingreso</option>
+                        <option value="expense">Gasto</option>
+                    </select>
+                    <small style="display: block; margin-top: 6px; color: var(--gray-500); font-size: 12px;">Elige si es una categoría de ingreso o gasto</small>
+                </div>
+                <div class="form-group">
+                    <label for="customCategoryParent" style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--gray-700); font-size: 14px;">Categoría Padre (Opcional)</label>
+                    <select id="customCategoryParent" style="width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+                        <option value="">Crear nueva categoría</option>
+                    </select>
+                    <small style="display: block; margin-top: 6px; color: var(--gray-500); font-size: 12px;">Selecciona una categoría existente para agregar subcategorías, o déjalo vacío para crear una nueva categoría</small>
+                </div>
+                <div class="form-group" id="newCategoryGroup">
+                    <label for="customCategoryName" style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--gray-700); font-size: 14px;">Nombre de la Categoría</label>
+                    <input type="text" id="customCategoryName" placeholder="Ej: Suscripciones, Bonos, etc." style="width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+                    <small style="display: block; margin-top: 6px; color: var(--gray-500); font-size: 12px;">Nombre descriptivo para tu categoría</small>
+                </div>
+                <div class="form-group" id="subcategoryGroup" style="display: none;">
+                    <label for="customCategorySubcategories" style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--gray-700); font-size: 14px;">Nueva Subcategoría</label>
+                    <input type="text" id="customCategorySubcategories" placeholder="Ej: Netflix, Spotify, Amazon Prime (separadas por comas)" style="width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+                    <small style="display: block; margin-top: 6px; color: var(--gray-500); font-size: 12px;">Separa las subcategorías con comas. Se agregarán a la categoría seleccionada</small>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; padding-top: 20px; border-top: 1px solid var(--gray-200);">
+                    <button type="button" class="btn-secondary" id="cancelCustomCategoryBtn" style="padding: 10px 20px;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="padding: 10px 20px; display: flex; align-items: center; gap: 6px;">
+                        <span>✅</span> Crear Categoría
+                    </button>
                 </div>
             </form>
         </div>
