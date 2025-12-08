@@ -3047,18 +3047,46 @@ function updateMonthDashboard() {
                                customCategories.income.find(c => c.id === catId);
                 const categoryName = category ? category.name : catId;
                 
+                // Buscar presupuesto para esta categoría en este mes
+                const budget = budgets.find(b => b.period_type === 'monthly' && b.period_value === selectedMonth && b.category_id === catId);
+                const budgetAmount = budget ? budget.amount : 0;
+                const percentage = budgetAmount > 0 ? (data.amount / budgetAmount) * 100 : 0;
+                
+                let progressColor = '#10b981'; // Verde
+                if (percentage < 80) {
+                    progressColor = '#fbbf24'; // Amarillo
+                } else if (percentage < 100) {
+                    progressColor = '#10b981'; // Verde
+                }
+                
                 const card = document.createElement('div');
                 card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);';
                 card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div>
                             <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--gray-900);">${categoryName}</h5>
                             <p style="font-size: 14px; color: var(--gray-600); margin: 0;">${data.transactions.length} transacción${data.transactions.length !== 1 ? 'es' : ''}</p>
                         </div>
                         <div style="text-align: right;">
-                            <p style="font-size: 20px; font-weight: 700; margin: 0; color: var(--success-color);">${formatCurrency(data.amount)}</p>
+                            <p style="font-size: 20px; font-weight: 700; margin: 0; color: var(--success);">${formatCurrency(data.amount)}</p>
+                            ${budgetAmount > 0 ? `<small style="color: var(--gray-500);">de ${formatCurrency(budgetAmount)}</small>` : ''}
                         </div>
                     </div>
+                    ${budgetAmount > 0 ? `
+                        <div style="margin-top: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <small style="font-size: 12px; color: var(--gray-600);">Progreso del presupuesto</small>
+                                <small style="font-size: 12px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
+                            </div>
+                            <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden;">
+                                <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                                <small style="font-size: 11px; color: var(--gray-500);">Diferencia: ${formatCurrency(data.amount - budgetAmount)}</small>
+                                ${percentage < 100 ? `<small style="font-size: 11px; color: var(--warning); font-weight: 600;">⚠️ Por debajo del presupuesto</small>` : ''}
+                            </div>
+                        </div>
+                    ` : '<small style="color: var(--gray-500);">Sin presupuesto establecido</small>'}
                 `;
                 incomeContainer.appendChild(card);
             });
