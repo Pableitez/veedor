@@ -499,12 +499,20 @@ app.post('/api/forgot-password', async (req, res) => {
         const resetTokenExpiry = new Date();
         resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1);
         
-        user.resetToken = resetToken;
-        user.resetTokenExpiry = resetTokenExpiry;
+        // Actualizar campos de recuperación usando updateOne para evitar problemas de validación
         try {
-            await user.save();
+            await User.updateOne(
+                { _id: user._id },
+                {
+                    $set: {
+                        resetToken: resetToken,
+                        resetTokenExpiry: resetTokenExpiry
+                    }
+                }
+            );
         } catch (saveError) {
             console.error('Error guardando token de recuperación:', saveError);
+            console.error('Detalles del error:', saveError.message);
             return res.status(500).json({ error: 'Error al generar código de recuperación' });
         }
         
