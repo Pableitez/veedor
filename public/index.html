@@ -99,24 +99,24 @@
             <div id="registerForm" class="auth-form">
                 <form id="registerFormElement">
                     <div class="form-group">
-                        <label for="registerEmail">Email</label>
-                        <input type="email" id="registerEmail" required autocomplete="email">
+                        <label for="registerEmail" data-translate="auth.email">Email</label>
+                        <input type="email" id="registerEmail" required autocomplete="email" data-translate-placeholder="auth.email">
                     </div>
                     <div class="form-group">
-                        <label for="registerUsername">Nombre de Usuario</label>
-                        <input type="text" id="registerUsername" required autocomplete="username" minlength="3">
-                        <small>Mínimo 3 caracteres</small>
+                        <label for="registerUsername" data-translate="auth.username">Nombre de Usuario</label>
+                        <input type="text" id="registerUsername" required autocomplete="username" minlength="3" data-translate-placeholder="auth.username">
+                        <small data-translate="auth.usernameHint">Mínimo 3 caracteres</small>
                     </div>
                     <div class="form-group">
-                        <label for="registerPassword">Contraseña</label>
-                        <input type="password" id="registerPassword" required autocomplete="new-password" minlength="4">
-                        <small>Mínimo 4 caracteres</small>
+                        <label for="registerPassword" data-translate="auth.password">Contraseña</label>
+                        <input type="password" id="registerPassword" required autocomplete="new-password" minlength="4" data-translate-placeholder="auth.password">
+                        <small data-translate="auth.passwordHint">Mínimo 4 caracteres</small>
                     </div>
                     <div class="form-group">
-                        <label for="registerPasswordConfirm">Confirmar Contraseña</label>
-                        <input type="password" id="registerPasswordConfirm" required autocomplete="new-password">
+                        <label for="registerPasswordConfirm" data-translate="auth.confirmPassword">Confirmar Contraseña</label>
+                        <input type="password" id="registerPasswordConfirm" required autocomplete="new-password" data-translate-placeholder="auth.confirmPassword">
                     </div>
-                    <button type="submit" class="btn-primary btn-full">Crear Cuenta</button>
+                    <button type="submit" class="btn-primary btn-full" data-translate="auth.register">Registrarse</button>
                     <p id="registerError" class="error-message"></p>
                 </form>
             </div>
@@ -1356,7 +1356,7 @@
     </div>
 
     <!-- Cargar aplicación JavaScript directamente -->
-    <script src="/app.js?v=2.22.0"></script>
+    <script src="/app.js?v=2.23.0"></script>
     
     <!-- Footer (solo visible en la app principal, no en welcome page) -->
     <footer id="mainFooter" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: rgba(255,255,255,0.9); padding: 16px 20px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); display: none;">
