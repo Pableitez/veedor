@@ -1,4 +1,5 @@
 // Evitar cargar múltiples veces
+// Versión: 2.0.1 - Fix budgetsData
 if (window.VEEDOR_LOADED) {
     console.warn('⚠️ app.js ya fue cargado, evitando carga duplicada');
 } else {
