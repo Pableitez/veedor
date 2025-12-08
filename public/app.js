@@ -997,6 +997,13 @@ function switchToTab(targetTab) {
         }, 100);
     }
     
+    // Actualizar propiedades cuando se cambia al tab de propiedades
+    if (targetTab === 'properties') {
+        setTimeout(() => {
+            updateProperties();
+        }, 100);
+    }
+    
     // Actualizar patrimonio cuando se cambia al tab de patrimonio
     if (targetTab === 'assets') {
         setTimeout(() => {
@@ -1607,9 +1614,11 @@ function updateDisplay() {
         updateEnvelopeSelect();
         updateAccountSelect(); // Actualizar selector de cuentas
         updateInvestmentSelect(); // Actualizar selector de inversiones
+        updatePropertySelect(); // Actualizar selector de propiedades
         updateLoans();
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
+        updateProperties(); // Actualizar propiedades
         updateAssets(); // Actualizar patrimonio
         updateMonthFilter();
         updateMonthDashboard();
@@ -1810,7 +1819,7 @@ function updateTransactionsTable() {
     tbody.innerHTML = '';
     
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">No hay transacciones registradas</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">No hay transacciones registradas</td></tr>';
         return;
     }
     
@@ -1845,12 +1854,20 @@ function updateTransactionsTable() {
             accountName = account ? account.name : '-';
         }
         
+        // Buscar nombre de propiedad
+        let propertyName = '-';
+        if (transaction.property_id) {
+            const property = properties.find(p => (p._id || p.id) === transaction.property_id);
+            propertyName = property ? property.name : '-';
+        }
+        
         row.innerHTML = `
             <td>${formatDate(date)}</td>
             <td><span class="badge badge-${transaction.type}">${transaction.type === 'income' ? 'Ingreso' : 'Gasto'}</span></td>
             <td>${categoryName} - ${transaction.categorySpecific}</td>
             <td>${transaction.description || '-'}</td>
             <td>${accountName}</td>
+            <td>${propertyName}</td>
             <td>${transaction.envelope || '-'}</td>
             <td style="font-weight: 600; color: ${transaction.amount >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(transaction.amount)}</td>
             <td><button class="btn-danger" onclick="deleteTransaction('${transaction._id || transaction.id}')">Eliminar</button></td>
