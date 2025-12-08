@@ -147,36 +147,38 @@
                     <button id="mainNavDropdownBtn" onclick="toggleMainNavDropdown()" style="padding: 6px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
                         <span>☰</span> <span>Navegación</span> <span style="font-size: 9px;">▼</span>
                     </button>
-                        <div id="mainNavDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 240px; z-index: 1000; overflow: hidden;">
-                            <a href="javascript:void(0);" onclick="switchToTab('transactions'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="transactions">
-                                💳 Transacciones
+                    <div id="mainNavDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 240px; z-index: 1000; overflow: hidden;">
+                        <a href="javascript:void(0);" onclick="switchToTab('transactions'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="transactions">
+                            💳 Transacciones
+                        </a>
+                        <a href="javascript:void(0);" onclick="switchToTab('accounts'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="accounts">
+                            🏦 Cuentas
+                        </a>
+                        <a href="javascript:void(0);" onclick="switchToTab('properties'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="properties">
+                            🏘️ Propiedades
+                        </a>
+                        <a href="javascript:void(0);" onclick="switchToTab('envelopes'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="envelopes">
+                            📦 Presupuestos
+                        </a>
+                        <a href="javascript:void(0);" onclick="switchToTab('loans'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="loans">
+                            🏦 Préstamos
+                        </a>
+                        <a href="javascript:void(0);" onclick="switchToTab('investments'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="investments">
+                            📈 Inversiones
+                        </a>
+                        <a href="javascript:void(0);" onclick="switchToTab('assets'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="assets">
+                            🏠 Patrimonio
+                        </a>
+                        <a href="javascript:void(0);" onclick="switchToTab('charts'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="charts">
+                            📊 Análisis
+                        </a>
+                        <div style="border-top: 1px solid var(--gray-200); margin-top: 4px; padding-top: 4px;">
+                            <a href="javascript:void(0);" onclick="showMonthDashboard(); toggleMainNavDropdown();" class="nav-dropdown-item">
+                                📅 Análisis del Mes Seleccionado
                             </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('accounts'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="accounts">
-                                🏦 Cuentas
+                            <a href="javascript:void(0);" onclick="scrollToDashboard(); toggleMainNavDropdown();" class="nav-dropdown-item">
+                                📊 Panel de Mandos Principal
                             </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('envelopes'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="envelopes">
-                                📦 Presupuestos
-                            </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('loans'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="loans">
-                                🏦 Préstamos
-                            </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('investments'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="investments">
-                                📈 Inversiones
-                            </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('assets'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="assets">
-                                🏠 Patrimonio
-                            </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('charts'); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="charts">
-                                📊 Análisis
-                            </a>
-                            <div style="border-top: 1px solid var(--gray-200); margin-top: 4px; padding-top: 4px;">
-                                <a href="javascript:void(0);" onclick="showMonthDashboard(); toggleMainNavDropdown();" class="nav-dropdown-item">
-                                    📅 Análisis del Mes Seleccionado
-                                </a>
-                                <a href="javascript:void(0);" onclick="scrollToDashboard(); toggleMainNavDropdown();" class="nav-dropdown-item">
-                                    📊 Panel de Mandos Principal
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>
