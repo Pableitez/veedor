@@ -89,29 +89,26 @@ function initializeApp() {
     initializeAuth();
 }
 
-// Intentar inicializar de inmediato
-if (document.readyState === 'loading') {
-    console.log('Esperando DOMContentLoaded...');
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('✅ DOMContentLoaded disparado');
-        initializeApp();
-    });
-} else {
-    console.log('✅ DOM ya está listo, inicializando inmediatamente...');
-    // Pequeño delay para asegurar que todo esté listo
-    setTimeout(() => {
-        initializeApp();
-    }, 100);
-}
-
-// También escuchar cuando el script se carga
-window.addEventListener('load', () => {
-    console.log('✅ Window load event disparado');
-    if (typeof initializeAuth === 'function' && !document.getElementById('mainApp')?.style.display !== 'none') {
-        console.log('Re-inicializando por si acaso...');
-        initializeAuth();
+// Intentar inicializar de inmediato (solo una vez)
+if (!window.VEEDOR_INITIALIZED) {
+    window.VEEDOR_INITIALIZED = true;
+    
+    if (document.readyState === 'loading') {
+        console.log('Esperando DOMContentLoaded...');
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ DOMContentLoaded disparado');
+            initializeApp();
+        });
+    } else {
+        console.log('✅ DOM ya está listo, inicializando inmediatamente...');
+        // Pequeño delay para asegurar que todo esté listo
+        setTimeout(() => {
+            initializeApp();
+        }, 100);
     }
-});
+} else {
+    console.log('⚠️ Aplicación ya inicializada, evitando inicialización duplicada');
+}
 
 // Verificar autenticación
 async function checkAuth() {
