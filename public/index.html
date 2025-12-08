@@ -234,6 +234,8 @@
         // Script inline para verificar que JavaScript funciona
         console.log('✅ HTML cargado, iniciando carga de app.js...');
         console.log('URL actual:', window.location.href);
+        console.log('Base URL:', window.location.origin);
+        console.log('Pathname:', window.location.pathname);
         
         // Verificar que los elementos existan
         console.log('Verificando elementos del DOM...');
@@ -241,31 +243,57 @@
         console.log('registerUsername:', document.getElementById('registerUsername') ? '✅ Encontrado' : '❌ No encontrado');
         console.log('authScreen:', document.getElementById('authScreen') ? '✅ Encontrado' : '❌ No encontrado');
         
-        // Cargar app.js
-        const script = document.createElement('script');
-        script.src = 'app.js';
-        script.onload = function() {
-            console.log('✅ app.js cargado exitosamente');
-            console.log('Verificando si las funciones están disponibles...');
-            console.log('register function:', typeof register !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
-        };
-        script.onerror = function(error) {
-            console.error('❌ Error cargando app.js');
-            console.error('Error:', error);
-            console.error('Verifica que el archivo exista en: ' + window.location.origin + '/app.js');
-            alert('Error cargando app.js. Abre la pestaña Network para verificar.');
-        };
-        document.head.appendChild(script);
+        // Determinar la ruta correcta para app.js
+        const basePath = window.location.pathname === '/' ? '' : window.location.pathname.replace(/\/[^/]*$/, '');
+        const appJsPath = basePath + '/app.js';
+        console.log('Intentando cargar app.js desde:', appJsPath);
         
-        // También intentar cargar directamente como fallback
-        setTimeout(function() {
-            if (typeof register === 'undefined') {
-                console.warn('⚠️ app.js no se cargó correctamente, intentando carga directa...');
-                const fallbackScript = document.createElement('script');
-                fallbackScript.src = '/app.js';
-                document.head.appendChild(fallbackScript);
-            }
-        }, 2000);
+        // Cargar app.js con múltiples intentos
+        function loadAppJs(path) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = path;
+                script.onload = function() {
+                    console.log('✅ app.js cargado exitosamente desde:', path);
+                    resolve();
+                };
+                script.onerror = function(error) {
+                    console.error('❌ Error cargando app.js desde:', path);
+                    reject(error);
+                };
+                document.head.appendChild(script);
+            });
+        }
+        
+        // Intentar múltiples rutas
+        const pathsToTry = [
+            'app.js',
+            '/app.js',
+            './app.js',
+            window.location.origin + '/app.js'
+        ];
+        
+        let loaded = false;
+        for (const path of pathsToTry) {
+            loadAppJs(path)
+                .then(() => {
+                    loaded = true;
+                    setTimeout(() => {
+                        console.log('Verificando si las funciones están disponibles...');
+                        console.log('register function:', typeof register !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
+                        if (typeof register === 'undefined') {
+                            console.error('❌ La función register no está disponible después de cargar app.js');
+                        }
+                    }, 500);
+                })
+                .catch(() => {
+                    if (!loaded && pathsToTry.indexOf(path) === pathsToTry.length - 1) {
+                        console.error('❌ No se pudo cargar app.js desde ninguna ruta');
+                        alert('Error cargando app.js. Abre la pestaña Network para verificar.');
+                    }
+                });
+            if (loaded) break;
+        }
     </script>
 </body>
 </html>

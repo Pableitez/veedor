@@ -30,7 +30,10 @@ if (MONGODB_URI && !MONGODB_URI.includes('mongodb://localhost')) {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+
+// Servir archivos estáticos desde la carpeta public
+app.use(express.static(path.join(__dirname, 'public')));
+console.log('📁 Archivos estáticos servidos desde:', path.join(__dirname, 'public'));
 
 // Modelos de MongoDB
 const userSchema = new mongoose.Schema({
