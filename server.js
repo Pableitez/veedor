@@ -1692,6 +1692,16 @@ app.delete('/api/assets/:id', authenticateToken, async (req, res) => {
 });
 
 // ==================== RUTA PARA SERVIR EL FRONTEND ====================
+// Health check endpoint para Render (simple, sin /api)
+app.get('/health', (req, res) => {
+    const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+    res.status(200).json({ 
+        status: 'ok', 
+        database: dbStatus,
+        timestamp: new Date().toISOString()
+    });
+});
+
 app.get('*', (req, res) => {
     if (!req.path.startsWith('/api')) {
         res.sendFile(path.join(__dirname, 'public', 'index.html'));
