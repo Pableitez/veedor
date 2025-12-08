@@ -1117,6 +1117,7 @@ function updateDisplay() {
         updateLoans();
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
+        updateAssets(); // Actualizar patrimonio
         updateMonthFilter();
         updateMonthDashboard();
         
