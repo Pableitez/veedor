@@ -206,9 +206,11 @@ async function checkAuth() {
     } else {
         showAuthScreen();
         // Inicializar traducciones en la pantalla de auth también
-        if (typeof updateTranslations === 'function') {
-            updateTranslations();
-        }
+        setTimeout(() => {
+            if (typeof updateTranslations === 'function') {
+                updateTranslations();
+            }
+        }, 300);
     }
 }
 
