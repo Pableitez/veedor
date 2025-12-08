@@ -911,8 +911,85 @@
         </div>
     </div>
 
+    <!-- Modal de Perfil de Usuario -->
+    <div id="userProfileModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="margin: 0; font-size: 24px; color: var(--gray-900);">👤 Mi Perfil</h2>
+                <button id="closeUserProfileModal" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-500); padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s;" onmouseover="this.style.background='var(--gray-100)'" onmouseout="this.style.background='none'">×</button>
+            </div>
+            
+            <form id="userProfileForm" style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="profileFirstName">Nombre</label>
+                        <input type="text" id="profileFirstName" placeholder="Tu nombre">
+                    </div>
+                    <div class="form-group">
+                        <label for="profileLastName">Apellidos</label>
+                        <input type="text" id="profileLastName" placeholder="Tus apellidos">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="profileAge">Edad</label>
+                        <input type="number" id="profileAge" min="1" max="120" placeholder="Tu edad">
+                    </div>
+                    <div class="form-group">
+                        <label for="profileBirthDate">Fecha de Nacimiento</label>
+                        <input type="date" id="profileBirthDate">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileEmail">Email</label>
+                    <input type="email" id="profileEmail" disabled style="background: var(--gray-50); cursor: not-allowed;">
+                    <small style="color: var(--gray-500);">El email no se puede cambiar</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileUsername">Nombre de Usuario</label>
+                    <input type="text" id="profileUsername" disabled style="background: var(--gray-50); cursor: not-allowed;">
+                    <small style="color: var(--gray-500);">El nombre de usuario no se puede cambiar</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profilePhone">Teléfono</label>
+                    <input type="tel" id="profilePhone" placeholder="+34 600 000 000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileAddress">Dirección</label>
+                    <input type="text" id="profileAddress" placeholder="Calle, número">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="profileCity">Ciudad</label>
+                        <input type="text" id="profileCity" placeholder="Tu ciudad">
+                    </div>
+                    <div class="form-group">
+                        <label for="profileCountry">País</label>
+                        <input type="text" id="profileCountry" placeholder="Tu país">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileNotes">Notas Personales</label>
+                    <textarea id="profileNotes" rows="4" placeholder="Cualquier información adicional que quieras guardar..." style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px;">
+                    <button type="button" class="btn-secondary" onclick="closeUserProfile()">Cancelar</button>
+                    <button type="submit" class="btn-primary">💾 Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Cargar aplicación JavaScript directamente -->
-    <script src="/app.js?v=2.1.0"></script>
+    <script src="/app.js?v=2.2.0"></script>
     
     <!-- Footer -->
     <footer style="background: var(--gray-900); color: var(--gray-300); padding: 40px 20px; margin-top: 60px; border-top: 1px solid var(--border-color);">

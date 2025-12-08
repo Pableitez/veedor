@@ -68,6 +68,7 @@ let accounts = [];
 let assets = [];
 let charts = {};
 let currentUser = null;
+let currentUserEmail = null;
 let authToken = null;
 let summaryPeriod = 'month'; // 'month', 'year', 'all'
 
@@ -153,6 +154,19 @@ async function checkAuth() {
         try {
             const data = await apiRequest('/verify');
             currentUser = data.user.username || data.user.email;
+            currentUserEmail = data.user.email;
+            // Cargar datos del perfil
+            userProfile = {
+                firstName: data.user.firstName || '',
+                lastName: data.user.lastName || '',
+                age: data.user.age || null,
+                phone: data.user.phone || '',
+                address: data.user.address || '',
+                city: data.user.city || '',
+                country: data.user.country || '',
+                birthDate: data.user.birthDate || null,
+                notes: data.user.notes || ''
+            };
             showMainApp();
             await loadUserData();
             initializeDate();
@@ -485,6 +499,19 @@ async function register() {
         console.log('✅ Registro exitoso');
         authToken = data.token;
         currentUser = data.user.username || data.user.email;
+        currentUserEmail = data.user.email;
+        // Cargar datos del perfil
+        userProfile = {
+            firstName: data.user.firstName || '',
+            lastName: data.user.lastName || '',
+            age: data.user.age || null,
+            phone: data.user.phone || '',
+            address: data.user.address || '',
+            city: data.user.city || '',
+            country: data.user.country || '',
+            birthDate: data.user.birthDate || null,
+            notes: data.user.notes || ''
+        };
         localStorage.setItem('veedor_token', authToken);
         
         showMainApp();
@@ -533,6 +560,19 @@ async function login() {
         
         authToken = data.token;
         currentUser = data.user.username || data.user.email;
+        currentUserEmail = data.user.email;
+        // Cargar datos del perfil
+        userProfile = {
+            firstName: data.user.firstName || '',
+            lastName: data.user.lastName || '',
+            age: data.user.age || null,
+            phone: data.user.phone || '',
+            address: data.user.address || '',
+            city: data.user.city || '',
+            country: data.user.country || '',
+            birthDate: data.user.birthDate || null,
+            notes: data.user.notes || ''
+        };
         localStorage.setItem('veedor_token', authToken);
         
         showMainApp();
