@@ -999,49 +999,55 @@ tbody tr:last-child td {
     }
     
     header {
-        flex-direction: column;
-        gap: 12px;
-        padding: 14px 16px !important;
+        padding: 10px 16px !important;
+        flex-wrap: nowrap;
+        gap: 8px;
     }
     
     header > div:first-child {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    
-    #headerNav {
-        display: flex !important; /* Mostrar menú desplegable en móvil también */
-    }
-    
-    #mainNavDropdown {
-        right: 0 !important; /* Alinear a la derecha en móvil */
-        left: auto !important;
+        flex-shrink: 0;
+        min-width: 0;
     }
     
     header > div:first-child svg {
-        width: 32px !important;
-        height: 32px !important;
+        width: 28px !important;
+        height: 28px !important;
         flex-shrink: 0;
     }
     
     header h1 {
-        font-size: 18px !important;
+        font-size: 16px !important;
         margin: 0 !important;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        flex-shrink: 0;
     }
     
     .header-actions {
-        width: auto;
+        flex-shrink: 0;
         justify-content: flex-end;
         flex-wrap: nowrap;
         gap: 6px;
-        flex-shrink: 0;
+        min-width: 0;
+    }
+    
+    #mainNavDropdownBtn {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+        font-size: 16px !important;
+    }
+    
+    #settingsDropdownBtn {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+    }
+    
+    #mainNavDropdown {
+        right: 0 !important;
+        left: auto !important;
     }
     
     .header-actions .user-info {
