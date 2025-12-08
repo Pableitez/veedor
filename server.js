@@ -313,7 +313,15 @@ function setupEmailTransporter() {
 // Función para enviar email de verificación
 async function sendVerificationEmail(email, verificationToken) {
     if (!emailTransporter) {
-        console.log('⚠️ Email transporter no configurado. Token de verificación:', verificationToken);
+        console.log('⚠️ Email transporter no configurado.');
+        console.log('📧 Token de verificación generado:', verificationToken);
+        console.log('💡 Para habilitar emails, configura en Render:');
+        console.log('   - EMAIL_HOST (ej: smtp.gmail.com)');
+        console.log('   - EMAIL_USER (tu email)');
+        console.log('   - EMAIL_PASS (tu contraseña de aplicación)');
+        console.log('   - EMAIL_PORT (587 para TLS, 465 para SSL)');
+        console.log('   - EMAIL_SECURE (true para SSL, false para TLS)');
+        console.log('   - APP_URL (URL de tu aplicación en Render)');
         return false;
     }
 
@@ -338,11 +346,23 @@ async function sendVerificationEmail(email, verificationToken) {
     };
 
     try {
-        await emailTransporter.sendMail(mailOptions);
-        console.log(`✅ Email de verificación enviado a ${email}`);
+        console.log('📧 Intentando enviar email a:', email);
+        console.log('📧 Desde:', process.env.EMAIL_USER);
+        console.log('📧 Host:', process.env.EMAIL_HOST);
+        console.log('📧 Puerto:', process.env.EMAIL_PORT || '587');
+        
+        const info = await emailTransporter.sendMail(mailOptions);
+        console.log('✅ Email de verificación enviado exitosamente a', email);
+        console.log('📧 Message ID:', info.messageId);
         return true;
     } catch (error) {
         console.error('❌ Error enviando email:', error);
+        console.error('❌ Detalles del error:', {
+            code: error.code,
+            command: error.command,
+            response: error.response,
+            responseCode: error.responseCode
+        });
         return false;
     }
 }

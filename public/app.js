@@ -191,14 +191,11 @@ async function checkAuth() {
                 updateCharts();
             }, 200);
             updateUserInfo();
-            // Inicializar traducciones y seleccionar dashboard por defecto
+            // Inicializar traducciones
             if (typeof updateTranslations === 'function') {
                 updateTranslations();
             }
-            // Seleccionar dashboard por defecto al entrar
-            setTimeout(() => {
-                scrollToDashboard();
-            }, 300);
+            // NO hacer scroll automático - el usuario decidirá dónde quiere ir
         } catch (error) {
             console.error('Error verificando autenticación:', error);
             logout();
