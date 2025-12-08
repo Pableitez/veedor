@@ -610,6 +610,50 @@ function initializeForms() {
         });
     }
     
+    // Formulario de préstamos
+    const loanForm = document.getElementById('loanForm');
+    if (loanForm) {
+        loanForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addLoan();
+        });
+        
+        // Calcular cuota mensual automáticamente
+        const loanPrincipal = document.getElementById('loanPrincipal');
+        const loanInterestRate = document.getElementById('loanInterestRate');
+        const loanStartDate = document.getElementById('loanStartDate');
+        const loanEndDate = document.getElementById('loanEndDate');
+        const loanMonthlyPayment = document.getElementById('loanMonthlyPayment');
+        
+        if (loanPrincipal && loanInterestRate && loanStartDate && loanEndDate && loanMonthlyPayment) {
+            const calculatePayment = () => {
+                const principal = parseFloat(loanPrincipal.value) || 0;
+                const rate = parseFloat(loanInterestRate.value) || 0;
+                const start = new Date(loanStartDate.value);
+                const end = new Date(loanEndDate.value);
+                
+                if (principal > 0 && rate >= 0 && end > start && !isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                    const months = Math.ceil((end - start) / (1000 * 60 * 60 * 24 * 30.44));
+                    if (months > 0) {
+                        const payment = calculateMonthlyPayment(principal, rate, months);
+                        loanMonthlyPayment.value = payment.toFixed(2);
+                    }
+                }
+            };
+            
+            loanPrincipal.addEventListener('input', calculatePayment);
+            loanInterestRate.addEventListener('input', calculatePayment);
+            loanStartDate.addEventListener('change', calculatePayment);
+            loanEndDate.addEventListener('change', calculatePayment);
+        }
+        
+        // Inicializar fecha de inicio
+        if (loanStartDate) {
+            const today = new Date().toISOString().split('T')[0];
+            loanStartDate.value = today;
+        }
+    }
+    
     // Búsqueda y filtros
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
