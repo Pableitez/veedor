@@ -3520,7 +3520,7 @@ function updateFinancialHealthMetrics() {
                     <p style="margin: 0; font-size: 12px; color: var(--gray-600);">${metric.description}</p>
                 </div>
                 <span style="padding: 4px 10px; background: ${statusStyle.bg}; color: ${statusStyle.text}; border-radius: var(--radius-full); font-size: 11px; font-weight: 600;">
-                    ${metric.status === 'excellent' ? 'Excelente' : metric.status === 'good' ? 'Bueno' : metric.status === 'warning' ? 'Moderado' : 'Alto'}
+                    ${metric.status === 'excellent' ? 'Excelente' : metric.status === 'good' ? 'Bueno' : metric.status === 'warning' ? 'Moderado' : 'Bajo'}
                 </span>
             </div>
             <div style="margin-top: 16px;">
