@@ -539,7 +539,22 @@ app.get('/api/verify', authenticateToken, async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
-        res.json({ user: { id: user._id.toString(), username: user.username } });
+        res.json({ 
+            user: { 
+                id: user._id.toString(), 
+                email: user.email,
+                username: user.username,
+                firstName: user.firstName || '',
+                lastName: user.lastName || '',
+                age: user.age || null,
+                phone: user.phone || '',
+                address: user.address || '',
+                city: user.city || '',
+                country: user.country || '',
+                birthDate: user.birthDate || null,
+                notes: user.notes || ''
+            } 
+        });
     } catch (error) {
         console.error('Error verificando token:', error);
         res.status(500).json({ error: 'Error del servidor' });
