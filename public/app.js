@@ -3278,7 +3278,7 @@ function formatDate(date) {
 function updateFinancialHealthMetrics() {
     const container = document.getElementById('financialHealthMetrics');
     if (!container) {
-        console.warn('⚠️ Contenedor financialHealthMetrics no encontrado');
+        // El contenedor puede no existir si no estamos en el tab de análisis
         return;
     }
     
