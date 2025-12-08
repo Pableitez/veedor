@@ -617,7 +617,12 @@ function showMainApp() {
 
 // Actualizar información del usuario
 function updateUserInfo() {
-    document.getElementById('currentUser').textContent = `👤 ${currentUser}`;
+    const currentUserEl = document.getElementById('currentUser');
+    if (currentUserEl) {
+        const displayName = userProfile.firstName || currentUser;
+        currentUserEl.textContent = `👤 ${displayName}`;
+        currentUserEl.title = `Haz clic para ver tu perfil`;
+    }
 }
 
 // Cargar datos del usuario actual
