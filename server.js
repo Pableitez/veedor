@@ -616,7 +616,14 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
         if (city !== undefined) user.city = city;
         if (country !== undefined) user.country = country;
         if (notes !== undefined) user.notes = notes;
-        if (savingsGoal !== undefined) user.savingsGoal = savingsGoal === null || savingsGoal === '' ? null : parseFloat(savingsGoal);
+        if (savingsGoal !== undefined) {
+            if (savingsGoal === null || savingsGoal === '' || savingsGoal === 0) {
+                user.savingsGoal = null;
+            } else {
+                const parsed = parseFloat(savingsGoal);
+                user.savingsGoal = isNaN(parsed) ? null : parsed;
+            }
+        }
         
         user.updatedAt = new Date();
         await user.save();

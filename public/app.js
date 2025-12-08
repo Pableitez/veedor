@@ -4589,7 +4589,8 @@ function updateFinancialHealthMetrics() {
     // 5. Ratio de Ahorro (Ahorro del período / Ingresos del período)
     const savingsRatio = periodIncome > 0 ? (periodSavings / periodIncome) * 100 : (periodIncome === 0 && periodExpenses > 0 ? -100 : 0);
     // Lógica corregida: negativo o 0% = bajo/peligro, positivo = bueno
-    const savingsStatus = savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger';
+    // Si no hay ingresos y hay gastos = peligro, si no hay ingresos ni gastos = moderado
+    const savingsStatus = periodIncome === 0 && periodExpenses === 0 ? 'warning' : (savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger');
     
     // 6. Ratio de Liquidez (Activos líquidos / Gastos mensuales promedio del período)
     const avgMonthlyExpenses = monthsInPeriod > 0 ? periodExpenses / monthsInPeriod : periodExpenses;
@@ -4607,7 +4608,7 @@ function updateFinancialHealthMetrics() {
     const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
     const debtServiceRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 999 : 0);
     // Si no hay ingresos pero hay pagos = peligro crítico
-    const debtServiceStatus = avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'danger' : (debtServiceRatio < 20 ? 'excellent' : debtServiceRatio < 30 ? 'good' : debtServiceRatio < 40 ? 'warning' : 'danger');
+    const debtServiceStatus = avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'danger' : (debtServiceRatio >= 40 ? 'danger' : debtServiceRatio >= 30 ? 'warning' : debtServiceRatio >= 20 ? 'good' : 'excellent');
     
     const metrics = [
         {
@@ -5368,6 +5369,143 @@ window.closeTermsModal = closeTermsModal;
 window.showSavingsGoalModal = showSavingsGoalModal;
 window.closeSavingsGoalModal = closeSavingsGoalModal;
 window.deleteSavingsGoal = deleteSavingsGoal;
+window.showFinancialHealthDetail = showFinancialHealthDetail;
+
+// Mostrar detalles de métrica de salud financiera
+function showFinancialHealthDetail(metric, index) {
+    const modal = document.getElementById('summaryDetailsModal');
+    const titleEl = document.getElementById('summaryDetailsTitle');
+    const contentEl = document.getElementById('summaryDetailsContent');
+    
+    if (!modal || !titleEl || !contentEl) return;
+    
+    titleEl.textContent = `${metric.icon} ${metric.title}`;
+    
+    // Obtener datos detallados según la métrica
+    const periodTransactions = getTransactionsByPeriod();
+    const period = getSelectedPeriod();
+    const now = new Date();
+    
+    let monthsInPeriod = 1;
+    if (period === 999) {
+        const dates = periodTransactions.map(t => new Date(t.date));
+        if (dates.length > 0) {
+            const minDate = new Date(Math.min(...dates));
+            const maxDate = new Date(Math.max(...dates));
+            const diffTime = Math.abs(maxDate - minDate);
+            monthsInPeriod = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44)));
+        }
+    } else {
+        monthsInPeriod = period;
+    }
+    
+    const totalTransactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit;
+    const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    const periodIncome = periodTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const periodExpenses = Math.abs(periodTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    const periodSavings = periodIncome - periodExpenses;
+    const avgMonthlyIncome = monthsInPeriod > 0 ? periodIncome / monthsInPeriod : 0;
+    const avgMonthlyExpenses = monthsInPeriod > 0 ? periodExpenses / monthsInPeriod : periodExpenses;
+    const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
+    
+    let detailContent = `
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div style="background: var(--gray-50); padding: 20px; border-radius: 12px;">
+                <h3 style="margin: 0 0 12px 0; font-size: 18px; color: var(--gray-900);">Valor Actual</h3>
+                <div style="font-size: 32px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">
+                    ${metric.value}
+                </div>
+                <p style="margin: 0; color: var(--gray-600); font-size: 14px;">${metric.description}</p>
+            </div>
+            
+            <div>
+                <h3 style="margin: 0 0 12px 0; font-size: 16px; color: var(--gray-900);">Detalles del Cálculo</h3>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+    `;
+    
+    // Agregar detalles específicos según la métrica
+    if (index === 0) { // Deuda Pendiente
+        detailContent += `
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
+                <strong>Deuda Total:</strong> ${formatCurrency(loansDebt)}
+            </div>
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
+                <strong>Activos Totales:</strong> ${formatCurrency(totalAssets)}
+            </div>
+        `;
+    } else if (index === 1) { // Ratio de Endeudamiento
+        detailContent += `
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
+                <strong>Deuda Total:</strong> ${formatCurrency(loansDebt)}
+            </div>
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
+                <strong>Activos Totales:</strong> ${formatCurrency(totalAssets)}
+            </div>
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--primary);">
+                <strong>Ratio:</strong> ${(loansDebt / (totalAssets || 1) * 100).toFixed(2)}%
+            </div>
+        `;
+    } else if (index === 4) { // Ratio de Ahorro
+        detailContent += `
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
+                <strong>Ingresos del Período:</strong> ${formatCurrency(periodIncome)}
+            </div>
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
+                <strong>Gastos del Período:</strong> ${formatCurrency(periodExpenses)}
+            </div>
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--primary);">
+                <strong>Ahorro del Período:</strong> ${formatCurrency(periodSavings)}
+            </div>
+        `;
+    } else if (index === 7) { // Servicio de Deuda
+        detailContent += `
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
+                <strong>Pagos Mensuales de Préstamos:</strong> ${formatCurrency(monthlyLoanPayments)}
+            </div>
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
+                <strong>Ingresos Mensuales Promedio:</strong> ${formatCurrency(avgMonthlyIncome)} ${avgMonthlyIncome === 0 ? '(sin ingresos)' : ''}
+            </div>
+        `;
+    }
+    
+    detailContent += `
+                </div>
+            </div>
+            
+            <div style="padding: 16px; background: var(--primary-light); border-radius: 12px; border: 1px solid var(--primary);">
+                <p style="margin: 0; color: var(--gray-700); font-size: 14px; line-height: 1.6;">
+                    <strong>Interpretación:</strong> ${metric.detail}
+                </p>
+            </div>
+        </div>
+    `;
+    
+    contentEl.innerHTML = detailContent;
+    modal.style.display = 'flex';
+}
 
 // Cerrar el bloque de protección contra carga múltiple
 }
