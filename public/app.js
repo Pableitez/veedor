@@ -851,7 +851,32 @@ function updateSummary() {
     });
     
     // Cálculos del mes
-    const totalBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    // Balance total = transacciones + valor actual de inversiones - capital restante de préstamos
+    const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt;
     const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
     const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
     const monthSavings = monthIncome - monthExpenses;
