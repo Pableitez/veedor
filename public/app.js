@@ -786,11 +786,44 @@ function initializeForms() {
     
     // Selector de período en dashboard
     const summaryPeriodSelect = document.getElementById('summaryPeriod');
+    const summaryYearInput = document.getElementById('summaryYear');
     if (summaryPeriodSelect) {
+        // Inicializar año actual
+        if (summaryYearInput) {
+            summaryYearInput.value = new Date().getFullYear();
+        }
+        
         summaryPeriodSelect.addEventListener('change', (e) => {
-            summaryPeriod = e.target.value;
+            const value = e.target.value;
+            summaryPeriod = value;
+            
+            // Mostrar/ocultar selector de año
+            if (summaryYearInput) {
+                if (value === 'year-select') {
+                    summaryYearInput.style.display = 'block';
+                    summaryYearInput.focus();
+                } else {
+                    summaryYearInput.style.display = 'none';
+                }
+            }
+            
             updateSummary();
         });
+        
+        // Listener para cambio de año
+        if (summaryYearInput) {
+            summaryYearInput.addEventListener('change', () => {
+                if (summaryPeriod === 'year-select') {
+                    updateSummary();
+                }
+            });
+            
+            summaryYearInput.addEventListener('input', () => {
+                if (summaryPeriod === 'year-select') {
+                    updateSummary();
+                }
+            });
+        }
     }
     
     // Selector de mes para el panel de mandos
