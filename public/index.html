@@ -260,6 +260,13 @@
                                 </select>
                                 <small>Selecciona la cuenta desde/hacia la que se realiza la transacción</small>
                             </div>
+                            <div class="form-group">
+                                <label for="transactionInvestment">Inversión (Opcional)</label>
+                                <select id="transactionInvestment">
+                                    <option value="">Ninguna</option>
+                                </select>
+                                <small>Si este gasto/ingreso es para una inversión, selecciónala</small>
+                            </div>
                             <div class="form-group" style="flex: 2;">
                                 <label for="transactionDescription">Descripción</label>
                                 <input type="text" id="transactionDescription" placeholder="Ej: Compra en supermercado">
@@ -809,6 +816,26 @@
                         <div class="chart-card">
                             <h3>Distribución de Gastos</h3>
                             <canvas id="distributionChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Evolución de Ingresos</h3>
+                            <canvas id="incomeEvolutionChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Evolución de Gastos</h3>
+                            <canvas id="expensesEvolutionChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Préstamos Pendientes</h3>
+                            <canvas id="loansPendingChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Evolución del Patrimonio</h3>
+                            <canvas id="assetsEvolutionChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Evolución de Saldo en Cuentas</h3>
+                            <canvas id="accountsBalanceChart"></canvas>
                         </div>
                     </div>
                 </div>

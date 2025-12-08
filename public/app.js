@@ -1175,6 +1175,7 @@ async function addTransaction() {
     const categorySpecific = document.getElementById('categorySpecific').value;
     const envelope = document.getElementById('envelope').value;
     const accountId = document.getElementById('transactionAccount').value;
+    const investmentId = document.getElementById('transactionInvestment').value;
     const description = document.getElementById('transactionDescription').value;
     
     try {
@@ -1188,9 +1189,29 @@ async function addTransaction() {
                 categorySpecific,
                 envelope: envelope || null,
                 account_id: accountId || null,
+                investment_id: investmentId || null,
                 description: description || `${categories.general.find(c => c.id === categoryGeneral)?.name} - ${categorySpecific}`
             })
         });
+        
+        // Si la transacción está asociada a una inversión, actualizar el monto invertido
+        if (investmentId && type === 'expense') {
+            const investment = investments.find(inv => (inv._id || inv.id) === investmentId);
+            if (investment) {
+                const newAmount = investment.amount + Math.abs(amount);
+                try {
+                    await apiRequest(`/investments/${investmentId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({
+                            ...investment,
+                            amount: newAmount
+                        })
+                    });
+                } catch (error) {
+                    console.error('Error actualizando inversión:', error);
+                }
+            }
+        }
         
         // Agregar a la lista local
         transactions.push({
@@ -1239,6 +1260,7 @@ function updateDisplay() {
         updateEnvelopes();
         updateEnvelopeSelect();
         updateAccountSelect(); // Actualizar selector de cuentas
+        updateInvestmentSelect(); // Actualizar selector de inversiones
         updateLoans();
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
@@ -3102,6 +3124,77 @@ function initializeCharts() {
             }
         }
     });
+    
+    // Nuevas gráficas
+    const incomeEvolutionEl = document.getElementById('incomeEvolutionChart');
+    if (incomeEvolutionEl) {
+        charts.incomeEvolution = new Chart(incomeEvolutionEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const expensesEvolutionEl = document.getElementById('expensesEvolutionChart');
+    if (expensesEvolutionEl) {
+        charts.expensesEvolution = new Chart(expensesEvolutionEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const loansPendingEl = document.getElementById('loansPendingChart');
+    if (loansPendingEl) {
+        charts.loansPending = new Chart(loansPendingEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const assetsEvolutionEl = document.getElementById('assetsEvolutionChart');
+    if (assetsEvolutionEl) {
+        charts.assetsEvolution = new Chart(assetsEvolutionEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const accountsBalanceEl = document.getElementById('accountsBalanceChart');
+    if (accountsBalanceEl) {
+        charts.accountsBalance = new Chart(accountsBalanceEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
 }
 
 // Obtener período seleccionado
@@ -3134,6 +3227,11 @@ function updateCharts() {
     updateExpensesChart();
     updateIncomeExpenseChart();
     updateDistributionChart();
+    updateIncomeEvolutionChart();
+    updateExpensesEvolutionChart();
+    updateLoansPendingChart();
+    updateAssetsEvolutionChart();
+    updateAccountsBalanceChart();
     updateFinancialHealthMetrics();
     updateAnalysisTables();
 }
