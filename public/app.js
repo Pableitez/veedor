@@ -2696,6 +2696,27 @@ function updateInvestments() {
             
             ${investment.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${investment.description}</div>` : ''}
             
+            ${investment.periodic_contribution && investment.periodic_contribution.enabled ? `
+                <div style="margin: 12px 0; padding: 12px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius); border-left: 3px solid var(--primary);">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 8px;">💡 Aporte Periódico Activo</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                        <div><strong>Frecuencia:</strong></div>
+                        <div style="text-align: right;">${investment.periodic_contribution.frequency === 'weekly' ? 'Semanal' : investment.periodic_contribution.frequency === 'monthly' ? 'Mensual' : 'Anual'}</div>
+                        <div><strong>Monto:</strong></div>
+                        <div style="text-align: right; font-weight: 600;">${formatCurrency(investment.periodic_contribution.amount)}</div>
+                        <div><strong>Inicio:</strong></div>
+                        <div style="text-align: right;">${formatDate(new Date(investment.periodic_contribution.start_date))}</div>
+                        ${investment.periodic_contribution.end_date ? `
+                            <div><strong>Fin:</strong></div>
+                            <div style="text-align: right;">${formatDate(new Date(investment.periodic_contribution.end_date))}</div>
+                        ` : `
+                            <div><strong>Fin:</strong></div>
+                            <div style="text-align: right; color: var(--gray-500);">Indefinido</div>
+                        `}
+                    </div>
+                </div>
+            ` : ''}
+            
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
                 <button class="btn-secondary" onclick="editInvestment('${investment._id || investment.id}')" style="flex: 1;">✏️ Editar</button>
                 <button class="btn-danger" onclick="deleteInvestment('${investment._id || investment.id}')" style="flex: 1;">🗑️ Eliminar</button>
