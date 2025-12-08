@@ -308,10 +308,10 @@ app.post('/api/register', async (req, res) => {
             }
         }
 
-        const { email, password } = req.body;
+        const { email, username, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email y contraseña requeridos' });
+        if (!email || !username || !password) {
+            return res.status(400).json({ error: 'Email, nombre de usuario y contraseña requeridos' });
         }
 
         // Validar formato de email
@@ -320,14 +320,24 @@ app.post('/api/register', async (req, res) => {
             return res.status(400).json({ error: 'Email inválido' });
         }
 
+        if (username.trim().length < 3) {
+            return res.status(400).json({ error: 'El nombre de usuario debe tener al menos 3 caracteres' });
+        }
+
         if (password.length < 4) {
             return res.status(400).json({ error: 'La contraseña debe tener al menos 4 caracteres' });
         }
 
-        // Verificar si el usuario ya existe
-        const existingUser = await User.findOne({ email: email.trim().toLowerCase() });
-        if (existingUser) {
+        // Verificar si el email ya existe
+        const existingUserByEmail = await User.findOne({ email: email.trim().toLowerCase() });
+        if (existingUserByEmail) {
             return res.status(400).json({ error: 'El email ya está registrado' });
+        }
+
+        // Verificar si el username ya existe
+        const existingUserByUsername = await User.findOne({ username: username.trim() });
+        if (existingUserByUsername) {
+            return res.status(400).json({ error: 'El nombre de usuario ya está en uso' });
         }
 
         // Hash de la contraseña
@@ -335,7 +345,8 @@ app.post('/api/register', async (req, res) => {
 
         // Crear usuario
         const user = new User({ 
-            email: email.trim().toLowerCase(), 
+            email: email.trim().toLowerCase(),
+            username: username.trim(),
             password: hashedPassword 
         });
         await user.save();
@@ -374,28 +385,38 @@ app.post('/api/login', async (req, res) => {
             return res.status(503).json({ error: 'Base de datos no disponible. Intenta de nuevo en unos momentos.' });
         }
 
-        const { email, password } = req.body;
+        const { emailOrUsername, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email y contraseña requeridos' });
+        if (!emailOrUsername || !password) {
+            return res.status(400).json({ error: 'Email/nombre de usuario y contraseña requeridos' });
         }
 
-        const user = await User.findOne({ email: email.trim().toLowerCase() });
+        // Intentar buscar por email o username
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isEmail = emailRegex.test(emailOrUsername.trim());
+        
+        let user;
+        if (isEmail) {
+            user = await User.findOne({ email: emailOrUsername.trim().toLowerCase() });
+        } else {
+            user = await User.findOne({ username: emailOrUsername.trim() });
+        }
+        
         if (!user) {
-            return res.status(401).json({ error: 'Email o contraseña incorrectos' });
+            return res.status(401).json({ error: 'Email/nombre de usuario o contraseña incorrectos' });
         }
 
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
-            return res.status(401).json({ error: 'Email o contraseña incorrectos' });
+            return res.status(401).json({ error: 'Email/nombre de usuario o contraseña incorrectos' });
         }
 
-        const token = jwt.sign({ userId: user._id.toString(), email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+        const token = jwt.sign({ userId: user._id.toString(), email: user.email, username: user.username }, JWT_SECRET, { expiresIn: '30d' });
 
         res.json({
             message: 'Login exitoso',
             token,
-            user: { id: user._id.toString(), email: user.email }
+            user: { id: user._id.toString(), email: user.email, username: user.username }
         });
     } catch (error) {
         console.error('Error en login:', error);
