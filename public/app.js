@@ -817,35 +817,8 @@ function initializeForms() {
             await addAccount();
         });
         
-        // Calcular rentabilidad automáticamente
-        const investmentAmount = document.getElementById('investmentAmount');
-        const investmentCurrentValue = document.getElementById('investmentCurrentValue');
-        const investmentReturn = document.getElementById('investmentReturn');
-        const investmentProfit = document.getElementById('investmentProfit');
-        
-        if (investmentAmount && investmentCurrentValue && investmentReturn && investmentProfit) {
-            const calculateReturn = () => {
-                const amount = parseFloat(investmentAmount.value) || 0;
-                const current = parseFloat(investmentCurrentValue.value) || 0;
-                
-                if (amount > 0) {
-                    const profit = current - amount;
-                    const returnPercent = ((profit / amount) * 100);
-                    investmentProfit.value = profit.toFixed(2);
-                    investmentReturn.value = returnPercent.toFixed(2);
-                }
-            };
-            
-            investmentAmount.addEventListener('input', calculateReturn);
-            investmentCurrentValue.addEventListener('input', calculateReturn);
-        }
-        
-        // Inicializar fecha
-        const investmentDate = document.getElementById('investmentDate');
-        if (investmentDate) {
-            const today = new Date().toISOString().split('T')[0];
-            investmentDate.value = today;
-        }
+        // Ya no necesitamos calcular rentabilidad automáticamente en el formulario
+        // La rentabilidad se calcula en base a los aportes acumulados
     }
     
     // Formulario de patrimonio
@@ -2574,9 +2547,7 @@ window.showEarlyPaymentModal = showEarlyPaymentModal;
 async function addInvestment() {
     const name = document.getElementById('investmentName').value.trim();
     const type = document.getElementById('investmentType').value;
-    const amount = parseFloat(document.getElementById('investmentAmount').value);
     const currentValue = parseFloat(document.getElementById('investmentCurrentValue').value);
-    const date = document.getElementById('investmentDate').value;
     const description = document.getElementById('investmentDescription').value.trim();
     
     // Aportes periódicos
@@ -2586,7 +2557,7 @@ async function addInvestment() {
     const contributionStartDate = document.getElementById('contributionStartDate')?.value || null;
     const contributionEndDate = document.getElementById('contributionEndDate')?.value || null;
     
-    if (!name || !amount || !currentValue || !date || !type) {
+    if (!name || isNaN(currentValue) || !type) {
         alert('Por favor completa todos los campos requeridos');
         return;
     }
@@ -2600,16 +2571,16 @@ async function addInvestment() {
         const investmentData = {
             name,
             type,
-            amount,
-            current_value: currentValue,
-            date,
+            current_value: currentValue || 0,
             description: description || null,
+            contributions: [], // Inicialmente vacío, se irá llenando con aportes
             periodic_contribution: {
                 enabled: enablePeriodic,
                 frequency: enablePeriodic ? contributionFrequency : 'monthly',
                 amount: enablePeriodic ? contributionAmount : 0,
                 start_date: enablePeriodic ? contributionStartDate : null,
-                end_date: enablePeriodic ? (contributionEndDate || null) : null
+                end_date: enablePeriodic ? (contributionEndDate || null) : null,
+                completed_contributions: []
             }
         };
         
@@ -2621,17 +2592,12 @@ async function addInvestment() {
         investments.push(investment);
         updateDisplay();
         document.getElementById('investmentForm').reset();
-        const investmentDate = document.getElementById('investmentDate');
-        if (investmentDate) {
-            const today = new Date().toISOString().split('T')[0];
-            investmentDate.value = today;
-        }
         // Resetear campos de aportes periódicos
         const enablePeriodicCheckbox = document.getElementById('enablePeriodicContribution');
         const periodicFields = document.getElementById('periodicContributionFields');
         if (enablePeriodicCheckbox) enablePeriodicCheckbox.checked = false;
         if (periodicFields) periodicFields.style.display = 'none';
-        alert('✅ Inversión agregada exitosamente');
+        alert('✅ Inversión creada. Ahora puedes añadir dinero a tu hucha.');
     } catch (error) {
         alert('Error al crear inversión: ' + error.message);
     }
@@ -2742,7 +2708,8 @@ function updateInvestments() {
             ` : ''}
             
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
-                <button class="btn-secondary" onclick="editInvestment('${investment._id || investment.id}')" style="flex: 1;">✏️ Editar</button>
+                <button class="btn-primary" onclick="addMoneyToInvestment('${investment._id || investment.id}')" style="flex: 1;">💰 Añadir Dinero</button>
+                <button class="btn-secondary" onclick="updateInvestmentValue('${investment._id || investment.id}')" style="flex: 1;">📊 Actualizar Valor</button>
                 <button class="btn-danger" onclick="deleteInvestment('${investment._id || investment.id}')" style="flex: 1;">🗑️ Eliminar</button>
             </div>
         `;

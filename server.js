@@ -106,10 +106,14 @@ const investmentSchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
     type: { type: String, enum: ['stocks', 'bonds', 'crypto', 'funds', 'real_estate', 'other'], required: true },
-    amount: { type: Number, required: true }, // Monto invertido
-    current_value: { type: Number, required: true }, // Valor actual
-    date: { type: String, required: true },
+    current_value: { type: Number, required: true, default: 0 }, // Valor actual de la inversión
     description: { type: String, default: null },
+    // Historial de aportes (como una hucha)
+    contributions: [{ // Aportes realizados
+        date: { type: String, required: true },
+        amount: { type: Number, required: true },
+        transaction_id: { type: String, default: null } // ID de la transacción asociada (si viene de un gasto)
+    }],
     // Aportes periódicos
     periodic_contribution: {
         enabled: { type: Boolean, default: false },
@@ -581,6 +585,17 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
                         amount: Math.abs(amount),
                         transaction_id: transaction._id.toString()
                     });
+                    
+                    // También agregar al historial de aportes general
+                    if (!investment.contributions) {
+                        investment.contributions = [];
+                    }
+                    investment.contributions.push({
+                        date: date,
+                        amount: Math.abs(amount),
+                        transaction_id: transaction._id.toString()
+                    });
+                    
                     await investment.save();
                 }
             }
