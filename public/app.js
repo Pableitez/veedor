@@ -1109,24 +1109,42 @@ function initializeForms() {
     // Inicializar formulario de meta de ahorro
     const savingsGoalForm = document.getElementById('savingsGoalForm');
     if (savingsGoalForm) {
-        savingsGoalForm.addEventListener('submit', async (e) => {
+        // Remover listeners anteriores si existen
+        const newForm = savingsGoalForm.cloneNode(true);
+        savingsGoalForm.parentNode.replaceChild(newForm, savingsGoalForm);
+        
+        document.getElementById('savingsGoalForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const input = document.getElementById('savingsGoalInput');
-            if (!input || !input.value || isNaN(input.value) || parseFloat(input.value) <= 0) {
+            if (!input) {
+                alert('Error: No se encontró el campo de entrada');
+                return;
+            }
+            
+            const value = input.value.trim();
+            if (!value) {
                 alert('Por favor ingresa una cantidad válida');
                 return;
             }
             
+            const numValue = parseFloat(value);
+            if (isNaN(numValue) || numValue < 0) {
+                alert('Por favor ingresa un número válido mayor o igual a 0');
+                return;
+            }
+            
             try {
-                savingsGoal = parseFloat(input.value);
+                savingsGoal = numValue > 0 ? numValue : null;
                 await apiRequest('/user/profile', {
                     method: 'PUT',
                     body: JSON.stringify({ savingsGoal })
                 });
                 updateSummary();
                 closeSavingsGoalModal();
+                alert('✅ Meta de ahorro guardada exitosamente');
             } catch (error) {
-                alert('Error al guardar la meta de ahorro: ' + error.message);
+                console.error('Error al guardar la meta de ahorro:', error);
+                alert('Error al guardar la meta de ahorro: ' + (error.message || 'Error desconocido'));
             }
         });
     }
@@ -4581,8 +4599,9 @@ function updateFinancialHealthMetrics() {
     // 8. Ratio de Servicio de Deuda (Pagos mensuales / Ingresos mensuales promedio del período)
     const avgMonthlyIncome = monthsInPeriod > 0 ? periodIncome / monthsInPeriod : 0;
     const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
-    const debtServiceRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 100 : 0);
-    const debtServiceStatus = debtServiceRatio < 20 ? 'excellent' : debtServiceRatio < 30 ? 'good' : debtServiceRatio < 40 ? 'warning' : 'danger';
+    const debtServiceRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 999 : 0);
+    // Si no hay ingresos pero hay pagos = peligro crítico
+    const debtServiceStatus = avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'danger' : (debtServiceRatio < 20 ? 'excellent' : debtServiceRatio < 30 ? 'good' : debtServiceRatio < 40 ? 'warning' : 'danger');
     
     const metrics = [
         {
@@ -4651,7 +4670,7 @@ function updateFinancialHealthMetrics() {
         }
     ];
     
-    metrics.forEach(metric => {
+    metrics.forEach((metric, index) => {
         const card = document.createElement('div');
         card.className = 'card';
         card.style.borderLeft = `4px solid ${
@@ -4660,6 +4679,17 @@ function updateFinancialHealthMetrics() {
             metric.status === 'warning' ? 'var(--warning)' :
             'var(--danger)'
         }`;
+        card.style.cursor = 'pointer';
+        card.style.transition = 'transform 0.2s, box-shadow 0.2s';
+        card.onmouseover = () => {
+            card.style.transform = 'translateY(-2px)';
+            card.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+        };
+        card.onmouseout = () => {
+            card.style.transform = 'translateY(0)';
+            card.style.boxShadow = '';
+        };
+        card.onclick = () => showFinancialHealthDetail(metric, index);
         
         const statusColors = {
             excellent: { bg: '#D1FAE5', text: '#065F46' },
