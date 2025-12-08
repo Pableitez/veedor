@@ -987,6 +987,9 @@ async function deleteTransaction(id) {
     }
 }
 
+// Exponer funciones al scope global para onclick handlers
+window.deleteTransaction = deleteTransaction;
+
 // Eliminar sobre
 async function deleteEnvelope(id) {
     if (!confirm('¿Estás seguro de eliminar este sobre? Esto no eliminará las transacciones asociadas.')) return;
@@ -1001,6 +1004,9 @@ async function deleteEnvelope(id) {
         alert('Error al eliminar sobre: ' + (error.message || 'Error desconocido'));
     }
 }
+
+// Exponer funciones al scope global para onclick handlers
+window.deleteEnvelope = deleteEnvelope;
 
 // Agregar préstamo
 async function addLoan() {
@@ -1105,6 +1111,9 @@ async function deleteLoan(id) {
         alert('Error al eliminar préstamo: ' + (error.message || 'Error desconocido'));
     }
 }
+
+// Exponer funciones al scope global para onclick handlers
+window.deleteLoan = deleteLoan;
 
 // Inicializar gráficas
 function initializeCharts() {
