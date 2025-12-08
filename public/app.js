@@ -177,6 +177,7 @@ async function checkAuth() {
                 notes: data.user.notes || ''
             };
             showMainApp();
+            updateCurrentDateDisplay(); // Actualizar fecha al verificar autenticación
             await loadUserData();
             initializeDate();
             initializeCategories();
