@@ -986,12 +986,23 @@ function switchToTab(targetTab) {
     if (targetTabBtn) targetTabBtn.classList.add('active');
     if (targetTabContent) {
         targetTabContent.classList.add('active');
-        // Scroll suave a la sección
+        // Scroll suave a la sección - esperar a que el DOM se actualice
         setTimeout(() => {
-            if (targetTabContent) {
-                targetTabContent.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+            // Primero intentar hacer scroll al contenedor principal
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-        }, 150);
+            // Luego hacer scroll fino al tab específico
+            setTimeout(() => {
+                if (targetTabContent) {
+                    const rect = targetTabContent.getBoundingClientRect();
+                    const headerHeight = 80; // Altura aproximada del header
+                    const scrollPosition = window.pageYOffset + rect.top - headerHeight;
+                    window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+                }
+            }, 100);
+        }, 200);
     }
     
     // Actualizar items del dropdown
