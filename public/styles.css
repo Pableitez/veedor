@@ -207,6 +207,8 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     overflow-y: auto;
     transition: background-color 0.3s;
     backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
 }
 
 .auth-header {
@@ -981,18 +983,20 @@ tbody tr:last-child td {
     background-color: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(4px);
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Cambiado de center a flex-start para móvil */
     animation: fadeIn 0.2s ease-out;
+    padding: 10px;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
 }
 
 .modal-content {
     background-color: var(--bg-primary);
-    margin: 40px auto;
+    margin: 20px auto;
     padding: 0;
     border-radius: 16px;
     width: 85%;
     max-width: 800px;
-    max-width: 900px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
     position: relative;
     animation: slideUp 0.3s ease-out;
@@ -1001,6 +1005,7 @@ tbody tr:last-child td {
     max-height: 90vh;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 /* Mejorar padding y márgenes de contenido de modales */
