@@ -683,13 +683,28 @@ async function loadUserData() {
         // Cargar categorías personalizadas
         loadCustomCategories();
         
-        // Cargar meta de ahorro
-        const savedGoal = localStorage.getItem('veedor_savingsGoal');
-        if (savedGoal) {
-            try {
-                savingsGoal = parseFloat(savedGoal);
-            } catch (e) {
-                savingsGoal = null;
+        // Cargar meta de ahorro desde el perfil del usuario
+        try {
+            const profileData = await apiRequest('/user/profile');
+            if (profileData && profileData.savingsGoal !== undefined) {
+                savingsGoal = profileData.savingsGoal;
+            }
+        } catch (error) {
+            console.warn('No se pudo cargar la meta de ahorro:', error);
+            // Fallback a localStorage si existe (migración)
+            const savedGoal = localStorage.getItem('veedor_savingsGoal');
+            if (savedGoal) {
+                try {
+                    savingsGoal = parseFloat(savedGoal);
+                    // Migrar a la BD
+                    await apiRequest('/user/profile', {
+                        method: 'PUT',
+                        body: JSON.stringify({ savingsGoal })
+                    });
+                    localStorage.removeItem('veedor_savingsGoal');
+                } catch (e) {
+                    savingsGoal = null;
+                }
             }
         }
     } catch (error) {
@@ -1057,19 +1072,33 @@ function initializeForms() {
     // Botón para establecer meta de ahorro
     const setSavingsGoalBtn = document.getElementById('setSavingsGoalBtn');
     if (setSavingsGoalBtn) {
-        setSavingsGoalBtn.addEventListener('click', () => {
+        setSavingsGoalBtn.addEventListener('click', async () => {
             const currentGoal = savingsGoal ? savingsGoal.toString() : '';
             const newGoal = prompt('Establece tu meta de ahorro (en euros):', currentGoal);
             if (newGoal && !isNaN(newGoal) && parseFloat(newGoal) > 0) {
-                savingsGoal = parseFloat(newGoal);
-                localStorage.setItem('veedor_savingsGoal', savingsGoal.toString());
-                updateSummary();
-                alert('✅ Meta de ahorro establecida');
+                try {
+                    savingsGoal = parseFloat(newGoal);
+                    await apiRequest('/user/profile', {
+                        method: 'PUT',
+                        body: JSON.stringify({ savingsGoal })
+                    });
+                    updateSummary();
+                    alert('✅ Meta de ahorro establecida');
+                } catch (error) {
+                    alert('Error al guardar la meta de ahorro: ' + error.message);
+                }
             } else if (newGoal === '') {
                 // Eliminar meta
-                savingsGoal = null;
-                localStorage.removeItem('veedor_savingsGoal');
-                updateSummary();
+                try {
+                    savingsGoal = null;
+                    await apiRequest('/user/profile', {
+                        method: 'PUT',
+                        body: JSON.stringify({ savingsGoal: null })
+                    });
+                    updateSummary();
+                } catch (error) {
+                    alert('Error al eliminar la meta de ahorro: ' + error.message);
+                }
             }
         });
     }
@@ -1380,14 +1409,14 @@ function updateSummary() {
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     
-    // Cargar meta de ahorro
-    const savedGoal = localStorage.getItem('veedor_savingsGoal');
-    if (savedGoal) {
-        try {
-            savingsGoal = parseFloat(savedGoal);
-        } catch (e) {
-            savingsGoal = null;
+    // Cargar meta de ahorro desde el perfil del usuario
+    try {
+        const profileData = await apiRequest('/user/profile');
+        if (profileData && profileData.savingsGoal !== undefined) {
+            savingsGoal = profileData.savingsGoal;
         }
+    } catch (error) {
+        console.warn('No se pudo cargar la meta de ahorro:', error);
     }
     
     // Obtener año seleccionado si aplica

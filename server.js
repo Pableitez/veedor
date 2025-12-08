@@ -53,6 +53,7 @@ const userSchema = new mongoose.Schema({
     country: { type: String, default: '' },
     birthDate: { type: String, default: null },
     notes: { type: String, default: '' },
+    savingsGoal: { type: Number, default: null }, // Meta de ahorro del usuario
     resetToken: { type: String, default: null },
     resetTokenExpiry: { type: Date, default: null },
     createdAt: { type: Date, default: Date.now },
@@ -552,12 +553,83 @@ app.get('/api/verify', authenticateToken, async (req, res) => {
                 city: user.city || '',
                 country: user.country || '',
                 birthDate: user.birthDate || null,
-                notes: user.notes || ''
+                notes: user.notes || '',
+                savingsGoal: user.savingsGoal || null
             } 
         });
     } catch (error) {
         console.error('Error verificando token:', error);
         res.status(500).json({ error: 'Error del servidor' });
+    }
+});
+
+// Obtener perfil de usuario
+app.get('/api/user/profile', authenticateToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId);
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        res.json({
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            age: user.age || null,
+            phone: user.phone || '',
+            address: user.address || '',
+            city: user.city || '',
+            country: user.country || '',
+            birthDate: user.birthDate || null,
+            notes: user.notes || '',
+            savingsGoal: user.savingsGoal || null
+        });
+    } catch (error) {
+        console.error('Error obteniendo perfil:', error);
+        res.status(500).json({ error: 'Error al obtener perfil' });
+    }
+});
+
+// Actualizar perfil de usuario
+app.put('/api/user/profile', authenticateToken, async (req, res) => {
+    try {
+        const { firstName, lastName, age, birthDate, phone, address, city, country, notes, savingsGoal } = req.body;
+
+        const user = await User.findById(req.user.userId);
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        if (firstName !== undefined) user.firstName = firstName;
+        if (lastName !== undefined) user.lastName = lastName;
+        if (age !== undefined) user.age = age;
+        if (birthDate !== undefined) user.birthDate = birthDate;
+        if (phone !== undefined) user.phone = phone;
+        if (address !== undefined) user.address = address;
+        if (city !== undefined) user.city = city;
+        if (country !== undefined) user.country = country;
+        if (notes !== undefined) user.notes = notes;
+        if (savingsGoal !== undefined) user.savingsGoal = savingsGoal === null || savingsGoal === '' ? null : parseFloat(savingsGoal);
+        
+        user.updatedAt = new Date();
+        await user.save();
+        
+        res.json({ 
+            message: 'Perfil actualizado exitosamente', 
+            user: {
+                firstName: user.firstName || '',
+                lastName: user.lastName || '',
+                age: user.age || null,
+                phone: user.phone || '',
+                address: user.address || '',
+                city: user.city || '',
+                country: user.country || '',
+                birthDate: user.birthDate || null,
+                notes: user.notes || '',
+                savingsGoal: user.savingsGoal || null
+            }
+        });
+    } catch (error) {
+        console.error('Error actualizando perfil:', error);
+        res.status(500).json({ error: 'Error al actualizar perfil' });
     }
 });
 

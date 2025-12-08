@@ -115,7 +115,7 @@
 
     <!-- Contenido Principal (oculto hasta login) -->
     <div id="mainApp" class="container" style="display: none;">
-        <header style="background: linear-gradient(135deg, #0075FF 0%, #0051CC 100%); color: white; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0, 117, 255, 0.15); border-bottom: none;">
+        <header style="background: linear-gradient(135deg, #0075FF 0%, #0051CC 100%); color: white; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0, 117, 255, 0.15); border-bottom: none; width: 100%; box-sizing: border-box;">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
                     <rect width="40" height="40" rx="12" fill="white" fill-opacity="0.2"/>
@@ -154,12 +154,12 @@
                     </div>
                 </div>
                 <div class="summary-cards" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px;">
-                <div class="card">
+                <div class="card" style="cursor: pointer;" onclick="showSummaryDetails('balance')" title="Haz clic para ver detalles">
                     <h3>Balance Total</h3>
                         <p class="amount" id="totalBalance">0,00 €</p>
                         <small id="totalBalancePeriod">Todos los tiempos</small>
                     </div>
-                    <div class="card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none;">
+                    <div class="card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; cursor: pointer;" onclick="showSummaryDetails('accounts')" title="Haz clic para ver detalles">
                         <h3 style="color: white;">💰 Saldo en Cuentas</h3>
                         <p class="amount" id="totalAccountsBalance" style="color: white;">0,00 €</p>
                         <small style="color: rgba(255,255,255,0.9);">Total en todas las cuentas</small>
@@ -171,17 +171,17 @@
                     </div>
                 </div>
                 <div class="summary-cards" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-                <div class="card">
+                <div class="card" style="cursor: pointer;" onclick="showSummaryDetails('income')" title="Haz clic para ver detalles">
                         <h3 id="periodIncomeLabel">Ingresos</h3>
                         <p class="amount positive" id="periodIncome">0,00 €</p>
                         <small id="periodIncomeSubLabel">Este mes</small>
                 </div>
-                <div class="card">
+                <div class="card" style="cursor: pointer;" onclick="showSummaryDetails('expenses')" title="Haz clic para ver detalles">
                         <h3 id="periodExpensesLabel">Gastos</h3>
                         <p class="amount negative" id="periodExpenses">0,00 €</p>
                         <small id="periodExpensesSubLabel">Este mes</small>
                 </div>
-                <div class="card">
+                <div class="card" style="cursor: pointer;" onclick="showSummaryDetails('savings')" title="Haz clic para ver detalles">
                         <h3 id="periodSavingsLabel">Ahorro</h3>
                         <p class="amount" id="periodSavings">0,00 €</p>
                         <small id="periodSavingsSubLabel">Este mes</small>
