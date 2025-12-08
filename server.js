@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -56,6 +57,9 @@ const userSchema = new mongoose.Schema({
     savingsGoal: { type: Number, default: null }, // Meta de ahorro del usuario
     resetToken: { type: String, default: null },
     resetTokenExpiry: { type: Date, default: null },
+    emailVerified: { type: Boolean, default: false },
+    emailVerificationToken: { type: String, default: null },
+    emailVerificationExpiry: { type: Date, default: null },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });
@@ -274,6 +278,70 @@ mongoose.connection.on('reconnected', () => {
     console.log('✅ MongoDB reconectado');
 });
 
+// ==================== CONFIGURACIÓN DE EMAIL ====================
+
+// Configurar transporter de nodemailer
+let emailTransporter = null;
+
+function setupEmailTransporter() {
+    // Si hay credenciales de email configuradas, crear transporter
+    if (process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        emailTransporter = nodemailer.createTransport({
+            host: process.env.EMAIL_HOST,
+            port: parseInt(process.env.EMAIL_PORT || '587'),
+            secure: process.env.EMAIL_SECURE === 'true', // true para 465, false para otros puertos
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+        console.log('✅ Transporter de email configurado');
+    } else {
+        console.log('⚠️ Email no configurado. Los emails de verificación no se enviarán.');
+        console.log('💡 Configura EMAIL_HOST, EMAIL_USER, EMAIL_PASS en las variables de entorno para habilitar emails');
+    }
+}
+
+// Función para enviar email de verificación
+async function sendVerificationEmail(email, verificationToken) {
+    if (!emailTransporter) {
+        console.log('⚠️ Email transporter no configurado. Token de verificación:', verificationToken);
+        return false;
+    }
+
+    const verificationUrl = `${process.env.APP_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
+    
+    const mailOptions = {
+        from: `"Veedor" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: 'Verifica tu email - Veedor',
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #6366F1;">¡Bienvenido a Veedor!</h2>
+                <p>Gracias por registrarte. Por favor, verifica tu dirección de email haciendo clic en el siguiente enlace:</p>
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="${verificationUrl}" style="background: #6366F1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Verificar Email</a>
+                </p>
+                <p>O copia y pega este enlace en tu navegador:</p>
+                <p style="word-break: break-all; color: #666; font-size: 12px;">${verificationUrl}</p>
+                <p style="color: #999; font-size: 12px; margin-top: 30px;">Este enlace expirará en 24 horas.</p>
+            </div>
+        `
+    };
+
+    try {
+        await emailTransporter.sendMail(mailOptions);
+        console.log(`✅ Email de verificación enviado a ${email}`);
+        return true;
+    } catch (error) {
+        console.error('❌ Error enviando email:', error);
+        return false;
+    }
+}
+
+// Inicializar transporter al iniciar
+setupEmailTransporter();
+
 // Middleware de autenticación
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -375,24 +443,40 @@ app.post('/api/register', async (req, res) => {
         // Hash de la contraseña
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Generar token de verificación de email
+        const crypto = require('crypto');
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        const verificationExpiry = new Date();
+        verificationExpiry.setHours(verificationExpiry.getHours() + 24); // Válido por 24 horas
+
         // Crear usuario
         const user = new User({ 
             email: email.trim().toLowerCase(),
             username: username.trim(),
-            password: hashedPassword 
+            password: hashedPassword,
+            emailVerificationToken: verificationToken,
+            emailVerificationExpiry: verificationExpiry,
+            emailVerified: false
         });
         await user.save();
 
-        // Generar token
+        // Enviar email de verificación
+        const emailSent = await sendVerificationEmail(user.email, verificationToken);
+        
+        // Generar token de sesión
         const token = jwt.sign({ userId: user._id.toString(), email: user.email, username: user.username }, JWT_SECRET, { expiresIn: '30d' });
 
         res.status(201).json({
-            message: 'Usuario creado exitosamente',
+            message: emailSent 
+                ? 'Usuario creado exitosamente. Revisa tu email para verificar tu cuenta.' 
+                : 'Usuario creado exitosamente. Por favor, verifica tu email (el email no pudo enviarse, pero puedes usar el token de verificación).',
             token,
+            emailVerificationToken: emailSent ? null : verificationToken, // Solo en desarrollo si no se envió email
             user: { 
                 id: user._id.toString(), 
                 email: user.email, 
                 username: user.username,
+                emailVerified: user.emailVerified,
                 firstName: user.firstName || '',
                 lastName: user.lastName || '',
                 age: user.age || null,
@@ -564,6 +648,86 @@ app.post('/api/reset-password', async (req, res) => {
         res.json({ message: 'Contraseña actualizada exitosamente' });
     } catch (error) {
         console.error('Error en reset-password:', error);
+        res.status(500).json({ error: 'Error del servidor' });
+    }
+});
+
+// Verificar email con token
+app.get('/api/verify-email', async (req, res) => {
+    try {
+        const { token } = req.query;
+        
+        if (!token) {
+            return res.status(400).json({ error: 'Token de verificación requerido' });
+        }
+        
+        const user = await User.findOne({
+            emailVerificationToken: token,
+            emailVerificationExpiry: { $gt: new Date() }
+        });
+        
+        if (!user) {
+            return res.status(400).json({ error: 'Token inválido o expirado' });
+        }
+        
+        // Marcar email como verificado
+        await User.updateOne(
+            { _id: user._id },
+            {
+                $set: {
+                    emailVerified: true,
+                    emailVerificationToken: null,
+                    emailVerificationExpiry: null
+                }
+            }
+        );
+        
+        res.json({ message: 'Email verificado exitosamente' });
+    } catch (error) {
+        console.error('Error verificando email:', error);
+        res.status(500).json({ error: 'Error del servidor' });
+    }
+});
+
+// Reenviar email de verificación
+app.post('/api/resend-verification', authenticateToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId);
+        
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        
+        if (user.emailVerified) {
+            return res.status(400).json({ error: 'El email ya está verificado' });
+        }
+        
+        // Generar nuevo token
+        const crypto = require('crypto');
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        const verificationExpiry = new Date();
+        verificationExpiry.setHours(verificationExpiry.getHours() + 24);
+        
+        await User.updateOne(
+            { _id: user._id },
+            {
+                $set: {
+                    emailVerificationToken: verificationToken,
+                    emailVerificationExpiry: verificationExpiry
+                }
+            }
+        );
+        
+        const emailSent = await sendVerificationEmail(user.email, verificationToken);
+        
+        res.json({
+            message: emailSent 
+                ? 'Email de verificación reenviado exitosamente' 
+                : 'Token de verificación regenerado (el email no pudo enviarse)',
+            token: emailSent ? null : verificationToken
+        });
+    } catch (error) {
+        console.error('Error reenviando verificación:', error);
         res.status(500).json({ error: 'Error del servidor' });
     }
 });
