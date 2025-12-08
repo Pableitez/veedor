@@ -4849,7 +4849,102 @@ if (typeof document !== 'undefined') {
     });
 }
 
+// Mostrar modal de perfil de usuario
+function showUserProfile() {
+    const modal = document.getElementById('userProfileModal');
+    if (!modal) {
+        console.error('Modal de perfil no encontrado');
+        return;
+    }
+    
+    // Cargar datos del perfil
+    const emailInput = document.getElementById('profileEmail');
+    const usernameInput = document.getElementById('profileUsername');
+    const firstNameInput = document.getElementById('profileFirstName');
+    const lastNameInput = document.getElementById('profileLastName');
+    const ageInput = document.getElementById('profileAge');
+    const phoneInput = document.getElementById('profilePhone');
+    const addressInput = document.getElementById('profileAddress');
+    const cityInput = document.getElementById('profileCity');
+    const countryInput = document.getElementById('profileCountry');
+    const birthDateInput = document.getElementById('profileBirthDate');
+    const notesInput = document.getElementById('profileNotes');
+    
+    if (emailInput) emailInput.value = currentUserEmail || '';
+    if (usernameInput) usernameInput.value = currentUser || '';
+    if (firstNameInput) firstNameInput.value = userProfile.firstName || '';
+    if (lastNameInput) lastNameInput.value = userProfile.lastName || '';
+    if (ageInput) ageInput.value = userProfile.age || '';
+    if (phoneInput) phoneInput.value = userProfile.phone || '';
+    if (addressInput) addressInput.value = userProfile.address || '';
+    if (cityInput) cityInput.value = userProfile.city || '';
+    if (countryInput) countryInput.value = userProfile.country || '';
+    if (birthDateInput) birthDateInput.value = userProfile.birthDate || '';
+    if (notesInput) notesInput.value = userProfile.notes || '';
+    
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de perfil
+function closeUserProfile() {
+    const modal = document.getElementById('userProfileModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Guardar perfil de usuario
+async function saveUserProfile() {
+    const firstName = document.getElementById('profileFirstName')?.value.trim() || '';
+    const lastName = document.getElementById('profileLastName')?.value.trim() || '';
+    const age = document.getElementById('profileAge')?.value ? parseInt(document.getElementById('profileAge').value) : null;
+    const phone = document.getElementById('profilePhone')?.value.trim() || '';
+    const address = document.getElementById('profileAddress')?.value.trim() || '';
+    const city = document.getElementById('profileCity')?.value.trim() || '';
+    const country = document.getElementById('profileCountry')?.value.trim() || '';
+    const birthDate = document.getElementById('profileBirthDate')?.value || null;
+    const notes = document.getElementById('profileNotes')?.value.trim() || '';
+    
+    try {
+        const data = await apiRequest('/user/profile', {
+            method: 'PUT',
+            body: JSON.stringify({
+                firstName,
+                lastName,
+                age,
+                phone,
+                address,
+                city,
+                country,
+                birthDate,
+                notes
+            })
+        });
+        
+        // Actualizar datos locales
+        userProfile = {
+            firstName: data.user.firstName || '',
+            lastName: data.user.lastName || '',
+            age: data.user.age || null,
+            phone: data.user.phone || '',
+            address: data.user.address || '',
+            city: data.user.city || '',
+            country: data.user.country || '',
+            birthDate: data.user.birthDate || null,
+            notes: data.user.notes || ''
+        };
+        
+        updateUserInfo();
+        closeUserProfile();
+        alert('✅ Perfil actualizado exitosamente');
+    } catch (error) {
+        alert('Error al actualizar perfil: ' + error.message);
+    }
+}
+
 // Exponer funciones globales
+window.showUserProfile = showUserProfile;
+window.closeUserProfile = closeUserProfile;
 window.showPrivacyModal = showPrivacyModal;
 window.closePrivacyModal = closePrivacyModal;
 window.showCookiesModal = showCookiesModal;
