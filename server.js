@@ -9,7 +9,23 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'tu_secreto_super_seguro_cambiar_en_produccion';
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/veedor';
+// Obtener MONGODB_URI y asegurar formato correcto
+let MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/veedor';
+
+// Asegurar que el connection string tenga el formato correcto
+if (MONGODB_URI && !MONGODB_URI.includes('mongodb://localhost')) {
+    // Si no termina con /veedor, agregarlo
+    if (!MONGODB_URI.includes('/veedor') && !MONGODB_URI.includes('/?')) {
+        // Si tiene query params, insertar /veedor antes del ?
+        if (MONGODB_URI.includes('?')) {
+            MONGODB_URI = MONGODB_URI.replace('?', '/veedor?');
+        } else {
+            MONGODB_URI = MONGODB_URI.endsWith('/') 
+                ? MONGODB_URI + 'veedor' 
+                : MONGODB_URI + '/veedor';
+        }
+    }
+}
 
 // Middleware
 app.use(cors());
@@ -60,29 +76,38 @@ if (!MONGODB_URI || MONGODB_URI === 'mongodb://localhost:27017/veedor') {
     console.error('💡 Configura MONGODB_URI en las variables de entorno de Render');
 }
 
-// Intentar conectar
-console.log('Intentando conectar a MongoDB...');
-mongoose.connect(MONGODB_URI, {
-    serverSelectionTimeoutMS: 30000,
-    socketTimeoutMS: 45000,
-    retryWrites: true,
-    w: 'majority',
-    maxPoolSize: 10
-})
-    .then(() => {
+// Función para conectar a MongoDB
+async function connectToMongoDB() {
+    try {
+        console.log('Intentando conectar a MongoDB...');
+        await mongoose.connect(MONGODB_URI, {
+            serverSelectionTimeoutMS: 30000,
+            socketTimeoutMS: 45000,
+            retryWrites: true,
+            w: 'majority',
+            maxPoolSize: 10
+        });
         console.log('✅ Conectado a MongoDB exitosamente');
         console.log('Estado de conexión:', mongoose.connection.readyState);
-        console.log('Base de datos:', mongoose.connection.db.databaseName);
-    })
-    .catch((err) => {
+        console.log('Base de datos:', mongoose.connection.db?.databaseName || 'conectando...');
+        return true;
+    } catch (err) {
         console.error('❌ Error conectando a MongoDB:', err.message);
-        console.error('Error completo:', err);
         console.error('Código de error:', err.code);
+        if (err.code === 'ENOTFOUND' || err.code === 'ETIMEDOUT') {
+            console.error('💡 Error de red. Verifica que MongoDB Atlas esté accesible.');
+        } else if (err.code === 'EAUTH') {
+            console.error('💡 Error de autenticación. Verifica usuario y contraseña.');
+        }
         console.log('💡 Asegúrate de configurar MONGODB_URI en las variables de entorno');
         console.log('💡 Verifica que tu IP esté en la whitelist de MongoDB Atlas (0.0.0.0/0)');
-        console.log('💡 Verifica que el usuario y contraseña sean correctos en MONGODB_URI');
         console.log('💡 Formato esperado: mongodb+srv://usuario:password@cluster.mongodb.net/veedor');
-    });
+        return false;
+    }
+}
+
+// Conectar al iniciar
+connectToMongoDB();
 
 // Manejar eventos de conexión
 mongoose.connection.on('error', (err) => {
@@ -91,6 +116,20 @@ mongoose.connection.on('error', (err) => {
 
 mongoose.connection.on('disconnected', () => {
     console.log('MongoDB desconectado. Intentando reconectar...');
+    // Intentar reconectar después de 5 segundos
+    setTimeout(() => {
+        if (mongoose.connection.readyState === 0) {
+            connectToMongoDB();
+        }
+    }, 5000);
+});
+
+mongoose.connection.on('connected', () => {
+    console.log('✅ MongoDB conectado');
+});
+
+mongoose.connection.on('reconnected', () => {
+    console.log('✅ MongoDB reconectado');
 });
 
 // Middleware de autenticación
@@ -150,17 +189,9 @@ app.post('/api/register', async (req, res) => {
             // Intentar reconectar
             if (mongoose.connection.readyState === 0) {
                 console.log('Intentando reconectar a MongoDB...');
-                try {
-                    await mongoose.connect(MONGODB_URI, {
-                        serverSelectionTimeoutMS: 10000,
-                        socketTimeoutMS: 45000,
-                        retryWrites: true,
-                        w: 'majority'
-                    });
-                    console.log('✅ Reconectado exitosamente');
-                } catch (reconnectError) {
-                    console.error('❌ Error al reconectar:', reconnectError.message);
-                    return res.status(503).json({ error: 'Base de datos no disponible. Verifica la configuración de MongoDB.' });
+                const reconnected = await connectToMongoDB();
+                if (!reconnected) {
+                    return res.status(503).json({ error: 'Base de datos no disponible. Verifica la configuración de MongoDB en Render.' });
                 }
             } else {
                 return res.status(503).json({ error: 'Base de datos no disponible. Intenta de nuevo en unos momentos.' });
