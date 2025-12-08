@@ -509,25 +509,25 @@ async function register() {
 
 // Iniciar sesión
 async function login() {
-    const email = document.getElementById('loginEmail').value.trim();
+    const emailOrUsername = document.getElementById('loginEmailOrUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
     const errorMsg = document.getElementById('loginError');
     
     errorMsg.textContent = '';
     
-    if (!email) {
-        errorMsg.textContent = 'Por favor ingresa tu email';
+    if (!emailOrUsername) {
+        errorMsg.textContent = 'Por favor ingresa tu email o nombre de usuario';
         return;
     }
     
     try {
         const data = await apiRequest('/login', {
             method: 'POST',
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ emailOrUsername, password })
         });
         
         authToken = data.token;
-        currentUser = data.user.email;
+        currentUser = data.user.username || data.user.email;
         localStorage.setItem('veedor_token', authToken);
         
         showMainApp();
