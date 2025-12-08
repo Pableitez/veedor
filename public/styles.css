@@ -997,18 +997,22 @@ tbody tr:last-child td {
     }
     
     header {
-        flex-direction: row;
-        gap: 8px;
-        padding: 12px 16px !important;
-        min-height: 56px;
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px 16px !important;
     }
     
     header > div:first-child {
+        width: 100%;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 8px;
-        flex: 1;
-        min-width: 0;
+        flex-wrap: wrap;
+    }
+    
+    #headerNav {
+        display: none !important; /* Ocultar navegación en móvil, usar tabs principales */
     }
     
     header > div:first-child svg {
