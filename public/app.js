@@ -643,7 +643,7 @@ function initializeForms() {
     if (setSavingsGoalBtn) {
         setSavingsGoalBtn.addEventListener('click', () => {
             const currentGoal = savingsGoal ? savingsGoal.toString() : '';
-            const newGoal = prompt('Establece tu meta de ahorro (en pesos):', currentGoal);
+            const newGoal = prompt('Establece tu meta de ahorro (en euros):', currentGoal);
             if (newGoal && !isNaN(newGoal) && parseFloat(newGoal) > 0) {
                 savingsGoal = parseFloat(newGoal);
                 localStorage.setItem('veedor_savingsGoal', savingsGoal.toString());
