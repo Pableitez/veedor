@@ -230,7 +230,23 @@
     </div>
 
     <!-- Cargar aplicación JavaScript -->
-    <script src="app.js"></script>
+    <script>
+        // Script inline para verificar que JavaScript funciona
+        console.log('✅ HTML cargado, iniciando carga de app.js...');
+        console.log('URL actual:', window.location.href);
+        
+        // Cargar app.js
+        const script = document.createElement('script');
+        script.src = 'app.js';
+        script.onload = function() {
+            console.log('✅ app.js cargado exitosamente');
+        };
+        script.onerror = function() {
+            console.error('❌ Error cargando app.js');
+            console.error('Verifica que el archivo exista en: ' + window.location.origin + '/app.js');
+        };
+        document.head.appendChild(script);
+    </script>
 </body>
 </html>
 
