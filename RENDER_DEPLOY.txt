@@ -1,0 +1,9 @@
+CONNECTION STRING PARA RENDER:
+mongodb+srv://veedor_admin:520845@cluster0.sqt1psn.mongodb.net/veedor?appName=Cluster0
+
+VARIABLES DE ENTORNO PARA RENDER:
+MONGODB_URI=mongodb+srv://veedor_admin:520845@cluster0.sqt1psn.mongodb.net/veedor?appName=Cluster0
+JWT_SECRET=veedor_secreto_super_seguro_2025_520845
+PORT=10000
+NODE_ENV=production
+

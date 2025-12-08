@@ -133,6 +133,11 @@ async function register() {
     
     errorMsg.textContent = '';
     
+    if (!username) {
+        errorMsg.textContent = 'El usuario es requerido';
+        return;
+    }
+    
     if (password !== passwordConfirm) {
         errorMsg.textContent = 'Las contraseñas no coinciden';
         return;
@@ -144,10 +149,20 @@ async function register() {
     }
     
     try {
-        const data = await apiRequest('/register', {
+        errorMsg.textContent = 'Registrando...';
+        const response = await fetch(`${API_URL}/register`, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({ username, password })
         });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Error al registrar usuario');
+        }
         
         authToken = data.token;
         currentUser = data.user.username;
@@ -165,7 +180,8 @@ async function register() {
         
         document.getElementById('registerFormElement').reset();
     } catch (error) {
-        errorMsg.textContent = error.message || 'Error al registrar usuario';
+        console.error('Error en registro:', error);
+        errorMsg.textContent = error.message || 'Error al registrar usuario. Verifica tu conexión.';
     }
 }
 

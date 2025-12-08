@@ -48,7 +48,7 @@ const Envelope = mongoose.model('Envelope', envelopeSchema);
 
 // Conectar a MongoDB
 mongoose.connect(MONGODB_URI, {
-    serverSelectionTimeoutMS: 5000,
+    serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000,
 })
     .then(() => {
@@ -56,9 +56,19 @@ mongoose.connect(MONGODB_URI, {
     })
     .catch((err) => {
         console.error('❌ Error conectando a MongoDB:', err.message);
+        console.error('Error completo:', err);
         console.log('💡 Asegúrate de configurar MONGODB_URI en las variables de entorno');
-        // No detener el servidor si falla la conexión inicial, intentará reconectar
+        console.log('💡 Verifica que tu IP esté en la whitelist de MongoDB Atlas');
     });
+
+// Manejar eventos de conexión
+mongoose.connection.on('error', (err) => {
+    console.error('Error de MongoDB:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.log('MongoDB desconectado. Intentando reconectar...');
+});
 
 // Middleware de autenticación
 function authenticateToken(req, res, next) {
@@ -116,7 +126,10 @@ app.post('/api/register', async (req, res) => {
         });
     } catch (error) {
         console.error('Error en registro:', error);
-        res.status(500).json({ error: 'Error del servidor' });
+        if (error.code === 11000) {
+            return res.status(400).json({ error: 'El usuario ya existe' });
+        }
+        res.status(500).json({ error: error.message || 'Error del servidor' });
     }
 });
 
