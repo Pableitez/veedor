@@ -240,18 +240,20 @@ body {
    ============================================ */
 
 header {
-    background: linear-gradient(135deg, #0075FF 0%, #0051CC 100%);
+    background: var(--gray-900);
     color: white;
     border-bottom: none;
-    padding: 20px 32px;
+    padding: 16px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 4px 12px rgba(0, 117, 255, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, border-color 0.3s;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 header h1 {
@@ -912,28 +914,34 @@ tbody tr:last-child td {
     }
     
     header {
-        flex-direction: column;
-        gap: 16px;
-        padding: 16px 20px;
+        flex-direction: row;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+    
+    header h1 {
+        font-size: 20px;
     }
     
     .header-actions {
-        width: 100%;
-        justify-content: space-between;
-        flex-wrap: wrap;
+        width: auto;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        gap: 8px;
     }
     
-    .header-actions .btn {
-        font-size: 13px;
-        padding: 8px 16px;
+    .header-actions .user-info,
+    .header-actions .btn-secondary {
+        font-size: 12px;
+        padding: 6px 12px;
     }
     
     .dashboard {
-        padding: 16px;
+        padding: 12px;
     }
     
     .dashboard > div:first-child {
-        margin-bottom: 16px;
+        margin-bottom: 12px;
     }
     
     .dashboard > div:first-child > div {
@@ -942,37 +950,40 @@ tbody tr:last-child td {
     }
     
     .main-content {
-        padding: 16px;
+        padding: 12px;
     }
     
     .tabs {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        gap: 8px;
+        gap: 6px;
+        padding: 0 12px;
     }
     
     .tab-btn {
-        padding: 10px 14px;
-        font-size: 14px;
+        padding: 8px 12px;
+        font-size: 13px;
         white-space: nowrap;
     }
     
     .form-section {
-        padding: 16px;
+        padding: 12px;
     }
     
     .table-container {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        margin: 0 -12px;
+        padding: 0 12px;
     }
     
     table {
-        font-size: 13px;
+        font-size: 12px;
         min-width: 600px;
     }
     
     th, td {
-        padding: 10px 8px;
+        padding: 8px 6px;
     }
     
     .chart-controls {
@@ -987,16 +998,29 @@ tbody tr:last-child td {
     
     .modal-content {
         width: 95%;
-        padding: 20px;
-        margin: 20px;
+        max-width: 95%;
+        padding: 16px;
+        margin: 10px;
+        max-height: 90vh;
     }
     
     .card {
-        padding: 16px;
+        padding: 12px;
     }
     
     .card .amount {
-        font-size: 24px;
+        font-size: 22px;
+    }
+    
+    footer {
+        padding: 20px 12px !important;
+        margin-top: 30px !important;
+    }
+    
+    footer > div > div:first-child {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        margin-bottom: 16px !important;
     }
 }
 
@@ -1006,43 +1030,80 @@ tbody tr:last-child td {
         border-radius: 0;
     }
     
+    header {
+        padding: 10px 12px !important;
+    }
+    
     header h1 {
-        font-size: 20px;
+        font-size: 18px;
+    }
+    
+    .header-actions .user-info,
+    .header-actions .btn-secondary {
+        font-size: 11px;
+        padding: 5px 10px;
     }
     
     .summary-cards {
-        gap: 12px;
+        gap: 10px;
     }
     
     .card {
-        padding: 12px;
+        padding: 10px;
     }
     
     .card .amount {
-        font-size: 20px;
+        font-size: 18px;
     }
     
     .table-container {
         border-radius: 0;
+        margin: 0 -12px;
+        padding: 0 12px;
     }
     
     table {
-        font-size: 12px;
+        font-size: 11px;
+        min-width: 500px;
     }
     
     th, td {
-        padding: 8px 6px;
+        padding: 6px 4px;
     }
     
     .btn {
-        padding: 10px 16px;
-        font-size: 14px;
+        padding: 8px 14px;
+        font-size: 13px;
     }
     
     .form-group input,
     .form-group select {
-        padding: 10px 12px;
-        font-size: 14px;
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+    
+    .tabs {
+        padding: 0 8px;
+    }
+    
+    .tab-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    footer {
+        padding: 16px 8px !important;
+    }
+    
+    footer h3,
+    footer h4 {
+        font-size: 13px !important;
+    }
+    
+    footer p,
+    footer a,
+    footer li {
+        font-size: 11px !important;
     }
 }
 
