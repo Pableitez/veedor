@@ -2083,6 +2083,25 @@ function showLoanDetails(loanId) {
     
     modalContent.innerHTML = contentHTML;
     modal.style.display = 'flex';
+    
+    // Asegurar que los event listeners estén activos
+    const closeBtn = document.getElementById('closeAmortizationModal');
+    if (closeBtn) {
+        // Remover listeners anteriores para evitar duplicados
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+        
+        newCloseBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+    
+    // Cerrar al hacer clic fuera del modal
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
 }
 
 // Mostrar modal de amortización anticipada
