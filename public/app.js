@@ -886,7 +886,7 @@ function initializeForms() {
         }
         
         // Función para actualizar campos según período
-        function updateBudgetPeriodFields(periodType, periodValueInput, periodValueLabel, periodValueHelp, amountLabel, amountHelp, now) {
+        function updateBudgetPeriodFields(periodType, periodValueInput, periodValueLabel, periodValueHelp, amountLabel, amountHelp, durationGroup, durationSelect, durationLabel, durationHelp, now) {
             if (periodType === 'weekly') {
                 periodValueInput.type = 'date';
                 periodValueInput.value = getWeekStartDate(now);
@@ -894,13 +894,19 @@ function initializeForms() {
                 periodValueHelp.textContent = 'Selecciona el lunes de la semana';
                 amountLabel.textContent = 'Presupuesto Semanal (€)';
                 amountHelp.textContent = 'Límite máximo de gasto para esta semana';
+                if (durationGroup) durationGroup.style.display = 'none';
             } else if (periodType === 'monthly') {
                 periodValueInput.type = 'month';
                 periodValueInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-                periodValueLabel.textContent = 'Mes';
-                periodValueHelp.textContent = 'Selecciona el mes';
+                periodValueLabel.textContent = 'Mes de Inicio';
+                periodValueHelp.textContent = 'Mes desde el que comienza el presupuesto';
                 amountLabel.textContent = 'Presupuesto Mensual (€)';
-                amountHelp.textContent = 'Límite máximo de gasto para este mes';
+                amountHelp.textContent = 'Límite máximo de gasto para cada mes';
+                if (durationGroup) {
+                    durationGroup.style.display = 'block';
+                    if (durationLabel) durationLabel.textContent = 'Duración';
+                    if (durationHelp) durationHelp.textContent = 'Por cuántos meses aplicar este presupuesto';
+                }
             } else if (periodType === 'yearly') {
                 periodValueInput.type = 'number';
                 periodValueInput.min = '2000';
@@ -910,6 +916,7 @@ function initializeForms() {
                 periodValueHelp.textContent = 'Selecciona el año';
                 amountLabel.textContent = 'Presupuesto Anual (€)';
                 amountHelp.textContent = 'Límite máximo de gasto para este año';
+                if (durationGroup) durationGroup.style.display = 'none';
             }
         }
         
