@@ -152,7 +152,7 @@ async function checkAuth() {
     if (authToken) {
         try {
             const data = await apiRequest('/verify');
-            currentUser = data.user.username;
+            currentUser = data.user.username || data.user.email;
             showMainApp();
             await loadUserData();
             initializeDate();
@@ -391,27 +391,41 @@ async function register() {
     console.log('=== FUNCIÓN REGISTER LLAMADA ===');
     
     const emailInput = document.getElementById('registerEmail');
+    const usernameInput = document.getElementById('registerUsername');
     const passwordInput = document.getElementById('registerPassword');
     const passwordConfirmInput = document.getElementById('registerPasswordConfirm');
     const errorMsg = document.getElementById('registerError');
     
-    if (!emailInput || !passwordInput || !passwordConfirmInput || !errorMsg) {
+    if (!emailInput || !usernameInput || !passwordInput || !passwordConfirmInput || !errorMsg) {
         console.error('❌ Elementos del formulario no encontrados');
         alert('Error: Formulario no encontrado. Recarga la página.');
         return;
     }
     
     const email = emailInput.value.trim();
+    const username = usernameInput.value.trim();
     const password = passwordInput.value;
     const passwordConfirm = passwordConfirmInput.value;
     
-    console.log('Datos del formulario:', { email, passwordLength: password.length, passwordsMatch: password === passwordConfirm });
+    console.log('Datos del formulario:', { email, username, passwordLength: password.length, passwordsMatch: password === passwordConfirm });
     
     errorMsg.textContent = '';
     
     if (!email) {
         errorMsg.textContent = 'El email es requerido';
         console.log('Validación fallida: email vacío');
+        return;
+    }
+    
+    if (!username) {
+        errorMsg.textContent = 'El nombre de usuario es requerido';
+        console.log('Validación fallida: username vacío');
+        return;
+    }
+    
+    if (username.length < 3) {
+        errorMsg.textContent = 'El nombre de usuario debe tener al menos 3 caracteres';
+        console.log('Validación fallida: username muy corto');
         return;
     }
     
@@ -440,14 +454,14 @@ async function register() {
         errorMsg.style.color = '#666';
         console.log('Enviando registro a:', `${API_URL}/register`);
         console.log('URL completa:', window.location.origin + API_URL + '/register');
-        console.log('Datos:', { email, password: '***' });
+        console.log('Datos:', { email, username, password: '***' });
         
         const response = await fetch(`${API_URL}/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, username, password })
         });
         
         console.log('Respuesta recibida. Status:', response.status);
@@ -470,7 +484,7 @@ async function register() {
         
         console.log('✅ Registro exitoso');
         authToken = data.token;
-        currentUser = data.user.email;
+        currentUser = data.user.username || data.user.email;
         localStorage.setItem('veedor_token', authToken);
         
         showMainApp();

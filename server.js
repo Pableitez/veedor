@@ -41,6 +41,7 @@ console.log('📁 Archivos estáticos servidos desde:', path.join(__dirname, 'pu
 // Modelos de MongoDB
 const userSchema = new mongoose.Schema({
     email: { type: String, unique: true, required: true, lowercase: true, trim: true },
+    username: { type: String, unique: true, required: true, trim: true },
     password: { type: String, required: true },
     resetToken: { type: String, default: null },
     resetTokenExpiry: { type: Date, default: null },
@@ -340,12 +341,12 @@ app.post('/api/register', async (req, res) => {
         await user.save();
 
         // Generar token
-        const token = jwt.sign({ userId: user._id.toString(), email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+        const token = jwt.sign({ userId: user._id.toString(), email: user.email, username: user.username }, JWT_SECRET, { expiresIn: '30d' });
 
         res.status(201).json({
             message: 'Usuario creado exitosamente',
             token,
-            user: { id: user._id.toString(), email: user.email }
+            user: { id: user._id.toString(), email: user.email, username: user.username }
         });
     } catch (error) {
         console.error('❌ Error en registro:', error);
