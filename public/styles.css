@@ -1422,25 +1422,91 @@ tbody tr:last-child td {
         gap: 16px !important;
     }
     
+    /* Modales generales en móvil */
+    .modal {
+        padding: 5px !important;
+        align-items: flex-start !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
     .modal-content {
-        width: 95% !important;
-        max-width: 95% !important;
-        padding: 0 !important;
-        margin: 10px !important;
+        width: 98% !important;
+        max-width: 98% !important;
+        margin: 10px auto !important;
         max-height: 95vh !important;
+        border-radius: 12px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
     }
     
     .modal-content > div:first-child {
         padding: 20px 16px !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
     }
     
     .modal-content > div:last-child,
     .modal-content form {
         padding: 20px 16px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
     }
     
     .modal-content h2 {
         font-size: 20px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    .modal-close {
+        top: 10px !important;
+        right: 10px !important;
+        font-size: 24px !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+    }
+    
+    /* Auth container en móvil */
+    .auth-container {
+        padding: 32px 20px !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: 95vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-radius: 16px !important;
+        margin: 10px auto !important;
+    }
+    
+    /* Modales de cookies y términos en móvil */
+    #cookiesModal .modal-content,
+    #termsModal .modal-content,
+    #privacyModal .modal-content {
+        width: 98% !important;
+        max-width: 98% !important;
+        max-height: 95vh !important;
+        margin: 10px auto !important;
+    }
+    
+    #cookiesModal .modal-content > div:first-child,
+    #termsModal .modal-content > div:first-child,
+    #privacyModal .modal-content > div:first-child {
+        padding: 16px !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
+    }
+    
+    #cookiesContent,
+    #termsContent,
+    #privacyContent {
+        padding: 20px 16px !important;
+        max-height: calc(95vh - 100px) !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
     }
     
     .card {
@@ -1523,22 +1589,74 @@ tbody tr:last-child td {
         font-size: 12px !important;
     }
     
-    /* Modales más grandes */
+    /* Modales más grandes en móvil pequeño */
+    .modal {
+        padding: 5px !important;
+        align-items: flex-start !important;
+    }
+    
     .modal-content {
         width: 98% !important;
         max-width: 98% !important;
         margin: 5px auto !important;
         max-height: 95vh !important;
+        border-radius: 12px !important;
     }
     
-    .modal-content > div:first-child,
+    .modal-content > div:first-child {
+        padding: 16px !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
+    }
+    
     .modal-content > div:last-child,
     .modal-content form {
         padding: 16px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
     }
     
     .modal-content h2 {
         font-size: 18px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .modal-close {
+        top: 8px !important;
+        right: 8px !important;
+        font-size: 22px !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+    }
+    
+    /* Auth container en móvil pequeño */
+    .auth-container {
+        padding: 24px 16px !important;
+        border-radius: 12px !important;
+        margin: 5px auto !important;
+    }
+    
+    .auth-header h1 {
+        font-size: 24px !important;
+    }
+    
+    /* Modales de cookies en móvil pequeño */
+    #cookiesModal .modal-content,
+    #termsModal .modal-content,
+    #privacyModal .modal-content {
+        width: 98% !important;
+        max-width: 98% !important;
+        margin: 5px auto !important;
+    }
+    
+    #cookiesContent,
+    #termsContent,
+    #privacyContent {
+        padding: 16px !important;
+        max-height: calc(95vh - 80px) !important;
     }
     
     /* Tablas más compactas */
