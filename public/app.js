@@ -1050,7 +1050,12 @@ function updateDisplay() {
     updateInvestments();
     updateMonthFilter();
     updateMonthDashboard();
-    updateFinancialHealthMetrics();
+    // Actualizar métricas y tablas de análisis si estamos en el tab de análisis
+    const chartsTab = document.getElementById('charts-tab');
+    if (chartsTab && chartsTab.classList.contains('active')) {
+        updateFinancialHealthMetrics();
+        updateAnalysisTables();
+    }
 }
 
 // Actualizar resumen
