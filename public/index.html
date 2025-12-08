@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veedor - Control de Finanzas Personales</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Pantalla de Login/Registro -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>💰 Veedor</h1>
+                <p>Control de Finanzas Personales</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" data-auth-tab="login">Iniciar Sesión</button>
+                <button class="auth-tab-btn" data-auth-tab="register">Registrarse</button>
+            </div>
+            
+            <!-- Formulario de Login -->
+            <div id="loginForm" class="auth-form active">
+                <form id="loginFormElement">
+                    <div class="form-group">
+                        <label for="loginUsername">Usuario</label>
+                        <input type="text" id="loginUsername" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Contraseña</label>
+                        <input type="password" id="loginPassword" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn-primary btn-full">Iniciar Sesión</button>
+                    <p id="loginError" class="error-message"></p>
+                </form>
+            </div>
+            
+            <!-- Formulario de Registro -->
+            <div id="registerForm" class="auth-form">
+                <form id="registerFormElement">
+                    <div class="form-group">
+                        <label for="registerUsername">Usuario</label>
+                        <input type="text" id="registerUsername" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Contraseña</label>
+                        <input type="password" id="registerPassword" required autocomplete="new-password" minlength="4">
+                        <small>Mínimo 4 caracteres</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPasswordConfirm">Confirmar Contraseña</label>
+                        <input type="password" id="registerPasswordConfirm" required autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="btn-primary btn-full">Crear Cuenta</button>
+                    <p id="registerError" class="error-message"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal (oculto hasta login) -->
+    <div id="mainApp" class="container" style="display: none;">
+        <header>
+            <h1>💰 Veedor - Control de Finanzas Personales</h1>
+            <div class="header-actions">
+                <span id="currentUser" class="user-info"></span>
+                <button id="switchUserBtn" class="btn-secondary">👤 Cambiar Usuario</button>
+                <button id="exportBtn" class="btn-secondary">📥 Exportar</button>
+                <button id="importBtn" class="btn-secondary">📤 Importar</button>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <div class="summary-cards">
+                <div class="card">
+                    <h3>Balance Total</h3>
+                    <p class="amount" id="totalBalance">$0.00</p>
+                </div>
+                <div class="card">
+                    <h3>Ingresos del Mes</h3>
+                    <p class="amount positive" id="monthIncome">$0.00</p>
+                </div>
+                <div class="card">
+                    <h3>Gastos del Mes</h3>
+                    <p class="amount negative" id="monthExpenses">$0.00</p>
+                </div>
+                <div class="card">
+                    <h3>Ahorro del Mes</h3>
+                    <p class="amount" id="monthSavings">$0.00</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="transactions">📝 Transacciones</button>
+                <button class="tab-btn" data-tab="envelopes">✉️ Sobres</button>
+                <button class="tab-btn" data-tab="charts">📊 Gráficas</button>
+            </div>
+
+            <!-- Tab: Transacciones -->
+            <div class="tab-content active" id="transactions-tab">
+                <div class="form-section">
+                    <h2>Nueva Transacción</h2>
+                    <form id="transactionForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="transactionType">Tipo</label>
+                                <select id="transactionType" required>
+                                    <option value="income">Ingreso</option>
+                                    <option value="expense">Gasto</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="transactionDate">Fecha</label>
+                                <input type="date" id="transactionDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="transactionAmount">Monto</label>
+                                <input type="number" id="transactionAmount" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="categoryGeneral">Categoría General</label>
+                                <select id="categoryGeneral" required>
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="categorySpecific">Categoría Específica</label>
+                                <select id="categorySpecific" required>
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="envelope">Sobre (Opcional)</label>
+                                <select id="envelope">
+                                    <option value="">Ninguno</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="transactionDescription">Descripción</label>
+                                <input type="text" id="transactionDescription" placeholder="Ej: Compra en supermercado">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Agregar Transacción</button>
+                    </form>
+                </div>
+
+                <div class="table-section">
+                    <h2>Historial de Transacciones</h2>
+                    <div class="table-controls">
+                        <input type="text" id="searchInput" placeholder="🔍 Buscar...">
+                        <select id="filterCategory">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                        <select id="filterMonth">
+                            <option value="">Todos los meses</option>
+                        </select>
+                    </div>
+                    <div class="table-container">
+                        <table id="transactionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Categoría</th>
+                                    <th>Descripción</th>
+                                    <th>Sobre</th>
+                                    <th>Monto</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Sobres -->
+            <div class="tab-content" id="envelopes-tab">
+                <div class="form-section">
+                    <h2>Gestionar Sobres</h2>
+                    <form id="envelopeForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="envelopeName">Nombre del Sobre</label>
+                                <input type="text" id="envelopeName" placeholder="Ej: Vacaciones" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="envelopeBudget">Presupuesto Mensual</label>
+                                <input type="number" id="envelopeBudget" step="0.01" min="0" required>
+                            </div>
+                            <button type="submit" class="btn-primary">Crear Sobre</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="envelopes-grid" id="envelopesGrid">
+                </div>
+            </div>
+
+            <!-- Tab: Gráficas -->
+            <div class="tab-content" id="charts-tab">
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>Evolución de Ahorro</h3>
+                        <canvas id="savingsChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Gastos por Categoría (Este Mes)</h3>
+                        <canvas id="expensesChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Ingresos vs Gastos (Últimos 6 Meses)</h3>
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Distribución de Gastos</h3>
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
