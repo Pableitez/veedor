@@ -2449,6 +2449,8 @@ function updateCharts() {
     updateExpensesChart();
     updateIncomeExpenseChart();
     updateDistributionChart();
+    updateFinancialHealthMetrics();
+    updateAnalysisTables();
 }
 
 // Gráfica de ahorro
