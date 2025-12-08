@@ -1351,11 +1351,24 @@ function updateBudgets() {
         const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
         const isOverBudget = spent > budget.amount;
         
+        // Obtener etiqueta del período
+        let periodLabel = '';
+        if (budget.period_type === 'weekly') {
+            periodLabel = 'Semanal';
+        } else if (budget.period_type === 'monthly') {
+            periodLabel = 'Mensual';
+        } else if (budget.period_type === 'yearly') {
+            periodLabel = 'Anual';
+        }
+        
         const card = document.createElement('div');
         card.className = 'envelope-card';
         card.style.borderLeft = `4px solid ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'}`;
         card.innerHTML = `
-            <h3>${categoryName}</h3>
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <h3 style="margin: 0;">${categoryName}</h3>
+                <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600;">${periodLabel}</span>
+            </div>
             <div style="margin: 12px 0;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                     <span style="font-size: 13px; color: var(--gray-600);">Presupuesto:</span>
