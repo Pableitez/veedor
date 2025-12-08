@@ -40,7 +40,7 @@ console.log('📁 Archivos estáticos servidos desde:', path.join(__dirname, 'pu
 
 // Modelos de MongoDB
 const userSchema = new mongoose.Schema({
-    username: { type: String, unique: true, required: true },
+    email: { type: String, unique: true, required: true, lowercase: true, trim: true },
     password: { type: String, required: true },
     resetToken: { type: String, default: null },
     resetTokenExpiry: { type: Date, default: null },
@@ -290,14 +290,16 @@ app.post('/api/register', async (req, res) => {
             }
         }
 
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        if (!username || !password) {
-            return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email y contraseña requeridos' });
         }
 
-        if (username.trim().length === 0) {
-            return res.status(400).json({ error: 'El usuario no puede estar vacío' });
+        // Validar formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.trim())) {
+            return res.status(400).json({ error: 'Email inválido' });
         }
 
         if (password.length < 4) {
@@ -305,9 +307,9 @@ app.post('/api/register', async (req, res) => {
         }
 
         // Verificar si el usuario ya existe
-        const existingUser = await User.findOne({ username: username.trim() });
+        const existingUser = await User.findOne({ email: email.trim().toLowerCase() });
         if (existingUser) {
-            return res.status(400).json({ error: 'El usuario ya existe' });
+            return res.status(400).json({ error: 'El email ya está registrado' });
         }
 
         // Hash de la contraseña
@@ -315,18 +317,18 @@ app.post('/api/register', async (req, res) => {
 
         // Crear usuario
         const user = new User({ 
-            username: username.trim(), 
+            email: email.trim().toLowerCase(), 
             password: hashedPassword 
         });
         await user.save();
 
         // Generar token
-        const token = jwt.sign({ userId: user._id.toString(), username: user.username }, JWT_SECRET, { expiresIn: '30d' });
+        const token = jwt.sign({ userId: user._id.toString(), email: user.email }, JWT_SECRET, { expiresIn: '30d' });
 
         res.status(201).json({
             message: 'Usuario creado exitosamente',
             token,
-            user: { id: user._id.toString(), username: user.username }
+            user: { id: user._id.toString(), email: user.email }
         });
     } catch (error) {
         console.error('❌ Error en registro:', error);
@@ -354,28 +356,28 @@ app.post('/api/login', async (req, res) => {
             return res.status(503).json({ error: 'Base de datos no disponible. Intenta de nuevo en unos momentos.' });
         }
 
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        if (!username || !password) {
-            return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email y contraseña requeridos' });
         }
 
-        const user = await User.findOne({ username: username.trim() });
+        const user = await User.findOne({ email: email.trim().toLowerCase() });
         if (!user) {
-            return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+            return res.status(401).json({ error: 'Email o contraseña incorrectos' });
         }
 
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
-            return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+            return res.status(401).json({ error: 'Email o contraseña incorrectos' });
         }
 
-        const token = jwt.sign({ userId: user._id.toString(), username: user.username }, JWT_SECRET, { expiresIn: '30d' });
+        const token = jwt.sign({ userId: user._id.toString(), email: user.email }, JWT_SECRET, { expiresIn: '30d' });
 
         res.json({
             message: 'Login exitoso',
             token,
-            user: { id: user._id.toString(), username: user.username }
+            user: { id: user._id.toString(), email: user.email }
         });
     } catch (error) {
         console.error('Error en login:', error);
@@ -386,16 +388,22 @@ app.post('/api/login', async (req, res) => {
 // Solicitar recuperación de contraseña
 app.post('/api/forgot-password', async (req, res) => {
     try {
-        const { username } = req.body;
+        const { email } = req.body;
         
-        if (!username) {
-            return res.status(400).json({ error: 'Usuario requerido' });
+        if (!email) {
+            return res.status(400).json({ error: 'Email requerido' });
         }
         
-        const user = await User.findOne({ username: username.trim() });
+        // Validar formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.trim())) {
+            return res.status(400).json({ error: 'Email inválido' });
+        }
+        
+        const user = await User.findOne({ email: email.trim().toLowerCase() });
         if (!user) {
             // Por seguridad, no revelamos si el usuario existe
-            return res.json({ message: 'Si el usuario existe, se ha enviado un token de recuperación' });
+            return res.json({ message: 'Si el email está registrado, se ha enviado un enlace de recuperación' });
         }
         
         // Generar token de recuperación (válido por 1 hora)
@@ -410,8 +418,9 @@ app.post('/api/forgot-password', async (req, res) => {
         
         // En producción, aquí enviarías un email con el token
         // Por ahora, devolvemos el token directamente (solo para desarrollo)
+        // TODO: Implementar envío de email real
         res.json({ 
-            message: 'Token de recuperación generado',
+            message: 'Token de recuperación generado. En producción se enviaría por email.',
             token: resetToken, // Solo en desarrollo - eliminar en producción
             expiresAt: resetTokenExpiry
         });

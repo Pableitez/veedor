@@ -312,7 +312,7 @@ function initializeAuth() {
 
 // Solicitar recuperación de contraseña
 async function requestPasswordReset() {
-    const username = document.getElementById('forgotUsername').value.trim();
+    const email = document.getElementById('forgotEmail').value.trim();
     const errorMsg = document.getElementById('forgotPasswordError');
     const successMsg = document.getElementById('forgotPasswordSuccess');
     const resetSection = document.getElementById('resetPasswordSection');
@@ -320,19 +320,26 @@ async function requestPasswordReset() {
     if (errorMsg) errorMsg.textContent = '';
     if (successMsg) successMsg.style.display = 'none';
     
-    if (!username) {
-        if (errorMsg) errorMsg.textContent = 'Por favor ingresa tu usuario';
+    if (!email) {
+        if (errorMsg) errorMsg.textContent = 'Por favor ingresa tu email';
+        return;
+    }
+    
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        if (errorMsg) errorMsg.textContent = 'Por favor ingresa un email válido';
         return;
     }
     
     try {
         const data = await apiRequest('/forgot-password', {
             method: 'POST',
-            body: JSON.stringify({ username })
+            body: JSON.stringify({ email })
         });
         
         if (successMsg) {
-            successMsg.textContent = `Token generado: ${data.token} (válido por 1 hora). Copia este token para restablecer tu contraseña.`;
+            successMsg.textContent = `Código de recuperación generado: ${data.token} (válido por 1 hora). En producción se enviaría por email.`;
             successMsg.style.display = 'block';
         }
         if (resetSection) resetSection.style.display = 'block';
@@ -383,28 +390,36 @@ async function resetPassword() {
 async function register() {
     console.log('=== FUNCIÓN REGISTER LLAMADA ===');
     
-    const usernameInput = document.getElementById('registerUsername');
+    const emailInput = document.getElementById('registerEmail');
     const passwordInput = document.getElementById('registerPassword');
     const passwordConfirmInput = document.getElementById('registerPasswordConfirm');
     const errorMsg = document.getElementById('registerError');
     
-    if (!usernameInput || !passwordInput || !passwordConfirmInput || !errorMsg) {
+    if (!emailInput || !passwordInput || !passwordConfirmInput || !errorMsg) {
         console.error('❌ Elementos del formulario no encontrados');
         alert('Error: Formulario no encontrado. Recarga la página.');
         return;
     }
     
-    const username = usernameInput.value.trim();
+    const email = emailInput.value.trim();
     const password = passwordInput.value;
     const passwordConfirm = passwordConfirmInput.value;
     
-    console.log('Datos del formulario:', { username, passwordLength: password.length, passwordsMatch: password === passwordConfirm });
+    console.log('Datos del formulario:', { email, passwordLength: password.length, passwordsMatch: password === passwordConfirm });
     
     errorMsg.textContent = '';
     
-    if (!username) {
-        errorMsg.textContent = 'El usuario es requerido';
-        console.log('Validación fallida: usuario vacío');
+    if (!email) {
+        errorMsg.textContent = 'El email es requerido';
+        console.log('Validación fallida: email vacío');
+        return;
+    }
+    
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        errorMsg.textContent = 'Por favor ingresa un email válido';
+        console.log('Validación fallida: email inválido');
         return;
     }
     
@@ -425,14 +440,14 @@ async function register() {
         errorMsg.style.color = '#666';
         console.log('Enviando registro a:', `${API_URL}/register`);
         console.log('URL completa:', window.location.origin + API_URL + '/register');
-        console.log('Datos:', { username, password: '***' });
+        console.log('Datos:', { email, password: '***' });
         
         const response = await fetch(`${API_URL}/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ email, password })
         });
         
         console.log('Respuesta recibida. Status:', response.status);
@@ -455,7 +470,7 @@ async function register() {
         
         console.log('✅ Registro exitoso');
         authToken = data.token;
-        currentUser = data.user.username;
+        currentUser = data.user.email;
         localStorage.setItem('veedor_token', authToken);
         
         showMainApp();
@@ -480,20 +495,25 @@ async function register() {
 
 // Iniciar sesión
 async function login() {
-    const username = document.getElementById('loginUsername').value.trim();
+    const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
     const errorMsg = document.getElementById('loginError');
     
     errorMsg.textContent = '';
     
+    if (!email) {
+        errorMsg.textContent = 'Por favor ingresa tu email';
+        return;
+    }
+    
     try {
         const data = await apiRequest('/login', {
             method: 'POST',
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ email, password })
         });
         
         authToken = data.token;
-        currentUser = data.user.username;
+        currentUser = data.user.email;
         localStorage.setItem('veedor_token', authToken);
         
         showMainApp();
@@ -842,6 +862,25 @@ function initializeForms() {
             const today = new Date().toISOString().split('T')[0];
             assetPurchaseDate.value = today;
         }
+    }
+    
+    // Toggle de aportes periódicos en inversiones
+    const enablePeriodicContribution = document.getElementById('enablePeriodicContribution');
+    const periodicContributionFields = document.getElementById('periodicContributionFields');
+    if (enablePeriodicContribution && periodicContributionFields) {
+        enablePeriodicContribution.addEventListener('change', (e) => {
+            periodicContributionFields.style.display = e.target.checked ? 'block' : 'none';
+            
+            // Inicializar fechas si se activa
+            if (e.target.checked) {
+                const contributionStartDate = document.getElementById('contributionStartDate');
+                const contributionEndDate = document.getElementById('contributionEndDate');
+                if (contributionStartDate) {
+                    const today = new Date().toISOString().split('T')[0];
+                    contributionStartDate.value = today;
+                }
+            }
+        });
     }
     
     // Formulario de préstamos
@@ -2540,22 +2579,43 @@ async function addInvestment() {
     const date = document.getElementById('investmentDate').value;
     const description = document.getElementById('investmentDescription').value.trim();
     
+    // Aportes periódicos
+    const enablePeriodic = document.getElementById('enablePeriodicContribution')?.checked || false;
+    const contributionFrequency = document.getElementById('contributionFrequency')?.value || 'monthly';
+    const contributionAmount = parseFloat(document.getElementById('contributionAmount')?.value || 0);
+    const contributionStartDate = document.getElementById('contributionStartDate')?.value || null;
+    const contributionEndDate = document.getElementById('contributionEndDate')?.value || null;
+    
     if (!name || !amount || !currentValue || !date || !type) {
         alert('Por favor completa todos los campos requeridos');
         return;
     }
     
+    if (enablePeriodic && (!contributionAmount || contributionAmount <= 0 || !contributionStartDate)) {
+        alert('Si activas aportes periódicos, debes especificar el monto y la fecha de inicio');
+        return;
+    }
+    
     try {
+        const investmentData = {
+            name,
+            type,
+            amount,
+            current_value: currentValue,
+            date,
+            description: description || null,
+            periodic_contribution: {
+                enabled: enablePeriodic,
+                frequency: enablePeriodic ? contributionFrequency : 'monthly',
+                amount: enablePeriodic ? contributionAmount : 0,
+                start_date: enablePeriodic ? contributionStartDate : null,
+                end_date: enablePeriodic ? (contributionEndDate || null) : null
+            }
+        };
+        
         const investment = await apiRequest('/investments', {
             method: 'POST',
-            body: JSON.stringify({
-                name,
-                type,
-                amount,
-                current_value: currentValue,
-                date,
-                description: description || null
-            })
+            body: JSON.stringify(investmentData)
         });
         
         investments.push(investment);
@@ -2566,6 +2626,11 @@ async function addInvestment() {
             const today = new Date().toISOString().split('T')[0];
             investmentDate.value = today;
         }
+        // Resetear campos de aportes periódicos
+        const enablePeriodicCheckbox = document.getElementById('enablePeriodicContribution');
+        const periodicFields = document.getElementById('periodicContributionFields');
+        if (enablePeriodicCheckbox) enablePeriodicCheckbox.checked = false;
+        if (periodicFields) periodicFields.style.display = 'none';
         alert('✅ Inversión agregada exitosamente');
     } catch (error) {
         alert('Error al crear inversión: ' + error.message);

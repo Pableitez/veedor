@@ -25,8 +25,8 @@
             <div id="loginForm" class="auth-form active">
                 <form id="loginFormElement">
                     <div class="form-group">
-                        <label for="loginUsername">Usuario</label>
-                        <input type="text" id="loginUsername" required autocomplete="username">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required autocomplete="email">
                     </div>
                     <div class="form-group">
                         <label for="loginPassword">Contraseña</label>
@@ -45,19 +45,19 @@
                 <h3 style="margin-bottom: 20px;">Recuperar Contraseña</h3>
                 <form id="forgotPasswordFormElement">
                     <div class="form-group">
-                        <label for="forgotUsername">Usuario</label>
-                        <input type="text" id="forgotUsername" required>
+                        <label for="forgotEmail">Email</label>
+                        <input type="email" id="forgotEmail" required>
                     </div>
-                    <button type="submit" class="btn-primary btn-full">Solicitar Token</button>
+                    <button type="submit" class="btn-primary btn-full">Enviar Enlace de Recuperación</button>
                     <p id="forgotPasswordError" class="error-message"></p>
                     <p id="forgotPasswordSuccess" class="success-message" style="display: none;"></p>
                 </form>
                 <div id="resetPasswordSection" style="display: none; margin-top: 20px;">
-                    <h4 style="margin-bottom: 12px;">Ingresa el token y nueva contraseña</h4>
+                    <h4 style="margin-bottom: 12px;">Ingresa el código recibido por email y nueva contraseña</h4>
                     <form id="resetPasswordFormElement">
                         <div class="form-group">
-                            <label for="resetToken">Token de Recuperación</label>
-                            <input type="text" id="resetToken" required>
+                            <label for="resetToken">Código de Recuperación</label>
+                            <input type="text" id="resetToken" required placeholder="Código recibido por email">
                         </div>
                         <div class="form-group">
                             <label for="resetNewPassword">Nueva Contraseña</label>
@@ -76,8 +76,8 @@
             <div id="registerForm" class="auth-form">
                 <form id="registerFormElement">
                     <div class="form-group">
-                        <label for="registerUsername">Usuario</label>
-                        <input type="text" id="registerUsername" required autocomplete="username">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" required autocomplete="email">
                     </div>
                     <div class="form-group">
                         <label for="registerPassword">Contraseña</label>
@@ -627,6 +627,42 @@
                             <div class="form-group full-width">
                                 <label for="investmentDescription">Descripción (Opcional)</label>
                                 <input type="text" id="investmentDescription" placeholder="Ej: Inversión a largo plazo">
+                            </div>
+                        </div>
+                        <div class="form-row" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                            <div class="form-group full-width">
+                                <label style="font-weight: 600; margin-bottom: 12px; display: block;">💡 Aportes Periódicos (Opcional)</label>
+                                <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+                                    <input type="checkbox" id="enablePeriodicContribution" style="width: auto;">
+                                    <label for="enablePeriodicContribution" style="margin: 0; font-weight: normal;">Activar aportes periódicos</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="periodicContributionFields" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="contributionFrequency">Frecuencia</label>
+                                    <select id="contributionFrequency">
+                                        <option value="weekly">Semanal</option>
+                                        <option value="monthly" selected>Mensual</option>
+                                        <option value="yearly">Anual</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contributionAmount">Monto del Aporte (€)</label>
+                                    <input type="number" id="contributionAmount" step="0.01" min="0" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="contributionStartDate">Fecha de Inicio</label>
+                                    <input type="date" id="contributionStartDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="contributionEndDate">Fecha de Fin (Opcional)</label>
+                                    <input type="date" id="contributionEndDate">
+                                    <small>Dejar vacío para aportes indefinidos</small>
+                                </div>
                             </div>
                         </div>
                         <button type="submit" class="btn-primary">Agregar Inversión</button>
