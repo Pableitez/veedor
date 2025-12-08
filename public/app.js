@@ -1228,7 +1228,7 @@ function updateLoans() {
             
             <div style="margin: 10px 0; padding: 10px; background: #f3f4f6; border-radius: 6px;">
                 <div style="font-size: 13px; line-height: 1.8;">
-                    <div><strong>Capital Restante:</strong> <span style="color: ${remainingPrincipal > 0 ? '#ef4444' : '#10b981'; font-size: 16px; font-weight: bold;">${formatCurrency(remainingPrincipal)}</span></div>
+                    <div><strong>Capital Restante:</strong> <span style="color: ${remainingPrincipal > 0 ? '#ef4444' : '#10b981'}; font-size: 16px; font-weight: bold;">${formatCurrency(remainingPrincipal)}</span></div>
                     <div><strong>Total Pagado:</strong> ${formatCurrency(totalPaid)}</div>
                     <div><strong>Intereses Pagados:</strong> ${formatCurrency(totalInterestPaid)}</div>
                     <div><strong>Comisiones Totales:</strong> ${formatCurrency(totalCommissions)}</div>
