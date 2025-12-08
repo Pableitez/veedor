@@ -260,7 +260,7 @@ body {
    ============================================ */
 
 header {
-    background: var(--gray-900);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
     border-bottom: none;
     padding: 18px 32px;
@@ -270,7 +270,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 117, 255, 0.25);
     transition: background-color 0.3s, border-color 0.3s;
     width: 100%;
     box-sizing: border-box;
@@ -891,7 +891,7 @@ tbody tr:last-child td {
 
 .modal-content {
     background-color: var(--bg-primary);
-    margin: auto;
+    margin: 40px auto;
     padding: 0;
     border-radius: 16px;
     width: 90%;
@@ -904,6 +904,19 @@ tbody tr:last-child td {
     max-height: 90vh;
     display: flex;
     flex-direction: column;
+}
+
+/* Mejorar padding y márgenes de contenido de modales */
+.modal-content > div:last-child {
+    padding: 32px;
+}
+
+.modal-content form {
+    padding: 32px;
+}
+
+.modal-content > div:first-child {
+    padding: 28px 32px;
 }
 
 @keyframes slideUp {
@@ -970,7 +983,7 @@ tbody tr:last-child td {
     header {
         flex-direction: row;
         gap: 12px;
-        padding: 12px 16px;
+        padding: 14px 16px;
     }
     
     header h1 {
@@ -984,18 +997,27 @@ tbody tr:last-child td {
         gap: 8px;
     }
     
-    .header-actions .user-info,
-    .header-actions .btn-secondary {
+    .header-actions .user-info {
         font-size: 12px;
-        padding: 6px 12px;
+        padding: 8px 12px;
+        max-width: 120px;
+    }
+    
+    .header-actions .user-info span {
+        display: none;
+    }
+    
+    .header-actions .btn-secondary {
+        font-size: 11px;
+        padding: 8px 12px;
     }
     
     .dashboard {
-        padding: 12px;
+        padding: 16px 12px;
     }
     
     .dashboard > div:first-child {
-        margin-bottom: 12px;
+        margin-bottom: 16px;
     }
     
     .dashboard > div:first-child > div {
@@ -1004,7 +1026,7 @@ tbody tr:last-child td {
     }
     
     .main-content {
-        padding: 12px;
+        padding: 16px 12px;
     }
     
     .tabs {
@@ -1015,13 +1037,13 @@ tbody tr:last-child td {
     }
     
     .tab-btn {
-        padding: 8px 12px;
+        padding: 10px 14px;
         font-size: 13px;
         white-space: nowrap;
     }
     
     .form-section {
-        padding: 12px;
+        padding: 20px 16px;
     }
     
     .table-container {
@@ -1037,7 +1059,7 @@ tbody tr:last-child td {
     }
     
     th, td {
-        padding: 8px 6px;
+        padding: 10px 8px;
     }
     
     .chart-controls {
@@ -1048,6 +1070,15 @@ tbody tr:last-child td {
     .chart-controls button {
         width: 100%;
         margin-left: 0 !important;
+    }
+    
+    footer {
+        padding: 16px 12px !important;
+    }
+    
+    footer > div > div {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
     }
     
     .modal-content {
