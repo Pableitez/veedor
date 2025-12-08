@@ -832,9 +832,11 @@ function scrollToDashboard() {
 }
 
 // Exponer funciones globalmente
+window.toggleMainNavDropdown = toggleMainNavDropdown;
 window.toggleDashboardDropdown = toggleDashboardDropdown;
 window.showMonthDashboard = showMonthDashboard;
 window.scrollToDashboard = scrollToDashboard;
+window.switchToTab = switchToTab;
 
 // Inicializar categorías
 function initializeCategories() {
@@ -948,14 +950,17 @@ function switchToTab(targetTab) {
     if (targetTabBtn) targetTabBtn.classList.add('active');
     if (targetTabContent) targetTabContent.classList.add('active');
     
-    // Actualizar navegación del header
-    navItems.forEach(item => {
+    // Actualizar items del dropdown
+    const dropdownItems = document.querySelectorAll('.nav-dropdown-item[data-tab]');
+    dropdownItems.forEach(item => {
         if (item.getAttribute('data-tab') === targetTab) {
-            item.style.background = 'rgba(255,255,255,0.25)';
-            item.style.borderColor = 'rgba(255,255,255,0.4)';
+            item.style.background = 'var(--primary-light)';
+            item.style.color = 'var(--primary)';
+            item.style.fontWeight = '600';
         } else {
-            item.style.background = 'rgba(255,255,255,0.1)';
-            item.style.borderColor = 'rgba(255,255,255,0.2)';
+            item.style.background = 'transparent';
+            item.style.color = 'var(--gray-900)';
+            item.style.fontWeight = '400';
         }
     });
     
