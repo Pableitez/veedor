@@ -605,6 +605,7 @@ async function login() {
         localStorage.setItem('veedor_token', authToken);
         
         showMainApp();
+        updateCurrentDateDisplay(); // Actualizar fecha al iniciar sesión
         await loadUserData();
         initializeDate();
         initializeCategories();
