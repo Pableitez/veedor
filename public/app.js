@@ -5467,7 +5467,17 @@ function showFinancialHealthDetail(metric, index) {
         return sum + amortization.finalBalance;
     }, 0);
     const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit;
-    const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
+    
+    // Verificar préstamos activos (que aún no han terminado)
+    const activeDebtLoans = loans.filter(l => {
+        if (l.type !== 'debt') return false;
+        const endDate = new Date(l.end_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return endDate >= today; // Préstamo aún activo
+    });
+    
+    const loansDebt = activeDebtLoans.reduce((sum, loan) => {
         const amortization = calculateAmortizationTable(
             loan.principal,
             loan.interest_rate,
@@ -5478,6 +5488,8 @@ function showFinancialHealthDetail(metric, index) {
         );
         return sum + amortization.finalBalance;
     }, 0);
+    
+    const hasActiveDebts = activeDebtLoans.length > 0;
     const periodIncome = periodTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
     const periodExpenses = Math.abs(periodTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
     const periodSavings = periodIncome - periodExpenses;
