@@ -10,6 +10,9 @@ if (window.VEEDOR_LOADED) {
     window.closeUserProfile = function() { console.warn('closeUserProfile aún no está disponible'); };
     window.showSummaryDetails = function() { console.warn('showSummaryDetails aún no está disponible'); };
     window.closeSummaryDetails = function() { console.warn('closeSummaryDetails aún no está disponible'); };
+    window.showSavingsGoalModal = function() { console.warn('showSavingsGoalModal aún no está disponible'); };
+    window.closeSavingsGoalModal = function() { console.warn('closeSavingsGoalModal aún no está disponible'); };
+    window.deleteSavingsGoal = function() { console.warn('deleteSavingsGoal aún no está disponible'); };
     
     // Configuración de la API
     const API_URL = '/api';

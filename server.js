@@ -70,7 +70,11 @@ const transactionSchema = new mongoose.Schema({
     envelope: { type: String, default: null },
     account_id: { type: String, default: null }, // ID de la cuenta bancaria asociada
     investment_id: { type: String, default: null }, // ID de la inversión asociada (si el gasto/ingreso es para una inversión)
+    loan_id: { type: String, default: null }, // ID del préstamo asociado (si es una cuota)
     description: { type: String, default: null },
+    is_recurring: { type: Boolean, default: false }, // Si es una transacción recurrente
+    recurring_frequency: { type: String, enum: ['weekly', 'monthly', 'yearly'], default: null }, // Frecuencia de recurrencia
+    recurring_day: { type: Number, default: null }, // Día del mes/semana para transacciones recurrentes
     created_at: { type: Date, default: Date.now }
 });
 
@@ -868,6 +872,44 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
         });
 
         await loan.save();
+        
+        // Si es una deuda (debt), crear transacción recurrente mensual automáticamente
+        if (type === 'debt' && monthly_payment > 0) {
+            try {
+                // Calcular la fecha del primer pago (día de pago del mes de inicio)
+                const startDateObj = new Date(start_date);
+                const paymentDay = payment_day || 1;
+                const firstPaymentDate = new Date(startDateObj.getFullYear(), startDateObj.getMonth(), paymentDay);
+                
+                // Si la fecha de inicio ya pasó, usar el próximo mes
+                if (firstPaymentDate < new Date()) {
+                    firstPaymentDate.setMonth(firstPaymentDate.getMonth() + 1);
+                }
+                
+                const firstPaymentDateStr = firstPaymentDate.toISOString().split('T')[0];
+                
+                // Crear transacción recurrente para la cuota del préstamo
+                const recurringTransaction = new Transaction({
+                    user_id: req.user.userId,
+                    type: 'expense',
+                    date: firstPaymentDateStr,
+                    amount: -Math.abs(monthly_payment), // Negativo porque es un gasto
+                    category_general: 'Préstamos e Hipotecas',
+                    category_specific: 'Cuota de Préstamo',
+                    loan_id: loan._id.toString(),
+                    description: `Cuota mensual: ${name}`,
+                    is_recurring: true,
+                    recurring_frequency: payment_frequency || 'monthly',
+                    recurring_day: paymentDay
+                });
+                
+                await recurringTransaction.save();
+            } catch (recurringError) {
+                console.error('Error creando transacción recurrente para préstamo:', recurringError);
+                // No fallar la creación del préstamo si falla la transacción recurrente
+            }
+        }
+        
         res.status(201).json(loan);
     } catch (error) {
         console.error('Error creando préstamo:', error);
