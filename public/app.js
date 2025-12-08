@@ -1034,6 +1034,7 @@ function updateDisplay() {
     updateInvestments();
     updateMonthFilter();
     updateMonthDashboard();
+    updateFinancialHealthMetrics();
 }
 
 // Actualizar resumen
@@ -3232,6 +3233,202 @@ function formatDate(date) {
         year: 'numeric',
         month: 'short',
         day: 'numeric'
+    });
+}
+
+// Actualizar métricas de salud financiera
+function updateFinancialHealthMetrics() {
+    const container = document.getElementById('financialHealthMetrics');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    // Calcular activos totales
+    const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    
+    const totalAssets = transactionsBalance + investmentsValue + loansCredit;
+    
+    // Calcular deudas totales
+    const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    
+    // Calcular ingresos y gastos anuales
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const yearTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getFullYear() === currentYear;
+    });
+    const annualIncome = yearTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const annualExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    
+    // 1. Porcentaje de Deuda Pendiente
+    const debtPercentage = totalAssets > 0 ? (loansDebt / totalAssets) * 100 : (loansDebt > 0 ? 100 : 0);
+    const debtStatus = debtPercentage < 30 ? 'excellent' : debtPercentage < 50 ? 'good' : debtPercentage < 70 ? 'warning' : 'danger';
+    
+    // 2. Ratio de Endeudamiento (Deuda / Activos)
+    const debtToAssetsRatio = totalAssets > 0 ? (loansDebt / totalAssets) : (loansDebt > 0 ? 1 : 0);
+    const debtRatioStatus = debtToAssetsRatio < 0.3 ? 'excellent' : debtToAssetsRatio < 0.5 ? 'good' : debtToAssetsRatio < 0.7 ? 'warning' : 'danger';
+    
+    // 3. Ratio de Salud Financiera (Activos / Deudas)
+    const healthRatio = loansDebt > 0 ? (totalAssets / loansDebt) : (totalAssets > 0 ? 999 : 0);
+    const healthStatus = healthRatio > 3 ? 'excellent' : healthRatio > 2 ? 'good' : healthRatio > 1 ? 'warning' : 'danger';
+    
+    // 4. Ratio de Cobertura de Deuda (Ingresos anuales / Deuda)
+    const debtCoverageRatio = loansDebt > 0 ? (annualIncome / loansDebt) : (annualIncome > 0 ? 999 : 0);
+    const coverageStatus = debtCoverageRatio > 2 ? 'excellent' : debtCoverageRatio > 1 ? 'good' : debtCoverageRatio > 0.5 ? 'warning' : 'danger';
+    
+    // 5. Ratio de Ahorro (Ahorro anual / Ingresos anuales)
+    const annualSavings = annualIncome - annualExpenses;
+    const savingsRatio = annualIncome > 0 ? (annualSavings / annualIncome) * 100 : 0;
+    const savingsStatus = savingsRatio > 20 ? 'excellent' : savingsRatio > 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger';
+    
+    // 6. Ratio de Liquidez (Activos líquidos / Gastos mensuales)
+    const monthlyExpenses = annualExpenses / 12;
+    const liquidityRatio = monthlyExpenses > 0 ? (transactionsBalance / monthlyExpenses) : (transactionsBalance > 0 ? 999 : 0);
+    const liquidityStatus = liquidityRatio > 6 ? 'excellent' : liquidityRatio > 3 ? 'good' : liquidityRatio > 1 ? 'warning' : 'danger';
+    
+    // 7. Ratio de Inversión (Inversiones / Activos totales)
+    const investmentRatio = totalAssets > 0 ? (investmentsValue / totalAssets) * 100 : 0;
+    const investmentStatus = investmentRatio > 20 ? 'excellent' : investmentRatio > 10 ? 'good' : investmentRatio > 5 ? 'warning' : 'danger';
+    
+    // 8. Ratio de Servicio de Deuda (Pagos mensuales / Ingresos mensuales)
+    const monthlyIncome = annualIncome / 12;
+    const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
+    const debtServiceRatio = monthlyIncome > 0 ? (monthlyLoanPayments / monthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 100 : 0);
+    const debtServiceStatus = debtServiceRatio < 20 ? 'excellent' : debtServiceRatio < 30 ? 'good' : debtServiceRatio < 40 ? 'warning' : 'danger';
+    
+    const metrics = [
+        {
+            title: 'Deuda Pendiente',
+            value: debtPercentage.toFixed(1) + '%',
+            description: `Deuda sobre activos totales`,
+            status: debtStatus,
+            icon: '📊',
+            detail: formatCurrency(loansDebt) + ' de ' + formatCurrency(totalAssets)
+        },
+        {
+            title: 'Ratio de Endeudamiento',
+            value: (debtToAssetsRatio * 100).toFixed(1) + '%',
+            description: `Deuda / Activos totales`,
+            status: debtRatioStatus,
+            icon: '⚖️',
+            detail: debtToAssetsRatio < 0.3 ? 'Excelente' : debtToAssetsRatio < 0.5 ? 'Bueno' : debtToAssetsRatio < 0.7 ? 'Moderado' : 'Alto'
+        },
+        {
+            title: 'Salud Financiera',
+            value: healthRatio > 999 ? '∞' : healthRatio.toFixed(2),
+            description: `Activos / Deudas`,
+            status: healthStatus,
+            icon: '💚',
+            detail: healthRatio > 3 ? 'Excelente' : healthRatio > 2 ? 'Buena' : healthRatio > 1 ? 'Moderada' : 'Baja'
+        },
+        {
+            title: 'Cobertura de Deuda',
+            value: debtCoverageRatio > 999 ? '∞' : debtCoverageRatio.toFixed(2),
+            description: `Ingresos anuales / Deuda`,
+            status: coverageStatus,
+            icon: '🛡️',
+            detail: debtCoverageRatio > 2 ? 'Excelente' : debtCoverageRatio > 1 ? 'Buena' : debtCoverageRatio > 0.5 ? 'Moderada' : 'Baja'
+        },
+        {
+            title: 'Ratio de Ahorro',
+            value: savingsRatio.toFixed(1) + '%',
+            description: `Ahorro anual / Ingresos`,
+            status: savingsStatus,
+            icon: '💰',
+            detail: formatCurrency(annualSavings) + ' de ' + formatCurrency(annualIncome)
+        },
+        {
+            title: 'Liquidez',
+            value: liquidityRatio > 999 ? '∞' : liquidityRatio.toFixed(1) + ' meses',
+            description: `Activos líquidos / Gastos mensuales`,
+            status: liquidityStatus,
+            icon: '💧',
+            detail: liquidityRatio > 6 ? 'Excelente' : liquidityRatio > 3 ? 'Buena' : liquidityRatio > 1 ? 'Moderada' : 'Baja'
+        },
+        {
+            title: 'Ratio de Inversión',
+            value: investmentRatio.toFixed(1) + '%',
+            description: `Inversiones / Activos totales`,
+            status: investmentStatus,
+            icon: '📈',
+            detail: formatCurrency(investmentsValue) + ' de ' + formatCurrency(totalAssets)
+        },
+        {
+            title: 'Servicio de Deuda',
+            value: debtServiceRatio.toFixed(1) + '%',
+            description: `Pagos mensuales / Ingresos mensuales`,
+            status: debtServiceStatus,
+            icon: '💳',
+            detail: formatCurrency(monthlyLoanPayments) + ' de ' + formatCurrency(monthlyIncome)
+        }
+    ];
+    
+    metrics.forEach(metric => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.borderLeft = `4px solid ${
+            metric.status === 'excellent' ? 'var(--success)' :
+            metric.status === 'good' ? '#10b981' :
+            metric.status === 'warning' ? 'var(--warning)' :
+            'var(--danger)'
+        }`;
+        
+        const statusColors = {
+            excellent: { bg: '#D1FAE5', text: '#065F46' },
+            good: { bg: '#DCFCE7', text: '#166534' },
+            warning: { bg: '#FEF3C7', text: '#92400E' },
+            danger: { bg: '#FEE2E2', text: '#991B1B' }
+        };
+        
+        const statusStyle = statusColors[metric.status] || statusColors.warning;
+        
+        card.innerHTML = `
+            <div style="display: flex; align-items: start; justify-content: space-between; margin-bottom: 12px;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <span style="font-size: 20px;">${metric.icon}</span>
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--gray-900);">${metric.title}</h3>
+                    </div>
+                    <p style="margin: 0; font-size: 12px; color: var(--gray-600);">${metric.description}</p>
+                </div>
+                <span style="padding: 4px 10px; background: ${statusStyle.bg}; color: ${statusStyle.text}; border-radius: var(--radius-full); font-size: 11px; font-weight: 600;">
+                    ${metric.status === 'excellent' ? 'Excelente' : metric.status === 'good' ? 'Bueno' : metric.status === 'warning' ? 'Moderado' : 'Alto'}
+                </span>
+            </div>
+            <div style="margin-top: 16px;">
+                <div style="font-size: 28px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px;">
+                    ${metric.value}
+                </div>
+                <div style="font-size: 13px; color: var(--gray-600);">
+                    ${metric.detail}
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(card);
     });
 }
 
