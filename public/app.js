@@ -1244,7 +1244,7 @@ function initializeTabs() {
     tabButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetTab = btn.getAttribute('data-tab');
-            switchToTab(targetTab);
+            switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
         });
     });
     
