@@ -65,6 +65,7 @@ let transactions = [];
 let envelopes = [];
 let budgets = [];
 let accounts = [];
+let assets = [];
 let charts = {};
 let currentUser = null;
 let authToken = null;
@@ -637,6 +638,13 @@ function initializeTabs() {
             if (targetTab === 'accounts') {
                 setTimeout(() => {
                     updateAccounts();
+                }, 100);
+            }
+            
+            // Actualizar patrimonio cuando se cambia al tab de patrimonio
+            if (targetTab === 'assets') {
+                setTimeout(() => {
+                    updateAssets();
                 }, 100);
             }
         });
@@ -2691,6 +2699,213 @@ window.editInvestment = editInvestment;
 window.deleteInvestment = deleteInvestment;
 window.editAccount = editAccount;
 window.deleteAccount = deleteAccount;
+
+// ==================== PATRIMONIO ====================
+
+// Agregar bien
+async function addAsset() {
+    const name = document.getElementById('assetName').value.trim();
+    const type = document.getElementById('assetType').value;
+    const purchaseDate = document.getElementById('assetPurchaseDate').value;
+    const purchasePrice = parseFloat(document.getElementById('assetPurchasePrice').value);
+    const currentValue = parseFloat(document.getElementById('assetCurrentValue').value);
+    const location = document.getElementById('assetLocation').value.trim();
+    const description = document.getElementById('assetDescription').value.trim();
+    
+    if (!name || !type || !purchaseDate || isNaN(purchasePrice) || isNaN(currentValue)) {
+        alert('Por favor completa todos los campos requeridos');
+        return;
+    }
+    
+    try {
+        const asset = await apiRequest('/assets', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                type,
+                purchase_date: purchaseDate,
+                purchase_price: purchasePrice,
+                current_value: currentValue,
+                location: location || null,
+                description: description || null
+            })
+        });
+        
+        assets.push(asset);
+        updateDisplay();
+        document.getElementById('assetForm').reset();
+        const assetPurchaseDate = document.getElementById('assetPurchaseDate');
+        if (assetPurchaseDate) {
+            const today = new Date().toISOString().split('T')[0];
+            assetPurchaseDate.value = today;
+        }
+        alert('✅ Bien agregado exitosamente');
+    } catch (error) {
+        alert('Error al crear bien: ' + error.message);
+    }
+}
+
+// Actualizar patrimonio
+function updateAssets() {
+    const grid = document.getElementById('assetsGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (assets.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay bienes registrados</p>';
+        return;
+    }
+    
+    const totalPurchaseValue = assets.reduce((sum, a) => sum + a.purchase_price, 0);
+    const totalCurrentValue = assets.reduce((sum, a) => sum + a.current_value, 0);
+    const totalAppreciation = totalCurrentValue - totalPurchaseValue;
+    const totalAppreciationPercent = totalPurchaseValue > 0 ? ((totalAppreciation / totalPurchaseValue) * 100) : 0;
+    
+    assets.forEach(asset => {
+        const appreciation = asset.current_value - asset.purchase_price;
+        const appreciationPercent = asset.purchase_price > 0 ? ((appreciation / asset.purchase_price) * 100) : 0;
+        const purchaseDate = new Date(asset.purchase_date);
+        const daysOwned = Math.floor((new Date() - purchaseDate) / (1000 * 60 * 60 * 24));
+        
+        const typeNames = {
+            property: 'Propiedad',
+            vehicle: 'Vehículo',
+            jewelry: 'Joyas',
+            art: 'Arte',
+            electronics: 'Electrónica',
+            other: 'Otro'
+        };
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.borderLeft = `4px solid ${appreciation >= 0 ? 'var(--success)' : 'var(--danger)'}`;
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--gray-900);">${asset.name}</h3>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--gray-600);">${typeNames[asset.type] || asset.type}</p>
+                    ${asset.location ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">📍 ${asset.location}</p>` : ''}
+                </div>
+            </div>
+            
+            <div style="margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
+                    <div><strong>Compra:</strong></div>
+                    <div style="text-align: right;">${formatCurrency(asset.purchase_price)}</div>
+                    <div><strong>Valor Actual:</strong></div>
+                    <div style="text-align: right; font-weight: 600;">${formatCurrency(asset.current_value)}</div>
+                    <div><strong>Evolución:</strong></div>
+                    <div style="text-align: right; color: ${appreciation >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 16px;">
+                        ${appreciation >= 0 ? '+' : ''}${formatCurrency(appreciation)}
+                    </div>
+                    <div><strong>Porcentaje:</strong></div>
+                    <div style="text-align: right; color: ${appreciationPercent >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700;">
+                        ${appreciationPercent >= 0 ? '+' : ''}${appreciationPercent.toFixed(2)}%
+                    </div>
+                    <div><strong>Días:</strong></div>
+                    <div style="text-align: right; color: var(--gray-600);">${daysOwned}</div>
+                </div>
+            </div>
+            
+            ${asset.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${asset.description}</div>` : ''}
+            
+            ${asset.value_history && asset.value_history.length > 2 ? `
+                <div style="margin: 12px 0; padding: 12px; background: var(--gray-100); border-radius: var(--radius);">
+                    <strong style="font-size: 12px; color: var(--gray-700);">Historial de Valores:</strong>
+                    <div style="margin-top: 8px; font-size: 11px; color: var(--gray-600); max-height: 100px; overflow-y: auto;">
+                        ${asset.value_history.slice(-5).map(h => `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>${h.date}</span>
+                                <span style="font-weight: 600;">${formatCurrency(h.value)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editAsset('${asset._id || asset.id}')" style="flex: 1;">✏️ Editar</button>
+                <button class="btn-danger" onclick="deleteAsset('${asset._id || asset.id}')" style="flex: 1;">🗑️ Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+    
+    // Agregar resumen total
+    const summaryCard = document.createElement('div');
+    summaryCard.className = 'envelope-card';
+    summaryCard.style.gridColumn = '1 / -1';
+    summaryCard.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
+    summaryCard.style.color = 'white';
+    summaryCard.style.border = 'none';
+    summaryCard.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0; color: white; font-size: 18px;">🏠 Valor Total del Patrimonio</h3>
+                <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${assets.length} bien${assets.length !== 1 ? 'es' : ''}</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 32px; font-weight: 700; color: white;">
+                    ${formatCurrency(totalCurrentValue)}
+                </div>
+                <div style="font-size: 12px; color: rgba(255,255,255,0.8);">
+                    ${totalAppreciation >= 0 ? '+' : ''}${formatCurrency(totalAppreciation)} (${totalAppreciationPercent >= 0 ? '+' : ''}${totalAppreciationPercent.toFixed(2)}%)
+                </div>
+            </div>
+        </div>
+    `;
+    grid.appendChild(summaryCard);
+}
+
+// Editar bien (actualizar valor)
+async function editAsset(id) {
+    const asset = assets.find(a => (a._id || a.id) === id);
+    if (!asset) return;
+    
+    const newValue = prompt(`Actualizar valor actual de "${asset.name}":`, asset.current_value);
+    if (newValue === null) return;
+    
+    const currentValue = parseFloat(newValue);
+    if (isNaN(currentValue)) {
+        alert('Por favor ingresa un número válido');
+        return;
+    }
+    
+    try {
+        await apiRequest(`/assets/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                ...asset,
+                current_value: currentValue,
+                update_value_history: true
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Valor actualizado exitosamente');
+    } catch (error) {
+        alert('Error al actualizar bien: ' + error.message);
+    }
+}
+
+// Eliminar bien
+async function deleteAsset(id) {
+    if (!confirm('¿Estás seguro de eliminar este bien?')) return;
+    
+    try {
+        await apiRequest(`/assets/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+    } catch (error) {
+        alert('Error al eliminar bien: ' + error.message);
+    }
+}
+
+// Exponer funciones globales
+window.editAsset = editAsset;
+window.deleteAsset = deleteAsset;
 
 // Eliminar préstamo
 async function deleteLoan(id) {

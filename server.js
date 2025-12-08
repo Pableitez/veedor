@@ -42,6 +42,8 @@ console.log('📁 Archivos estáticos servidos desde:', path.join(__dirname, 'pu
 const userSchema = new mongoose.Schema({
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true },
+    resetToken: { type: String, default: null },
+    resetTokenExpiry: { type: Date, default: null },
     createdAt: { type: Date, default: Date.now }
 });
 
@@ -130,6 +132,26 @@ const Loan = mongoose.model('Loan', loanSchema);
 const Investment = mongoose.model('Investment', investmentSchema);
 const Budget = mongoose.model('Budget', budgetSchema);
 const Account = mongoose.model('Account', accountSchema);
+
+const assetSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true }, // Nombre del bien (ej: "Piso en Madrid", "Coche Toyota")
+    type: { type: String, enum: ['property', 'vehicle', 'jewelry', 'art', 'electronics', 'other'], required: true },
+    purchase_date: { type: String, required: true }, // Fecha de adquisición
+    purchase_price: { type: Number, required: true }, // Precio de compra
+    current_value: { type: Number, required: true }, // Valor actual
+    description: { type: String, default: null },
+    location: { type: String, default: null }, // Ubicación (para propiedades)
+    value_history: [{ // Historial de valores
+        date: { type: String, required: true },
+        value: { type: Number, required: true },
+        notes: { type: String, default: null }
+    }],
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
+});
+
+const Asset = mongoose.model('Asset', assetSchema);
 
 // Conectar a MongoDB
 console.log('=== CONFIGURACIÓN MONGODB ===');
@@ -357,6 +379,80 @@ app.post('/api/login', async (req, res) => {
     } catch (error) {
         console.error('Error en login:', error);
         res.status(500).json({ error: error.message || 'Error del servidor' });
+    }
+});
+
+// Solicitar recuperación de contraseña
+app.post('/api/forgot-password', async (req, res) => {
+    try {
+        const { username } = req.body;
+        
+        if (!username) {
+            return res.status(400).json({ error: 'Usuario requerido' });
+        }
+        
+        const user = await User.findOne({ username: username.trim() });
+        if (!user) {
+            // Por seguridad, no revelamos si el usuario existe
+            return res.json({ message: 'Si el usuario existe, se ha enviado un token de recuperación' });
+        }
+        
+        // Generar token de recuperación (válido por 1 hora)
+        const crypto = require('crypto');
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpiry = new Date();
+        resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1);
+        
+        user.resetToken = resetToken;
+        user.resetTokenExpiry = resetTokenExpiry;
+        await user.save();
+        
+        // En producción, aquí enviarías un email con el token
+        // Por ahora, devolvemos el token directamente (solo para desarrollo)
+        res.json({ 
+            message: 'Token de recuperación generado',
+            token: resetToken, // Solo en desarrollo - eliminar en producción
+            expiresAt: resetTokenExpiry
+        });
+    } catch (error) {
+        console.error('Error en forgot-password:', error);
+        res.status(500).json({ error: 'Error del servidor' });
+    }
+});
+
+// Resetear contraseña con token
+app.post('/api/reset-password', async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        
+        if (!token || !newPassword) {
+            return res.status(400).json({ error: 'Token y nueva contraseña requeridos' });
+        }
+        
+        if (newPassword.length < 4) {
+            return res.status(400).json({ error: 'La contraseña debe tener al menos 4 caracteres' });
+        }
+        
+        const user = await User.findOne({ 
+            resetToken: token,
+            resetTokenExpiry: { $gt: new Date() }
+        });
+        
+        if (!user) {
+            return res.status(400).json({ error: 'Token inválido o expirado' });
+        }
+        
+        // Actualizar contraseña
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        user.resetToken = null;
+        user.resetTokenExpiry = null;
+        await user.save();
+        
+        res.json({ message: 'Contraseña actualizada exitosamente' });
+    } catch (error) {
+        console.error('Error en reset-password:', error);
+        res.status(500).json({ error: 'Error del servidor' });
     }
 });
 
@@ -979,6 +1075,112 @@ app.delete('/api/investments/:id', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error eliminando inversión:', error);
         res.status(500).json({ error: 'Error al eliminar inversión' });
+    }
+});
+
+// ==================== RUTAS DE PATRIMONIO ====================
+
+// Obtener todos los bienes del usuario
+app.get('/api/assets', authenticateToken, async (req, res) => {
+    try {
+        const assets = await Asset.find({ user_id: req.user.userId })
+            .sort({ created_at: -1 });
+        res.json(assets);
+    } catch (error) {
+        console.error('Error obteniendo bienes:', error);
+        res.status(500).json({ error: 'Error al obtener bienes' });
+    }
+});
+
+// Crear bien
+app.post('/api/assets', authenticateToken, async (req, res) => {
+    try {
+        const { name, type, purchase_date, purchase_price, current_value, description, location } = req.body;
+        
+        if (!name || !type || !purchase_date || !purchase_price || current_value === undefined) {
+            return res.status(400).json({ error: 'Todos los campos requeridos deben estar completos' });
+        }
+        
+        const asset = new Asset({
+            user_id: req.user.userId,
+            name,
+            type,
+            purchase_date,
+            purchase_price,
+            current_value,
+            description: description || null,
+            location: location || null,
+            value_history: [{
+                date: purchase_date,
+                value: purchase_price,
+                notes: 'Valor inicial de compra'
+            }, {
+                date: new Date().toISOString().split('T')[0],
+                value: current_value,
+                notes: 'Valor actual'
+            }]
+        });
+        
+        await asset.save();
+        res.status(201).json(asset);
+    } catch (error) {
+        console.error('Error creando bien:', error);
+        res.status(500).json({ error: 'Error al crear bien' });
+    }
+});
+
+// Actualizar bien (incluyendo valor actual)
+app.put('/api/assets/:id', authenticateToken, async (req, res) => {
+    try {
+        const { name, type, purchase_date, purchase_price, current_value, description, location, update_value_history } = req.body;
+        
+        const asset = await Asset.findOne({ _id: req.params.id, user_id: req.user.userId });
+        if (!asset) {
+            return res.status(404).json({ error: 'Bien no encontrado' });
+        }
+        
+        // Si se actualiza el valor actual, agregar al historial
+        if (update_value_history && current_value !== undefined && current_value !== asset.current_value) {
+            asset.value_history.push({
+                date: new Date().toISOString().split('T')[0],
+                value: current_value,
+                notes: 'Actualización de valor'
+            });
+        }
+        
+        asset.name = name || asset.name;
+        asset.type = type || asset.type;
+        asset.purchase_date = purchase_date || asset.purchase_date;
+        asset.purchase_price = purchase_price !== undefined ? purchase_price : asset.purchase_price;
+        asset.current_value = current_value !== undefined ? current_value : asset.current_value;
+        asset.description = description !== undefined ? description : asset.description;
+        asset.location = location !== undefined ? location : asset.location;
+        asset.updated_at = new Date();
+        
+        await asset.save();
+        res.json(asset);
+    } catch (error) {
+        console.error('Error actualizando bien:', error);
+        res.status(500).json({ error: 'Error al actualizar bien' });
+    }
+});
+
+// Eliminar bien
+app.delete('/api/assets/:id', authenticateToken, async (req, res) => {
+    try {
+        const asset = await Asset.findOneAndDelete({
+            _id: req.params.id,
+            user_id: req.user.userId
+        });
+        
+        if (!asset) {
+            return res.status(404).json({ error: 'Bien no encontrado' });
+        }
+        
+        res.json({ message: 'Bien eliminado exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando bien:', error);
+        res.status(500).json({ error: 'Error al eliminar bien' });
     }
 });
 
