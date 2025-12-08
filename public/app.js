@@ -660,6 +660,7 @@ function showMainApp() {
     // Mostrar footer en la app principal
     const footer = document.getElementById('mainFooter');
     if (footer) footer.style.display = 'block';
+    updateCurrentDateDisplay(); // Actualizar fecha al mostrar la app
 }
 
 // Actualizar información del usuario
