@@ -2877,32 +2877,7 @@ function updateInvestments() {
 
 // Añadir dinero a una inversión (hucha)
 async function addMoneyToInvestment(id) {
-    const investment = investments.find(inv => (inv._id || inv.id) === id);
-    if (!investment) return;
-    
-    const totalInvested = (investment.contributions || []).reduce((sum, c) => sum + c.amount, 0);
-    const amount = prompt(`💰 Añadir dinero a "${investment.name}"\n\nTotal invertido actual: ${formatCurrency(totalInvested)}\n\n¿Cuánto quieres añadir? (€):`, '');
-    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) return;
-    
-    const contributionAmount = parseFloat(amount);
-    const today = new Date().toISOString().split('T')[0];
-    
-    try {
-        // Agregar el aporte al historial
-        await apiRequest(`/investments/${id}/contribution`, {
-            method: 'POST',
-            body: JSON.stringify({
-                amount: contributionAmount,
-                date: today
-            })
-        });
-        
-        await loadUserData();
-        updateDisplay();
-        alert(`✅ Se añadieron ${formatCurrency(contributionAmount)} a tu inversión`);
-    } catch (error) {
-        alert('Error al añadir dinero: ' + error.message);
-    }
+    showAddMoneyInvestmentModal(id);
 }
 
 // Actualizar valor actual de la inversión
