@@ -178,7 +178,7 @@ async function checkAuth() {
                 notes: data.user.notes || ''
             };
             showMainApp();
-            updateCurrentDateDisplay(); // Actualizar fecha al verificar autenticación
+            // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
             await loadUserData();
             initializeDate();
             initializeCategories();
@@ -606,7 +606,7 @@ async function login() {
         localStorage.setItem('veedor_token', authToken);
         
         showMainApp();
-        updateCurrentDateDisplay(); // Actualizar fecha al iniciar sesión
+        // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
         await loadUserData();
         initializeDate();
         initializeCategories();
@@ -662,7 +662,7 @@ function showMainApp() {
     // Mostrar footer en la app principal
     const footer = document.getElementById('mainFooter');
     if (footer) footer.style.display = 'block';
-    updateCurrentDateDisplay(); // Actualizar fecha al mostrar la app
+    // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
 }
 
 // Actualizar información del usuario
@@ -778,7 +778,7 @@ function initializeDate() {
     }
     
     // Actualizar indicador de fecha actual en el header
-    updateCurrentDateDisplay();
+    // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
 }
 
 // Actualizar fecha actual en el header
@@ -835,6 +835,13 @@ document.addEventListener('click', function(event) {
     
     if (mainDropdown && mainBtn && !mainDropdown.contains(event.target) && !mainBtn.contains(event.target)) {
         mainDropdown.style.display = 'none';
+    }
+    
+    const settingsDropdown = document.getElementById('settingsDropdown');
+    const settingsBtn = document.getElementById('settingsDropdownBtn');
+    
+    if (settingsDropdown && settingsBtn && !settingsDropdown.contains(event.target) && !settingsBtn.contains(event.target)) {
+        settingsDropdown.style.display = 'none';
     }
     
     if (dashboardDropdown && dashboardBtn && !dashboardDropdown.contains(event.target) && !dashboardBtn.contains(event.target)) {
@@ -977,7 +984,15 @@ function switchToTab(targetTab) {
     const targetTabContent = document.getElementById(`${targetTab}-tab`);
     
     if (targetTabBtn) targetTabBtn.classList.add('active');
-    if (targetTabContent) targetTabContent.classList.add('active');
+    if (targetTabContent) {
+        targetTabContent.classList.add('active');
+        // Scroll suave a la sección
+        setTimeout(() => {
+            if (targetTabContent) {
+                targetTabContent.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+            }
+        }, 150);
+    }
     
     // Actualizar items del dropdown
     const dropdownItems = document.querySelectorAll('.nav-dropdown-item[data-tab]');
