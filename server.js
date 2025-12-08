@@ -9,7 +9,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'tu_secreto_super_seguro_cambiar_en_produccion';
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/veedor';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://veedor_admin:520845@cluster0.sqt1psn.mongodb.net/veedor?appName=Cluster0';
 
 // Middleware
 app.use(cors());
