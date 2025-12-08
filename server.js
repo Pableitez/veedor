@@ -540,11 +540,22 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
 
         await transaction.save();
         
-        // Si la transacción está asociada a una inversión con aportes periódicos, marcar el aporte como completado
+        // Si la transacción está asociada a una inversión, agregar al historial de aportes
         if (investment_id && type === 'expense') {
-            const Investment = require('./models/Investment') || mongoose.model('Investment');
             const investment = await Investment.findOne({ _id: investment_id, user_id: req.user.userId });
-            if (investment && investment.periodic_contribution && investment.periodic_contribution.enabled) {
+            if (investment) {
+                // Agregar al historial de aportes general
+                if (!investment.contributions) {
+                    investment.contributions = [];
+                }
+                investment.contributions.push({
+                    date: date,
+                    amount: Math.abs(amount),
+                    transaction_id: transaction._id.toString()
+                });
+                
+                // Si tiene aportes periódicos activos, también registrar ahí
+                if (investment.periodic_contribution && investment.periodic_contribution.enabled) {
                 // Verificar si este aporte ya fue registrado en este período
                 const contributionDate = new Date(date);
                 

@@ -2615,16 +2615,24 @@ function updateInvestments() {
         return;
     }
     
-    const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
+    const totalInvested = investments.reduce((sum, inv) => {
+        return sum + ((inv.contributions || []).reduce((contribSum, c) => contribSum + c.amount, 0));
+    }, 0);
     const totalCurrentValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
     const totalProfit = totalCurrentValue - totalInvested;
     const totalReturn = totalInvested > 0 ? ((totalProfit / totalInvested) * 100) : 0;
     
     investments.forEach(investment => {
-        const profit = investment.current_value - investment.amount;
-        const returnPercent = investment.amount > 0 ? ((profit / investment.amount) * 100) : 0;
-        const investmentDate = new Date(investment.date);
-        const daysHeld = Math.floor((new Date() - investmentDate) / (1000 * 60 * 60 * 24));
+        // Calcular total invertido (suma de todos los aportes)
+        const totalInvested = (investment.contributions || []).reduce((sum, c) => sum + c.amount, 0);
+        const profit = investment.current_value - totalInvested;
+        const returnPercent = totalInvested > 0 ? ((profit / totalInvested) * 100) : 0;
+        
+        // Calcular días desde el primer aporte
+        const firstContribution = investment.contributions && investment.contributions.length > 0 
+            ? new Date(investment.contributions[0].date)
+            : new Date(investment.created_at);
+        const daysHeld = Math.floor((new Date() - firstContribution) / (1000 * 60 * 60 * 24));
         
         const typeNames = {
             stocks: 'Acciones',
@@ -2643,24 +2651,51 @@ function updateInvestments() {
             
             <div style="margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
-                    <div><strong>Invertido:</strong></div>
-                    <div style="text-align: right;">${formatCurrency(investment.amount)}</div>
-                    <div><strong>Valor Actual:</strong></div>
-                    <div style="text-align: right; font-weight: 600;">${formatCurrency(investment.current_value)}</div>
-                    <div><strong>Ganancia/Pérdida:</strong></div>
-                    <div style="text-align: right; color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 16px;">
+                    <div><strong>💰 Total Invertido:</strong></div>
+                    <div style="text-align: right; font-weight: 600;">${formatCurrency(totalInvested)}</div>
+                    <div><strong>💵 Valor Actual:</strong></div>
+                    <div style="text-align: right; font-weight: 600; font-size: 16px;">${formatCurrency(investment.current_value)}</div>
+                    <div><strong>📈 Ganancia/Pérdida:</strong></div>
+                    <div style="text-align: right; color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 18px;">
                         ${profit >= 0 ? '+' : ''}${formatCurrency(profit)}
                     </div>
-                    <div><strong>Rentabilidad:</strong></div>
-                    <div style="text-align: right; color: ${returnPercent >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700;">
+                    <div><strong>📊 Rentabilidad:</strong></div>
+                    <div style="text-align: right; color: ${returnPercent >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 16px;">
                         ${returnPercent >= 0 ? '+' : ''}${returnPercent.toFixed(2)}%
                     </div>
-                    <div><strong>Días:</strong></div>
-                    <div style="text-align: right; color: var(--gray-600);">${daysHeld}</div>
+                    ${investment.contributions && investment.contributions.length > 0 ? `
+                        <div><strong>🔢 Aportes:</strong></div>
+                        <div style="text-align: right; color: var(--gray-600);">${investment.contributions.length}</div>
+                    ` : ''}
                 </div>
             </div>
             
             ${investment.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${investment.description}</div>` : ''}
+            
+            ${investment.contributions && investment.contributions.length > 0 ? `
+                <div style="margin: 12px 0; padding: 12px; background: rgba(16, 185, 129, 0.05); border-radius: var(--radius); border-left: 3px solid var(--success);">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--success); margin-bottom: 8px;">💰 Historial de Aportes</div>
+                    <div style="max-height: 120px; overflow-y: auto; font-size: 12px;">
+                        ${investment.contributions.slice().reverse().slice(0, 5).map(c => `
+                            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.1);">
+                                <span>${formatDate(new Date(c.date))}</span>
+                                <span style="font-weight: 600; color: var(--success);">+${formatCurrency(c.amount)}</span>
+                            </div>
+                        `).join('')}
+                        ${investment.contributions.length > 5 ? `
+                            <div style="text-align: center; padding-top: 6px; color: var(--gray-500); font-size: 11px;">
+                                +${investment.contributions.length - 5} aportes más
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            ` : `
+                <div style="margin: 12px 0; padding: 12px; background: rgba(99, 102, 241, 0.05); border-radius: var(--radius); border-left: 3px solid var(--primary);">
+                    <div style="font-size: 12px; color: var(--gray-600); text-align: center;">
+                        💡 Aún no has añadido dinero. Haz clic en "Añadir Dinero" para empezar.
+                    </div>
+                </div>
+            `}
             
             ${investment.periodic_contribution && investment.periodic_contribution.enabled ? `
                 <div style="margin: 12px 0; padding: 12px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius); border-left: 3px solid var(--primary);">
@@ -2751,12 +2786,42 @@ function updateInvestments() {
     grid.insertBefore(summaryCard, grid.firstChild);
 }
 
-// Editar inversión
-async function editInvestment(id) {
+// Añadir dinero a una inversión (hucha)
+async function addMoneyToInvestment(id) {
     const investment = investments.find(inv => (inv._id || inv.id) === id);
     if (!investment) return;
     
-    const newValue = prompt(`Actualizar valor de "${investment.name}"\n\nValor actual: ${formatCurrency(investment.current_value)}\n\nNuevo valor (€):`, investment.current_value);
+    const totalInvested = (investment.contributions || []).reduce((sum, c) => sum + c.amount, 0);
+    const amount = prompt(`💰 Añadir dinero a "${investment.name}"\n\nTotal invertido actual: ${formatCurrency(totalInvested)}\n\n¿Cuánto quieres añadir? (€):`, '');
+    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) return;
+    
+    const contributionAmount = parseFloat(amount);
+    const today = new Date().toISOString().split('T')[0];
+    
+    try {
+        // Agregar el aporte al historial
+        await apiRequest(`/investments/${id}/contribution`, {
+            method: 'POST',
+            body: JSON.stringify({
+                amount: contributionAmount,
+                date: today
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        alert(`✅ Se añadieron ${formatCurrency(contributionAmount)} a tu inversión`);
+    } catch (error) {
+        alert('Error al añadir dinero: ' + error.message);
+    }
+}
+
+// Actualizar valor actual de la inversión
+async function updateInvestmentValue(id) {
+    const investment = investments.find(inv => (inv._id || inv.id) === id);
+    if (!investment) return;
+    
+    const newValue = prompt(`📊 Actualizar valor de "${investment.name}"\n\nValor actual: ${formatCurrency(investment.current_value)}\n\nNuevo valor (€):`, investment.current_value);
     if (!newValue || isNaN(newValue)) return;
     
     try {
@@ -2769,9 +2834,9 @@ async function editInvestment(id) {
         
         await loadUserData();
         updateDisplay();
-        alert('✅ Inversión actualizada');
+        alert('✅ Valor actualizado');
     } catch (error) {
-        alert('Error al actualizar inversión: ' + error.message);
+        alert('Error al actualizar valor: ' + error.message);
     }
 }
 
@@ -2957,7 +3022,8 @@ async function deleteAccount(id) {
 }
 
 // Exponer funciones globales
-window.editInvestment = editInvestment;
+window.addMoneyToInvestment = addMoneyToInvestment;
+window.updateInvestmentValue = updateInvestmentValue;
 window.deleteInvestment = deleteInvestment;
 window.editAccount = editAccount;
 window.deleteAccount = deleteAccount;
