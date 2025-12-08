@@ -1873,7 +1873,7 @@ function updateLoans() {
     });
 }
 
-// Mostrar detalles del préstamo
+// Mostrar detalles del préstamo con tabla de amortización completa
 function showLoanDetails(loanId) {
     const loan = loans.find(l => (l._id || l.id) === loanId);
     if (!loan) return;
@@ -1887,25 +1887,104 @@ function showLoanDetails(loanId) {
         loan.early_payments || []
     );
     
-    let tableHTML = '<table style="width: 100%; border-collapse: collapse; margin-top: 10px;"><thead><tr style="background: #f3f4f6;"><th style="padding: 8px; text-align: left;">Mes</th><th style="padding: 8px; text-align: right;">Cuota</th><th style="padding: 8px; text-align: right;">Capital</th><th style="padding: 8px; text-align: right;">Interés</th><th style="padding: 8px; text-align: right;">Restante</th></tr></thead><tbody>';
+    const modal = document.getElementById('amortizationModal');
+    const modalTitle = document.getElementById('amortizationModalTitle');
+    const modalContent = document.getElementById('amortizationModalContent');
     
-    amortization.table.slice(0, 12).forEach(row => {
-        tableHTML += `<tr style="border-bottom: 1px solid #e5e7eb;">
-            <td style="padding: 6px;">${row.month}</td>
-            <td style="padding: 6px; text-align: right;">${formatCurrency(row.payment)}</td>
-            <td style="padding: 6px; text-align: right;">${formatCurrency(row.principal)}</td>
-            <td style="padding: 6px; text-align: right;">${formatCurrency(row.interest)}</td>
-            <td style="padding: 6px; text-align: right;">${formatCurrency(row.balance)}</td>
-        </tr>`;
+    if (!modal || !modalTitle || !modalContent) return;
+    
+    // Título del modal
+    modalTitle.textContent = `📊 Tabla de Amortización - ${loan.name}`;
+    
+    // Calcular resumen
+    const totalPaid = (loan.total_paid || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
+    const totalInterest = amortization.totalInterest;
+    const totalCommissions = (loan.opening_commission || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + (ep.commission || 0), 0);
+    const totalCost = totalInterest + totalCommissions;
+    const remainingPrincipal = amortization.finalBalance;
+    
+    // Crear contenido del modal
+    let contentHTML = `
+        <div style="margin-bottom: 24px; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                <div>
+                    <strong style="color: var(--gray-600); font-size: 12px;">Capital Inicial</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--gray-900);">${formatCurrency(loan.principal)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--gray-600); font-size: 12px;">Capital Restante</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(remainingPrincipal)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--gray-600); font-size: 12px;">Total Pagado</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--gray-900);">${formatCurrency(totalPaid)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--gray-600); font-size: 12px;">Intereses Totales</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(totalInterest)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--gray-600); font-size: 12px;">Comisiones Totales</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--warning);">${formatCurrency(totalCommissions)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--gray-600); font-size: 12px;">Costo Total</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(totalCost)}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 18px; font-weight: 700;">Cuadro de Amortización Completo</h3>
+            <span style="color: var(--gray-600); font-size: 14px;">${amortization.table.length} cuotas</span>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius); overflow: hidden;">
+                <thead>
+                    <tr style="background: var(--primary); color: white;">
+                        <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px;">Mes</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Fecha</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Cuota</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Capital</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Interés</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Capital Restante</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    amortization.table.forEach((row, index) => {
+        const isEven = index % 2 === 0;
+        contentHTML += `
+            <tr style="border-bottom: 1px solid var(--gray-200); background: ${isEven ? 'white' : 'var(--gray-50)'};">
+                <td style="padding: 10px; font-weight: 600; color: var(--gray-900);">${row.month}</td>
+                <td style="padding: 10px; text-align: right; color: var(--gray-700);">${formatDate(row.date)}</td>
+                <td style="padding: 10px; text-align: right; font-weight: 600; color: var(--gray-900);">${formatCurrency(row.payment)}</td>
+                <td style="padding: 10px; text-align: right; color: var(--success);">${formatCurrency(row.principal)}</td>
+                <td style="padding: 10px; text-align: right; color: var(--danger);">${formatCurrency(row.interest)}</td>
+                <td style="padding: 10px; text-align: right; font-weight: 600; color: ${row.balance > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(row.balance)}</td>
+            </tr>
+        `;
     });
     
-    if (amortization.table.length > 12) {
-        tableHTML += `<tr><td colspan="5" style="padding: 8px; text-align: center; color: #666;">... y ${amortization.table.length - 12} meses más</td></tr>`;
-    }
+    contentHTML += `
+                </tbody>
+                <tfoot style="background: var(--gray-100); font-weight: 700;">
+                    <tr>
+                        <td colspan="2" style="padding: 12px; text-align: left;">TOTALES</td>
+                        <td style="padding: 12px; text-align: right;">${formatCurrency(amortization.table.reduce((sum, r) => sum + r.payment, 0))}</td>
+                        <td style="padding: 12px; text-align: right; color: var(--success);">${formatCurrency(loan.principal - remainingPrincipal)}</td>
+                        <td style="padding: 12px; text-align: right; color: var(--danger);">${formatCurrency(totalInterest)}</td>
+                        <td style="padding: 12px; text-align: right; color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(remainingPrincipal)}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    `;
     
-    tableHTML += '</tbody></table>';
-    
-    alert(`Tabla de Amortización - ${loan.name}\n\n(Se muestran los primeros 12 meses)\n\nTotal de meses: ${amortization.table.length}\nInterés total: ${formatCurrency(amortization.totalInterest)}`);
+    modalContent.innerHTML = contentHTML;
+    modal.style.display = 'flex';
 }
 
 // Mostrar modal de amortización anticipada

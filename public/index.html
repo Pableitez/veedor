@@ -346,6 +346,16 @@
             <div class="tab-content" id="loans-tab">
                 <div class="form-section">
                     <h2 style="margin-bottom: 24px;">🏦 Gestionar Préstamos e Hipotecas</h2>
+                    
+                    <!-- Modal para tabla de amortización -->
+                    <div id="amortizationModal" class="modal">
+                        <div class="modal-content" style="max-width: 90%; width: 1000px;">
+                            <span class="modal-close" id="closeAmortizationModal">&times;</span>
+                            <h2 id="amortizationModalTitle">📊 Tabla de Amortización</h2>
+                            <div id="amortizationModalContent" style="max-height: 70vh; overflow-y: auto; margin-top: 20px;">
+                            </div>
+                        </div>
+                    </div>
                     <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px;">
                         <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">Registra tus préstamos e hipotecas para hacer un seguimiento del capital restante, intereses y realizar simulaciones de amortización anticipada.</p>
                     </div>
