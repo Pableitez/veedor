@@ -359,12 +359,31 @@ async function requestPasswordReset() {
         });
         
         if (successMsg) {
-            successMsg.textContent = `Código de recuperación generado: ${data.token} (válido por 1 hora). En producción se enviaría por email.`;
-            successMsg.style.display = 'block';
+            if (data.token) {
+                // Usuario encontrado - mostrar token
+                successMsg.innerHTML = `
+                    <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--primary); margin-bottom: 12px;">
+                        <strong style="color: var(--gray-900); display: block; margin-bottom: 8px;">✅ Código de recuperación generado</strong>
+                        <p style="margin: 8px 0; color: var(--gray-700); font-size: 13px;">Copia este código (válido por 1 hora):</p>
+                        <div style="background: white; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border-color); margin: 8px 0;">
+                            <code style="font-size: 14px; font-weight: 600; color: var(--primary); word-break: break-all; display: block;">${data.token}</code>
+                        </div>
+                        <p style="margin: 8px 0 0 0; color: var(--gray-600); font-size: 12px;">⚠️ Nota: En producción este código se enviaría por email.</p>
+                    </div>
+                `;
+                successMsg.style.display = 'block';
+                if (resetSection) resetSection.style.display = 'block';
+            } else {
+                // Usuario no encontrado o mensaje genérico
+                successMsg.textContent = data.message || 'Si el email está registrado, recibirás un código de recuperación.';
+                successMsg.style.display = 'block';
+            }
         }
-        if (resetSection) resetSection.style.display = 'block';
     } catch (error) {
-        if (errorMsg) errorMsg.textContent = error.message || 'Error al solicitar recuperación';
+        console.error('Error en requestPasswordReset:', error);
+        if (errorMsg) {
+            errorMsg.textContent = error.message || 'Error al solicitar recuperación. Por favor, intenta de nuevo.';
+        }
     }
 }
 

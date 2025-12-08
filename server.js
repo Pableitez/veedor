@@ -467,7 +467,10 @@ app.post('/api/forgot-password', async (req, res) => {
         const user = await User.findOne({ email: email.trim().toLowerCase() });
         if (!user) {
             // Por seguridad, no revelamos si el usuario existe
-            return res.json({ message: 'Si el email está registrado, se ha enviado un enlace de recuperación' });
+            return res.json({ 
+                message: 'Si el email está registrado, recibirás un código de recuperación por email.',
+                token: null
+            });
         }
         
         // Generar token de recuperación (válido por 1 hora)
@@ -480,11 +483,13 @@ app.post('/api/forgot-password', async (req, res) => {
         user.resetTokenExpiry = resetTokenExpiry;
         await user.save();
         
-        // En producción, aquí enviarías un email con el token
-        // Por ahora, devolvemos el token directamente (solo para desarrollo)
-        // TODO: Implementar envío de email real
+        console.log(`🔑 Token de recuperación generado para ${email}: ${resetToken.substring(0, 10)}...`);
+        
+        // En producción, aquí enviarías un email con el token usando un servicio como SendGrid, Nodemailer, etc.
+        // Por ahora, devolvemos el token directamente (solo para desarrollo/pruebas)
+        // TODO: Implementar envío de email real con Nodemailer o servicio similar
         res.json({ 
-            message: 'Token de recuperación generado. En producción se enviaría por email.',
+            message: 'Código de recuperación generado exitosamente.',
             token: resetToken, // Solo en desarrollo - eliminar en producción
             expiresAt: resetTokenExpiry
         });
