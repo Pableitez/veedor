@@ -1373,34 +1373,56 @@ async function addBudget() {
     }
     
     try {
-        // Si es mensual y tiene duración, crear múltiples presupuestos
-        if (period_type === 'monthly' && duration > 0) {
-            const startDate = new Date(period_value + '-01');
-            const budgetsCreated = [];
-            
-            for (let i = 0; i < duration; i++) {
-                const currentDate = new Date(startDate);
-                currentDate.setMonth(startDate.getMonth() + i);
-                const monthValue = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+        // Si es mensual, crear presupuestos según la duración
+        if (period_type === 'monthly') {
+            if (duration === 0) {
+                // Duración indefinida: crear presupuesto solo para el mes inicial
+                const budget = await apiRequest('/budgets', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        category_id,
+                        amount,
+                        period_type,
+                        period_value
+                    })
+                });
                 
-                try {
-                    const budget = await apiRequest('/budgets', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            category_id,
-                            amount,
-                            period_type,
-                            period_value: monthValue
-                        })
-                    });
-                    budgetsCreated.push(monthValue);
-                } catch (error) {
-                    console.error(`Error creando presupuesto para ${monthValue}:`, error);
+                await loadUserData();
+                updateDisplay();
+                
+                alert(`✅ Presupuesto mensual establecido indefinidamente desde ${period_value}`);
+            } else {
+                // Duración específica: crear múltiples presupuestos
+                const startDate = new Date(period_value + '-01');
+                const budgetsCreated = [];
+                
+                for (let i = 0; i < duration; i++) {
+                    const currentDate = new Date(startDate);
+                    currentDate.setMonth(startDate.getMonth() + i);
+                    const monthValue = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+                    
+                    try {
+                        const budget = await apiRequest('/budgets', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                category_id,
+                                amount,
+                                period_type,
+                                period_value: monthValue
+                            })
+                        });
+                        budgetsCreated.push(monthValue);
+                    } catch (error) {
+                        console.error(`Error creando presupuesto para ${monthValue}:`, error);
+                        alert(`Error al crear presupuesto para ${monthValue}: ${error.message}`);
+                    }
                 }
+                
+                await loadUserData();
+                updateDisplay();
+                
+                alert(`✅ Presupuesto establecido para ${budgetsCreated.length} mes(es) exitosamente`);
             }
-            
-            await loadUserData();
-            updateDisplay();
             
             // Resetear formulario
             const budgetForm = document.getElementById('budgetForm');
@@ -1413,12 +1435,8 @@ async function addBudget() {
                     const now = new Date();
                     budgetPeriodValue.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
                 }
-            }
-            
-            if (duration === 0) {
-                alert(`✅ Presupuesto mensual establecido indefinidamente desde ${period_value}`);
-            } else {
-                alert(`✅ Presupuesto establecido para ${budgetsCreated.length} mes(es) exitosamente`);
+                const budgetDuration = document.getElementById('budgetDuration');
+                if (budgetDuration) budgetDuration.value = '1';
             }
         } else {
             // Para otros tipos de período o duración 0 (indefinido), crear uno solo
