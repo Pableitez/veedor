@@ -1488,12 +1488,26 @@ tbody tr:last-child td {
     
     /* Cards más compactos */
     .summary-cards {
+        grid-template-columns: 1fr !important;
         gap: 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+    
+    .summary-cards .card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
     }
     
     .card,
     .envelope-card {
         padding: 14px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     .card .amount {
