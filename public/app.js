@@ -3262,8 +3262,12 @@ function formatDate(date) {
 // Actualizar métricas de salud financiera
 function updateFinancialHealthMetrics() {
     const container = document.getElementById('financialHealthMetrics');
-    if (!container) return;
+    if (!container) {
+        console.warn('⚠️ Contenedor financialHealthMetrics no encontrado');
+        return;
+    }
     
+    console.log('📊 Actualizando métricas de salud financiera...');
     container.innerHTML = '';
     
     // Calcular activos totales
@@ -3457,6 +3461,7 @@ function updateFinancialHealthMetrics() {
 
 // Actualizar tablas de análisis
 function updateAnalysisTables() {
+    console.log('📊 Actualizando tablas de análisis...');
     const periodTransactions = getTransactionsByPeriod();
     const expenses = periodTransactions.filter(t => t.type === 'expense');
     const income = periodTransactions.filter(t => t.type === 'income');
