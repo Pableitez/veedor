@@ -69,18 +69,18 @@
             <div id="loginForm" class="auth-form active">
                 <form id="loginFormElement">
                     <div class="form-group">
-                        <label for="loginEmailOrUsername">Email o Nombre de Usuario</label>
-                        <input type="text" id="loginEmailOrUsername" required autocomplete="username">
-                        <small>Puedes usar tu email o tu nombre de usuario</small>
+                        <label for="loginEmailOrUsername" data-translate="auth.emailOrUsername">Email o Nombre de Usuario</label>
+                        <input type="text" id="loginEmailOrUsername" required autocomplete="username" data-translate-placeholder="auth.emailOrUsername">
+                        <small data-translate="auth.emailOrUsernameHint">Puedes usar tu email o tu nombre de usuario</small>
                     </div>
                     <div class="form-group">
-                        <label for="loginPassword">Contraseña</label>
-                        <input type="password" id="loginPassword" required autocomplete="current-password">
+                        <label for="loginPassword" data-translate="auth.password">Contraseña</label>
+                        <input type="password" id="loginPassword" required autocomplete="current-password" data-translate-placeholder="auth.password">
                     </div>
-                    <button type="submit" class="btn-primary btn-full">Iniciar Sesión</button>
+                    <button type="submit" class="btn-primary btn-full" data-translate="auth.login">Iniciar Sesión</button>
                     <p id="loginError" class="error-message"></p>
                     <p style="text-align: center; margin-top: 16px;">
-                        <a href="#" id="forgotPasswordLink" style="color: var(--primary); text-decoration: none; font-size: 14px;">¿Olvidaste tu contraseña?</a>
+                        <a href="#" id="forgotPasswordLink" style="color: var(--primary); text-decoration: none; font-size: 14px;" data-translate="auth.forgotPassword">¿Olvidaste tu contraseña?</a>
                     </p>
                 </form>
             </div>
