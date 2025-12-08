@@ -998,34 +998,61 @@ tbody tr:last-child td {
     
     header {
         flex-direction: row;
-        gap: 12px;
-        padding: 14px 16px;
+        gap: 8px;
+        padding: 12px 16px !important;
+        min-height: 56px;
+    }
+    
+    header > div:first-child {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    header > div:first-child svg {
+        width: 32px !important;
+        height: 32px !important;
+        flex-shrink: 0;
     }
     
     header h1 {
-        font-size: 20px;
+        font-size: 18px !important;
+        margin: 0 !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .header-actions {
         width: auto;
         justify-content: flex-end;
         flex-wrap: nowrap;
-        gap: 8px;
+        gap: 6px;
+        flex-shrink: 0;
     }
     
     .header-actions .user-info {
-        font-size: 12px;
-        padding: 8px 12px;
-        max-width: 120px;
+        font-size: 11px;
+        padding: 6px 10px;
+        max-width: 100px;
+        min-width: 40px;
     }
     
     .header-actions .user-info span {
         display: none;
     }
     
+    .header-actions .user-info svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+    
     .header-actions .btn-secondary {
-        font-size: 11px;
-        padding: 8px 12px;
+        font-size: 10px;
+        padding: 6px 10px;
+        white-space: nowrap;
     }
     
     .dashboard {

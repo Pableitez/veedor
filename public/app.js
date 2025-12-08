@@ -859,51 +859,93 @@ function initializeCategories() {
     updateCategoriesByType();
 }
 
+// Función para cambiar de tab (reutilizable)
+function switchToTab(targetTab) {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    // Actualizar tabs principales
+    tabButtons.forEach(b => b.classList.remove('active'));
+    tabContents.forEach(c => c.classList.remove('active'));
+    
+    const targetTabBtn = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
+    const targetTabContent = document.getElementById(`${targetTab}-tab`);
+    
+    if (targetTabBtn) targetTabBtn.classList.add('active');
+    if (targetTabContent) targetTabContent.classList.add('active');
+    
+    // Actualizar navegación del header
+    navItems.forEach(item => {
+        if (item.getAttribute('data-tab') === targetTab) {
+            item.style.background = 'rgba(255,255,255,0.25)';
+            item.style.borderColor = 'rgba(255,255,255,0.4)';
+        } else {
+            item.style.background = 'rgba(255,255,255,0.1)';
+            item.style.borderColor = 'rgba(255,255,255,0.2)';
+        }
+    });
+    
+    // Actualizar gráficas y análisis cuando se cambia al tab de análisis
+    if (targetTab === 'charts') {
+        setTimeout(() => {
+            updateCharts();
+        }, 100);
+    }
+    
+    // Actualizar presupuestos cuando se cambia al tab de presupuestos
+    if (targetTab === 'budgets') {
+        setTimeout(() => {
+            updateBudgets();
+        }, 100);
+    }
+    
+    // Actualizar cuentas cuando se cambia al tab de cuentas
+    if (targetTab === 'accounts') {
+        setTimeout(() => {
+            updateAccounts();
+        }, 100);
+    }
+    
+    // Actualizar patrimonio cuando se cambia al tab de patrimonio
+    if (targetTab === 'assets') {
+        setTimeout(() => {
+            updateAssets();
+        }, 100);
+    }
+}
+
 // Inicializar tabs
 function initializeTabs() {
     const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+    const navItems = document.querySelectorAll('.nav-item');
     
+    // Event listeners para tabs principales
     tabButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetTab = btn.getAttribute('data-tab');
-            
-            tabButtons.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            
-            btn.classList.add('active');
-            document.getElementById(`${targetTab}-tab`).classList.add('active');
-            
-            // Actualizar gráficas y análisis cuando se cambia al tab de análisis
-            if (targetTab === 'charts') {
-                // Pequeño delay para asegurar que el tab esté visible
-                setTimeout(() => {
-                    updateCharts();
-                }, 100);
-            }
-            
-            // Actualizar presupuestos cuando se cambia al tab de presupuestos
-            if (targetTab === 'budgets') {
-                setTimeout(() => {
-                    updateBudgets();
-                }, 100);
-            }
-            
-            // Actualizar cuentas cuando se cambia al tab de cuentas
-            if (targetTab === 'accounts') {
-                setTimeout(() => {
-                    updateAccounts();
-                }, 100);
-            }
-            
-            // Actualizar patrimonio cuando se cambia al tab de patrimonio
-            if (targetTab === 'assets') {
-                setTimeout(() => {
-                    updateAssets();
-                }, 100);
+            switchToTab(targetTab);
+        });
+    });
+    
+    // Event listeners para navegación del header
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetTab = item.getAttribute('data-tab');
+            switchToTab(targetTab);
+            // Scroll suave hacia el contenido
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
     });
+    
+    // Inicializar estado activo del primer tab
+    if (tabButtons.length > 0) {
+        const firstTab = tabButtons[0].getAttribute('data-tab');
+        switchToTab(firstTab);
+    }
 }
 
 // Inicializar formularios

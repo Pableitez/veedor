@@ -125,21 +125,47 @@
     <!-- Contenido Principal (oculto hasta login) -->
     <div id="mainApp" style="display: none; width: 100%; margin: 0; padding: 0; min-height: 100vh;">
         <header style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0, 117, 255, 0.25); border-bottom: none; width: 100%; box-sizing: border-box; margin: 0; left: 0; right: 0;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
-                    <defs>
-                        <linearGradient id="headerLogoGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#818CF8"/>
-                            <stop offset="100%" stop-color="#6366F1"/>
-                        </linearGradient>
-                    </defs>
-                    <circle cx="20" cy="20" r="18" fill="url(#headerLogoGradient)"/>
-                    <circle cx="20" cy="20" r="12" fill="white" opacity="0.95"/>
-                    <circle cx="20" cy="20" r="7" fill="url(#headerLogoGradient)"/>
-                    <path d="M20 4 L20 8 M20 32 L20 36 M4 20 L8 20 M32 20 L36 20" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
-                    <path d="M10 10 L13 13 M30 10 L27 13 M10 30 L13 27 M30 30 L27 27" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
-                </svg>
-                <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Veedor</h1>
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                        <defs>
+                            <linearGradient id="headerLogoGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#818CF8"/>
+                                <stop offset="100%" stop-color="#6366F1"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="20" cy="20" r="18" fill="url(#headerLogoGradient)"/>
+                        <circle cx="20" cy="20" r="12" fill="white" opacity="0.95"/>
+                        <circle cx="20" cy="20" r="7" fill="url(#headerLogoGradient)"/>
+                        <path d="M20 4 L20 8 M20 32 L20 36 M4 20 L8 20 M32 20 L36 20" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+                        <path d="M10 10 L13 13 M30 10 L27 13 M10 30 L13 27 M30 30 L27 27" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+                    </svg>
+                    <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Veedor</h1>
+                </div>
+                <!-- Menú de Navegación -->
+                <nav id="headerNav" style="display: flex; align-items: center; gap: 4px;">
+                    <button class="nav-item" data-tab="transactions" title="Transacciones" style="padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                        💳 Transacciones
+                    </button>
+                    <button class="nav-item" data-tab="accounts" title="Cuentas" style="padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                        🏦 Cuentas
+                    </button>
+                    <button class="nav-item" data-tab="envelopes" title="Presupuestos" style="padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                        📦 Presupuestos
+                    </button>
+                    <button class="nav-item" data-tab="loans" title="Préstamos" style="padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                        🏦 Préstamos
+                    </button>
+                    <button class="nav-item" data-tab="investments" title="Inversiones" style="padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                        📈 Inversiones
+                    </button>
+                    <button class="nav-item" data-tab="assets" title="Patrimonio" style="padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                        🏠 Patrimonio
+                    </button>
+                    <button class="nav-item" data-tab="charts" title="Análisis" style="padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                        📊 Análisis
+                    </button>
+                </nav>
             </div>
             <div class="header-actions">
                 <span id="currentUser" class="user-info" style="cursor: pointer; padding: 10px 16px; border-radius: 10px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); color: white; transition: all 0.3s; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; font-size: 14px;" onclick="showUserProfile()" title="Haz clic para ver tu perfil" onmouseover="this.style.background='rgba(255,255,255,0.25)'; this.style.borderColor='rgba(255,255,255,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.25)'">
