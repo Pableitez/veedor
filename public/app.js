@@ -6075,13 +6075,22 @@ function showFinancialHealthDetail(metric, index) {
 
 // Función para actualizar todas las traducciones
 function updateTranslations() {
-    const lang = getLanguage ? getLanguage() : 'es';
+    // Verificar que las funciones de traducción estén disponibles
+    if (typeof getLanguage === 'undefined' || typeof t === 'undefined') {
+        console.warn('⚠️ Funciones de traducción no disponibles aún');
+        return;
+    }
+    
+    const lang = getLanguage();
     
     // Actualizar elementos con data-translate
     document.querySelectorAll('[data-translate]').forEach(el => {
         const key = el.getAttribute('data-translate');
         if (key && typeof t === 'function') {
-            el.textContent = t(key, lang);
+            const translation = t(key, lang);
+            if (translation && translation !== key) {
+                el.textContent = translation;
+            }
         }
     });
     
@@ -6089,7 +6098,10 @@ function updateTranslations() {
     document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
         const key = el.getAttribute('data-translate-placeholder');
         if (key && typeof t === 'function') {
-            el.placeholder = t(key, lang);
+            const translation = t(key, lang);
+            if (translation && translation !== key) {
+                el.placeholder = translation;
+            }
         }
     });
     
@@ -6097,18 +6109,27 @@ function updateTranslations() {
     document.querySelectorAll('[data-translate-title]').forEach(el => {
         const key = el.getAttribute('data-translate-title');
         if (key && typeof t === 'function') {
-            el.title = t(key, lang);
+            const translation = t(key, lang);
+            if (translation && translation !== key) {
+                el.title = translation;
+            }
         }
     });
     
-    // Actualizar bandera del idioma actual
+    // Actualizar bandera del idioma actual (header)
     const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
     const flagEl = document.getElementById('currentLanguageFlag');
     if (flagEl) {
         flagEl.textContent = flags[lang] || flags['es'];
     }
     
-    // Actualizar selección en dropdown de idioma
+    // Actualizar bandera del idioma actual (auth page)
+    const authFlagEl = document.getElementById('authCurrentLanguageFlag');
+    if (authFlagEl) {
+        authFlagEl.textContent = flags[lang] || flags['es'];
+    }
+    
+    // Actualizar selección en dropdown de idioma (header)
     document.querySelectorAll('#languageDropdown .nav-dropdown-item').forEach(item => {
         const itemLang = item.getAttribute('data-lang');
         if (itemLang === lang) {
@@ -6121,21 +6142,47 @@ function updateTranslations() {
             item.style.fontWeight = '400';
         }
     });
+    
+    // Actualizar selección en dropdown de idioma (auth page)
+    document.querySelectorAll('#authLanguageDropdown .nav-dropdown-item').forEach(item => {
+        const itemLang = item.getAttribute('data-lang');
+        if (itemLang === lang) {
+            item.style.background = 'var(--primary-light)';
+            item.style.color = 'var(--primary)';
+            item.style.fontWeight = '600';
+        } else {
+            item.style.background = 'transparent';
+            item.style.color = 'var(--gray-900)';
+            item.style.fontWeight = '400';
+        }
+    });
+    
+    // Actualizar atributo lang del HTML
+    document.documentElement.lang = lang;
 }
 
 // Función para cambiar idioma
 function changeLanguage(lang) {
+    console.log('🌐 Cambiando idioma a:', lang);
     if (typeof setLanguage === 'function') {
         setLanguage(lang);
+    } else {
+        // Fallback: guardar en localStorage directamente
+        localStorage.setItem('veedor_language', lang);
     }
-    updateTranslations();
-    // Recargar datos para actualizar formatos
-    if (typeof updateDisplay === 'function') {
+    
+    // Actualizar traducciones inmediatamente
+    setTimeout(() => {
+        updateTranslations();
+    }, 100);
+    
+    // Recargar datos para actualizar formatos (solo si estamos en la app principal)
+    if (typeof updateDisplay === 'function' && document.getElementById('mainApp') && document.getElementById('mainApp').style.display !== 'none') {
         updateDisplay();
     }
 }
 
-// Función para toggle del dropdown de idioma
+// Función para toggle del dropdown de idioma (header)
 function toggleLanguageDropdown() {
     const dropdown = document.getElementById('languageDropdown');
     const mainNavDropdown = document.getElementById('mainNavDropdown');
@@ -6151,6 +6198,15 @@ function toggleLanguageDropdown() {
     }
     if (settingsDropdown && settingsDropdown.style.display === 'block') {
         settingsDropdown.style.display = 'none';
+    }
+}
+
+// Función para toggle del dropdown de idioma (auth page)
+function toggleAuthLanguageDropdown() {
+    const dropdown = document.getElementById('authLanguageDropdown');
+    
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
     }
 }
 
