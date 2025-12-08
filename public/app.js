@@ -5515,8 +5515,11 @@ function showFinancialHealthDetail(metric, index) {
     // Agregar detalles específicos según la métrica
     if (index === 0) { // Deuda Pendiente
         detailContent += `
+            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'};">
+                <strong>Préstamos Activos:</strong> ${activeDebtLoans.length} ${hasActiveDebts ? '(Hay deudas activas)' : '(Sin deudas activas)'}
+            </div>
             <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
-                <strong>Deuda Total:</strong> ${formatCurrency(loansDebt)}
+                <strong>Capital Restante Total:</strong> ${formatCurrency(loansDebt)}
             </div>
             <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
                 <strong>Activos Totales:</strong> ${formatCurrency(totalAssets)}
