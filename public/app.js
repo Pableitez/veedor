@@ -439,6 +439,16 @@ async function loadUserData() {
         
         // Cargar categorías personalizadas
         loadCustomCategories();
+        
+        // Cargar meta de ahorro
+        const savedGoal = localStorage.getItem('veedor_savingsGoal');
+        if (savedGoal) {
+            try {
+                savingsGoal = parseFloat(savedGoal);
+            } catch (e) {
+                savingsGoal = null;
+            }
+        }
     } catch (error) {
         console.error('Error cargando datos:', error);
         transactions = [];
