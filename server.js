@@ -500,7 +500,7 @@ app.get('/api/transactions', authenticateToken, async (req, res) => {
 // Crear transacción
 app.post('/api/transactions', authenticateToken, async (req, res) => {
     try {
-        const { type, date, amount, categoryGeneral, categorySpecific, envelope, description } = req.body;
+        const { type, date, amount, categoryGeneral, categorySpecific, envelope, account_id, investment_id, description } = req.body;
 
         if (!type || !date || amount === undefined || !categoryGeneral || !categorySpecific) {
             return res.status(400).json({ error: 'Datos incompletos' });
@@ -516,10 +516,63 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             category_general: categoryGeneral,
             category_specific: categorySpecific,
             envelope: envelope || null,
+            account_id: account_id || null,
+            investment_id: investment_id || null,
             description: description || null
         });
 
         await transaction.save();
+        
+        // Si la transacción está asociada a una inversión con aportes periódicos, marcar el aporte como completado
+        if (investment_id && type === 'expense') {
+            const Investment = require('./models/Investment') || mongoose.model('Investment');
+            const investment = await Investment.findOne({ _id: investment_id, user_id: req.user.userId });
+            if (investment && investment.periodic_contribution && investment.periodic_contribution.enabled) {
+                // Verificar si este aporte ya fue registrado en este período
+                const contributionDate = new Date(date);
+                
+                // Determinar el período según la frecuencia
+                let periodKey = '';
+                if (investment.periodic_contribution.frequency === 'weekly') {
+                    const weekStart = new Date(contributionDate);
+                    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                    periodKey = weekStart.toISOString().split('T')[0];
+                } else if (investment.periodic_contribution.frequency === 'monthly') {
+                    periodKey = `${contributionDate.getFullYear()}-${String(contributionDate.getMonth() + 1).padStart(2, '0')}`;
+                } else if (investment.periodic_contribution.frequency === 'yearly') {
+                    periodKey = `${contributionDate.getFullYear()}`;
+                }
+                
+                // Verificar si ya existe un aporte para este período
+                const existingContribution = investment.periodic_contribution.completed_contributions?.find(c => {
+                    const cDate = new Date(c.date);
+                    if (investment.periodic_contribution.frequency === 'weekly') {
+                        const cWeekStart = new Date(cDate);
+                        cWeekStart.setDate(cWeekStart.getDate() - cWeekStart.getDay());
+                        return cWeekStart.toISOString().split('T')[0] === periodKey;
+                    } else if (investment.periodic_contribution.frequency === 'monthly') {
+                        return `${cDate.getFullYear()}-${String(cDate.getMonth() + 1).padStart(2, '0')}` === periodKey;
+                    } else if (investment.periodic_contribution.frequency === 'yearly') {
+                        return `${cDate.getFullYear()}` === periodKey;
+                    }
+                    return false;
+                });
+                
+                // Si no existe, agregar el aporte completado
+                if (!existingContribution) {
+                    if (!investment.periodic_contribution.completed_contributions) {
+                        investment.periodic_contribution.completed_contributions = [];
+                    }
+                    investment.periodic_contribution.completed_contributions.push({
+                        date: date,
+                        amount: Math.abs(amount),
+                        transaction_id: transaction._id.toString()
+                    });
+                    await investment.save();
+                }
+            }
+        }
+        
         res.status(201).json(transaction);
     } catch (error) {
         console.error('Error creando transacción:', error);
