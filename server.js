@@ -499,7 +499,7 @@ app.post('/api/forgot-password', async (req, res) => {
         const resetTokenExpiry = new Date();
         resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1);
         
-        // Actualizar campos de recuperación usando updateOne para evitar problemas de validación
+        // Actualizar campos de reset usando updateOne para evitar problemas de validación
         try {
             await User.updateOne(
                 { _id: user._id },
