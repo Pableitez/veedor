@@ -73,21 +73,39 @@ async function apiRequest(endpoint, options = {}) {
     }
 }
 
-// Inicialización
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('DOM cargado, inicializando...');
-        initializeApp();
-    });
-} else {
-    console.log('DOM ya cargado, inicializando inmediatamente...');
-    initializeApp();
-}
+// Inicialización - Ejecutar inmediatamente
+console.log('🚀 app.js ejecutándose...');
+console.log('Estado del DOM:', document.readyState);
 
 function initializeApp() {
+    console.log('=== INICIALIZANDO APLICACIÓN ===');
     checkAuth();
     initializeAuth();
 }
+
+// Intentar inicializar de inmediato
+if (document.readyState === 'loading') {
+    console.log('Esperando DOMContentLoaded...');
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('✅ DOMContentLoaded disparado');
+        initializeApp();
+    });
+} else {
+    console.log('✅ DOM ya está listo, inicializando inmediatamente...');
+    // Pequeño delay para asegurar que todo esté listo
+    setTimeout(() => {
+        initializeApp();
+    }, 100);
+}
+
+// También escuchar cuando el script se carga
+window.addEventListener('load', () => {
+    console.log('✅ Window load event disparado');
+    if (typeof initializeAuth === 'function' && !document.getElementById('mainApp')?.style.display !== 'none') {
+        console.log('Re-inicializando por si acaso...');
+        initializeAuth();
+    }
+});
 
 // Verificar autenticación
 async function checkAuth() {

@@ -235,17 +235,37 @@
         console.log('✅ HTML cargado, iniciando carga de app.js...');
         console.log('URL actual:', window.location.href);
         
+        // Verificar que los elementos existan
+        console.log('Verificando elementos del DOM...');
+        console.log('registerFormElement:', document.getElementById('registerFormElement') ? '✅ Encontrado' : '❌ No encontrado');
+        console.log('registerUsername:', document.getElementById('registerUsername') ? '✅ Encontrado' : '❌ No encontrado');
+        console.log('authScreen:', document.getElementById('authScreen') ? '✅ Encontrado' : '❌ No encontrado');
+        
         // Cargar app.js
         const script = document.createElement('script');
         script.src = 'app.js';
         script.onload = function() {
             console.log('✅ app.js cargado exitosamente');
+            console.log('Verificando si las funciones están disponibles...');
+            console.log('register function:', typeof register !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
         };
-        script.onerror = function() {
+        script.onerror = function(error) {
             console.error('❌ Error cargando app.js');
+            console.error('Error:', error);
             console.error('Verifica que el archivo exista en: ' + window.location.origin + '/app.js');
+            alert('Error cargando app.js. Abre la pestaña Network para verificar.');
         };
         document.head.appendChild(script);
+        
+        // También intentar cargar directamente como fallback
+        setTimeout(function() {
+            if (typeof register === 'undefined') {
+                console.warn('⚠️ app.js no se cargó correctamente, intentando carga directa...');
+                const fallbackScript = document.createElement('script');
+                fallbackScript.src = '/app.js';
+                document.head.appendChild(fallbackScript);
+            }
+        }, 2000);
     </script>
 </body>
 </html>
