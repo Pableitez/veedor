@@ -6091,35 +6091,107 @@ function showFinancialHealthDetail(metric, index) {
 
 // Función para actualizar todas las traducciones
 function updateTranslations() {
-    // Verificar que las funciones de traducción estén disponibles
-    if (typeof getLanguage === 'undefined' || typeof t === 'undefined') {
-        console.warn('⚠️ Funciones de traducción no disponibles aún');
-        // Intentar cargar desde localStorage directamente
-        const savedLang = localStorage.getItem('veedor_language') || 'es';
-        if (typeof window !== 'undefined' && window.translations && window.translations[savedLang]) {
-            // Usar traducciones directamente si están disponibles
-            const lang = savedLang;
-            const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
-            const flagEl = document.getElementById('currentLanguageFlag');
-            if (flagEl) flagEl.textContent = flags[lang] || flags['es'];
-            const authFlagEl = document.getElementById('authCurrentLanguageFlag');
-            if (authFlagEl) authFlagEl.textContent = flags[lang] || flags['es'];
-            document.documentElement.lang = lang;
+    // Usar funciones globales directamente
+    const tFunc = window.t || (typeof t !== 'undefined' ? t : null);
+    const getLangFunc = window.getLanguage || (typeof getLanguage !== 'undefined' ? getLanguage : null);
+    
+    // Si no están disponibles, intentar obtener idioma desde localStorage
+    let lang = 'es';
+    if (getLangFunc && typeof getLangFunc === 'function') {
+        try {
+            lang = getLangFunc();
+        } catch (e) {
+            console.warn('Error obteniendo idioma:', e);
+            lang = localStorage.getItem('veedor_language') || 'es';
         }
+    } else {
+        lang = localStorage.getItem('veedor_language') || 'es';
+    }
+    
+    console.log('🔄 Actualizando traducciones para:', lang);
+    console.log('📦 Funciones disponibles:', { t: !!tFunc, getLanguage: !!getLangFunc, translations: !!window.translations });
+    
+    if (!tFunc && window.translations && window.translations[lang]) {
+        // Fallback: usar traducciones directamente
+        console.log('⚠️ Usando traducciones directamente desde window.translations');
+        const trans = window.translations[lang];
+        
+        // Función t simple
+        const simpleT = (key) => {
+            const keys = key.split('.');
+            let value = trans;
+            for (const k of keys) {
+                value = value?.[k];
+                if (!value) {
+                    // Fallback a español
+                    value = window.translations['es'];
+                    for (const k2 of keys) {
+                        value = value?.[k2];
+                    }
+                    break;
+                }
+            }
+            return value || key;
+        };
+        
+        // Actualizar elementos
+        document.querySelectorAll('[data-translate]').forEach(el => {
+            const key = el.getAttribute('data-translate');
+            if (key) {
+                try {
+                    const translation = simpleT(key);
+                    if (translation && translation !== key) {
+                        el.textContent = translation;
+                    }
+                } catch (e) {
+                    console.warn('Error traduciendo:', key, e);
+                }
+            }
+        });
+        
+        // Actualizar placeholders
+        document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-translate-placeholder');
+            if (key) {
+                try {
+                    const translation = simpleT(key);
+                    if (translation && translation !== key) {
+                        el.placeholder = translation;
+                    }
+                } catch (e) {
+                    console.warn('Error traduciendo placeholder:', key, e);
+                }
+            }
+        });
+        
+        // Actualizar banderas
+        const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
+        const flagEl = document.getElementById('currentLanguageFlag');
+        if (flagEl) flagEl.textContent = flags[lang] || flags['es'];
+        const authFlagEl = document.getElementById('authCurrentLanguageFlag');
+        if (authFlagEl) authFlagEl.textContent = flags[lang] || flags['es'];
+        document.documentElement.lang = lang;
         return;
     }
     
-    const lang = getLanguage();
-    console.log('🔄 Actualizando traducciones para:', lang);
+    if (!tFunc) {
+        console.warn('⚠️ Función t no disponible. Esperando a que translations.js se cargue...');
+        return;
+    }
     
     // Actualizar elementos con data-translate (incluyendo elementos dinámicos)
-    document.querySelectorAll('[data-translate]').forEach(el => {
+    const elementsToTranslate = document.querySelectorAll('[data-translate]');
+    console.log(`📝 Encontrados ${elementsToTranslate.length} elementos para traducir`);
+    elementsToTranslate.forEach(el => {
         const key = el.getAttribute('data-translate');
-        if (key && typeof t === 'function') {
+        if (key && tFunc) {
             try {
-                const translation = t(key, lang);
+                const translation = tFunc(key, lang);
                 if (translation && translation !== key) {
                     el.textContent = translation;
+                    console.log(`✅ Traducido: ${key} -> ${translation}`);
+                } else {
+                    console.warn(`⚠️ No se encontró traducción para: ${key}`);
                 }
             } catch (e) {
                 console.warn('Error traduciendo:', key, e);
@@ -6130,9 +6202,9 @@ function updateTranslations() {
     // Actualizar placeholders
     document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
         const key = el.getAttribute('data-translate-placeholder');
-        if (key && typeof t === 'function') {
+        if (key && tFunc) {
             try {
-                const translation = t(key, lang);
+                const translation = tFunc(key, lang);
                 if (translation && translation !== key) {
                     el.placeholder = translation;
                 }
@@ -6145,9 +6217,9 @@ function updateTranslations() {
     // Actualizar títulos
     document.querySelectorAll('[data-translate-title]').forEach(el => {
         const key = el.getAttribute('data-translate-title');
-        if (key && typeof t === 'function') {
+        if (key && tFunc) {
             try {
-                const translation = t(key, lang);
+                const translation = tFunc(key, lang);
                 if (translation && translation !== key) {
                     el.title = translation;
                 }
@@ -6237,8 +6309,14 @@ function changeLanguage(lang) {
     console.log('🌐 Cambiando idioma a:', lang);
     
     // Guardar idioma
-    if (typeof setLanguage === 'function') {
-        setLanguage(lang);
+    const setLangFunc = window.setLanguage || (typeof setLanguage !== 'undefined' ? setLanguage : null);
+    if (setLangFunc && typeof setLangFunc === 'function') {
+        try {
+            setLangFunc(lang);
+        } catch (e) {
+            console.warn('Error en setLanguage:', e);
+            localStorage.setItem('veedor_language', lang);
+        }
     } else {
         // Fallback: guardar en localStorage directamente
         localStorage.setItem('veedor_language', lang);
@@ -6248,17 +6326,53 @@ function changeLanguage(lang) {
         }
     }
     
-    // Actualizar traducciones inmediatamente (múltiples intentos para asegurar que funcione)
-    updateTranslations();
-    setTimeout(() => {
+    console.log('💾 Idioma guardado:', localStorage.getItem('veedor_language'));
+    
+    // Forzar actualización inmediata
+    const forceUpdate = () => {
+        console.log('🔄 Forzando actualización de traducciones...');
         updateTranslations();
-    }, 50);
-    setTimeout(() => {
-        updateTranslations();
-    }, 200);
-    setTimeout(() => {
-        updateTranslations();
-    }, 500);
+        
+        // Actualizar elementos dinámicos manualmente
+        const tFunc = window.t || (typeof t !== 'undefined' ? t : null);
+        if (tFunc) {
+            // Actualizar navegación
+            document.querySelectorAll('#mainNavDropdown .nav-dropdown-item span[data-translate]').forEach(span => {
+                const key = span.getAttribute('data-translate');
+                if (key) {
+                    try {
+                        const translation = tFunc(key, lang);
+                        if (translation && translation !== key) {
+                            span.textContent = translation;
+                        }
+                    } catch (e) {}
+                }
+            });
+            
+            // Actualizar tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const span = btn.querySelector('span[data-translate]');
+                if (span) {
+                    const key = span.getAttribute('data-translate');
+                    if (key) {
+                        try {
+                            const translation = tFunc(key, lang);
+                            if (translation && translation !== key) {
+                                span.textContent = translation;
+                            }
+                        } catch (e) {}
+                    }
+                }
+            });
+        }
+    };
+    
+    // Actualizar traducciones múltiples veces para asegurar que funcione
+    forceUpdate();
+    setTimeout(forceUpdate, 50);
+    setTimeout(forceUpdate, 200);
+    setTimeout(forceUpdate, 500);
+    setTimeout(forceUpdate, 1000);
     
     // Recargar datos para actualizar formatos (solo si estamos en la app principal)
     if (typeof updateDisplay === 'function' && document.getElementById('mainApp') && document.getElementById('mainApp').style.display !== 'none') {
@@ -6273,34 +6387,6 @@ function changeLanguage(lang) {
             updateCharts();
         }, 400);
     }
-    
-    // Actualizar tabs y navegación
-    setTimeout(() => {
-        // Actualizar todos los tabs
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            const span = btn.querySelector('span[data-translate]');
-            if (span) {
-                const key = span.getAttribute('data-translate');
-                if (key && typeof t === 'function') {
-                    try {
-                        const translation = t(key, lang);
-                        if (translation) span.textContent = translation;
-                    } catch (e) {}
-                }
-            }
-        });
-        
-        // Actualizar navegación dropdown
-        document.querySelectorAll('#mainNavDropdown .nav-dropdown-item span[data-translate]').forEach(span => {
-            const key = span.getAttribute('data-translate');
-            if (key && typeof t === 'function') {
-                try {
-                    const translation = t(key, lang);
-                    if (translation) span.textContent = translation;
-                } catch (e) {}
-            }
-        });
-    }, 600);
 }
 
 // Función para toggle del dropdown de idioma (header)
