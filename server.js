@@ -296,9 +296,17 @@ function setupEmailTransporter() {
             }
         });
         console.log('✅ Transporter de email configurado');
+        console.log('📧 Email configurado para:', process.env.EMAIL_USER);
+        console.log('📧 Host:', process.env.EMAIL_HOST);
+        console.log('📧 Puerto:', process.env.EMAIL_PORT || '587');
     } else {
         console.log('⚠️ Email no configurado. Los emails de verificación no se enviarán.');
         console.log('💡 Configura EMAIL_HOST, EMAIL_USER, EMAIL_PASS en las variables de entorno para habilitar emails');
+        console.log('💡 Variables actuales:', {
+            EMAIL_HOST: process.env.EMAIL_HOST ? 'Configurado' : 'No configurado',
+            EMAIL_USER: process.env.EMAIL_USER ? 'Configurado' : 'No configurado',
+            EMAIL_PASS: process.env.EMAIL_PASS ? 'Configurado' : 'No configurado'
+        });
     }
 }
 
