@@ -5286,6 +5286,35 @@ function closeSummaryDetails() {
     }
 }
 
+// Funciones para modal de meta de ahorro
+function showSavingsGoalModal() {
+    const modal = document.getElementById('savingsGoalModal');
+    const input = document.getElementById('savingsGoalInput');
+    if (modal && input) {
+        input.value = savingsGoal || '';
+        modal.style.display = 'flex';
+    }
+}
+
+function closeSavingsGoalModal() {
+    const modal = document.getElementById('savingsGoalModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function deleteSavingsGoal() {
+    try {
+        savingsGoal = null;
+        await apiRequest('/user/profile', {
+            method: 'PUT',
+            body: JSON.stringify({ savingsGoal: null })
+        });
+        updateSummary();
+        closeSavingsGoalModal();
+    } catch (error) {
+        alert('Error al eliminar la meta de ahorro: ' + error.message);
+    }
+}
+
 // Exponer funciones globales
 window.showUserProfile = showUserProfile;
 window.closeUserProfile = closeUserProfile;
@@ -5297,6 +5326,9 @@ window.showCookiesModal = showCookiesModal;
 window.closeCookiesModal = closeCookiesModal;
 window.showTermsModal = showTermsModal;
 window.closeTermsModal = closeTermsModal;
+window.showSavingsGoalModal = showSavingsGoalModal;
+window.closeSavingsGoalModal = closeSavingsGoalModal;
+window.deleteSavingsGoal = deleteSavingsGoal;
 
 // Cerrar el bloque de protección contra carga múltiple
 }
