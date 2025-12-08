@@ -1524,7 +1524,8 @@ async function updateSummary() {
         );
         return sum + amortization.finalBalance;
     }, 0);
-    const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt;
+    const assetsValue = assets.reduce((sum, asset) => sum + (asset.current_value || 0), 0);
+    const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt + assetsValue;
     // Calcular según período seleccionado
     let periodIncome, periodExpenses, periodSavings, periodLabel;
     
