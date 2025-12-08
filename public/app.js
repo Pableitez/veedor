@@ -879,7 +879,7 @@ function updateTransactionsTable() {
             <td>${transaction.description || '-'}</td>
             <td>${transaction.envelope || '-'}</td>
             <td style="font-weight: 600; color: ${transaction.amount >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(transaction.amount)}</td>
-            <td><button class="btn-danger" onclick="deleteTransaction(${transaction.id})">Eliminar</button></td>
+            <td><button class="btn-danger" onclick="deleteTransaction('${transaction._id || transaction.id}')">Eliminar</button></td>
         `;
         tbody.appendChild(row);
     });
@@ -980,7 +980,8 @@ async function deleteTransaction(id) {
     
     try {
         await apiRequest(`/transactions/${id}`, { method: 'DELETE' });
-        transactions = transactions.filter(t => t.id !== id);
+        // Recargar datos desde el servidor
+        await loadUserData();
         updateDisplay();
     } catch (error) {
         alert('Error al eliminar transacción: ' + error.message);
