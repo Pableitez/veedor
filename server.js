@@ -53,6 +53,7 @@ const transactionSchema = new mongoose.Schema({
     category_general: { type: String, required: true },
     category_specific: { type: String, required: true },
     envelope: { type: String, default: null },
+    account_id: { type: String, default: null }, // ID de la cuenta bancaria asociada
     description: { type: String, default: null },
     created_at: { type: Date, default: Date.now }
 });

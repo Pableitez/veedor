@@ -1038,6 +1038,7 @@ async function addTransaction() {
     const categoryGeneral = document.getElementById('categoryGeneral').value;
     const categorySpecific = document.getElementById('categorySpecific').value;
     const envelope = document.getElementById('envelope').value;
+    const accountId = document.getElementById('transactionAccount').value;
     const description = document.getElementById('transactionDescription').value;
     
     try {
@@ -1050,6 +1051,7 @@ async function addTransaction() {
                 categoryGeneral,
                 categorySpecific,
                 envelope: envelope || null,
+                account_id: accountId || null,
                 description: description || `${categories.general.find(c => c.id === categoryGeneral)?.name} - ${categorySpecific}`
             })
         });
@@ -1067,6 +1069,7 @@ async function addTransaction() {
         initializeDate();
         initializeCategories();
         updateEnvelopeSelect();
+        updateAccountSelect();
     } catch (error) {
         alert('Error al agregar transacción: ' + error.message);
     }
@@ -1099,6 +1102,7 @@ function updateDisplay() {
         updateTransactionsTable();
         updateEnvelopes();
         updateEnvelopeSelect();
+        updateAccountSelect(); // Actualizar selector de cuentas
         updateLoans();
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
@@ -1328,11 +1332,19 @@ function updateTransactionsTable() {
             }
         }
         
+        // Buscar nombre de cuenta
+        let accountName = '-';
+        if (transaction.account_id) {
+            const account = accounts.find(a => (a._id || a.id) === transaction.account_id);
+            accountName = account ? account.name : '-';
+        }
+        
         row.innerHTML = `
             <td>${formatDate(date)}</td>
             <td><span class="badge badge-${transaction.type}">${transaction.type === 'income' ? 'Ingreso' : 'Gasto'}</span></td>
             <td>${categoryName} - ${transaction.categorySpecific}</td>
             <td>${transaction.description || '-'}</td>
+            <td>${accountName}</td>
             <td>${transaction.envelope || '-'}</td>
             <td style="font-weight: 600; color: ${transaction.amount >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(transaction.amount)}</td>
             <td><button class="btn-danger" onclick="deleteTransaction('${transaction._id || transaction.id}')">Eliminar</button></td>
@@ -1400,6 +1412,20 @@ function updateEnvelopeSelect() {
         const option = document.createElement('option');
         option.value = envelope.name;
         option.textContent = envelope.name;
+        select.appendChild(option);
+    });
+}
+
+// Actualizar selector de cuentas bancarias
+function updateAccountSelect() {
+    const select = document.getElementById('transactionAccount');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Ninguna</option>';
+    accounts.forEach(account => {
+        const option = document.createElement('option');
+        option.value = account._id || account.id;
+        option.textContent = `${account.name}${account.bank ? ` (${account.bank})` : ''}`;
         select.appendChild(option);
     });
 }
