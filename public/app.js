@@ -4768,6 +4768,94 @@ function getMonthsInPeriod() {
     return parseInt(chartPeriod);
 }
 
+// Cargar contenido de políticas desde archivos
+async function loadPolicyContent(file, contentId) {
+    try {
+        const response = await fetch(`/${file}`);
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const content = doc.querySelector('.policy-container');
+        if (content) {
+            // Remover el título y el back link
+            const title = content.querySelector('h1');
+            const backLink = content.querySelector('.back-link');
+            if (title) title.remove();
+            if (backLink) backLink.remove();
+            document.getElementById(contentId).innerHTML = content.innerHTML;
+        }
+    } catch (error) {
+        console.error(`Error cargando ${file}:`, error);
+        document.getElementById(contentId).innerHTML = '<p>Error al cargar el contenido.</p>';
+    }
+}
+
+// Mostrar modales de políticas
+function showPrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    if (modal) {
+        loadPolicyContent('privacy.html', 'privacyContent');
+        modal.style.display = 'flex';
+    }
+}
+
+function closePrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function showCookiesModal() {
+    const modal = document.getElementById('cookiesModal');
+    if (modal) {
+        loadPolicyContent('cookies.html', 'cookiesContent');
+        modal.style.display = 'flex';
+    }
+}
+
+function closeCookiesModal() {
+    const modal = document.getElementById('cookiesModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function showTermsModal() {
+    const modal = document.getElementById('termsModal');
+    if (modal) {
+        loadPolicyContent('terms.html', 'termsContent');
+        modal.style.display = 'flex';
+    }
+}
+
+function closeTermsModal() {
+    const modal = document.getElementById('termsModal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Cerrar modales al hacer clic fuera
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        ['privacyModal', 'cookiesModal', 'termsModal'].forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        if (modalId === 'privacyModal') closePrivacyModal();
+                        if (modalId === 'cookiesModal') closeCookiesModal();
+                        if (modalId === 'termsModal') closeTermsModal();
+                    }
+                });
+            }
+        });
+    });
+}
+
+// Exponer funciones globales
+window.showPrivacyModal = showPrivacyModal;
+window.closePrivacyModal = closePrivacyModal;
+window.showCookiesModal = showCookiesModal;
+window.closeCookiesModal = closeCookiesModal;
+window.showTermsModal = showTermsModal;
+window.closeTermsModal = closeTermsModal;
+
 // Cerrar el bloque de protección contra carga múltiple
 }
 
