@@ -5010,9 +5010,243 @@ async function saveUserProfile() {
     }
 }
 
+// Mostrar detalles de resumen
+function showSummaryDetails(type) {
+    const modal = document.getElementById('summaryDetailsModal');
+    const titleEl = document.getElementById('summaryDetailsTitle');
+    const contentEl = document.getElementById('summaryDetailsContent');
+    
+    if (!modal || !titleEl || !contentEl) return;
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const summaryYearInput = document.getElementById('summaryYear');
+    let selectedYear = currentYear;
+    if (summaryYearInput && summaryPeriod === 'year-select') {
+        selectedYear = parseInt(summaryYearInput.value) || currentYear;
+    }
+    
+    let title = '';
+    let content = '';
+    
+    if (type === 'balance') {
+        title = '📊 Detalles del Balance Total';
+        const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+        const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+        const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
+            const amortization = calculateAmortizationTable(
+                loan.principal,
+                loan.interest_rate,
+                loan.monthly_payment,
+                loan.start_date,
+                loan.total_paid || 0,
+                loan.early_payments || []
+            );
+            return sum + amortization.finalBalance;
+        }, 0);
+        const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
+            const amortization = calculateAmortizationTable(
+                loan.principal,
+                loan.interest_rate,
+                loan.monthly_payment,
+                loan.start_date,
+                loan.total_paid || 0,
+                loan.early_payments || []
+            );
+            return sum + amortization.finalBalance;
+        }, 0);
+        const assetsValue = assets.reduce((sum, asset) => sum + (asset.current_value || 0), 0);
+        const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt + assetsValue;
+        
+        content = `
+            <div style="display: grid; gap: 16px;">
+                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Balance Total: ${formatCurrency(totalBalance)}</h3>
+                </div>
+                <div style="display: grid; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Saldo de Transacciones:</strong></span>
+                        <span style="color: ${transactionsBalance >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(transactionsBalance)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Valor de Inversiones:</strong></span>
+                        <span style="color: #10b981">${formatCurrency(investmentsValue)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Valor de Patrimonio:</strong></span>
+                        <span style="color: #10b981">${formatCurrency(assetsValue)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Préstamos a Favor:</strong></span>
+                        <span style="color: #10b981">${formatCurrency(loansCredit)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Deudas Pendientes:</strong></span>
+                        <span style="color: #ef4444">-${formatCurrency(loansDebt)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (type === 'accounts') {
+        title = '💰 Detalles de Cuentas Bancarias';
+        const totalAccountsBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+        content = `
+            <div style="display: grid; gap: 16px;">
+                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid #10b981;">
+                    <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Saldo Total: ${formatCurrency(totalAccountsBalance)}</h3>
+                </div>
+                ${accounts.length === 0 ? '<p style="text-align: center; color: var(--gray-500); padding: 20px;">No hay cuentas registradas</p>' : ''}
+                ${accounts.map(acc => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--gray-50); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                        <div>
+                            <strong>${acc.name}</strong>
+                            <br><small style="color: var(--gray-600);">${acc.type || 'Cuenta bancaria'}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong style="color: ${acc.balance >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(acc.balance)}</strong>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } else if (type === 'income') {
+        title = '💵 Detalles de Ingresos';
+        let periodTransactions = [];
+        if (summaryPeriod === 'month') {
+            periodTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'income';
+            });
+        } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+            periodTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getFullYear() === selectedYear && t.type === 'income';
+            });
+        } else {
+            periodTransactions = transactions.filter(t => t.type === 'income');
+        }
+        const totalIncome = periodTransactions.reduce((sum, t) => sum + t.amount, 0);
+        content = `
+            <div style="display: grid; gap: 16px;">
+                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid #10b981;">
+                    <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Total Ingresos: ${formatCurrency(totalIncome)}</h3>
+                </div>
+                ${periodTransactions.length === 0 ? '<p style="text-align: center; color: var(--gray-500); padding: 20px;">No hay ingresos registrados</p>' : ''}
+                ${periodTransactions.slice(0, 20).map(t => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-50); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                        <div>
+                            <strong>${t.category_specific || t.category_general}</strong>
+                            <br><small style="color: var(--gray-600);">${new Date(t.date).toLocaleDateString('es-ES')}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong style="color: #10b981">${formatCurrency(t.amount)}</strong>
+                        </div>
+                    </div>
+                `).join('')}
+                ${periodTransactions.length > 20 ? `<p style="text-align: center; color: var(--gray-500);">Y ${periodTransactions.length - 20} ingresos más...</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'expenses') {
+        title = '💸 Detalles de Gastos';
+        let periodTransactions = [];
+        if (summaryPeriod === 'month') {
+            periodTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'expense';
+            });
+        } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+            periodTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getFullYear() === selectedYear && t.type === 'expense';
+            });
+        } else {
+            periodTransactions = transactions.filter(t => t.type === 'expense');
+        }
+        const totalExpenses = Math.abs(periodTransactions.reduce((sum, t) => sum + t.amount, 0));
+        content = `
+            <div style="display: grid; gap: 16px;">
+                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid #ef4444;">
+                    <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Total Gastos: ${formatCurrency(totalExpenses)}</h3>
+                </div>
+                ${periodTransactions.length === 0 ? '<p style="text-align: center; color: var(--gray-500); padding: 20px;">No hay gastos registrados</p>' : ''}
+                ${periodTransactions.slice(0, 20).map(t => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-50); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                        <div>
+                            <strong>${t.category_specific || t.category_general}</strong>
+                            <br><small style="color: var(--gray-600);">${new Date(t.date).toLocaleDateString('es-ES')}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong style="color: #ef4444">${formatCurrency(Math.abs(t.amount))}</strong>
+                        </div>
+                    </div>
+                `).join('')}
+                ${periodTransactions.length > 20 ? `<p style="text-align: center; color: var(--gray-500);">Y ${periodTransactions.length - 20} gastos más...</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'savings') {
+        title = '💰 Detalles de Ahorro';
+        let periodIncome = 0, periodExpenses = 0;
+        if (summaryPeriod === 'month') {
+            const monthTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            });
+            periodIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            periodExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+            const yearTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getFullYear() === selectedYear;
+            });
+            periodIncome = yearTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            periodExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        } else {
+            periodIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            periodExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        }
+        const periodSavings = periodIncome - periodExpenses;
+        content = `
+            <div style="display: grid; gap: 16px;">
+                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid ${periodSavings >= 0 ? '#10b981' : '#ef4444'};">
+                    <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Ahorro Total: ${formatCurrency(periodSavings)}</h3>
+                </div>
+                <div style="display: grid; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Ingresos:</strong></span>
+                        <span style="color: #10b981">${formatCurrency(periodIncome)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Gastos:</strong></span>
+                        <span style="color: #ef4444">${formatCurrency(periodExpenses)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Ahorro:</strong></span>
+                        <span style="color: ${periodSavings >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(periodSavings)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    titleEl.textContent = title;
+    contentEl.innerHTML = content;
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de detalles de resumen
+function closeSummaryDetails() {
+    const modal = document.getElementById('summaryDetailsModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
 // Exponer funciones globales
 window.showUserProfile = showUserProfile;
 window.closeUserProfile = closeUserProfile;
+window.showSummaryDetails = showSummaryDetails;
+window.closeSummaryDetails = closeSummaryDetails;
 window.showPrivacyModal = showPrivacyModal;
 window.closePrivacyModal = closePrivacyModal;
 window.showCookiesModal = showCookiesModal;
