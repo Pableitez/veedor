@@ -31,8 +31,11 @@ if (MONGODB_URI && !MONGODB_URI.includes('mongodb://localhost')) {
 app.use(cors());
 app.use(express.json());
 
-// Servir archivos estáticos desde la carpeta public
-app.use(express.static(path.join(__dirname, 'public')));
+// Servir archivos estáticos desde la carpeta public (ANTES de las rutas de API)
+app.use(express.static(path.join(__dirname, 'public'), {
+    etag: false,
+    lastModified: false
+}));
 console.log('📁 Archivos estáticos servidos desde:', path.join(__dirname, 'public'));
 
 // Modelos de MongoDB

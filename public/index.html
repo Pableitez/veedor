@@ -229,71 +229,21 @@
         </div>
     </div>
 
-    <!-- Cargar aplicación JavaScript -->
+    <!-- Cargar aplicación JavaScript directamente -->
+    <script src="/app.js"></script>
     <script>
-        // Script inline para verificar que JavaScript funciona
-        console.log('✅ HTML cargado, iniciando carga de app.js...');
-        console.log('URL actual:', window.location.href);
-        console.log('Base URL:', window.location.origin);
-        console.log('Pathname:', window.location.pathname);
+        // Verificación después de cargar
+        console.log('✅ HTML completamente cargado');
+        console.log('Verificando carga de app.js...');
         
-        // Verificar que los elementos existan
-        console.log('Verificando elementos del DOM...');
-        console.log('registerFormElement:', document.getElementById('registerFormElement') ? '✅ Encontrado' : '❌ No encontrado');
-        console.log('registerUsername:', document.getElementById('registerUsername') ? '✅ Encontrado' : '❌ No encontrado');
-        console.log('authScreen:', document.getElementById('authScreen') ? '✅ Encontrado' : '❌ No encontrado');
-        
-        // Determinar la ruta correcta para app.js
-        const basePath = window.location.pathname === '/' ? '' : window.location.pathname.replace(/\/[^/]*$/, '');
-        const appJsPath = basePath + '/app.js';
-        console.log('Intentando cargar app.js desde:', appJsPath);
-        
-        // Cargar app.js con múltiples intentos
-        function loadAppJs(path) {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = path;
-                script.onload = function() {
-                    console.log('✅ app.js cargado exitosamente desde:', path);
-                    resolve();
-                };
-                script.onerror = function(error) {
-                    console.error('❌ Error cargando app.js desde:', path);
-                    reject(error);
-                };
-                document.head.appendChild(script);
-            });
-        }
-        
-        // Intentar múltiples rutas
-        const pathsToTry = [
-            'app.js',
-            '/app.js',
-            './app.js',
-            window.location.origin + '/app.js'
-        ];
-        
-        let loaded = false;
-        for (const path of pathsToTry) {
-            loadAppJs(path)
-                .then(() => {
-                    loaded = true;
-                    setTimeout(() => {
-                        console.log('Verificando si las funciones están disponibles...');
-                        console.log('register function:', typeof register !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
-                        if (typeof register === 'undefined') {
-                            console.error('❌ La función register no está disponible después de cargar app.js');
-                        }
-                    }, 500);
-                })
-                .catch(() => {
-                    if (!loaded && pathsToTry.indexOf(path) === pathsToTry.length - 1) {
-                        console.error('❌ No se pudo cargar app.js desde ninguna ruta');
-                        alert('Error cargando app.js. Abre la pestaña Network para verificar.');
-                    }
-                });
-            if (loaded) break;
-        }
+        // Verificar después de un momento
+        setTimeout(() => {
+            console.log('register function disponible:', typeof register !== 'undefined' ? '✅ SÍ' : '❌ NO');
+            if (typeof register === 'undefined') {
+                console.error('❌ app.js no se cargó correctamente');
+                console.error('Verifica en la pestaña Network si app.js se descargó');
+            }
+        }, 1000);
     </script>
 </body>
 </html>
