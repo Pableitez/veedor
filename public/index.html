@@ -165,7 +165,25 @@
                     <button class="nav-item" data-tab="charts" title="Análisis" style="padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
                         📊 Análisis
                     </button>
+                    <!-- Menú Desplegable Panel de Mandos -->
+                    <div style="position: relative;">
+                        <button id="dashboardDropdownBtn" onclick="toggleDashboardDropdown()" style="padding: 8px 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                            📊 Panel de Mandos <span style="font-size: 10px;">▼</span>
+                        </button>
+                        <div id="dashboardDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 220px; z-index: 1000; overflow: hidden;">
+                            <a href="javascript:void(0);" onclick="showMonthDashboard(); toggleDashboardDropdown();" style="display: block; padding: 12px 16px; color: var(--gray-900); text-decoration: none; font-size: 14px; transition: background 0.2s; border-bottom: 1px solid var(--gray-100);" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='white'">
+                                📅 Análisis del Mes Seleccionado
+                            </a>
+                            <a href="javascript:void(0);" onclick="scrollToDashboard(); toggleDashboardDropdown();" style="display: block; padding: 12px 16px; color: var(--gray-900); text-decoration: none; font-size: 14px; transition: background 0.2s;" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='white'">
+                                📊 Panel de Mandos Principal
+                            </a>
+                        </div>
+                    </div>
                 </nav>
+                <!-- Indicador de Fecha Actual -->
+                <div id="currentDateDisplay" style="padding: 6px 12px; background: rgba(255,255,255,0.15); border-radius: 8px; font-size: 12px; font-weight: 500; color: white; white-space: nowrap; margin-left: 12px;">
+                    📅 <span id="currentDateText"></span>
+                </div>
             </div>
             <div class="header-actions">
                 <span id="currentUser" class="user-info" style="cursor: pointer; padding: 10px 16px; border-radius: 10px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); color: white; transition: all 0.3s; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; font-size: 14px;" onclick="showUserProfile()" title="Haz clic para ver tu perfil" onmouseover="this.style.background='rgba(255,255,255,0.25)'; this.style.borderColor='rgba(255,255,255,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.25)'">
@@ -1263,11 +1281,13 @@
                 </div>
                 <div>
                     <h4 style="color: white; margin-bottom: 8px; font-size: 13px;">Enlaces</h4>
-                    <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="margin-bottom: 4px;"><a href="javascript:void(0);" onclick="if(typeof showPrivacyModal === 'function') { showPrivacyModal(); } else { console.error('showPrivacyModal no está definida'); } return false;" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 11px; transition: color 0.2s; cursor: pointer;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">Política de Privacidad</a></li>
-                        <li style="margin-bottom: 4px;"><a href="javascript:void(0);" onclick="if(typeof showCookiesModal === 'function') { showCookiesModal(); } else { console.error('showCookiesModal no está definida'); } return false;" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 11px; transition: color 0.2s; cursor: pointer;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">Política de Cookies</a></li>
-                        <li style="margin-bottom: 4px;"><a href="javascript:void(0);" onclick="if(typeof showTermsModal === 'function') { showTermsModal(); } else { console.error('showTermsModal no está definida'); } return false;" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 11px; transition: color 0.2s; cursor: pointer;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">Términos y Condiciones</a></li>
-                    </ul>
+                    <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                        <a href="javascript:void(0);" onclick="if(typeof showPrivacyModal === 'function') { showPrivacyModal(); } else { console.error('showPrivacyModal no está definida'); } return false;" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 11px; transition: color 0.2s; cursor: pointer; white-space: nowrap;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">Política de Privacidad</a>
+                        <span style="color: rgba(255,255,255,0.4);">•</span>
+                        <a href="javascript:void(0);" onclick="if(typeof showCookiesModal === 'function') { showCookiesModal(); } else { console.error('showCookiesModal no está definida'); } return false;" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 11px; transition: color 0.2s; cursor: pointer; white-space: nowrap;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">Política de Cookies</a>
+                        <span style="color: rgba(255,255,255,0.4);">•</span>
+                        <a href="javascript:void(0);" onclick="if(typeof showTermsModal === 'function') { showTermsModal(); } else { console.error('showTermsModal no está definida'); } return false;" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 11px; transition: color 0.2s; cursor: pointer; white-space: nowrap;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">Términos y Condiciones</a>
+                    </div>
                 </div>
             </div>
             <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; text-align: center;">

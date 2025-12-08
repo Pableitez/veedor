@@ -901,7 +901,8 @@ tbody tr:last-child td {
     margin: 40px auto;
     padding: 0;
     border-radius: 16px;
-    width: 90%;
+    width: 85%;
+    max-width: 800px;
     max-width: 900px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
     position: relative;

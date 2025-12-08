@@ -761,7 +761,65 @@ function initializeDate() {
         const today = new Date().toISOString().split('T')[0];
         dateInput.value = today;
     }
+    
+    // Actualizar indicador de fecha actual en el header
+    updateCurrentDateDisplay();
 }
+
+// Actualizar fecha actual en el header
+function updateCurrentDateDisplay() {
+    const dateDisplay = document.getElementById('currentDateText');
+    if (dateDisplay) {
+        const now = new Date();
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        };
+        dateDisplay.textContent = now.toLocaleDateString('es-ES', options);
+    }
+}
+
+// Toggle del menú desplegable de Panel de Mandos
+function toggleDashboardDropdown() {
+    const dropdown = document.getElementById('dashboardDropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Cerrar dropdown al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('dashboardDropdown');
+    const btn = document.getElementById('dashboardDropdownBtn');
+    if (dropdown && btn && !dropdown.contains(event.target) && !btn.contains(event.target)) {
+        dropdown.style.display = 'none';
+    }
+});
+
+// Mostrar panel de mandos del mes
+function showMonthDashboard() {
+    const monthDashboard = document.getElementById('monthDashboard');
+    const monthSelect = document.getElementById('monthSelect');
+    if (monthDashboard && monthSelect) {
+        monthSelect.dispatchEvent(new Event('change'));
+        monthDashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Scroll al dashboard principal
+function scrollToDashboard() {
+    const dashboard = document.querySelector('.dashboard');
+    if (dashboard) {
+        dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Exponer funciones globalmente
+window.toggleDashboardDropdown = toggleDashboardDropdown;
+window.showMonthDashboard = showMonthDashboard;
+window.scrollToDashboard = scrollToDashboard;
 
 // Inicializar categorías
 function initializeCategories() {
