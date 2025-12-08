@@ -3502,12 +3502,32 @@ function updateCharts() {
     updateExpensesChart();
     updateIncomeExpenseChart();
     updateDistributionChart();
-    // Actualizar gráficas de evolución (si existen)
-    if (typeof updateIncomeEvolutionChart === 'function') updateIncomeEvolutionChart();
-    if (typeof updateExpensesEvolutionChart === 'function') updateExpensesEvolutionChart();
-    if (typeof updateLoansOutstandingChart === 'function') updateLoansOutstandingChart();
-    if (typeof updateAssetsEvolutionChart === 'function') updateAssetsEvolutionChart();
-    if (typeof updateAccountsBalanceChart === 'function') updateAccountsBalanceChart();
+    // Actualizar gráficas de evolución (si existen) - con manejo de errores
+    try {
+        if (typeof updateIncomeEvolutionChart === 'function') updateIncomeEvolutionChart();
+    } catch (e) { 
+        // Función no disponible, ignorar silenciosamente
+    }
+    try {
+        if (typeof updateExpensesEvolutionChart === 'function') updateExpensesEvolutionChart();
+    } catch (e) { 
+        // Función no disponible, ignorar silenciosamente
+    }
+    try {
+        if (typeof updateLoansOutstandingChart === 'function') updateLoansOutstandingChart();
+    } catch (e) { 
+        // Función no disponible, ignorar silenciosamente
+    }
+    try {
+        if (typeof updateAssetsEvolutionChart === 'function') updateAssetsEvolutionChart();
+    } catch (e) { 
+        // Función no disponible, ignorar silenciosamente
+    }
+    try {
+        if (typeof updateAccountsBalanceChart === 'function') updateAccountsBalanceChart();
+    } catch (e) { 
+        // Función no disponible, ignorar silenciosamente
+    }
     updateFinancialHealthMetrics();
     updateAnalysisTables();
 }
