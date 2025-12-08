@@ -286,19 +286,27 @@ let emailTransporter = null;
 function setupEmailTransporter() {
     // Si hay credenciales de email configuradas, crear transporter
     if (process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        const emailPort = parseInt(process.env.EMAIL_PORT || '587');
+        const emailSecure = process.env.EMAIL_SECURE === 'true' || process.env.EMAIL_SECURE === '1' || emailPort === 465;
+        
         emailTransporter = nodemailer.createTransport({
             host: process.env.EMAIL_HOST,
-            port: parseInt(process.env.EMAIL_PORT || '587'),
-            secure: process.env.EMAIL_SECURE === 'true', // true para 465, false para otros puertos
+            port: emailPort,
+            secure: emailSecure, // true para 465 (SSL), false para 587 (TLS)
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
+            },
+            tls: {
+                rejectUnauthorized: false // Para desarrollo, en producción debería ser true
             }
         });
         console.log('✅ Transporter de email configurado');
         console.log('📧 Email configurado para:', process.env.EMAIL_USER);
         console.log('📧 Host:', process.env.EMAIL_HOST);
-        console.log('📧 Puerto:', process.env.EMAIL_PORT || '587');
+        console.log('📧 Puerto:', emailPort);
+        console.log('📧 Secure (SSL):', emailSecure);
+        console.log('📧 APP_URL:', process.env.APP_URL || 'No configurado');
     } else {
         console.log('⚠️ Email no configurado. Los emails de verificación no se enviarán.');
         console.log('💡 Configura EMAIL_HOST, EMAIL_USER, EMAIL_PASS en las variables de entorno para habilitar emails');
