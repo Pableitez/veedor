@@ -827,6 +827,9 @@ tbody tr:last-child td {
     border-radius: var(--radius-md);
     padding: 24px;
     transition: all 0.2s;
+    overflow: visible; /* Cambiado para que no corte contenido */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .envelope-card:hover {
