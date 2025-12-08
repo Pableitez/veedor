@@ -604,10 +604,18 @@ function initializeTabs() {
             btn.classList.add('active');
             document.getElementById(`${targetTab}-tab`).classList.add('active');
             
+            // Actualizar gráficas y análisis cuando se cambia al tab de análisis
             if (targetTab === 'charts') {
                 // Pequeño delay para asegurar que el tab esté visible
                 setTimeout(() => {
                     updateCharts();
+                }, 100);
+            }
+            
+            // Actualizar presupuestos cuando se cambia al tab de presupuestos
+            if (targetTab === 'budgets') {
+                setTimeout(() => {
+                    updateBudgets();
                 }, 100);
             }
         });
@@ -1043,19 +1051,25 @@ async function addEnvelope() {
 
 // Actualizar visualización
 function updateDisplay() {
-    updateSummary();
-    updateTransactionsTable();
-    updateEnvelopes();
-    updateEnvelopeSelect();
-    updateLoans();
-    updateInvestments();
-    updateMonthFilter();
-    updateMonthDashboard();
-    // Actualizar métricas y tablas de análisis si estamos en el tab de análisis
-    const chartsTab = document.getElementById('charts-tab');
-    if (chartsTab && chartsTab.classList.contains('active')) {
-        updateFinancialHealthMetrics();
-        updateAnalysisTables();
+    try {
+        updateSummary();
+        updateTransactionsTable();
+        updateEnvelopes();
+        updateEnvelopeSelect();
+        updateLoans();
+        updateInvestments();
+        updateBudgets(); // Asegurar que los presupuestos se actualicen
+        updateMonthFilter();
+        updateMonthDashboard();
+        
+        // Actualizar métricas y tablas de análisis si estamos en el tab de análisis
+        const chartsTab = document.getElementById('charts-tab');
+        if (chartsTab && chartsTab.classList.contains('active')) {
+            updateFinancialHealthMetrics();
+            updateAnalysisTables();
+        }
+    } catch (error) {
+        console.error('Error en updateDisplay:', error);
     }
 }
 
