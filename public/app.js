@@ -69,10 +69,20 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 // Inicialización
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM cargado, inicializando...');
+        initializeApp();
+    });
+} else {
+    console.log('DOM ya cargado, inicializando inmediatamente...');
+    initializeApp();
+}
+
+function initializeApp() {
     checkAuth();
     initializeAuth();
-});
+}
 
 // Verificar autenticación
 async function checkAuth() {
@@ -139,17 +149,46 @@ function initializeAuth() {
         console.error('❌ loginFormElement no encontrado');
     }
     
-    // Formulario de registro
+    // Formulario de registro - Múltiples formas de asegurar que funcione
     const registerFormElement = document.getElementById('registerFormElement');
+    const registerButton = registerFormElement?.querySelector('button[type="submit"]');
+    
     if (registerFormElement) {
-        console.log('Agregando listener a registerFormElement');
+        console.log('✅ registerFormElement encontrado');
+        
+        // Listener en el formulario (submit)
         registerFormElement.addEventListener('submit', async (e) => {
             e.preventDefault();
-            console.log('Formulario de registro enviado');
+            e.stopPropagation();
+            console.log('✅ Formulario de registro enviado (submit event)');
             await register();
+            return false;
         });
+        
+        // También listener directo en el botón por si acaso
+        if (registerButton) {
+            console.log('✅ Botón de registro encontrado, agregando listener adicional');
+            registerButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('✅ Botón de registro clickeado');
+                await register();
+                return false;
+            });
+        }
     } else {
         console.error('❌ registerFormElement no encontrado');
+        // Intentar de nuevo después de un momento
+        setTimeout(() => {
+            const retryForm = document.getElementById('registerFormElement');
+            if (retryForm) {
+                console.log('✅ registerFormElement encontrado en reintento');
+                retryForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await register();
+                });
+            }
+        }, 1000);
     }
     
     // Botón cambiar usuario
