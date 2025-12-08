@@ -1277,6 +1277,15 @@ async function addBudget() {
     }
 }
 
+// Función auxiliar para obtener el lunes de la semana
+function getWeekStartDate(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Ajustar al lunes
+    const monday = new Date(d.setDate(diff));
+    return monday.toISOString().split('T')[0];
+}
+
 // Actualizar presupuestos
 function updateBudgets() {
     const grid = document.getElementById('budgetsGrid');
@@ -1286,31 +1295,58 @@ function updateBudgets() {
     
     const now = new Date();
     const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const monthBudgets = budgets.filter(b => b.month === currentMonth);
+    const currentYear = now.getFullYear().toString();
+    const currentWeek = getWeekStartDate(now);
     
-    if (monthBudgets.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay presupuestos establecidos para este mes</p>';
+    // Filtrar presupuestos activos (del período actual)
+    const activeBudgets = budgets.filter(b => {
+        if (b.period_type === 'monthly') {
+            return b.period_value === currentMonth;
+        } else if (b.period_type === 'yearly') {
+            return b.period_value === currentYear;
+        } else if (b.period_type === 'weekly') {
+            return b.period_value === currentWeek;
+        }
+        return false;
+    });
+    
+    if (activeBudgets.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay presupuestos activos para el período actual</p>';
         return;
     }
     
-    // Calcular gastos por categoría del mes actual
-    const monthTransactions = transactions.filter(t => {
-        const tDate = new Date(t.date);
-        return tDate.getMonth() === now.getMonth() && 
-               tDate.getFullYear() === now.getFullYear() &&
-               t.type === 'expense';
-    });
-    
+    // Calcular gastos por categoría según período
     const expensesByCategory = {};
-    monthTransactions.forEach(t => {
-        expensesByCategory[t.categoryGeneral] = (expensesByCategory[t.categoryGeneral] || 0) + Math.abs(t.amount);
+    transactions.forEach(t => {
+        if (t.type !== 'expense') return;
+        const tDate = new Date(t.date);
+        
+        // Verificar si la transacción está en algún período activo
+        const isInActivePeriod = activeBudgets.some(b => {
+            if (b.period_type === 'monthly') {
+                return tDate.toISOString().startsWith(b.period_value);
+            } else if (b.period_type === 'yearly') {
+                return tDate.getFullYear().toString() === b.period_value;
+            } else if (b.period_type === 'weekly') {
+                const weekStart = new Date(b.period_value);
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                return tDate >= weekStart && tDate <= weekEnd;
+            }
+            return false;
+        });
+        
+        if (isInActivePeriod) {
+            const catId = t.categoryGeneral;
+            expensesByCategory[catId] = (expensesByCategory[catId] || 0) + Math.abs(t.amount);
+        }
     });
     
-    monthBudgets.forEach(budget => {
-        const category = categories.expense.find(c => c.id === budget.category) || 
-                        customCategories.expense.find(c => c.id === budget.category);
-        const categoryName = category ? category.name : budget.category;
-        const spent = expensesByCategory[budget.category] || 0;
+    activeBudgets.forEach(budget => {
+        const category = categories.expense.find(c => c.id === budget.category_id) || 
+                        customCategories.expense.find(c => c.id === budget.category_id);
+        const categoryName = category ? category.name : budget.category_id;
+        const spent = expensesByCategory[budget.category_id] || 0;
         const remaining = budget.amount - spent;
         const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
         const isOverBudget = spent > budget.amount;
