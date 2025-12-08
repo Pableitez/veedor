@@ -158,6 +158,10 @@ async function checkAuth() {
             initializeForms();
             updateDisplay();
             initializeCharts();
+            // Actualizar gráficas después de inicializarlas
+            setTimeout(() => {
+                updateCharts();
+            }, 200);
             updateUserInfo();
         } catch (error) {
             console.error('Error verificando autenticación:', error);
@@ -600,7 +604,10 @@ function initializeTabs() {
             document.getElementById(`${targetTab}-tab`).classList.add('active');
             
             if (targetTab === 'charts') {
-                updateCharts();
+                // Pequeño delay para asegurar que el tab esté visible
+                setTimeout(() => {
+                    updateCharts();
+                }, 100);
             }
         });
     });
