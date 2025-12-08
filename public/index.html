@@ -279,9 +279,21 @@
                                         <small>Frecuencia del presupuesto</small>
                                     </div>
                                     <div class="form-group">
-                                        <label for="budgetPeriodValue" id="budgetPeriodValueLabel">Mes</label>
+                                        <label for="budgetPeriodValue" id="budgetPeriodValueLabel">Mes de Inicio</label>
                                         <input type="month" id="budgetPeriodValue" required>
-                                        <small id="budgetPeriodValueHelp">Selecciona el mes</small>
+                                        <small id="budgetPeriodValueHelp">Mes desde el que comienza el presupuesto</small>
+                                    </div>
+                                    <div class="form-group" id="budgetDurationGroup" style="display: none;">
+                                        <label for="budgetDuration" id="budgetDurationLabel">Duración</label>
+                                        <select id="budgetDuration">
+                                            <option value="1">1 mes</option>
+                                            <option value="3">3 meses</option>
+                                            <option value="6">6 meses</option>
+                                            <option value="12">12 meses (1 año)</option>
+                                            <option value="24">24 meses (2 años)</option>
+                                            <option value="0">Indefinido (hasta cancelar)</option>
+                                        </select>
+                                        <small id="budgetDurationHelp">Por cuántos meses aplicar este presupuesto</small>
                                     </div>
                                 </div>
                                 <div class="form-row">

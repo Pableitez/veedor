@@ -862,6 +862,10 @@ function initializeForms() {
         const budgetPeriodValueHelp = document.getElementById('budgetPeriodValueHelp');
         const budgetAmountLabel = document.getElementById('budgetAmountLabel');
         const budgetAmountHelp = document.getElementById('budgetAmountHelp');
+        const budgetDurationGroup = document.getElementById('budgetDurationGroup');
+        const budgetDuration = document.getElementById('budgetDuration');
+        const budgetDurationLabel = document.getElementById('budgetDurationLabel');
+        const budgetDurationHelp = document.getElementById('budgetDurationHelp');
         
         if (budgetPeriodType && budgetPeriodValue) {
             const now = new Date();
@@ -874,11 +878,11 @@ function initializeForms() {
             // Actualizar campos según tipo de período
             budgetPeriodType.addEventListener('change', (e) => {
                 const periodType = e.target.value;
-                updateBudgetPeriodFields(periodType, budgetPeriodValue, budgetPeriodValueLabel, budgetPeriodValueHelp, budgetAmountLabel, budgetAmountHelp, now);
+                updateBudgetPeriodFields(periodType, budgetPeriodValue, budgetPeriodValueLabel, budgetPeriodValueHelp, budgetAmountLabel, budgetAmountHelp, budgetDurationGroup, budgetDuration, budgetDurationLabel, budgetDurationHelp, now);
             });
             
             // Inicializar campos
-            updateBudgetPeriodFields(budgetPeriodType.value, budgetPeriodValue, budgetPeriodValueLabel, budgetPeriodValueHelp, budgetAmountLabel, budgetAmountHelp, now);
+            updateBudgetPeriodFields(budgetPeriodType.value, budgetPeriodValue, budgetPeriodValueLabel, budgetPeriodValueHelp, budgetAmountLabel, budgetAmountHelp, budgetDurationGroup, budgetDuration, budgetDurationLabel, budgetDurationHelp, now);
         }
         
         // Función para actualizar campos según período
@@ -1292,6 +1296,7 @@ async function addBudget() {
     const amount = parseFloat(document.getElementById('budgetAmount').value);
     const period_type = document.getElementById('budgetPeriodType').value;
     const period_value = document.getElementById('budgetPeriodValue').value;
+    const duration = period_type === 'monthly' ? parseInt(document.getElementById('budgetDuration')?.value || '1') : 1;
     
     if (!category_id || !amount || !period_type || !period_value) {
         alert('Por favor completa todos los campos');
@@ -1304,34 +1309,83 @@ async function addBudget() {
     }
     
     try {
-        const budget = await apiRequest('/budgets', {
-            method: 'POST',
-            body: JSON.stringify({
-                category_id,
-                amount,
-                period_type,
-                period_value
-            })
-        });
-        
-        await loadUserData();
-        updateDisplay();
-        
-        // Resetear formulario pero mantener valores por defecto
-        const budgetForm = document.getElementById('budgetForm');
-        if (budgetForm) {
-            budgetForm.reset();
-            // Restaurar valores por defecto
-            const budgetPeriodType = document.getElementById('budgetPeriodType');
-            if (budgetPeriodType) budgetPeriodType.value = 'monthly';
-            const budgetPeriodValue = document.getElementById('budgetPeriodValue');
-            if (budgetPeriodValue) {
-                const now = new Date();
-                budgetPeriodValue.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        // Si es mensual y tiene duración, crear múltiples presupuestos
+        if (period_type === 'monthly' && duration > 0) {
+            const startDate = new Date(period_value + '-01');
+            const budgetsCreated = [];
+            
+            for (let i = 0; i < duration; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setMonth(startDate.getMonth() + i);
+                const monthValue = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+                
+                try {
+                    const budget = await apiRequest('/budgets', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            category_id,
+                            amount,
+                            period_type,
+                            period_value: monthValue
+                        })
+                    });
+                    budgetsCreated.push(monthValue);
+                } catch (error) {
+                    console.error(`Error creando presupuesto para ${monthValue}:`, error);
+                }
             }
+            
+            await loadUserData();
+            updateDisplay();
+            
+            // Resetear formulario
+            const budgetForm = document.getElementById('budgetForm');
+            if (budgetForm) {
+                budgetForm.reset();
+                const budgetPeriodType = document.getElementById('budgetPeriodType');
+                if (budgetPeriodType) budgetPeriodType.value = 'monthly';
+                const budgetPeriodValue = document.getElementById('budgetPeriodValue');
+                if (budgetPeriodValue) {
+                    const now = new Date();
+                    budgetPeriodValue.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                }
+            }
+            
+            if (duration === 0) {
+                alert(`✅ Presupuesto mensual establecido indefinidamente desde ${period_value}`);
+            } else {
+                alert(`✅ Presupuesto establecido para ${budgetsCreated.length} mes(es) exitosamente`);
+            }
+        } else {
+            // Para otros tipos de período o duración 0 (indefinido), crear uno solo
+            const budget = await apiRequest('/budgets', {
+                method: 'POST',
+                body: JSON.stringify({
+                    category_id,
+                    amount,
+                    period_type,
+                    period_value
+                })
+            });
+            
+            await loadUserData();
+            updateDisplay();
+            
+            // Resetear formulario
+            const budgetForm = document.getElementById('budgetForm');
+            if (budgetForm) {
+                budgetForm.reset();
+                const budgetPeriodType = document.getElementById('budgetPeriodType');
+                if (budgetPeriodType) budgetPeriodType.value = 'monthly';
+                const budgetPeriodValue = document.getElementById('budgetPeriodValue');
+                if (budgetPeriodValue) {
+                    const now = new Date();
+                    budgetPeriodValue.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                }
+            }
+            
+            alert('✅ Presupuesto establecido exitosamente');
         }
-        
-        alert('✅ Presupuesto establecido exitosamente');
     } catch (error) {
         alert('Error al establecer presupuesto: ' + error.message);
     }
