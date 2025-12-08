@@ -64,6 +64,7 @@ let customCategories = {
 let transactions = [];
 let envelopes = [];
 let budgets = [];
+let accounts = [];
 let charts = {};
 let currentUser = null;
 let authToken = null;
@@ -460,6 +461,16 @@ async function loadUserData() {
         }
         budgets = budgetsData || [];
         
+        // Cargar cuentas bancarias por separado para manejar errores
+        let accountsData = [];
+        try {
+            accountsData = await apiRequest('/accounts');
+        } catch (error) {
+            console.warn('No se pudieron cargar cuentas:', error);
+            accountsData = [];
+        }
+        accounts = accountsData || [];
+        
         // Cargar categorías personalizadas
         loadCustomCategories();
         
@@ -618,6 +629,13 @@ function initializeTabs() {
                     updateBudgets();
                 }, 100);
             }
+            
+            // Actualizar cuentas cuando se cambia al tab de cuentas
+            if (targetTab === 'accounts') {
+                setTimeout(() => {
+                    updateAccounts();
+                }, 100);
+            }
         });
     });
 }
@@ -648,6 +666,15 @@ function initializeForms() {
         investmentForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             await addInvestment();
+        });
+    }
+    
+    // Formulario de cuentas bancarias
+    const accountForm = document.getElementById('accountForm');
+    if (accountForm) {
+        accountForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addAccount();
         });
         
         // Calcular rentabilidad automáticamente
@@ -1195,8 +1222,17 @@ function updateSummary() {
     const periodSavingsLabelEl = document.getElementById('periodSavingsLabel');
     const periodSavingsSubLabelEl = document.getElementById('periodSavingsSubLabel');
     
+    // Calcular saldo total de cuentas
+    const totalAccountsBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+    
     if (totalBalanceEl) totalBalanceEl.textContent = formatCurrency(totalBalance);
     if (totalBalancePeriodEl) totalBalancePeriodEl.textContent = 'Todos los tiempos';
+    
+    // Actualizar saldo de cuentas en el resumen
+    const totalAccountsBalanceEl = document.getElementById('totalAccountsBalance');
+    if (totalAccountsBalanceEl) {
+        totalAccountsBalanceEl.textContent = formatCurrency(totalAccountsBalance);
+    }
     
     if (periodIncomeEl) periodIncomeEl.textContent = formatCurrency(periodIncome);
     if (periodIncomeLabelEl) periodIncomeLabelEl.textContent = `Ingresos ${periodLabel}`;
@@ -2453,9 +2489,179 @@ async function deleteInvestment(id) {
     }
 }
 
+// ==================== CUENTAS BANCARIAS ====================
+
+// Agregar cuenta bancaria
+async function addAccount() {
+    const name = document.getElementById('accountName').value.trim();
+    const type = document.getElementById('accountType').value;
+    const bank = document.getElementById('accountBank').value.trim();
+    const accountNumber = document.getElementById('accountNumber').value.trim();
+    const balance = parseFloat(document.getElementById('accountBalance').value);
+    const description = document.getElementById('accountDescription').value.trim();
+    
+    if (!name || !type) {
+        alert('Por favor completa todos los campos requeridos');
+        return;
+    }
+    
+    if (isNaN(balance)) {
+        alert('El saldo debe ser un número válido');
+        return;
+    }
+    
+    try {
+        const account = await apiRequest('/accounts', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                type,
+                bank: bank || null,
+                account_number: accountNumber || null,
+                balance,
+                currency: 'EUR',
+                description: description || null
+            })
+        });
+        
+        accounts.push(account);
+        updateDisplay();
+        document.getElementById('accountForm').reset();
+        alert('✅ Cuenta agregada exitosamente');
+    } catch (error) {
+        alert('Error al crear cuenta: ' + error.message);
+    }
+}
+
+// Actualizar cuentas
+function updateAccounts() {
+    const grid = document.getElementById('accountsGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (accounts.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay cuentas registradas</p>';
+        return;
+    }
+    
+    const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+    
+    accounts.forEach(account => {
+        const typeNames = {
+            checking: 'Cuenta Corriente',
+            savings: 'Cuenta de Ahorros',
+            credit: 'Tarjeta de Crédito',
+            investment: 'Cuenta de Inversión',
+            other: 'Otra'
+        };
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.borderLeft = `4px solid ${account.balance >= 0 ? 'var(--success)' : 'var(--danger)'}`;
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--gray-900);">${account.name}</h3>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--gray-600);">${typeNames[account.type] || account.type}</p>
+                    ${account.bank ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">🏦 ${account.bank}</p>` : ''}
+                    ${account.account_number ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">📋 ****${account.account_number}</p>` : ''}
+                </div>
+            </div>
+            
+            <div style="margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
+                <div style="text-align: center;">
+                    <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Saldo Actual</div>
+                    <div style="font-size: 28px; font-weight: 700; color: ${account.balance >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                        ${formatCurrency(account.balance)}
+                    </div>
+                    <div style="font-size: 11px; color: var(--gray-500); margin-top: 4px;">${account.currency}</div>
+                </div>
+            </div>
+            
+            ${account.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${account.description}</div>` : ''}
+            
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editAccount('${account._id || account.id}')" style="flex: 1;">✏️ Editar</button>
+                <button class="btn-danger" onclick="deleteAccount('${account._id || account.id}')" style="flex: 1;">🗑️ Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+    
+    // Agregar resumen total
+    const summaryCard = document.createElement('div');
+    summaryCard.className = 'envelope-card';
+    summaryCard.style.gridColumn = '1 / -1';
+    summaryCard.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
+    summaryCard.style.color = 'white';
+    summaryCard.style.border = 'none';
+    summaryCard.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0; color: white; font-size: 18px;">💰 Saldo Total</h3>
+                <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${accounts.length} cuenta${accounts.length !== 1 ? 's' : ''}</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 32px; font-weight: 700; color: white;">
+                    ${formatCurrency(totalBalance)}
+                </div>
+                <div style="font-size: 12px; color: rgba(255,255,255,0.8);">EUR</div>
+            </div>
+        </div>
+    `;
+    grid.appendChild(summaryCard);
+}
+
+// Editar cuenta (actualizar saldo)
+async function editAccount(id) {
+    const account = accounts.find(a => (a._id || a.id) === id);
+    if (!account) return;
+    
+    const newBalance = prompt(`Actualizar saldo de "${account.name}":`, account.balance);
+    if (newBalance === null) return;
+    
+    const balance = parseFloat(newBalance);
+    if (isNaN(balance)) {
+        alert('Por favor ingresa un número válido');
+        return;
+    }
+    
+    try {
+        await apiRequest(`/accounts/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                ...account,
+                balance
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Saldo actualizado exitosamente');
+    } catch (error) {
+        alert('Error al actualizar cuenta: ' + error.message);
+    }
+}
+
+// Eliminar cuenta
+async function deleteAccount(id) {
+    if (!confirm('¿Estás seguro de eliminar esta cuenta?')) return;
+    
+    try {
+        await apiRequest(`/accounts/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+    } catch (error) {
+        alert('Error al eliminar cuenta: ' + error.message);
+    }
+}
+
 // Exponer funciones globales
 window.editInvestment = editInvestment;
 window.deleteInvestment = deleteInvestment;
+window.editAccount = editAccount;
+window.deleteAccount = deleteAccount;
 
 // Eliminar préstamo
 async function deleteLoan(id) {

@@ -109,12 +109,26 @@ const investmentSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 });
 
+const accountSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true }, // Nombre de la cuenta (ej: "Cuenta Nómina BBVA")
+    type: { type: String, enum: ['checking', 'savings', 'credit', 'investment', 'other'], required: true }, // Tipo de cuenta
+    bank: { type: String, default: null }, // Nombre del banco
+    account_number: { type: String, default: null }, // Últimos 4 dígitos o referencia
+    balance: { type: Number, required: true, default: 0 }, // Saldo actual
+    currency: { type: String, default: 'EUR' }, // Moneda
+    description: { type: String, default: null },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
+});
+
 const User = mongoose.model('User', userSchema);
 const Transaction = mongoose.model('Transaction', transactionSchema);
 const Envelope = mongoose.model('Envelope', envelopeSchema);
 const Loan = mongoose.model('Loan', loanSchema);
 const Investment = mongoose.model('Investment', investmentSchema);
 const Budget = mongoose.model('Budget', budgetSchema);
+const Account = mongoose.model('Account', accountSchema);
 
 // Conectar a MongoDB
 console.log('=== CONFIGURACIÓN MONGODB ===');
@@ -700,6 +714,190 @@ app.delete('/api/budgets/:id', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error eliminando presupuesto:', error);
         res.status(500).json({ error: 'Error al eliminar presupuesto' });
+    }
+});
+
+// ==================== RUTAS DE CUENTAS BANCARIAS ====================
+
+// Obtener todas las cuentas del usuario
+app.get('/api/accounts', authenticateToken, async (req, res) => {
+    try {
+        const accounts = await Account.find({ user_id: req.user.userId })
+            .sort({ created_at: -1 });
+        res.json(accounts);
+    } catch (error) {
+        console.error('Error obteniendo cuentas:', error);
+        res.status(500).json({ error: 'Error al obtener cuentas' });
+    }
+});
+
+// Crear cuenta
+app.post('/api/accounts', authenticateToken, async (req, res) => {
+    try {
+        const { name, type, bank, account_number, balance, currency, description } = req.body;
+        
+        if (!name || !type) {
+            return res.status(400).json({ error: 'Nombre y tipo de cuenta son requeridos' });
+        }
+        
+        const account = new Account({
+            user_id: req.user.userId,
+            name,
+            type,
+            bank: bank || null,
+            account_number: account_number || null,
+            balance: balance || 0,
+            currency: currency || 'EUR',
+            description: description || null
+        });
+        
+        await account.save();
+        res.status(201).json(account);
+    } catch (error) {
+        console.error('Error creando cuenta:', error);
+        res.status(500).json({ error: 'Error al crear cuenta' });
+    }
+});
+
+// Actualizar cuenta
+app.put('/api/accounts/:id', authenticateToken, async (req, res) => {
+    try {
+        const { name, type, bank, account_number, balance, currency, description } = req.body;
+        
+        const account = await Account.findOneAndUpdate(
+            { _id: req.params.id, user_id: req.user.userId },
+            { 
+                name, 
+                type, 
+                bank, 
+                account_number, 
+                balance, 
+                currency, 
+                description,
+                updated_at: new Date()
+            },
+            { new: true }
+        );
+        
+        if (!account) {
+            return res.status(404).json({ error: 'Cuenta no encontrada' });
+        }
+        
+        res.json(account);
+    } catch (error) {
+        console.error('Error actualizando cuenta:', error);
+        res.status(500).json({ error: 'Error al actualizar cuenta' });
+    }
+});
+
+// Eliminar cuenta
+app.delete('/api/accounts/:id', authenticateToken, async (req, res) => {
+    try {
+        const account = await Account.findOneAndDelete({
+            _id: req.params.id,
+            user_id: req.user.userId
+        });
+        
+        if (!account) {
+            return res.status(404).json({ error: 'Cuenta no encontrada' });
+        }
+        
+        res.json({ message: 'Cuenta eliminada exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando cuenta:', error);
+        res.status(500).json({ error: 'Error al eliminar cuenta' });
+    }
+});
+
+// ==================== RUTAS DE CUENTAS BANCARIAS ====================
+
+// Obtener todas las cuentas del usuario
+app.get('/api/accounts', authenticateToken, async (req, res) => {
+    try {
+        const accounts = await Account.find({ user_id: req.user.userId })
+            .sort({ created_at: -1 });
+        res.json(accounts);
+    } catch (error) {
+        console.error('Error obteniendo cuentas:', error);
+        res.status(500).json({ error: 'Error al obtener cuentas' });
+    }
+});
+
+// Crear cuenta
+app.post('/api/accounts', authenticateToken, async (req, res) => {
+    try {
+        const { name, type, bank, account_number, balance, currency, description } = req.body;
+        
+        if (!name || !type) {
+            return res.status(400).json({ error: 'Nombre y tipo de cuenta son requeridos' });
+        }
+        
+        const account = new Account({
+            user_id: req.user.userId,
+            name,
+            type,
+            bank: bank || null,
+            account_number: account_number || null,
+            balance: balance || 0,
+            currency: currency || 'EUR',
+            description: description || null
+        });
+        
+        await account.save();
+        res.status(201).json(account);
+    } catch (error) {
+        console.error('Error creando cuenta:', error);
+        res.status(500).json({ error: 'Error al crear cuenta' });
+    }
+});
+
+// Actualizar cuenta
+app.put('/api/accounts/:id', authenticateToken, async (req, res) => {
+    try {
+        const { name, type, bank, account_number, balance, currency, description } = req.body;
+        
+        const account = await Account.findOneAndUpdate(
+            { _id: req.params.id, user_id: req.user.userId },
+            { 
+                name, 
+                type, 
+                bank, 
+                account_number, 
+                balance, 
+                currency, 
+                description,
+                updated_at: new Date()
+            },
+            { new: true }
+        );
+        
+        if (!account) {
+            return res.status(404).json({ error: 'Cuenta no encontrada' });
+        }
+        
+        res.json(account);
+    } catch (error) {
+        console.error('Error actualizando cuenta:', error);
+        res.status(500).json({ error: 'Error al actualizar cuenta' });
+    }
+});
+
+// Eliminar cuenta
+app.delete('/api/accounts/:id', authenticateToken, async (req, res) => {
+    try {
+        const account = await Account.findOneAndDelete({
+            _id: req.params.id,
+            user_id: req.user.userId
+        });
+        
+        if (!account) {
+            return res.status(404).json({ error: 'Cuenta no encontrada' });
+        }
+        
+        res.json({ message: 'Cuenta eliminada exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando cuenta:', error);
+        res.status(500).json({ error: 'Error al eliminar cuenta' });
     }
 });
 
