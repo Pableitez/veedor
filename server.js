@@ -47,18 +47,25 @@ const Transaction = mongoose.model('Transaction', transactionSchema);
 const Envelope = mongoose.model('Envelope', envelopeSchema);
 
 // Conectar a MongoDB
+console.log('Intentando conectar a MongoDB...');
+console.log('MONGODB_URI configurado:', MONGODB_URI ? 'Sí' : 'No');
+
 mongoose.connect(MONGODB_URI, {
-    serverSelectionTimeoutMS: 10000,
+    serverSelectionTimeoutMS: 30000,
     socketTimeoutMS: 45000,
+    retryWrites: true,
+    w: 'majority'
 })
     .then(() => {
-        console.log('✅ Conectado a MongoDB');
+        console.log('✅ Conectado a MongoDB exitosamente');
+        console.log('Estado de conexión:', mongoose.connection.readyState);
     })
     .catch((err) => {
         console.error('❌ Error conectando a MongoDB:', err.message);
         console.error('Error completo:', err);
         console.log('💡 Asegúrate de configurar MONGODB_URI en las variables de entorno');
-        console.log('💡 Verifica que tu IP esté en la whitelist de MongoDB Atlas');
+        console.log('💡 Verifica que tu IP esté en la whitelist de MongoDB Atlas (0.0.0.0/0)');
+        console.log('💡 Verifica que el usuario y contraseña sean correctos en MONGODB_URI');
     });
 
 // Manejar eventos de conexión
@@ -93,9 +100,14 @@ function authenticateToken(req, res, next) {
 // Registro
 app.post('/api/register', async (req, res) => {
     try {
+        console.log('=== INTENTO DE REGISTRO ===');
+        console.log('Estado MongoDB:', mongoose.connection.readyState);
+        console.log('Body recibido:', { username: req.body.username, password: req.body.password ? '***' : 'no proporcionada' });
+        
         // Verificar conexión a MongoDB
         if (mongoose.connection.readyState !== 1) {
-            console.log('MongoDB no está conectado. Estado:', mongoose.connection.readyState);
+            console.log('❌ MongoDB no está conectado. Estado:', mongoose.connection.readyState);
+            console.log('Estados: 0=desconectado, 1=conectado, 2=conectando, 3=desconectando');
             return res.status(503).json({ error: 'Base de datos no disponible. Intenta de nuevo en unos momentos.' });
         }
 
@@ -138,14 +150,21 @@ app.post('/api/register', async (req, res) => {
             user: { id: user._id.toString(), username: user.username }
         });
     } catch (error) {
-        console.error('Error en registro:', error);
+        console.error('❌ Error en registro:', error);
+        console.error('Tipo de error:', error.name);
+        console.error('Código de error:', error.code);
+        console.error('Mensaje:', error.message);
+        
         if (error.code === 11000) {
             return res.status(400).json({ error: 'El usuario ya existe' });
         }
-        if (error.name === 'MongoServerError') {
+        if (error.name === 'MongoServerError' || error.name === 'MongoError') {
             return res.status(500).json({ error: 'Error de base de datos. Verifica la conexión a MongoDB.' });
         }
-        res.status(500).json({ error: error.message || 'Error del servidor' });
+        if (error.message) {
+            return res.status(500).json({ error: error.message });
+        }
+        res.status(500).json({ error: 'Error del servidor. Revisa los logs para más detalles.' });
     }
 });
 

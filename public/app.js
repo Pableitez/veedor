@@ -164,6 +164,9 @@ async function register() {
     
     try {
         errorMsg.textContent = 'Registrando...';
+        console.log('Enviando registro a:', `${API_URL}/register`);
+        console.log('Datos:', { username, password: '***' });
+        
         const response = await fetch(`${API_URL}/register`, {
             method: 'POST',
             headers: {
@@ -172,10 +175,20 @@ async function register() {
             body: JSON.stringify({ username, password })
         });
         
-        const data = await response.json();
+        console.log('Respuesta recibida. Status:', response.status);
+        
+        let data;
+        try {
+            data = await response.json();
+            console.log('Datos de respuesta:', data);
+        } catch (parseError) {
+            const text = await response.text();
+            console.error('Error parseando JSON:', text);
+            throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
+        }
         
         if (!response.ok) {
-            throw new Error(data.error || 'Error al registrar usuario');
+            throw new Error(data.error || `Error ${response.status}: ${response.statusText}`);
         }
         
         authToken = data.token;
