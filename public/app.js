@@ -219,16 +219,33 @@ function initializeAuth() {
     const authTabs = document.querySelectorAll('.auth-tab-btn');
     console.log('Tabs encontrados:', authTabs.length);
     authTabs.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             const targetTab = btn.getAttribute('data-auth-tab');
+            console.log('🔄 Tab seleccionado:', targetTab);
+            
+            // Actualizar clases de tabs
             authTabs.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
+            // Mostrar/ocultar formularios de forma explícita
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
             
-            if (loginForm) loginForm.classList.toggle('active', targetTab === 'login');
-            if (registerForm) registerForm.classList.toggle('active', targetTab === 'register');
+            if (loginForm && registerForm) {
+                if (targetTab === 'login') {
+                    loginForm.classList.add('active');
+                    registerForm.classList.remove('active');
+                    console.log('✅ Mostrando formulario de login');
+                } else if (targetTab === 'register') {
+                    loginForm.classList.remove('active');
+                    registerForm.classList.add('active');
+                    console.log('✅ Mostrando formulario de registro');
+                }
+            } else {
+                console.error('❌ Formularios no encontrados:', { loginForm: !!loginForm, registerForm: !!registerForm });
+            }
             
             // Limpiar errores
             const loginError = document.getElementById('loginError');
