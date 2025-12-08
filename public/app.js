@@ -605,8 +605,20 @@ function logout() {
 
 // Mostrar pantalla de autenticación
 function showAuthScreen() {
-    document.getElementById('authScreen').style.display = 'flex';
-    document.getElementById('mainApp').style.display = 'none';
+    const authScreen = document.getElementById('authScreen');
+    const mainApp = document.getElementById('mainApp');
+    if (authScreen) {
+        authScreen.style.display = 'flex';
+    }
+    if (mainApp) {
+        mainApp.style.display = 'none';
+    }
+    
+    // Asegurar que los formularios estén visibles
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    if (loginForm) loginForm.style.display = 'block';
+    if (registerForm) registerForm.style.display = 'none';
 }
 
 // Mostrar aplicación principal
