@@ -771,6 +771,9 @@ function initializeForms() {
         dashboardMonthInput.addEventListener('change', (e) => {
             updateMonthDashboard();
         });
+        
+        // Actualizar panel al cargar
+        setTimeout(() => updateMonthDashboard(), 500);
     }
     
     // Formulario de presupuestos
