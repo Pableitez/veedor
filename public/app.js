@@ -101,70 +101,116 @@ async function checkAuth() {
 
 // Inicializar sistema de autenticación
 function initializeAuth() {
+    console.log('Inicializando autenticación...');
+    
     // Tabs de autenticación
     const authTabs = document.querySelectorAll('.auth-tab-btn');
+    console.log('Tabs encontrados:', authTabs.length);
     authTabs.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetTab = btn.getAttribute('data-auth-tab');
             authTabs.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            document.getElementById('loginForm').classList.toggle('active', targetTab === 'login');
-            document.getElementById('registerForm').classList.toggle('active', targetTab === 'register');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (loginForm) loginForm.classList.toggle('active', targetTab === 'login');
+            if (registerForm) registerForm.classList.toggle('active', targetTab === 'register');
             
             // Limpiar errores
-            document.getElementById('loginError').textContent = '';
-            document.getElementById('registerError').textContent = '';
+            const loginError = document.getElementById('loginError');
+            const registerError = document.getElementById('registerError');
+            if (loginError) loginError.textContent = '';
+            if (registerError) registerError.textContent = '';
         });
     });
     
     // Formulario de login
-    document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await login();
-    });
+    const loginFormElement = document.getElementById('loginFormElement');
+    if (loginFormElement) {
+        console.log('Agregando listener a loginFormElement');
+        loginFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('Formulario de login enviado');
+            await login();
+        });
+    } else {
+        console.error('❌ loginFormElement no encontrado');
+    }
     
     // Formulario de registro
-    document.getElementById('registerFormElement').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await register();
-    });
+    const registerFormElement = document.getElementById('registerFormElement');
+    if (registerFormElement) {
+        console.log('Agregando listener a registerFormElement');
+        registerFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('Formulario de registro enviado');
+            await register();
+        });
+    } else {
+        console.error('❌ registerFormElement no encontrado');
+    }
     
     // Botón cambiar usuario
-    document.getElementById('switchUserBtn').addEventListener('click', () => {
-        if (confirm('¿Deseas cerrar sesión y cambiar de usuario?')) {
-            logout();
-        }
-    });
+    const switchUserBtn = document.getElementById('switchUserBtn');
+    if (switchUserBtn) {
+        switchUserBtn.addEventListener('click', () => {
+            if (confirm('¿Deseas cerrar sesión y cambiar de usuario?')) {
+                logout();
+            }
+        });
+    }
+    
+    console.log('Autenticación inicializada');
 }
 
 // Registrar nuevo usuario
 async function register() {
-    const username = document.getElementById('registerUsername').value.trim();
-    const password = document.getElementById('registerPassword').value;
-    const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+    console.log('=== FUNCIÓN REGISTER LLAMADA ===');
+    
+    const usernameInput = document.getElementById('registerUsername');
+    const passwordInput = document.getElementById('registerPassword');
+    const passwordConfirmInput = document.getElementById('registerPasswordConfirm');
     const errorMsg = document.getElementById('registerError');
+    
+    if (!usernameInput || !passwordInput || !passwordConfirmInput || !errorMsg) {
+        console.error('❌ Elementos del formulario no encontrados');
+        alert('Error: Formulario no encontrado. Recarga la página.');
+        return;
+    }
+    
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+    const passwordConfirm = passwordConfirmInput.value;
+    
+    console.log('Datos del formulario:', { username, passwordLength: password.length, passwordsMatch: password === passwordConfirm });
     
     errorMsg.textContent = '';
     
     if (!username) {
         errorMsg.textContent = 'El usuario es requerido';
+        console.log('Validación fallida: usuario vacío');
         return;
     }
     
     if (password !== passwordConfirm) {
         errorMsg.textContent = 'Las contraseñas no coinciden';
+        console.log('Validación fallida: contraseñas no coinciden');
         return;
     }
     
     if (password.length < 4) {
         errorMsg.textContent = 'La contraseña debe tener al menos 4 caracteres';
+        console.log('Validación fallida: contraseña muy corta');
         return;
     }
     
     try {
         errorMsg.textContent = 'Registrando...';
+        errorMsg.style.color = '#666';
         console.log('Enviando registro a:', `${API_URL}/register`);
+        console.log('URL completa:', window.location.origin + API_URL + '/register');
         console.log('Datos:', { username, password: '***' });
         
         const response = await fetch(`${API_URL}/register`, {
@@ -176,14 +222,16 @@ async function register() {
         });
         
         console.log('Respuesta recibida. Status:', response.status);
+        console.log('Headers:', Object.fromEntries(response.headers.entries()));
         
         let data;
         try {
-            data = await response.json();
-            console.log('Datos de respuesta:', data);
-        } catch (parseError) {
             const text = await response.text();
-            console.error('Error parseando JSON:', text);
+            console.log('Respuesta texto:', text);
+            data = JSON.parse(text);
+            console.log('Datos de respuesta parseados:', data);
+        } catch (parseError) {
+            console.error('Error parseando JSON:', parseError);
             throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
         }
         
@@ -191,6 +239,7 @@ async function register() {
             throw new Error(data.error || `Error ${response.status}: ${response.statusText}`);
         }
         
+        console.log('✅ Registro exitoso');
         authToken = data.token;
         currentUser = data.user.username;
         localStorage.setItem('veedor_token', authToken);
@@ -205,10 +254,13 @@ async function register() {
         initializeCharts();
         updateUserInfo();
         
-        document.getElementById('registerFormElement').reset();
+        const form = document.getElementById('registerFormElement');
+        if (form) form.reset();
     } catch (error) {
-        console.error('Error en registro:', error);
+        console.error('❌ Error en registro:', error);
+        console.error('Stack:', error.stack);
         errorMsg.textContent = error.message || 'Error al registrar usuario. Verifica tu conexión.';
+        errorMsg.style.color = '#ef4444';
     }
 }
 
