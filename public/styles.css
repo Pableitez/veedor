@@ -281,7 +281,8 @@ header h1 {
 
 .dashboard {
     padding: 32px;
-    background: var(--gray-50);
+    background: var(--bg-secondary);
+    transition: background-color 0.3s;
 }
 
 .summary-cards {
@@ -654,13 +655,15 @@ th {
 
 td {
     padding: 14px 16px;
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--border-color);
     font-size: 14px;
-    color: var(--gray-700);
+    color: var(--text-secondary);
+    transition: border-color 0.3s, color 0.3s;
 }
 
 tbody tr:hover {
-    background: var(--gray-50);
+    background: var(--bg-tertiary);
+    transition: background-color 0.3s;
 }
 
 tbody tr:last-child td {
@@ -697,8 +700,8 @@ tbody tr:last-child td {
 }
 
 .envelope-card {
-    background: white;
-    border: 1.5px solid var(--gray-200);
+    background: var(--bg-primary);
+    border: 1.5px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 24px;
     transition: all 0.2s;
