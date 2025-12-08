@@ -34,8 +34,11 @@ const translations = {
         dashboard: {
             title: "Panel de Mandos",
             monthAnalysis: "Análisis del Mes",
+            monthAnalysisHint: "Selecciona un mes para ver el análisis detallado",
             summaryView: "Vista de Resumen",
+            summaryPeriodHint: "Período para las tarjetas de resumen",
             selectMonth: "Selecciona un mes para ver el análisis detallado",
+            selectYear: "Selecciona el año",
             period: "Período",
             thisMonth: "Este mes",
             thisYear: "Este año",
@@ -44,7 +47,14 @@ const translations = {
             income: "Ingresos",
             expenses: "Gastos",
             savings: "Ahorro",
-            balance: "Balance"
+            balance: "Balance",
+            totalBalance: "Balance Total",
+            accountsBalance: "Saldo en Cuentas",
+            totalInAllAccounts: "Total en todas las cuentas",
+            savingsGoal: "Meta de Ahorro",
+            noGoal: "Sin meta",
+            setGoal: "Establecer Meta",
+            clickForDetails: "Haz clic para ver detalles"
         },
         // Transacciones
         transactions: {
@@ -298,8 +308,11 @@ const translations = {
         dashboard: {
             title: "Dashboard",
             monthAnalysis: "Month Analysis",
+            monthAnalysisHint: "Select a month to see detailed analysis",
             summaryView: "Summary View",
+            summaryPeriodHint: "Period for summary cards",
             selectMonth: "Select a month to see detailed analysis",
+            selectYear: "Select the year",
             period: "Period",
             thisMonth: "This month",
             thisYear: "This year",
@@ -308,7 +321,14 @@ const translations = {
             income: "Income",
             expenses: "Expenses",
             savings: "Savings",
-            balance: "Balance"
+            balance: "Balance",
+            totalBalance: "Total Balance",
+            accountsBalance: "Accounts Balance",
+            totalInAllAccounts: "Total in all accounts",
+            savingsGoal: "Savings Goal",
+            noGoal: "No goal",
+            setGoal: "Set Goal",
+            clickForDetails: "Click to see details"
         },
         transactions: {
             title: "Transactions",
@@ -550,8 +570,11 @@ const translations = {
         dashboard: {
             title: "Dashboard",
             monthAnalysis: "Monatsanalyse",
+            monthAnalysisHint: "Wählen Sie einen Monat, um eine detaillierte Analyse zu sehen",
             summaryView: "Zusammenfassung",
+            summaryPeriodHint: "Zeitraum für Zusammenfassungskarten",
             selectMonth: "Wählen Sie einen Monat, um eine detaillierte Analyse zu sehen",
+            selectYear: "Wählen Sie das Jahr",
             period: "Zeitraum",
             thisMonth: "Dieser Monat",
             thisYear: "Dieses Jahr",
@@ -560,7 +583,14 @@ const translations = {
             income: "Einkommen",
             expenses: "Ausgaben",
             savings: "Ersparnisse",
-            balance: "Saldo"
+            balance: "Saldo",
+            totalBalance: "Gesamtsaldo",
+            accountsBalance: "Kontostand",
+            totalInAllAccounts: "Gesamt auf allen Konten",
+            savingsGoal: "Sparziel",
+            noGoal: "Kein Ziel",
+            setGoal: "Ziel festlegen",
+            clickForDetails: "Klicken Sie, um Details zu sehen"
         },
         transactions: {
             title: "Transaktionen",
@@ -802,8 +832,11 @@ const translations = {
         dashboard: {
             title: "Tableau de Bord",
             monthAnalysis: "Analyse du Mois",
+            monthAnalysisHint: "Sélectionnez un mois pour voir l'analyse détaillée",
             summaryView: "Vue Résumé",
+            summaryPeriodHint: "Période pour les cartes de résumé",
             selectMonth: "Sélectionnez un mois pour voir l'analyse détaillée",
+            selectYear: "Sélectionnez l'année",
             period: "Période",
             thisMonth: "Ce mois",
             thisYear: "Cette année",
@@ -812,7 +845,14 @@ const translations = {
             income: "Revenus",
             expenses: "Dépenses",
             savings: "Épargne",
-            balance: "Solde"
+            balance: "Solde",
+            totalBalance: "Solde Total",
+            accountsBalance: "Solde des Comptes",
+            totalInAllAccounts: "Total sur tous les comptes",
+            savingsGoal: "Objectif d'Épargne",
+            noGoal: "Pas d'objectif",
+            setGoal: "Définir l'Objectif",
+            clickForDetails: "Cliquez pour voir les détails"
         },
         transactions: {
             title: "Transactions",

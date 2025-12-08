@@ -236,11 +236,15 @@ function initializeAuth() {
             if (loginForm && registerForm) {
                 if (targetTab === 'login') {
                     loginForm.classList.add('active');
+                    loginForm.style.display = 'block';
                     registerForm.classList.remove('active');
+                    registerForm.style.display = 'none';
                     console.log('✅ Mostrando formulario de login');
                 } else if (targetTab === 'register') {
                     loginForm.classList.remove('active');
+                    loginForm.style.display = 'none';
                     registerForm.classList.add('active');
+                    registerForm.style.display = 'block';
                     console.log('✅ Mostrando formulario de registro');
                 }
             } else {
