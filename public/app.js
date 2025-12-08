@@ -509,7 +509,12 @@ async function register() {
 
 // Iniciar sesión
 async function login() {
-    const emailOrUsername = document.getElementById('loginEmailOrUsername').value.trim();
+    const emailOrUsernameInput = document.getElementById('loginEmailOrUsername');
+    if (!emailOrUsernameInput) {
+        console.error('Campo loginEmailOrUsername no encontrado');
+        return;
+    }
+    const emailOrUsername = emailOrUsernameInput.value.trim();
     const password = document.getElementById('loginPassword').value;
     const errorMsg = document.getElementById('loginError');
     
