@@ -1075,10 +1075,22 @@ function updateSummary() {
         periodSavings = periodIncome - periodExpenses;
         periodLabel = 'Este mes';
     } else if (summaryPeriod === 'year') {
+        // Usar año actual cuando se selecciona "Este Año"
+        const yearForCalculation = currentYear;
+        const yearTransactionsForPeriod = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getFullYear() === yearForCalculation;
+        });
+        periodIncome = yearTransactionsForPeriod.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        periodExpenses = Math.abs(yearTransactionsForPeriod.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        periodSavings = periodIncome - periodExpenses;
+        periodLabel = 'Este año';
+    } else if (summaryPeriod === 'year-select') {
+        // Usar año seleccionado cuando se selecciona "Año Específico"
         periodIncome = yearTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
         periodExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
         periodSavings = periodIncome - periodExpenses;
-        periodLabel = 'Este año';
+        periodLabel = `Año ${selectedYear}`;
     } else { // 'all'
         periodIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
         periodExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
