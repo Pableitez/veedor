@@ -110,6 +110,19 @@ const investmentSchema = new mongoose.Schema({
     current_value: { type: Number, required: true }, // Valor actual
     date: { type: String, required: true },
     description: { type: String, default: null },
+    // Aportes periódicos
+    periodic_contribution: {
+        enabled: { type: Boolean, default: false },
+        frequency: { type: String, enum: ['weekly', 'monthly', 'yearly'], default: 'monthly' },
+        amount: { type: Number, default: 0 },
+        start_date: { type: String, default: null },
+        end_date: { type: String, default: null }, // null = indefinido
+        completed_contributions: [{ // Aportes realizados por el usuario
+            date: { type: String, required: true },
+            amount: { type: Number, required: true },
+            transaction_id: { type: String, default: null } // ID de la transacción asociada
+        }]
+    },
     created_at: { type: Date, default: Date.now }
 });
 
