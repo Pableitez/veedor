@@ -12,20 +12,29 @@
     <div id="authScreen" class="auth-screen">
         <div class="auth-container">
             <div class="auth-header">
-                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 16px;">
-                    <rect width="64" height="64" rx="16" fill="url(#gradient)"/>
-                    <path d="M32 16L20 26V48H44V26L32 16Z" fill="white" fill-opacity="0.95"/>
-                    <path d="M24 36H40M24 42H40" stroke="white" stroke-width="3" stroke-linecap="round"/>
-                    <circle cx="32" cy="30" r="3" fill="white"/>
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 24px; filter: drop-shadow(0 8px 16px rgba(99, 102, 241, 0.3));">
                     <defs>
-                        <linearGradient id="gradient" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#0075FF"/>
-                            <stop offset="100%" stop-color="#0051CC"/>
+                        <linearGradient id="logoGradient" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#6366F1"/>
+                            <stop offset="100%" stop-color="#4F46E5"/>
+                        </linearGradient>
+                        <linearGradient id="logoGradientInner" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#818CF8"/>
+                            <stop offset="100%" stop-color="#6366F1"/>
                         </linearGradient>
                     </defs>
+                    <!-- Círculo exterior con gradiente -->
+                    <circle cx="40" cy="40" r="38" fill="url(#logoGradient)"/>
+                    <!-- Ojo/visión - símbolo de observación y control -->
+                    <circle cx="40" cy="40" r="24" fill="url(#logoGradientInner)" opacity="0.9"/>
+                    <circle cx="40" cy="40" r="16" fill="white" opacity="0.95"/>
+                    <circle cx="40" cy="40" r="10" fill="url(#logoGradient)"/>
+                    <!-- Líneas que representan visión/observación -->
+                    <path d="M40 8 L40 16 M40 64 L40 72 M8 40 L16 40 M64 40 L72 40" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+                    <path d="M20 20 L26 26 M60 20 L54 26 M20 60 L26 54 M60 60 L54 54" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
                 </svg>
-                <h1>Veedor</h1>
-                <p>Control de Finanzas Personales</p>
+                <h1 style="font-size: 36px; font-weight: 800; letter-spacing: -1px; margin: 0 0 8px 0; background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Veedor</h1>
+                <p style="font-size: 16px; color: var(--gray-600); margin: 0; font-weight: 500;">Control total de tus finanzas personales</p>
             </div>
             
             <div class="auth-tabs">
