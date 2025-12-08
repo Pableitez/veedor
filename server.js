@@ -245,8 +245,11 @@ async function connectToMongoDB() {
     }
 }
 
-// Conectar al iniciar
-connectToMongoDB();
+// Conectar al iniciar (no bloquear el inicio del servidor)
+connectToMongoDB().catch(err => {
+    console.error('Error inicial al conectar a MongoDB:', err);
+    console.log('⚠️ El servidor continuará, pero algunas funciones pueden no funcionar hasta que MongoDB esté disponible');
+});
 
 // Manejar eventos de conexión
 mongoose.connection.on('error', (err) => {
@@ -1697,14 +1700,27 @@ app.get('*', (req, res) => {
     }
 });
 
+// Manejo de errores no capturados
+process.on('uncaughtException', (err) => {
+    console.error('❌ Excepción no capturada:', err);
+    console.error('Stack:', err.stack);
+    // No cerrar el proceso, solo registrar el error
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Promesa rechazada no manejada:', reason);
+    console.error('En:', promise);
+    // No cerrar el proceso, solo registrar el error
+});
+
 // Iniciar servidor
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
     const os = require('os');
     const networkInterfaces = os.networkInterfaces();
     let localIP = 'localhost';
     
     if (process.env.RENDER) {
-        console.log(`🚀 Servidor corriendo en Render.com`);
+        console.log(`🚀 Servidor corriendo en Render.com en puerto ${PORT}`);
     } else {
         // Obtener la primera IP local (no loopback)
         for (const interfaceName in networkInterfaces) {
@@ -1723,8 +1739,18 @@ app.listen(PORT, '0.0.0.0', () => {
         console.log(`   Red:     http://${localIP}:${PORT}`);
     }
     
-    console.log(`📊 Base de datos: MongoDB (en la nube)`);
+    const dbStatus = mongoose.connection.readyState === 1 ? '✅ Conectado' : '⚠️ Desconectado';
+    console.log(`📊 Base de datos: MongoDB - ${dbStatus}`);
     if (!process.env.RENDER) {
         console.log(`\n💡 Para acceder desde otros dispositivos, usa: http://${localIP}:${PORT}`);
+    }
+});
+
+// Manejo de errores del servidor
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`❌ Puerto ${PORT} ya está en uso`);
+    } else {
+        console.error('❌ Error del servidor:', err);
     }
 });
