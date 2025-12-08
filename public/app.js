@@ -2087,46 +2087,62 @@ function showEarlyPaymentModal(loanId) {
     
     // Resetear formulario
     form.reset();
-    commissionInfo.style.display = 'none';
+    if (commissionInfo) commissionInfo.style.display = 'none';
+    
+    // Remover listeners anteriores si existen
+    const newAmountInput = amountInput.cloneNode(true);
+    amountInput.parentNode.replaceChild(newAmountInput, amountInput);
+    const newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+    
+    // Obtener referencias nuevas
+    const updatedAmountInput = document.getElementById('earlyPaymentAmount');
+    const updatedForm = document.getElementById('earlyPaymentForm');
+    const updatedCommissionInfo = document.getElementById('earlyPaymentCommissionInfo');
+    const updatedCommissionAmount = document.getElementById('earlyPaymentCommissionAmount');
     
     // Calcular comisión cuando cambia el monto
-    amountInput.addEventListener('input', () => {
-        const amount = parseFloat(amountInput.value) || 0;
-        if (amount > 0 && loan.early_payment_commission > 0) {
-            const commission = amount * loan.early_payment_commission / 100;
-            commissionAmount.textContent = formatCurrency(commission);
-            commissionInfo.style.display = 'block';
-        } else {
-            commissionInfo.style.display = 'none';
-        }
-    });
+    if (updatedAmountInput) {
+        updatedAmountInput.addEventListener('input', () => {
+            const amount = parseFloat(updatedAmountInput.value) || 0;
+            if (amount > 0 && loan.early_payment_commission > 0 && updatedCommissionInfo && updatedCommissionAmount) {
+                const commission = amount * loan.early_payment_commission / 100;
+                updatedCommissionAmount.textContent = formatCurrency(commission);
+                updatedCommissionInfo.style.display = 'block';
+            } else if (updatedCommissionInfo) {
+                updatedCommissionInfo.style.display = 'none';
+            }
+        });
+    }
     
     // Manejar envío del formulario
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-        const amount = parseFloat(amountInput.value);
-        
-        if (!amount || amount <= 0) {
-            alert('Por favor ingresa un monto válido');
-            return;
-        }
-        
-        if (amount > remainingCapital) {
-            alert(`El monto no puede ser mayor al capital restante (${formatCurrency(remainingCapital)})`);
-            return;
-        }
-        
-        const commission = loan.early_payment_commission > 0 
-            ? (amount * loan.early_payment_commission / 100) 
-            : 0;
-        
-        await registerLoanPayment(loanId, amount, true);
-        modal.style.display = 'none';
-    };
+    if (updatedForm) {
+        updatedForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(updatedAmountInput?.value || 0);
+            
+            if (!amount || amount <= 0) {
+                alert('Por favor ingresa un monto válido');
+                return;
+            }
+            
+            if (amount > remainingCapital) {
+                alert(`El monto no puede ser mayor al capital restante (${formatCurrency(remainingCapital)})`);
+                return;
+            }
+            
+            const commission = loan.early_payment_commission > 0 
+                ? (amount * loan.early_payment_commission / 100) 
+                : 0;
+            
+            await registerLoanPayment(loanId, amount, true);
+            modal.style.display = 'none';
+        });
+    }
     
     // Mostrar modal
     modal.style.display = 'flex';
-    amountInput.focus();
+    if (updatedAmountInput) updatedAmountInput.focus();
 }
 
 // Registrar pago de préstamo
