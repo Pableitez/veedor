@@ -1612,6 +1612,20 @@ function updateAccountSelect() {
     });
 }
 
+// Actualizar selector de inversiones
+function updateInvestmentSelect() {
+    const select = document.getElementById('transactionInvestment');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Ninguna</option>';
+    investments.forEach(investment => {
+        const option = document.createElement('option');
+        option.value = investment._id || investment.id;
+        option.textContent = investment.name;
+        select.appendChild(option);
+    });
+}
+
 // ==================== PRESUPUESTOS ====================
 
 // Agregar presupuesto
