@@ -109,15 +109,15 @@ body {
 #authCurrentLanguageFlag,
 header div:has(#languageDropdownBtn),
 header > div > div:has(#languageDropdownBtn),
-header > div:last-child > div:nth-child(2),
-header > div:last-child > div:nth-child(2) button,
-header > div:last-child > div:nth-child(2) span,
+header > div:last-child > div:has(#languageDropdownBtn),
+header > div:last-child > div:has(#languageDropdownBtn) button,
+header > div:last-child > div:has(#languageDropdownBtn) span,
 .auth-header div:has(#authLanguageDropdownBtn),
 .auth-container div:has(#authLanguageDropdownBtn),
-button[id*="language"],
-button[id*="Language"],
-div[id*="language"],
-div[id*="Language"] {
+button[id*="language"]:not(#settingsDropdownBtn),
+button[id*="Language"]:not(#settingsDropdownBtn),
+div[id*="language"]:not(#settingsDropdown):not(#settingsDropdownBtn),
+div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
