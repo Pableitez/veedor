@@ -1429,7 +1429,7 @@ function updateDisplay() {
 }
 
 // Actualizar resumen
-function updateSummary() {
+async function updateSummary() {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
