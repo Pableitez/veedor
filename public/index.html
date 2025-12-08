@@ -126,12 +126,12 @@
                 <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Veedor</h1>
             </div>
             <div class="header-actions">
-                <span id="currentUser" class="user-info" style="cursor: pointer; padding: 10px 18px; border-radius: var(--radius-full); background: rgba(255,255,255,0.25); backdrop-filter: blur(10px); border: 1.5px solid rgba(255,255,255,0.4); color: white; transition: all 0.2s; font-weight: 500; display: inline-flex; align-items: center; gap: 8px;" onclick="showUserProfile()" title="Haz clic para ver tu perfil">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                <span id="currentUser" class="user-info" style="cursor: pointer; padding: 10px 16px; border-radius: 10px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); color: white; transition: all 0.3s; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; font-size: 14px;" onclick="showUserProfile()" title="Haz clic para ver tu perfil" onmouseover="this.style.background='rgba(255,255,255,0.25)'; this.style.borderColor='rgba(255,255,255,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.25)'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
                         <circle cx="12" cy="8" r="4" stroke="white" stroke-width="2" fill="none"/>
                         <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="white" stroke-width="2" fill="none"/>
                     </svg>
-                    <span id="currentUserText">Usuario</span>
+                    <span id="currentUserText" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">Usuario</span>
                 </span>
                 <button id="switchUserBtn" class="btn-secondary" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white;">Cerrar Sesión</button>
             </div>
@@ -500,11 +500,15 @@
                     <h2 style="margin-bottom: 24px;">🏦 Gestionar Préstamos e Hipotecas</h2>
                     
                     <!-- Modal para tabla de amortización -->
-                    <div id="amortizationModal" class="modal">
+                    <div id="amortizationModal" class="modal" style="display: none;">
                         <div class="modal-content" style="max-width: 90%; width: 1000px;">
-                            <span class="modal-close" id="closeAmortizationModal">&times;</span>
-                            <h2 id="amortizationModalTitle">📊 Tabla de Amortización</h2>
-                            <div id="amortizationModalContent" style="max-height: 70vh; overflow-y: auto; margin-top: 20px;">
+                            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <h2 id="amortizationModalTitle" style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">📊 Tabla de Amortización</h2>
+                                    <button id="closeAmortizationModal" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                                </div>
+                            </div>
+                            <div id="amortizationModalContent" style="padding: 32px; max-height: 70vh; overflow-y: auto;">
                             </div>
                         </div>
                     </div>
@@ -939,13 +943,15 @@
 
     <!-- Modal de Perfil de Usuario -->
     <div id="userProfileModal" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 600px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h2 style="margin: 0; font-size: 24px; color: var(--gray-900);">👤 Mi Perfil</h2>
-                <button id="closeUserProfileModal" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-500); padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s;" onmouseover="this.style.background='var(--gray-100)'" onmouseout="this.style.background='none'">×</button>
+        <div class="modal-content" style="max-width: 700px;">
+            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">👤 Mi Perfil</h2>
+                    <button id="closeUserProfileModal" onclick="closeUserProfile()" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                </div>
             </div>
             
-            <form id="userProfileForm" style="display: flex; flex-direction: column; gap: 20px;">
+            <form id="userProfileForm" style="padding: 32px; display: flex; flex-direction: column; gap: 24px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                     <div class="form-group">
                         <label for="profileFirstName">Nombre</label>
@@ -1006,7 +1012,7 @@
                     <textarea id="profileNotes" rows="4" placeholder="Cualquier información adicional que quieras guardar..." style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; font-family: inherit; resize: vertical;"></textarea>
                 </div>
                 
-                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px;">
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; padding-top: 20px; border-top: 1px solid var(--border-color);">
                     <button type="button" class="btn-secondary" onclick="closeUserProfile(); return false;">Cancelar</button>
                     <button type="submit" class="btn-primary">💾 Guardar Cambios</button>
                 </div>
@@ -1190,12 +1196,12 @@
     <script src="/app.js?v=2.8.0"></script>
     
     <!-- Footer -->
-    <footer style="background: var(--gray-900); color: var(--gray-300); padding: 20px 16px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1);">
+    <footer style="background: var(--gray-900); color: var(--gray-300); padding: 16px 20px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1);">
         <div style="max-width: 1200px; margin: 0 auto;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 16px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 12px;">
                 <div>
-                    <h3 style="color: white; margin-bottom: 12px; font-size: 16px; display: flex; align-items: center; gap: 8px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <h3 style="color: white; margin-bottom: 8px; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect width="24" height="24" rx="6" fill="white" fill-opacity="0.2"/>
                             <path d="M12 4L6 8V18H18V8L12 4Z" fill="white" fill-opacity="0.9"/>
                             <path d="M8 12H16M8 16H16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
@@ -1203,21 +1209,21 @@
                         </svg>
                         Veedor
                     </h3>
-                    <p style="font-size: 12px; line-height: 1.5; color: var(--gray-400); margin: 0;">
+                    <p style="font-size: 11px; line-height: 1.4; color: var(--gray-400); margin: 0;">
                         Control total de tus finanzas personales.
                     </p>
                 </div>
                 <div>
-                    <h4 style="color: white; margin-bottom: 12px; font-size: 14px;">Enlaces</h4>
+                    <h4 style="color: white; margin-bottom: 8px; font-size: 13px;">Enlaces</h4>
                     <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="margin-bottom: 6px;"><a href="javascript:void(0);" onclick="if(typeof showPrivacyModal === 'function') { showPrivacyModal(); } else { console.error('showPrivacyModal no está definida'); } return false;" style="color: var(--gray-400); text-decoration: none; font-size: 12px; transition: color 0.2s; cursor: pointer;">Política de Privacidad</a></li>
-                        <li style="margin-bottom: 6px;"><a href="javascript:void(0);" onclick="if(typeof showCookiesModal === 'function') { showCookiesModal(); } else { console.error('showCookiesModal no está definida'); } return false;" style="color: var(--gray-400); text-decoration: none; font-size: 12px; transition: color 0.2s; cursor: pointer;">Política de Cookies</a></li>
-                        <li style="margin-bottom: 6px;"><a href="javascript:void(0);" onclick="if(typeof showTermsModal === 'function') { showTermsModal(); } else { console.error('showTermsModal no está definida'); } return false;" style="color: var(--gray-400); text-decoration: none; font-size: 12px; transition: color 0.2s; cursor: pointer;">Términos y Condiciones</a></li>
+                        <li style="margin-bottom: 4px;"><a href="javascript:void(0);" onclick="if(typeof showPrivacyModal === 'function') { showPrivacyModal(); } else { console.error('showPrivacyModal no está definida'); } return false;" style="color: var(--gray-400); text-decoration: none; font-size: 11px; transition: color 0.2s; cursor: pointer;">Política de Privacidad</a></li>
+                        <li style="margin-bottom: 4px;"><a href="javascript:void(0);" onclick="if(typeof showCookiesModal === 'function') { showCookiesModal(); } else { console.error('showCookiesModal no está definida'); } return false;" style="color: var(--gray-400); text-decoration: none; font-size: 11px; transition: color 0.2s; cursor: pointer;">Política de Cookies</a></li>
+                        <li style="margin-bottom: 4px;"><a href="javascript:void(0);" onclick="if(typeof showTermsModal === 'function') { showTermsModal(); } else { console.error('showTermsModal no está definida'); } return false;" style="color: var(--gray-400); text-decoration: none; font-size: 11px; transition: color 0.2s; cursor: pointer;">Términos y Condiciones</a></li>
                     </ul>
                 </div>
             </div>
-            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; text-align: center;">
-                <p style="font-size: 11px; color: var(--gray-500); margin: 0;">
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; text-align: center;">
+                <p style="font-size: 10px; color: var(--gray-500); margin: 0;">
                     © 2025 <strong style="color: var(--gray-300);">Pablo Beneitez</strong>. Todos los derechos reservados.
                 </p>
             </div>
