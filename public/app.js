@@ -761,6 +761,18 @@ function initializeForms() {
         });
     }
     
+    // Selector de mes para el panel de mandos
+    const dashboardMonthInput = document.getElementById('dashboardMonth');
+    if (dashboardMonthInput) {
+        // Establecer mes actual por defecto
+        const now = new Date();
+        dashboardMonthInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        
+        dashboardMonthInput.addEventListener('change', (e) => {
+            updateMonthDashboard();
+        });
+    }
+    
     // Formulario de presupuestos
     const budgetForm = document.getElementById('budgetForm');
     if (budgetForm) {
@@ -861,6 +873,7 @@ function updateDisplay() {
     updateLoans();
     updateInvestments();
     updateMonthFilter();
+    updateMonthDashboard();
 }
 
 // Actualizar resumen

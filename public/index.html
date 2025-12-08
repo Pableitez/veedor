@@ -73,9 +73,11 @@
 
         <div class="dashboard">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
-                    <h2 style="font-size: 20px; font-weight: 700; color: var(--gray-900); margin: 0;">Resumen Financiero</h2>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <label style="font-size: 14px; font-weight: 500; color: var(--gray-700);">Período:</label>
+                    <h2 style="font-size: 20px; font-weight: 700; color: var(--gray-900); margin: 0;">Panel de Mandos</h2>
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <label style="font-size: 14px; font-weight: 500; color: var(--gray-700);">Mes:</label>
+                        <input type="month" id="dashboardMonth" style="padding: 8px 16px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s;">
+                        <label style="font-size: 14px; font-weight: 500; color: var(--gray-700);">Vista:</label>
                         <select id="summaryPeriod" style="padding: 8px 16px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s;">
                             <option value="month">Este Mes</option>
                             <option value="year">Este Año</option>
@@ -90,24 +92,57 @@
                         <small id="totalBalancePeriod">Todos los tiempos</small>
                     </div>
                     <div class="card">
-                        <h3>Ingresos</h3>
+                        <h3 id="periodIncomeLabel">Ingresos</h3>
                         <p class="amount positive" id="periodIncome">0,00 €</p>
-                        <small id="periodIncomeLabel">Este mes</small>
+                        <small id="periodIncomeSubLabel">Este mes</small>
                     </div>
                     <div class="card">
-                        <h3>Gastos</h3>
+                        <h3 id="periodExpensesLabel">Gastos</h3>
                         <p class="amount negative" id="periodExpenses">0,00 €</p>
-                        <small id="periodExpensesLabel">Este mes</small>
+                        <small id="periodExpensesSubLabel">Este mes</small>
                     </div>
                     <div class="card">
-                        <h3>Ahorro</h3>
+                        <h3 id="periodSavingsLabel">Ahorro</h3>
                         <p class="amount" id="periodSavings">0,00 €</p>
-                        <small id="periodSavingsLabel">Este mes</small>
+                        <small id="periodSavingsSubLabel">Este mes</small>
                     </div>
                     <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none;">
                         <h3 style="color: white;">Meta de Ahorro</h3>
                         <p class="amount" id="savingsGoal" style="color: white;">Sin meta</p>
                         <button id="setSavingsGoalBtn" class="btn-secondary" style="margin-top: 12px; font-size: 13px; padding: 8px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">Establecer Meta</button>
+                    </div>
+                </div>
+                
+                <!-- Panel de Mandos del Mes -->
+                <div id="monthDashboard" style="margin-top: 32px; display: none;">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--gray-900);">Análisis del Mes Seleccionado</h3>
+                    
+                    <!-- Gastos por Categoría -->
+                    <div style="margin-bottom: 32px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--gray-800);">📊 Gastos por Categoría</h4>
+                        <div id="monthExpensesByCategory" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Ingresos por Categoría -->
+                    <div style="margin-bottom: 32px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--gray-800);">💰 Ingresos por Categoría</h4>
+                        <div id="monthIncomeByCategory" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Estado de Presupuestos del Mes -->
+                    <div style="margin-bottom: 32px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--gray-800);">📋 Estado de Presupuestos</h4>
+                        <div id="monthBudgetsStatus" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Estado de Sobres del Mes -->
+                    <div style="margin-bottom: 32px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--gray-800);">📦 Estado de Sobres</h4>
+                        <div id="monthEnvelopesStatus" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                        </div>
                     </div>
                 </div>
         </div>
@@ -207,46 +242,61 @@
             <!-- Tab: Presupuestos -->
             <div class="tab-content" id="envelopes-tab">
                 <div class="form-section">
-                    <h2>Gestionar Presupuestos</h2>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
-                        <div>
-                            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--gray-900);">Presupuestos por Categoría</h3>
+                    <h2 style="margin-bottom: 24px;">📋 Gestionar Presupuestos y Sobres</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 24px;">
+                        <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
+                                <span style="font-size: 20px;">📊</span>
+                                <h3 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--gray-900);">Presupuesto por Categoría</h3>
+                            </div>
+                            <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 20px;">Establece un límite mensual para una categoría de gasto específica. Te avisaremos cuando te acerques al límite.</p>
                             <form id="budgetForm">
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="budgetCategory">Categoría</label>
+                                        <label for="budgetCategory">Categoría de Gasto</label>
                                         <select id="budgetCategory" required>
                                             <option value="">Seleccionar categoría...</option>
                                         </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="budgetAmount">Presupuesto Mensual (€)</label>
-                                        <input type="number" id="budgetAmount" step="0.01" min="0" required>
+                                        <small>Elige la categoría que quieres presupuestar</small>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="budgetMonth">Mes</label>
                                         <input type="month" id="budgetMonth" required>
+                                        <small>Mes para el que aplica el presupuesto</small>
                                     </div>
-                                    <button type="submit" class="btn-primary" style="align-self: flex-end;">Establecer Presupuesto</button>
+                                    <div class="form-group">
+                                        <label for="budgetAmount">Presupuesto Mensual (€)</label>
+                                        <input type="number" id="budgetAmount" step="0.01" min="0" required placeholder="0.00">
+                                        <small>Límite máximo de gasto para esta categoría</small>
+                                    </div>
                                 </div>
+                                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 8px;">💾 Establecer Presupuesto</button>
                             </form>
                         </div>
-                        <div>
-                            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--gray-900);">Sobres (Presupuestos Flexibles)</h3>
+                        <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
+                                <span style="font-size: 20px;">📦</span>
+                                <h3 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--gray-900);">Sobre (Presupuesto Flexible)</h3>
+                            </div>
+                            <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 20px;">Crea un sobre para ahorrar para un objetivo específico. Puedes asignar transacciones a sobres.</p>
                             <form id="envelopeForm">
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="envelopeName">Nombre del Sobre</label>
-                                        <input type="text" id="envelopeName" placeholder="Ej: Vacaciones" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="envelopeBudget">Presupuesto Mensual (€)</label>
-                                        <input type="number" id="envelopeBudget" step="0.01" min="0" required>
+                                        <input type="text" id="envelopeName" placeholder="Ej: Vacaciones, Emergencias, Regalos..." required>
+                                        <small>Un nombre descriptivo para tu objetivo</small>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn-primary">Crear Sobre</button>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="envelopeBudget">Presupuesto Mensual (€)</label>
+                                        <input type="number" id="envelopeBudget" step="0.01" min="0" required placeholder="0.00">
+                                        <small>Cuánto planeas ahorrar cada mes en este sobre</small>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 8px;">➕ Crear Sobre</button>
                             </form>
                         </div>
                     </div>
@@ -264,8 +314,11 @@
             <!-- Tab: Préstamos -->
             <div class="tab-content" id="loans-tab">
                 <div class="form-section">
-                    <h2>Gestionar Préstamos e Hipotecas</h2>
-                    <form id="loanForm">
+                    <h2 style="margin-bottom: 24px;">🏦 Gestionar Préstamos e Hipotecas</h2>
+                    <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px;">
+                        <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">Registra tus préstamos e hipotecas para hacer un seguimiento del capital restante, intereses y realizar simulaciones de amortización anticipada.</p>
+                    </div>
+                    <form id="loanForm" style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="loanName">Nombre del Préstamo</label>
@@ -338,8 +391,11 @@
             <!-- Tab: Inversiones -->
             <div class="tab-content" id="investments-tab">
                 <div class="form-section">
-                    <h2>Gestionar Inversiones</h2>
-                    <form id="investmentForm">
+                    <h2 style="margin-bottom: 24px;">📈 Gestionar Inversiones</h2>
+                    <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px;">
+                        <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">Registra tus inversiones para hacer seguimiento de su rendimiento, ganancias/pérdidas y rentabilidad total.</p>
+                    </div>
+                    <form id="investmentForm" style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="investmentName">Nombre de la Inversión</label>
