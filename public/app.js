@@ -1,9 +1,15 @@
 // Evitar cargar múltiples veces
-// Versión: 2.1.0 - Cuentas bancarias y presupuestos de ingresos
+// Versión: 2.5.0 - Detalles de resumen, meta de ahorro en BD, header mejorado
 if (window.VEEDOR_LOADED) {
     console.warn('⚠️ app.js ya fue cargado, evitando carga duplicada');
 } else {
     window.VEEDOR_LOADED = true;
+    
+    // Exponer funciones globales inmediatamente (stubs) para evitar errores de referencia
+    window.showUserProfile = function() { console.warn('showUserProfile aún no está disponible'); };
+    window.closeUserProfile = function() { console.warn('closeUserProfile aún no está disponible'); };
+    window.showSummaryDetails = function() { console.warn('showSummaryDetails aún no está disponible'); };
+    window.closeSummaryDetails = function() { console.warn('closeSummaryDetails aún no está disponible'); };
     
     // Configuración de la API
     const API_URL = '/api';
