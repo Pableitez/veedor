@@ -229,24 +229,8 @@
         </div>
     </div>
 
-    <!-- Versión standalone para GitHub Pages (sin servidor) -->
-    <script>
-        // Detectar si estamos en GitHub Pages o localhost
-        const isGitHubPages = window.location.hostname === 'pableitez.github.io' || 
-                              window.location.hostname.includes('github.io');
-        
-        if (isGitHubPages) {
-            // Cargar versión standalone (solo localStorage)
-            const script = document.createElement('script');
-            script.src = 'app-standalone.js';
-            document.body.appendChild(script);
-        } else {
-            // Cargar versión con servidor (API)
-            const script = document.createElement('script');
-            script.src = 'app.js';
-            document.body.appendChild(script);
-        }
-    </script>
+    <!-- Cargar aplicación JavaScript -->
+    <script src="app.js"></script>
 </body>
 </html>
 

@@ -1,6 +1,11 @@
 // Configuración de la API
 const API_URL = '/api';
 
+// Log inicial para verificar que el script se carga
+console.log('🚀 app.js cargado correctamente');
+console.log('API_URL:', API_URL);
+console.log('URL actual:', window.location.href);
+
 // Categorías de gastos
 const categories = {
     general: [
