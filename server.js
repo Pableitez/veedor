@@ -625,6 +625,7 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
+        // Actualizar solo los campos proporcionados, sin validar campos requeridos que no se están actualizando
         if (firstName !== undefined) user.firstName = firstName;
         if (lastName !== undefined) user.lastName = lastName;
         if (age !== undefined) user.age = age;
@@ -644,20 +645,43 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
         }
         
         user.updatedAt = new Date();
+        
+        // Usar updateOne para evitar validación de campos requeridos que no se están actualizando
         try {
-            await user.save();
+            await User.updateOne(
+                { _id: req.user.userId },
+                {
+                    $set: {
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        age: user.age,
+                        birthDate: user.birthDate,
+                        phone: user.phone,
+                        address: user.address,
+                        city: user.city,
+                        country: user.country,
+                        notes: user.notes,
+                        savingsGoal: user.savingsGoal,
+                        updatedAt: user.updatedAt
+                    }
+                }
+            );
+            
+            // Recargar el usuario actualizado
+            const updatedUser = await User.findById(req.user.userId);
+            
             // Devolver el usuario actualizado con savingsGoal
             res.json({
-                firstName: user.firstName || '',
-                lastName: user.lastName || '',
-                age: user.age || null,
-                phone: user.phone || '',
-                address: user.address || '',
-                city: user.city || '',
-                country: user.country || '',
-                birthDate: user.birthDate || null,
-                notes: user.notes || '',
-                savingsGoal: user.savingsGoal || null
+                firstName: updatedUser.firstName || '',
+                lastName: updatedUser.lastName || '',
+                age: updatedUser.age || null,
+                phone: updatedUser.phone || '',
+                address: updatedUser.address || '',
+                city: updatedUser.city || '',
+                country: updatedUser.country || '',
+                birthDate: updatedUser.birthDate || null,
+                notes: updatedUser.notes || '',
+                savingsGoal: updatedUser.savingsGoal || null
             });
             return;
         } catch (saveError) {
