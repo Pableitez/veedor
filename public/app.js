@@ -758,6 +758,26 @@ function initializeForms() {
         });
     }
     
+    // Modal de amortización
+    const amortizationModal = document.getElementById('amortizationModal');
+    const closeAmortizationModalBtn = document.getElementById('closeAmortizationModal');
+    
+    if (closeAmortizationModalBtn) {
+        closeAmortizationModalBtn.addEventListener('click', () => {
+            if (amortizationModal) {
+                amortizationModal.style.display = 'none';
+            }
+        });
+    }
+    
+    if (amortizationModal) {
+        amortizationModal.addEventListener('click', (e) => {
+            if (e.target === amortizationModal) {
+                amortizationModal.style.display = 'none';
+            }
+        });
+    }
+    
     // Botón para establecer meta de ahorro
     const setSavingsGoalBtn = document.getElementById('setSavingsGoalBtn');
     if (setSavingsGoalBtn) {
