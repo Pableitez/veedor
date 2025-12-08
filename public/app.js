@@ -1249,7 +1249,7 @@ function initializeTabs() {
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const targetTab = item.getAttribute('data-tab');
-            switchToTab(targetTab);
+            switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
             // Scroll suave hacia el contenido
             const mainContent = document.querySelector('.main-content');
             if (mainContent) {
@@ -1258,10 +1258,19 @@ function initializeTabs() {
         });
     });
     
-    // Inicializar estado activo del primer tab
+    // Inicializar estado activo del primer tab SIN hacer scroll automático
     if (tabButtons.length > 0) {
         const firstTab = tabButtons[0].getAttribute('data-tab');
-        switchToTab(firstTab);
+        const firstTabBtn = document.querySelector(`.tab-btn[data-tab="${firstTab}"]`);
+        const firstTabContent = document.getElementById(`${firstTab}-tab`);
+        
+        // Activar el primer tab sin hacer scroll
+        if (firstTabBtn) firstTabBtn.classList.add('active');
+        if (firstTabContent) {
+            firstTabContent.classList.add('active');
+        }
+        
+        // NO hacer scroll automático - el usuario decidirá dónde quiere ir
     }
 }
 
