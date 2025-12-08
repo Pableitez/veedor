@@ -94,6 +94,8 @@ body {
     transition: background-color 0.3s, color 0.3s;
     margin: 0;
     padding: 0;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 #mainApp {
@@ -103,6 +105,13 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+}
+
+#mainApp > header {
+    width: 100%;
+    margin: 0;
+    left: 0;
+    right: 0;
 }
 
 /* ============================================
@@ -1042,11 +1051,19 @@ tbody tr:last-child td {
     }
     
     .modal-content {
-        width: 95%;
-        max-width: 95%;
-        padding: 16px;
-        margin: 10px;
-        max-height: 90vh;
+        width: 95% !important;
+        max-width: 95% !important;
+        padding: 0 !important;
+        margin: 10px !important;
+        max-height: 95vh !important;
+    }
+    
+    .modal-content > div:first-child {
+        padding: 20px !important;
+    }
+    
+    .modal-content > div:last-child {
+        padding: 20px !important;
     }
     
     .card {
