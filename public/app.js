@@ -4582,8 +4582,8 @@ function updateFinancialHealthMetrics() {
     
     // 5. Ratio de Ahorro (Ahorro del período / Ingresos del período)
     const savingsRatio = periodIncome > 0 ? (periodSavings / periodIncome) * 100 : (periodIncome === 0 && periodExpenses > 0 ? -100 : 0);
-    // Lógica corregida: negativo = peligro, 0% = moderado, positivo = bueno
-    const savingsStatus = savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : (savingsRatio < 0 ? 'danger' : 'warning');
+    // Lógica corregida: negativo o 0% = bajo/peligro, positivo = bueno
+    const savingsStatus = savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger';
     
     // 6. Ratio de Liquidez (Activos líquidos / Gastos mensuales promedio del período)
     const avgMonthlyExpenses = monthsInPeriod > 0 ? periodExpenses / monthsInPeriod : periodExpenses;
