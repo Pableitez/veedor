@@ -8,19 +8,20 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'tu_secreto_super_seguro_cambiar_en_produccion';
+const JWT_SECRET = process.env.JWT_SECRET || 'cambiar_este_secreto_en_produccion_' + Math.random().toString(36);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Inicializar base de datos
-const db = new sqlite3.Database('./veedor.db', (err) => {
+// Inicializar base de datos (usa variable de entorno o ruta local)
+const dbPath = process.env.DATABASE_URL || './veedor.db';
+const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Error abriendo base de datos:', err.message);
     } else {
-        console.log('Conectado a la base de datos SQLite');
+        console.log('Conectado a la base de datos SQLite:', dbPath);
         initializeDatabase();
     }
 });

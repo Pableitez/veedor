@@ -1,7 +1,7 @@
 // Configuración de la API
-const API_URL = window.location.origin.includes('localhost') 
+const API_URL = process.env.API_URL || (window.location.origin.includes('localhost') 
     ? 'http://localhost:3000/api' 
-    : '/api';
+    : '/api');
 
 // Categorías de gastos
 const categories = {
