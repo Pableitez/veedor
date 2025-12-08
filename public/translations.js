@@ -1214,7 +1214,12 @@ function t(key, lang = 'es') {
 }
 
 // Función para cambiar idioma
+// Establecer español como idioma por defecto si no hay idioma guardado
 let currentLanguage = localStorage.getItem('veedor_language') || 'es';
+if (!localStorage.getItem('veedor_language')) {
+    localStorage.setItem('veedor_language', 'es');
+    currentLanguage = 'es';
+}
 
 function setLanguage(lang) {
     currentLanguage = lang;

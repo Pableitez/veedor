@@ -6652,6 +6652,12 @@ window.toggleLanguageDropdown = toggleLanguageDropdown;
 
 // Inicializar traducciones cuando se carga la app
 function initializeTranslationsOnLoad() {
+    // Establecer español como idioma por defecto si no hay idioma guardado
+    if (!localStorage.getItem('veedor_language')) {
+        localStorage.setItem('veedor_language', 'es');
+        console.log('🌐 Idioma por defecto establecido: Español');
+    }
+    
     // Esperar a que translations.js se cargue completamente
     const checkAndInit = () => {
         const getLangFunc = window.getLanguage || (typeof getLanguage !== 'undefined' ? getLanguage : null);
