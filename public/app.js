@@ -444,6 +444,15 @@ async function loadUserData() {
         envelopes = envelopesData;
         loans = loansData;
         investments = investmentsData || [];
+        
+        // Cargar presupuestos por separado para manejar errores
+        let budgetsData = [];
+        try {
+            budgetsData = await apiRequest('/budgets');
+        } catch (error) {
+            console.warn('No se pudieron cargar presupuestos:', error);
+            budgetsData = [];
+        }
         budgets = budgetsData || [];
         
         // Cargar categorías personalizadas
