@@ -43,9 +43,20 @@ const userSchema = new mongoose.Schema({
     email: { type: String, unique: true, required: true, lowercase: true, trim: true },
     username: { type: String, unique: true, required: true, trim: true },
     password: { type: String, required: true },
+    // Datos personales
+    firstName: { type: String, default: '' },
+    lastName: { type: String, default: '' },
+    age: { type: Number, default: null },
+    phone: { type: String, default: '' },
+    address: { type: String, default: '' },
+    city: { type: String, default: '' },
+    country: { type: String, default: '' },
+    birthDate: { type: String, default: null },
+    notes: { type: String, default: '' },
     resetToken: { type: String, default: null },
     resetTokenExpiry: { type: Date, default: null },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
 });
 
 const transactionSchema = new mongoose.Schema({
@@ -357,7 +368,20 @@ app.post('/api/register', async (req, res) => {
         res.status(201).json({
             message: 'Usuario creado exitosamente',
             token,
-            user: { id: user._id.toString(), email: user.email, username: user.username }
+            user: { 
+                id: user._id.toString(), 
+                email: user.email, 
+                username: user.username,
+                firstName: user.firstName || '',
+                lastName: user.lastName || '',
+                age: user.age || null,
+                phone: user.phone || '',
+                address: user.address || '',
+                city: user.city || '',
+                country: user.country || '',
+                birthDate: user.birthDate || null,
+                notes: user.notes || ''
+            }
         });
     } catch (error) {
         console.error('❌ Error en registro:', error);

@@ -1017,11 +1017,7 @@ function initializeForms() {
         });
     }
     
-    // Botón de exportar CSV
-    const exportBtn = document.getElementById('exportBtn');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', exportData);
-    }
+    // Botón de perfil de usuario ya se maneja con onclick en HTML
     
     // Selector de período en dashboard
     const summaryPeriodSelect = document.getElementById('summaryPeriod');
