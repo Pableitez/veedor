@@ -955,25 +955,31 @@ function updateSummary() {
     const totalBalancePeriodEl = document.getElementById('totalBalancePeriod');
     const periodIncomeEl = document.getElementById('periodIncome');
     const periodIncomeLabelEl = document.getElementById('periodIncomeLabel');
+    const periodIncomeSubLabelEl = document.getElementById('periodIncomeSubLabel');
     const periodExpensesEl = document.getElementById('periodExpenses');
     const periodExpensesLabelEl = document.getElementById('periodExpensesLabel');
+    const periodExpensesSubLabelEl = document.getElementById('periodExpensesSubLabel');
     const periodSavingsEl = document.getElementById('periodSavings');
     const periodSavingsLabelEl = document.getElementById('periodSavingsLabel');
+    const periodSavingsSubLabelEl = document.getElementById('periodSavingsSubLabel');
     
     if (totalBalanceEl) totalBalanceEl.textContent = formatCurrency(totalBalance);
     if (totalBalancePeriodEl) totalBalancePeriodEl.textContent = 'Todos los tiempos';
     
     if (periodIncomeEl) periodIncomeEl.textContent = formatCurrency(periodIncome);
-    if (periodIncomeLabelEl) periodIncomeLabelEl.textContent = periodLabel;
+    if (periodIncomeLabelEl) periodIncomeLabelEl.textContent = `Ingresos ${periodLabel}`;
+    if (periodIncomeSubLabelEl) periodIncomeSubLabelEl.textContent = periodLabel;
     
     if (periodExpensesEl) periodExpensesEl.textContent = formatCurrency(periodExpenses);
-    if (periodExpensesLabelEl) periodExpensesLabelEl.textContent = periodLabel;
+    if (periodExpensesLabelEl) periodExpensesLabelEl.textContent = `Gastos ${periodLabel}`;
+    if (periodExpensesSubLabelEl) periodExpensesSubLabelEl.textContent = periodLabel;
     
     if (periodSavingsEl) {
         periodSavingsEl.textContent = formatCurrency(periodSavings);
         periodSavingsEl.className = periodSavings >= 0 ? 'amount positive' : 'amount negative';
     }
-    if (periodSavingsLabelEl) periodSavingsLabelEl.textContent = periodLabel;
+    if (periodSavingsLabelEl) periodSavingsLabelEl.textContent = `Ahorro ${periodLabel}`;
+    if (periodSavingsSubLabelEl) periodSavingsSubLabelEl.textContent = periodLabel;
     
     // Actualizar meta de ahorro
     const savingsGoalEl = document.getElementById('savingsGoal');
