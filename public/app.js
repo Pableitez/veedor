@@ -4873,6 +4873,9 @@ if (typeof document !== 'undefined') {
     });
 }
 
+// Asegurar que las funciones de políticas estén disponibles globalmente ANTES de exponerlas
+// (ya están definidas arriba, solo las exponemos)
+
 // Mostrar modal de perfil de usuario
 function showUserProfile() {
     const modal = document.getElementById('userProfileModal');

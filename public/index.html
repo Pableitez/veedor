@@ -115,7 +115,7 @@
 
     <!-- Contenido Principal (oculto hasta login) -->
     <div id="mainApp" class="container" style="display: none;">
-        <header style="background: linear-gradient(135deg, #0075FF 0%, #0051CC 100%); color: white; border-bottom: none; box-shadow: 0 4px 12px rgba(0, 117, 255, 0.15);">
+        <header style="background: linear-gradient(135deg, #0075FF 0%, #0051CC 100%); color: white; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0, 117, 255, 0.15); border-bottom: none;">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
                     <rect width="40" height="40" rx="12" fill="white" fill-opacity="0.2"/>
@@ -123,11 +123,11 @@
                     <path d="M16 22H24M16 26H24" stroke="white" stroke-width="2" stroke-linecap="round"/>
                     <circle cx="20" cy="18" r="2" fill="white"/>
                 </svg>
-                <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">Veedor</h1>
+                <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Veedor</h1>
             </div>
             <div class="header-actions">
-                <span id="currentUser" class="user-info" style="cursor: pointer; padding: 10px 18px; border-radius: 20px; background: rgba(255, 255, 255, 0.2); color: white; font-weight: 500; font-size: 14px; transition: all 0.2s; backdrop-filter: blur(10px);" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'" onclick="showUserProfile()"></span>
-                <button id="switchUserBtn" class="btn-secondary" style="background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px);" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">Cerrar Sesión</button>
+                <span id="currentUser" class="user-info" style="cursor: pointer; padding: 8px 16px; border-radius: var(--radius-full); background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white; transition: background 0.2s;" onclick="showUserProfile()" title="Haz clic para ver tu perfil"></span>
+                <button id="switchUserBtn" class="btn-secondary" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white;">Cerrar Sesión</button>
             </div>
         </header>
 
@@ -1063,9 +1063,9 @@
                 <div>
                     <h4 style="color: white; margin-bottom: 16px; font-size: 16px;">Enlaces</h4>
                     <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="margin-bottom: 8px;"><a href="#" onclick="showPrivacyModal(); return false;" style="color: var(--gray-400); text-decoration: none; font-size: 14px; transition: color 0.2s; cursor: pointer;">Política de Privacidad</a></li>
-                        <li style="margin-bottom: 8px;"><a href="#" onclick="showCookiesModal(); return false;" style="color: var(--gray-400); text-decoration: none; font-size: 14px; transition: color 0.2s; cursor: pointer;">Política de Cookies</a></li>
-                        <li style="margin-bottom: 8px;"><a href="#" onclick="showTermsModal(); return false;" style="color: var(--gray-400); text-decoration: none; font-size: 14px; transition: color 0.2s; cursor: pointer;">Términos y Condiciones</a></li>
+                        <li style="margin-bottom: 8px;"><a href="javascript:void(0);" onclick="if(typeof showPrivacyModal === 'function') { showPrivacyModal(); } else { console.error('showPrivacyModal no está definida'); } return false;" style="color: var(--gray-400); text-decoration: none; font-size: 14px; transition: color 0.2s; cursor: pointer;">Política de Privacidad</a></li>
+                        <li style="margin-bottom: 8px;"><a href="javascript:void(0);" onclick="if(typeof showCookiesModal === 'function') { showCookiesModal(); } else { console.error('showCookiesModal no está definida'); } return false;" style="color: var(--gray-400); text-decoration: none; font-size: 14px; transition: color 0.2s; cursor: pointer;">Política de Cookies</a></li>
+                        <li style="margin-bottom: 8px;"><a href="javascript:void(0);" onclick="if(typeof showTermsModal === 'function') { showTermsModal(); } else { console.error('showTermsModal no está definida'); } return false;" style="color: var(--gray-400); text-decoration: none; font-size: 14px; transition: color 0.2s; cursor: pointer;">Términos y Condiciones</a></li>
                     </ul>
                 </div>
                 <div>
