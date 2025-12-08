@@ -485,7 +485,12 @@ app.post('/api/forgot-password', async (req, res) => {
         
         user.resetToken = resetToken;
         user.resetTokenExpiry = resetTokenExpiry;
-        await user.save();
+        try {
+            await user.save();
+        } catch (saveError) {
+            console.error('Error guardando token de recuperación:', saveError);
+            return res.status(500).json({ error: 'Error al generar código de recuperación' });
+        }
         
         console.log(`🔑 Token de recuperación generado para ${email}: ${resetToken.substring(0, 10)}...`);
         
@@ -626,7 +631,12 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
         }
         
         user.updatedAt = new Date();
-        await user.save();
+        try {
+            await user.save();
+        } catch (saveError) {
+            console.error('Error guardando perfil:', saveError);
+            return res.status(500).json({ error: 'Error al actualizar perfil: ' + (saveError.message || 'Error desconocido') });
+        }
         
         res.json({ 
             message: 'Perfil actualizado exitosamente', 
