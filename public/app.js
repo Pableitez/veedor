@@ -2964,24 +2964,6 @@ function updateAnalysisTables() {
     }
 }
 
-// Obtener transacciones según período seleccionado
-function getTransactionsByPeriod() {
-    const chartPeriod = document.getElementById('chartPeriod')?.value || '6';
-    const now = new Date();
-    
-    if (chartPeriod === 'all') {
-        return transactions;
-    }
-    
-    const months = parseInt(chartPeriod);
-    const startDate = new Date(now.getFullYear(), now.getMonth() - months, 1);
-    
-    return transactions.filter(t => {
-        const tDate = new Date(t.date);
-        return tDate >= startDate;
-    });
-}
-
 // Obtener número de meses en el período
 function getMonthsInPeriod() {
     const chartPeriod = document.getElementById('chartPeriod')?.value || '6';
