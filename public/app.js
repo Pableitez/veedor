@@ -1883,6 +1883,47 @@ function updateLoans() {
             
             ${loan.description ? `<div style="margin: 10px 0; font-size: 12px; color: #666; font-style: italic;">${loan.description}</div>` : ''}
             
+            <!-- Cuadro de amortización - Próximas cuotas -->
+            <div style="margin: 16px 0; padding: 12px; background: var(--gray-50); border-radius: 6px;">
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--gray-900);">📅 Próximas Cuotas</h4>
+                <div style="max-height: 200px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <thead>
+                            <tr style="background: var(--gray-100); border-bottom: 1px solid var(--gray-300);">
+                                <th style="padding: 6px; text-align: left; font-weight: 600;">Mes</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600;">Fecha</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600;">Cuota</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600;">Capital</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600;">Interés</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600;">Restante</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${amortization.table.slice(0, 12).map((row, idx) => `
+                                <tr style="border-bottom: 1px solid var(--gray-200); ${idx % 2 === 0 ? '' : 'background: white;'}">
+                                    <td style="padding: 6px; font-weight: 600;">${row.month}</td>
+                                    <td style="padding: 6px; text-align: right; color: var(--gray-700);">${formatDate(row.date)}</td>
+                                    <td style="padding: 6px; text-align: right; font-weight: 600;">${formatCurrency(row.payment)}</td>
+                                    <td style="padding: 6px; text-align: right; color: var(--success);">${formatCurrency(row.principal)}</td>
+                                    <td style="padding: 6px; text-align: right; color: var(--danger);">${formatCurrency(row.interest)}</td>
+                                    <td style="padding: 6px; text-align: right; font-weight: 600; color: ${row.balance > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(row.balance)}</td>
+                                </tr>
+                            `).join('')}
+                            ${amortization.table.length > 12 ? `
+                                <tr>
+                                    <td colspan="6" style="padding: 8px; text-align: center; color: var(--gray-600); font-size: 11px; font-style: italic;">
+                                        ... y ${amortization.table.length - 12} cuota(s) más
+                                    </td>
+                                </tr>
+                            ` : ''}
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="showLoanDetails('${loan._id || loan.id}')" class="btn-secondary" style="width: 100%; margin-top: 12px; font-size: 13px; padding: 8px;">
+                    📊 Ver Cuadro de Amortización Completo
+                </button>
+            </div>
+            
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 10px;">
                 <button class="btn-secondary" onclick="showLoanDetails('${loan._id || loan.id}')" style="flex: 1;">📊 Detalles</button>
                 <button class="btn-secondary" onclick="showEarlyPaymentModal('${loan._id || loan.id}')" style="flex: 1;">💰 Amortizar</button>
@@ -2012,17 +2053,80 @@ function showEarlyPaymentModal(loanId) {
     const loan = loans.find(l => (l._id || l.id) === loanId);
     if (!loan) return;
     
-    const amount = prompt(`Amortización Anticipada - ${loan.name}\n\nCapital restante: ${formatCurrency(loan.principal - (loan.total_paid || 0))}\n\nIngresa el monto a amortizar (€):`);
-    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) return;
+    const modal = document.getElementById('earlyPaymentModal');
+    const loanInfo = document.getElementById('earlyPaymentLoanInfo');
+    const form = document.getElementById('earlyPaymentForm');
+    const amountInput = document.getElementById('earlyPaymentAmount');
+    const commissionInfo = document.getElementById('earlyPaymentCommissionInfo');
+    const commissionAmount = document.getElementById('earlyPaymentCommissionAmount');
     
-    const paymentAmount = parseFloat(amount);
-    const commission = loan.early_payment_commission > 0 
-        ? (paymentAmount * loan.early_payment_commission / 100) 
-        : 0;
+    if (!modal || !loanInfo || !form || !amountInput) return;
     
-    if (confirm(`¿Confirmar amortización anticipada de ${formatCurrency(paymentAmount)}?\n\nComisión: ${formatCurrency(commission)}\nTotal: ${formatCurrency(paymentAmount + commission)}`)) {
-        registerLoanPayment(loanId, paymentAmount, true);
-    }
+    // Calcular capital restante
+    const amortization = calculateAmortizationTable(
+        loan.principal,
+        loan.interest_rate,
+        loan.monthly_payment,
+        loan.start_date,
+        loan.total_paid || 0,
+        loan.early_payments || []
+    );
+    const remainingCapital = amortization.finalBalance;
+    
+    // Mostrar información del préstamo
+    loanInfo.innerHTML = `
+        <div style="margin-bottom: 8px;">
+            <strong style="color: var(--gray-700);">Préstamo:</strong> 
+            <span style="font-weight: 700; color: var(--gray-900);">${loan.name}</span>
+        </div>
+        <div>
+            <strong style="color: var(--gray-700);">Capital Restante:</strong> 
+            <span style="font-weight: 700; color: ${remainingCapital > 0 ? 'var(--danger)' : 'var(--success)'}; font-size: 18px;">${formatCurrency(remainingCapital)}</span>
+        </div>
+    `;
+    
+    // Resetear formulario
+    form.reset();
+    commissionInfo.style.display = 'none';
+    
+    // Calcular comisión cuando cambia el monto
+    amountInput.addEventListener('input', () => {
+        const amount = parseFloat(amountInput.value) || 0;
+        if (amount > 0 && loan.early_payment_commission > 0) {
+            const commission = amount * loan.early_payment_commission / 100;
+            commissionAmount.textContent = formatCurrency(commission);
+            commissionInfo.style.display = 'block';
+        } else {
+            commissionInfo.style.display = 'none';
+        }
+    });
+    
+    // Manejar envío del formulario
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const amount = parseFloat(amountInput.value);
+        
+        if (!amount || amount <= 0) {
+            alert('Por favor ingresa un monto válido');
+            return;
+        }
+        
+        if (amount > remainingCapital) {
+            alert(`El monto no puede ser mayor al capital restante (${formatCurrency(remainingCapital)})`);
+            return;
+        }
+        
+        const commission = loan.early_payment_commission > 0 
+            ? (amount * loan.early_payment_commission / 100) 
+            : 0;
+        
+        await registerLoanPayment(loanId, amount, true);
+        modal.style.display = 'none';
+    };
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+    amountInput.focus();
 }
 
 // Registrar pago de préstamo

@@ -356,6 +356,30 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Modal para amortización anticipada -->
+                    <div id="earlyPaymentModal" class="modal">
+                        <div class="modal-content" style="max-width: 500px;">
+                            <span class="modal-close" id="closeEarlyPaymentModal">&times;</span>
+                            <h2>💰 Amortización Anticipada</h2>
+                            <div id="earlyPaymentLoanInfo" style="margin-bottom: 20px; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
+                            </div>
+                            <form id="earlyPaymentForm">
+                                <div class="form-group" style="margin-bottom: 20px;">
+                                    <label for="earlyPaymentAmount">Monto a Amortizar (€)</label>
+                                    <input type="number" id="earlyPaymentAmount" step="0.01" min="0.01" required placeholder="0.00">
+                                    <small>Ingresa el monto que deseas amortizar anticipadamente</small>
+                                </div>
+                                <div id="earlyPaymentCommissionInfo" style="margin-bottom: 20px; padding: 12px; background: var(--warning-light, #FEF3C7); border-radius: var(--radius); display: none;">
+                                    <strong>Comisión:</strong> <span id="earlyPaymentCommissionAmount">0,00 €</span>
+                                </div>
+                                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                                    <button type="button" class="btn-secondary" id="cancelEarlyPaymentBtn">Cancelar</button>
+                                    <button type="submit" class="btn-primary">✅ Confirmar Amortización</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                     <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px;">
                         <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">Registra tus préstamos e hipotecas para hacer un seguimiento del capital restante, intereses y realizar simulaciones de amortización anticipada.</p>
                     </div>
