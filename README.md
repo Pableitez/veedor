@@ -5,7 +5,7 @@ Una aplicación web completa para gestionar tus finanzas personales con servidor
 ## ✨ Características
 
 - **👤 Sistema de Usuarios**: Registro e inicio de sesión con autenticación JWT
-- **💾 Base de Datos**: Almacenamiento persistente en SQLite
+- **💾 Base de Datos en la Nube**: Almacenamiento persistente en MongoDB Atlas (gratis)
 - **📝 Registro de Transacciones**: Agrega ingresos y gastos de forma sencilla
 - **📂 Categorías Organizadas**: 
   - Categorías generales (Alimentación, Transporte, Vivienda, Salud, etc.)
@@ -101,13 +101,14 @@ Ver instrucciones detalladas en `DEPLOY.md`
 
 ```
 Veedor/
-├── server.js          # Servidor Express y API
+├── server.js          # Servidor Express y API (MongoDB)
 ├── package.json       # Dependencias del proyecto
-├── veedor.db          # Base de datos SQLite (se crea automáticamente)
+├── render.yaml        # Configuración para Render.com
 ├── public/            # Archivos del frontend
 │   ├── index.html
 │   ├── styles.css
 │   └── app.js
+├── DEPLOY.md          # Instrucciones de despliegue
 └── README.md
 ```
 
@@ -156,7 +157,7 @@ Veedor/
 ### Backend
 - Node.js
 - Express.js
-- SQLite3
+- MongoDB + Mongoose (base de datos en la nube)
 - bcryptjs (hash de contraseñas)
 - jsonwebtoken (autenticación)
 
@@ -181,9 +182,10 @@ Esto requiere tener `nodemon` instalado globalmente o como dependencia de desarr
 
 ## 📝 Notas
 
-- La base de datos SQLite se crea automáticamente al iniciar el servidor
-- Los datos se almacenan localmente en el archivo `veedor.db`
-- Para producción, considera usar PostgreSQL o MySQL
+- **Datos en la Nube**: Los datos se guardan en MongoDB Atlas (gratis)
+- **Acceso desde cualquier dispositivo**: Una vez desplegado, accede desde cualquier lugar
+- **No se pierden datos**: Aunque borres el caché del navegador, tus datos están seguros en la nube
+- **Gratis**: MongoDB Atlas y Render.com ofrecen planes gratuitos suficientes para uso personal
 - Cambia el `JWT_SECRET` en producción por un valor seguro y aleatorio
 
 ## 🐛 Solución de Problemas
