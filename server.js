@@ -1007,101 +1007,196 @@ app.get('/api/transactions', authenticateToken, async (req, res) => {
     }
 });
 
-// Crear transacción
+// Crear transacción - CÓDIGO COMPLETAMENTE REVISADO Y CORREGIDO
 app.post('/api/transactions', authenticateToken, async (req, res) => {
     try {
-        const { type, date, amount, categoryGeneral, categorySpecific, envelope, account_id, investment_id, description } = req.body;
-
-        if (!type || !date || amount === undefined || !categoryGeneral || !categorySpecific) {
-            return res.status(400).json({ error: 'Datos incompletos' });
+        // 1. Validar conexión a MongoDB
+        if (mongoose.connection.readyState !== 1) {
+            console.error('❌ MongoDB no está conectado. Estado:', mongoose.connection.readyState);
+            return res.status(503).json({ error: 'Base de datos no disponible. Intenta de nuevo en unos momentos.' });
         }
-
-        const finalAmount = type === 'expense' ? -Math.abs(amount) : Math.abs(amount);
-
-        const transaction = new Transaction({
+        
+        // 2. Validar que req.user existe
+        if (!req.user || !req.user.userId) {
+            console.error('❌ req.user o req.user.userId no existe');
+            console.error('❌ req.user completo:', req.user);
+            return res.status(401).json({ error: 'Usuario no autenticado' });
+        }
+        
+        console.log('📥 POST /api/transactions - Recibido');
+        console.log('📥 req.user.userId:', req.user.userId);
+        console.log('📥 req.body completo:', JSON.stringify(req.body, null, 2));
+        
+        // 3. Extraer datos del body
+        const { type, date, amount, categoryGeneral, categorySpecific, envelope, account_id, investment_id, property_id, description } = req.body;
+        
+        // 4. Validar campos requeridos
+        if (!type || !date || amount === undefined || amount === null || !categoryGeneral || !categorySpecific) {
+            console.log('❌ Validación fallida - campos requeridos faltantes');
+            console.log('❌ Valores recibidos:', { type, date, amount, categoryGeneral, categorySpecific });
+            return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes' });
+        }
+        
+        // 5. Validar tipo
+        if (type !== 'income' && type !== 'expense') {
+            console.log('❌ Validación fallida - tipo inválido:', type);
+            return res.status(400).json({ error: 'El tipo debe ser income o expense' });
+        }
+        
+        // 6. Validar y convertir monto
+        const amountNum = parseFloat(amount);
+        if (isNaN(amountNum) || amountNum <= 0) {
+            console.log('❌ Validación fallida - monto inválido:', amount);
+            return res.status(400).json({ error: 'El monto debe ser un número mayor a 0' });
+        }
+        
+        // 7. Normalizar campos opcionales (convertir strings vacíos a null)
+        const normalizedEnvelope = (envelope && typeof envelope === 'string' && envelope.trim() !== '') ? envelope.trim() : null;
+        const normalizedAccountId = (account_id && typeof account_id === 'string' && account_id.trim() !== '') ? account_id.trim() : null;
+        const normalizedInvestmentId = (investment_id && typeof investment_id === 'string' && investment_id.trim() !== '') ? investment_id.trim() : null;
+        const normalizedPropertyId = (property_id && typeof property_id === 'string' && property_id.trim() !== '') ? property_id.trim() : null;
+        const normalizedDescription = (description && typeof description === 'string' && description.trim() !== '') ? description.trim() : null;
+        
+        // 8. Calcular monto final
+        const finalAmount = type === 'expense' ? -Math.abs(amountNum) : Math.abs(amountNum);
+        
+        console.log('📥 Datos normalizados para crear transacción:', {
             user_id: req.user.userId,
             type,
             date,
             amount: finalAmount,
             category_general: categoryGeneral,
             category_specific: categorySpecific,
-            envelope: envelope || null,
-            account_id: account_id || null,
-            investment_id: investment_id || null,
-            property_id: property_id || null,
-            description: description || null
+            envelope: normalizedEnvelope,
+            account_id: normalizedAccountId,
+            investment_id: normalizedInvestmentId,
+            property_id: normalizedPropertyId,
+            description: normalizedDescription
         });
-
-        await transaction.save();
         
-        // Si la transacción está asociada a una inversión, agregar al historial de aportes
-        if (investment_id && type === 'expense') {
-            const investment = await Investment.findOne({ _id: investment_id, user_id: req.user.userId });
-            if (investment) {
-                // Agregar al historial de aportes general
-                if (!investment.contributions) {
-                    investment.contributions = [];
-                }
-                investment.contributions.push({
-                    date: date,
-                    amount: Math.abs(amount),
-                    transaction_id: transaction._id.toString()
-                });
-                
-                // Si tiene aportes periódicos activos, también registrar ahí
-                if (investment.periodic_contribution && investment.periodic_contribution.enabled) {
-                    // Verificar si este aporte ya fue registrado en este período
-                    const contributionDate = new Date(date);
-                    
-                    // Determinar el período según la frecuencia
-                    let periodKey = '';
-                    if (investment.periodic_contribution.frequency === 'weekly') {
-                        const weekStart = new Date(contributionDate);
-                        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-                        periodKey = weekStart.toISOString().split('T')[0];
-                    } else if (investment.periodic_contribution.frequency === 'monthly') {
-                        periodKey = `${contributionDate.getFullYear()}-${String(contributionDate.getMonth() + 1).padStart(2, '0')}`;
-                    } else if (investment.periodic_contribution.frequency === 'yearly') {
-                        periodKey = `${contributionDate.getFullYear()}`;
+        // 9. Crear la transacción
+        const transactionData = {
+            user_id: req.user.userId,
+            type: type,
+            date: date,
+            amount: finalAmount,
+            category_general: categoryGeneral,
+            category_specific: categorySpecific,
+            envelope: normalizedEnvelope,
+            account_id: normalizedAccountId,
+            investment_id: normalizedInvestmentId,
+            property_id: normalizedPropertyId,
+            description: normalizedDescription
+        };
+        
+        console.log('📥 Creando instancia de Transaction con:', transactionData);
+        
+        const transaction = new Transaction(transactionData);
+        
+        console.log('📥 Transacción creada (antes de save):', JSON.stringify(transaction.toObject(), null, 2));
+        
+        // 10. Guardar la transacción
+        try {
+            await transaction.save();
+            console.log('✅ Transacción guardada exitosamente. ID:', transaction._id);
+        } catch (saveError) {
+            console.error('❌ Error al guardar transacción:', saveError);
+            console.error('❌ Error name:', saveError.name);
+            console.error('❌ Error message:', saveError.message);
+            if (saveError.errors) {
+                console.error('❌ Errores de validación:', JSON.stringify(saveError.errors, null, 2));
+            }
+            throw saveError;
+        }
+        
+        // 11. Si está asociada a una inversión, actualizar el historial
+        if (normalizedInvestmentId && type === 'expense') {
+            try {
+                const investment = await Investment.findOne({ _id: normalizedInvestmentId, user_id: req.user.userId });
+                if (investment) {
+                    if (!investment.contributions) {
+                        investment.contributions = [];
                     }
-                    
-                    // Verificar si ya existe un aporte para este período
-                    const existingContribution = investment.periodic_contribution.completed_contributions?.find(c => {
-                        const cDate = new Date(c.date);
-                        if (investment.periodic_contribution.frequency === 'weekly') {
-                            const cWeekStart = new Date(cDate);
-                            cWeekStart.setDate(cWeekStart.getDate() - cWeekStart.getDay());
-                            return cWeekStart.toISOString().split('T')[0] === periodKey;
-                        } else if (investment.periodic_contribution.frequency === 'monthly') {
-                            return `${cDate.getFullYear()}-${String(cDate.getMonth() + 1).padStart(2, '0')}` === periodKey;
-                        } else if (investment.periodic_contribution.frequency === 'yearly') {
-                            return `${cDate.getFullYear()}` === periodKey;
-                        }
-                        return false;
+                    investment.contributions.push({
+                        date: date,
+                        amount: Math.abs(amountNum),
+                        transaction_id: transaction._id.toString()
                     });
                     
-                    // Si no existe, agregar el aporte completado
-                    if (!existingContribution) {
-                        if (!investment.periodic_contribution.completed_contributions) {
-                            investment.periodic_contribution.completed_contributions = [];
+                    if (investment.periodic_contribution && investment.periodic_contribution.enabled) {
+                        const contributionDate = new Date(date);
+                        let periodKey = '';
+                        if (investment.periodic_contribution.frequency === 'weekly') {
+                            const weekStart = new Date(contributionDate);
+                            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                            periodKey = weekStart.toISOString().split('T')[0];
+                        } else if (investment.periodic_contribution.frequency === 'monthly') {
+                            periodKey = `${contributionDate.getFullYear()}-${String(contributionDate.getMonth() + 1).padStart(2, '0')}`;
+                        } else if (investment.periodic_contribution.frequency === 'yearly') {
+                            periodKey = `${contributionDate.getFullYear()}`;
                         }
-                        investment.periodic_contribution.completed_contributions.push({
-                            date: date,
-                            amount: Math.abs(amount),
-                            transaction_id: transaction._id.toString()
+                        
+                        const existingContribution = investment.periodic_contribution.completed_contributions?.find(c => {
+                            const cDate = new Date(c.date);
+                            if (investment.periodic_contribution.frequency === 'weekly') {
+                                const cWeekStart = new Date(cDate);
+                                cWeekStart.setDate(cWeekStart.getDate() - cWeekStart.getDay());
+                                return cWeekStart.toISOString().split('T')[0] === periodKey;
+                            } else if (investment.periodic_contribution.frequency === 'monthly') {
+                                return `${cDate.getFullYear()}-${String(cDate.getMonth() + 1).padStart(2, '0')}` === periodKey;
+                            } else if (investment.periodic_contribution.frequency === 'yearly') {
+                                return `${cDate.getFullYear()}` === periodKey;
+                            }
+                            return false;
                         });
+                        
+                        if (!existingContribution) {
+                            if (!investment.periodic_contribution.completed_contributions) {
+                                investment.periodic_contribution.completed_contributions = [];
+                            }
+                            investment.periodic_contribution.completed_contributions.push({
+                                date: date,
+                                amount: Math.abs(amountNum),
+                                transaction_id: transaction._id.toString()
+                            });
+                        }
                     }
+                    
+                    await investment.save();
+                    console.log('✅ Inversión actualizada con el aporte');
                 }
-                
-                // Guardar el aporte (ya agregado arriba al historial general)
-                await investment.save();
+            } catch (invError) {
+                console.error('⚠️ Error al actualizar inversión (no crítico):', invError);
+                // No fallar la transacción si hay error al actualizar la inversión
             }
         }
         
+        console.log('✅ Enviando respuesta exitosa con transacción:', transaction._id);
         res.status(201).json(transaction);
     } catch (error) {
-        console.error('Error creando transacción:', error);
-        res.status(500).json({ error: 'Error al crear transacción' });
+        console.error('❌ ERROR CRÍTICO creando transacción:');
+        console.error('❌ Error name:', error.name);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error stack:', error.stack);
+        if (error.errors) {
+            console.error('❌ Errores de validación:', JSON.stringify(error.errors, null, 2));
+        }
+        if (error.code) {
+            console.error('❌ Error code:', error.code);
+        }
+        
+        // Respuesta de error más detallada
+        const errorResponse = {
+            error: 'Error al crear transacción',
+            details: error.message,
+            errorName: error.name
+        };
+        
+        if (error.errors) {
+            errorResponse.validationErrors = error.errors;
+        }
+        
+        res.status(500).json(errorResponse);
     }
 });
 

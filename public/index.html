@@ -13,7 +13,8 @@
     <div id="authScreen" class="auth-screen">
         <div class="auth-container">
             <div class="auth-header">
-                <!-- Selector de Idioma en Welcome Page -->
+                <!-- Selector de Idioma en Welcome Page - OCULTO TEMPORALMENTE - COMENTADO COMPLETAMENTE -->
+                <!--
                 <div style="position: absolute; top: 20px; right: 20px; z-index: 10;">
                     <div style="position: relative;">
                         <button id="authLanguageDropdownBtn" onclick="toggleAuthLanguageDropdown()" style="padding: 8px 12px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; color: var(--primary); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;" onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.1)'" title="Idioma">
@@ -35,6 +36,7 @@
                         </div>
                     </div>
                 </div>
+                -->
                 <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 24px; filter: drop-shadow(0 8px 16px rgba(99, 102, 241, 0.3));">
                     <defs>
                         <linearGradient id="logoGradient" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
@@ -204,7 +206,8 @@
                         </div>
                     </div>
                 </div>
-                <!-- Selector de Idioma -->
+                <!-- Selector de Idioma - OCULTO TEMPORALMENTE - COMENTADO COMPLETAMENTE -->
+                <!--
                 <div style="position: relative; flex-shrink: 0;">
                     <button id="languageDropdownBtn" onclick="toggleLanguageDropdown()" style="padding: 6px 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'" title="Idioma">
                         <span id="currentLanguageFlag" style="font-size: 18px;">🇪🇸</span>
@@ -224,6 +227,7 @@
                         </a>
                     </div>
                 </div>
+                -->
                 <!-- Menú de Configuración (Settings) -->
                 <div style="position: relative; flex-shrink: 0;">
                     <button id="settingsDropdownBtn" onclick="toggleSettingsDropdown()" style="padding: 6px 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'" data-translate-title="settings.title" title="Configuración">
@@ -436,29 +440,29 @@
                 </div>
 
                 <div class="table-section">
-                    <h2>Historial de Transacciones</h2>
+                    <h2 data-translate="transactions.history">Historial de Transacciones</h2>
                     <div class="table-controls">
-                        <input type="text" id="searchInput" placeholder="🔍 Buscar...">
+                        <input type="text" id="searchInput" data-translate-placeholder="transactions.search" placeholder="🔍 Buscar...">
                         <select id="filterCategory">
-                            <option value="">Todas las categorías</option>
+                            <option value="" data-translate="transactions.allCategories">Todas las categorías</option>
                         </select>
                         <select id="filterMonth">
-                            <option value="">Todos los meses</option>
+                            <option value="" data-translate="transactions.allMonths">Todos los meses</option>
                         </select>
                     </div>
                     <div class="table-container">
                         <table id="transactionsTable">
                             <thead>
                                 <tr>
-                                    <th>Fecha</th>
-                                    <th>Tipo</th>
-                                    <th>Categoría</th>
-                                    <th>Descripción</th>
-                                    <th>Cuenta</th>
-                                    <th>Propiedad</th>
-                                    <th>Sobre</th>
-                                    <th>Monto</th>
-                                    <th>Acciones</th>
+                                    <th data-translate="transactions.date">Fecha</th>
+                                    <th data-translate="transactions.type">Tipo</th>
+                                    <th data-translate="transactions.category">Categoría</th>
+                                    <th data-translate="transactions.description">Descripción</th>
+                                    <th data-translate="transactions.account">Cuenta</th>
+                                    <th data-translate="transactions.property">Propiedad</th>
+                                    <th data-translate="transactions.envelope">Sobre</th>
+                                    <th data-translate="transactions.amount">Monto</th>
+                                    <th data-translate="transactions.actions">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="transactionsBody">

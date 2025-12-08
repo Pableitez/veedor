@@ -84,6 +84,11 @@ let summaryPeriod = 'month'; // 'month', 'year', 'all'
 
 // Utilidad para hacer peticiones autenticadas
 async function apiRequest(endpoint, options = {}) {
+    // Asegurarse de que el token esté cargado desde localStorage
+    if (!authToken) {
+        authToken = localStorage.getItem('veedor_token');
+    }
+    
     const headers = {
         'Content-Type': 'application/json',
         ...options.headers
@@ -91,9 +96,18 @@ async function apiRequest(endpoint, options = {}) {
 
     if (authToken) {
         headers['Authorization'] = `Bearer ${authToken}`;
+        console.log('🔑 Token enviado en request:', authToken.substring(0, 20) + '...');
+    } else {
+        console.warn('⚠️ No hay token disponible para la petición a:', endpoint);
     }
 
     try {
+        console.log('📤 Enviando petición a:', `${API_URL}${endpoint}`, {
+            method: options.method || 'GET',
+            hasAuth: !!authToken,
+            headers: Object.keys(headers)
+        });
+        
         const response = await fetch(`${API_URL}${endpoint}`, {
             ...options,
             headers
@@ -399,25 +413,53 @@ function initializeAuth() {
     console.log('Autenticación inicializada');
 }
 
+// Helper para obtener traducciones
+function getTranslation(key, lang = null) {
+    if (!lang) {
+        lang = localStorage.getItem('veedor_language') || 'es';
+    }
+    if (window.t && typeof window.t === 'function') {
+        return window.t(key, lang);
+    }
+    if (window.translations && window.translations[lang]) {
+        const keys = key.split('.');
+        let value = window.translations[lang];
+        for (const k of keys) {
+            value = value?.[k];
+            if (!value) {
+                // Fallback a español
+                value = window.translations['es'];
+                for (const k2 of keys) {
+                    value = value?.[k2];
+                }
+                break;
+            }
+        }
+        return value || key;
+    }
+    return key;
+}
+
 // Solicitar recuperación de contraseña
 async function requestPasswordReset() {
     const email = document.getElementById('forgotEmail').value.trim();
     const errorMsg = document.getElementById('forgotPasswordError');
     const successMsg = document.getElementById('forgotPasswordSuccess');
     const resetSection = document.getElementById('resetPasswordSection');
+    const lang = localStorage.getItem('veedor_language') || 'es';
     
     if (errorMsg) errorMsg.textContent = '';
     if (successMsg) successMsg.style.display = 'none';
     
     if (!email) {
-        if (errorMsg) errorMsg.textContent = 'Por favor ingresa tu email';
+        if (errorMsg) errorMsg.textContent = getTranslation('auth.pleaseEnterEmail', lang);
         return;
     }
     
     // Validar formato de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        if (errorMsg) errorMsg.textContent = 'Por favor ingresa un email válido';
+        if (errorMsg) errorMsg.textContent = getTranslation('auth.pleaseEnterValidEmail', lang);
         return;
     }
     
@@ -430,28 +472,31 @@ async function requestPasswordReset() {
         if (successMsg) {
             if (data.token) {
                 // Usuario encontrado - mostrar token
+                const recoveryCodeGenerated = getTranslation('auth.recoveryCodeGenerated', lang);
+                const recoveryCodeCopy = getTranslation('auth.recoveryCodeCopy', lang);
+                const recoveryCodeNote = getTranslation('auth.recoveryCodeNote', lang);
                 successMsg.innerHTML = `
                     <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--primary); margin-bottom: 12px;">
-                        <strong style="color: var(--gray-900); display: block; margin-bottom: 8px;">✅ Código de recuperación generado</strong>
-                        <p style="margin: 8px 0; color: var(--gray-700); font-size: 13px;">Copia este código (válido por 1 hora):</p>
+                        <strong style="color: var(--gray-900); display: block; margin-bottom: 8px;">✅ ${recoveryCodeGenerated}</strong>
+                        <p style="margin: 8px 0; color: var(--gray-700); font-size: 13px;">${recoveryCodeCopy}</p>
                         <div style="background: white; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border-color); margin: 8px 0;">
                             <code style="font-size: 14px; font-weight: 600; color: var(--primary); word-break: break-all; display: block;">${data.token}</code>
                         </div>
-                        <p style="margin: 8px 0 0 0; color: var(--gray-600); font-size: 12px;">⚠️ Nota: En producción este código se enviaría por email.</p>
+                        <p style="margin: 8px 0 0 0; color: var(--gray-600); font-size: 12px;">⚠️ ${recoveryCodeNote}</p>
                     </div>
                 `;
                 successMsg.style.display = 'block';
                 if (resetSection) resetSection.style.display = 'block';
             } else {
                 // Usuario no encontrado o mensaje genérico
-                successMsg.textContent = data.message || 'Si el email está registrado, recibirás un código de recuperación.';
+                successMsg.textContent = data.message || getTranslation('auth.recoveryCodeSent', lang);
                 successMsg.style.display = 'block';
             }
         }
     } catch (error) {
         console.error('Error en requestPasswordReset:', error);
         if (errorMsg) {
-            errorMsg.textContent = error.message || 'Error al solicitar recuperación. Por favor, intenta de nuevo.';
+            errorMsg.textContent = error.message || getTranslation('auth.passwordResetRequestError', lang);
         }
     }
 }
@@ -461,16 +506,17 @@ async function resetPassword() {
     const token = document.getElementById('resetToken').value.trim();
     const newPassword = document.getElementById('resetNewPassword').value;
     const errorMsg = document.getElementById('resetPasswordError');
+    const lang = localStorage.getItem('veedor_language') || 'es';
     
     if (errorMsg) errorMsg.textContent = '';
     
     if (!token || !newPassword) {
-        if (errorMsg) errorMsg.textContent = 'Por favor completa todos los campos';
+        if (errorMsg) errorMsg.textContent = getTranslation('auth.pleaseCompleteAllFields', lang);
         return;
     }
     
     if (newPassword.length < 4) {
-        if (errorMsg) errorMsg.textContent = 'La contraseña debe tener al menos 4 caracteres';
+        if (errorMsg) errorMsg.textContent = getTranslation('auth.passwordMinLength', lang);
         return;
     }
     
@@ -480,7 +526,7 @@ async function resetPassword() {
             body: JSON.stringify({ token, newPassword })
         });
         
-        alert('✅ Contraseña actualizada exitosamente. Ahora puedes iniciar sesión.');
+        alert('✅ ' + getTranslation('auth.passwordResetSuccess', lang));
         const forgotForm = document.getElementById('forgotPasswordFormElement');
         const resetForm = document.getElementById('resetPasswordFormElement');
         if (forgotForm) forgotForm.reset();
@@ -490,7 +536,7 @@ async function resetPassword() {
         if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
         if (loginForm) loginForm.style.display = 'block';
     } catch (error) {
-        if (errorMsg) errorMsg.textContent = error.message || 'Error al restablecer contraseña';
+        if (errorMsg) errorMsg.textContent = error.message || getTranslation('auth.passwordResetError', lang);
     }
 }
 
@@ -519,20 +565,22 @@ async function register() {
     
     errorMsg.textContent = '';
     
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    
     if (!email) {
-        errorMsg.textContent = 'El email es requerido';
+        errorMsg.textContent = getTranslation('auth.emailRequired', lang);
         console.log('Validación fallida: email vacío');
         return;
     }
     
     if (!username) {
-        errorMsg.textContent = 'El nombre de usuario es requerido';
+        errorMsg.textContent = getTranslation('auth.usernameRequired', lang);
         console.log('Validación fallida: username vacío');
         return;
     }
     
     if (username.length < 3) {
-        errorMsg.textContent = 'El nombre de usuario debe tener al menos 3 caracteres';
+        errorMsg.textContent = getTranslation('auth.usernameMinLength', lang);
         console.log('Validación fallida: username muy corto');
         return;
     }
@@ -540,25 +588,25 @@ async function register() {
     // Validar formato de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        errorMsg.textContent = 'Por favor ingresa un email válido';
+        errorMsg.textContent = getTranslation('auth.pleaseEnterValidEmail', lang);
         console.log('Validación fallida: email inválido');
         return;
     }
     
     if (password !== passwordConfirm) {
-        errorMsg.textContent = 'Las contraseñas no coinciden';
+        errorMsg.textContent = getTranslation('auth.passwordsDoNotMatch', lang);
         console.log('Validación fallida: contraseñas no coinciden');
         return;
     }
     
     if (password.length < 4) {
-        errorMsg.textContent = 'La contraseña debe tener al menos 4 caracteres';
+        errorMsg.textContent = getTranslation('auth.passwordMinLength', lang);
         console.log('Validación fallida: contraseña muy corta');
         return;
     }
     
     try {
-        errorMsg.textContent = 'Registrando...';
+        errorMsg.textContent = getTranslation('auth.registering', lang);
         errorMsg.style.color = '#666';
         console.log('Enviando registro a:', `${API_URL}/register`);
         console.log('URL completa:', window.location.origin + API_URL + '/register');
@@ -623,7 +671,8 @@ async function register() {
     } catch (error) {
         console.error('❌ Error en registro:', error);
         console.error('Stack:', error.stack);
-        errorMsg.textContent = error.message || 'Error al registrar usuario. Verifica tu conexión.';
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        errorMsg.textContent = error.message || getTranslation('auth.registerError', lang);
         errorMsg.style.color = '#ef4444';
     }
 }
@@ -641,8 +690,10 @@ async function login() {
     
     errorMsg.textContent = '';
     
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    
     if (!emailOrUsername) {
-        errorMsg.textContent = 'Por favor ingresa tu email o nombre de usuario';
+        errorMsg.textContent = getTranslation('auth.pleaseEnterEmailOrUsername', lang);
         return;
     }
     
@@ -682,7 +733,8 @@ async function login() {
         
         document.getElementById('loginFormElement').reset();
     } catch (error) {
-        errorMsg.textContent = error.message || 'Error al iniciar sesión';
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        errorMsg.textContent = error.message || getTranslation('auth.loginError', lang);
     }
 }
 
@@ -910,6 +962,19 @@ document.addEventListener('click', function(event) {
     
     if (dashboardDropdown && dashboardBtn && !dashboardDropdown.contains(event.target) && !dashboardBtn.contains(event.target)) {
         dashboardDropdown.style.display = 'none';
+    }
+    
+    // Cerrar dropdowns de idioma
+    const languageDropdown = document.getElementById('languageDropdown');
+    const languageBtn = document.getElementById('languageDropdownBtn');
+    if (languageDropdown && languageBtn && !languageDropdown.contains(event.target) && !languageBtn.contains(event.target)) {
+        languageDropdown.style.display = 'none';
+    }
+    
+    const authLanguageDropdown = document.getElementById('authLanguageDropdown');
+    const authLanguageBtn = document.getElementById('authLanguageDropdownBtn');
+    if (authLanguageDropdown && authLanguageBtn && !authLanguageDropdown.contains(event.target) && !authLanguageBtn.contains(event.target)) {
+        authLanguageDropdown.style.display = 'none';
     }
 });
 
@@ -1190,13 +1255,28 @@ function initializeTabs() {
 
 // Inicializar formularios
 function initializeForms() {
+    console.log('🔧 initializeForms() - Iniciando...');
+    
     // Formulario de transacciones
     const transactionForm = document.getElementById('transactionForm');
+    console.log('🔍 Buscando formulario transactionForm:', transactionForm ? '✅ Encontrado' : '❌ NO ENCONTRADO');
+    
     if (transactionForm) {
+        console.log('✅ Formulario encontrado, agregando event listener...');
         transactionForm.addEventListener('submit', async (e) => {
+            console.log('🎯 EVENTO SUBMIT DISPARADO!');
             e.preventDefault();
-            await addTransaction();
+            console.log('🔄 Llamando a addTransaction()...');
+            try {
+                await addTransaction();
+            } catch (error) {
+                console.error('❌ Error en addTransaction desde event listener:', error);
+            }
         });
+        console.log('✅ Event listener agregado al formulario');
+    } else {
+        console.error('❌ ERROR: No se encontró el formulario transactionForm');
+        console.error('❌ Elementos disponibles:', document.querySelectorAll('form').length, 'formularios encontrados');
     }
     
     // Formulario de sobres
@@ -1681,56 +1761,163 @@ function initializeForms() {
 
 // Agregar transacción
 async function addTransaction() {
-    const type = document.getElementById('transactionType').value;
-    const date = document.getElementById('transactionDate').value;
-    const amount = parseFloat(document.getElementById('transactionAmount').value);
-    const categoryGeneral = document.getElementById('categoryGeneral').value;
-    const categorySpecific = document.getElementById('categorySpecific').value;
-    const envelope = document.getElementById('envelope').value;
-    const accountId = document.getElementById('transactionAccount').value;
-    const investmentId = document.getElementById('transactionInvestment').value;
-    const propertyId = document.getElementById('transactionProperty').value;
-    const description = document.getElementById('transactionDescription').value;
+    console.log('🔄 ========================================');
+    console.log('🔄 addTransaction() - INICIANDO');
+    console.log('🔄 ========================================');
     
     try {
-        const transaction = await apiRequest('/transactions', {
-            method: 'POST',
-            body: JSON.stringify({
-                type,
-                date,
-                amount: Math.abs(amount),
-                categoryGeneral,
-                categorySpecific,
-                envelope: envelope || null,
-                account_id: accountId || null,
-                investment_id: investmentId || null,
-                property_id: propertyId || null,
-                description: description || `${categories.general.find(c => c.id === categoryGeneral)?.name} - ${categorySpecific}`
-            })
+        // Obtener valores del formulario
+        console.log('📋 Obteniendo valores del formulario...');
+        const typeEl = document.getElementById('transactionType');
+        const dateEl = document.getElementById('transactionDate');
+        const amountEl = document.getElementById('transactionAmount');
+        const categoryGeneralEl = document.getElementById('categoryGeneral');
+        const categorySpecificEl = document.getElementById('categorySpecific');
+        const envelopeEl = document.getElementById('envelope');
+        const accountIdEl = document.getElementById('transactionAccount');
+        const investmentIdEl = document.getElementById('transactionInvestment');
+        const propertyIdEl = document.getElementById('transactionProperty');
+        const descriptionEl = document.getElementById('transactionDescription');
+        
+        console.log('📋 Elementos encontrados:', {
+            typeEl: !!typeEl,
+            dateEl: !!dateEl,
+            amountEl: !!amountEl,
+            categoryGeneralEl: !!categoryGeneralEl,
+            categorySpecificEl: !!categorySpecificEl,
+            envelopeEl: !!envelopeEl,
+            accountIdEl: !!accountIdEl,
+            investmentIdEl: !!investmentIdEl,
+            propertyIdEl: !!propertyIdEl,
+            descriptionEl: !!descriptionEl
         });
         
-        // Si la transacción está asociada a una inversión, el servidor ya maneja el registro del aporte
-        // Solo recargamos los datos para reflejar los cambios
-        if (investmentId && type === 'expense') {
-            await loadUserData();
+        if (!typeEl || !dateEl || !amountEl || !categoryGeneralEl || !categorySpecificEl) {
+            console.error('❌ ERROR: Faltan elementos del formulario');
+            alert('Error: No se encontraron todos los campos del formulario. Recarga la página.');
+            return;
         }
         
-        // Agregar a la lista local
-        transactions.push({
-            ...transaction,
-            categoryGeneral: transaction.category_general,
-            categorySpecific: transaction.category_specific
-        });
-        transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const type = typeEl.value;
+        const date = dateEl.value;
+        const amountInput = amountEl.value;
+        const categoryGeneral = categoryGeneralEl.value;
+        const categorySpecific = categorySpecificEl.value;
+        const envelope = envelopeEl ? envelopeEl.value : '';
+        const accountId = accountIdEl ? accountIdEl.value : '';
+        const investmentId = investmentIdEl ? investmentIdEl.value : '';
+        const propertyId = propertyIdEl ? propertyIdEl.value : '';
+        const description = descriptionEl ? descriptionEl.value : '';
         
-        updateDisplay();
+        console.log('📋 Datos del formulario:', {
+            type, date, amountInput, categoryGeneral, categorySpecific,
+            envelope, accountId, investmentId, propertyId, description
+        });
+    
+        // Validaciones básicas
+        console.log('✅ Validando campos requeridos...');
+        if (!type || !date || !amountInput || !categoryGeneral || !categorySpecific) {
+            console.error('❌ Validación fallida - campos requeridos faltantes');
+            alert('Por favor completa todos los campos requeridos');
+            return;
+        }
+        
+        console.log('✅ Validando monto...');
+        const amount = parseFloat(amountInput);
+        if (isNaN(amount) || amount <= 0) {
+            console.error('❌ Validación fallida - monto inválido:', amountInput);
+            alert('Por favor ingresa un monto válido mayor a 0');
+            return;
+        }
+        console.log('✅ Monto válido:', amount);
+    
+        // Normalizar campos opcionales (convertir strings vacíos a null)
+        console.log('✅ Normalizando campos opcionales...');
+        const normalizedEnvelope = (envelope && envelope.trim() !== '') ? envelope.trim() : null;
+        const normalizedAccountId = (accountId && accountId.trim() !== '') ? accountId.trim() : null;
+        const normalizedInvestmentId = (investmentId && investmentId.trim() !== '') ? investmentId.trim() : null;
+        const normalizedPropertyId = (propertyId && propertyId.trim() !== '') ? propertyId.trim() : null;
+        const normalizedDescription = (description && description.trim() !== '') ? description.trim() : null;
+        
+        // Preparar datos para enviar
+        const transactionData = {
+            type: type,
+            date: date,
+            amount: Math.abs(amount),
+            categoryGeneral: categoryGeneral,
+            categorySpecific: categorySpecific,
+            envelope: normalizedEnvelope,
+            account_id: normalizedAccountId,
+            investment_id: normalizedInvestmentId,
+            property_id: normalizedPropertyId,
+            description: normalizedDescription
+        };
+        
+        console.log('📤 ========================================');
+        console.log('📤 Enviando datos al servidor:');
+        console.log('📤', JSON.stringify(transactionData, null, 2));
+        console.log('📤 ========================================');
+        
+        // Enviar al servidor
+        console.log('📡 Llamando a apiRequest...');
+        const transaction = await apiRequest('/transactions', {
+            method: 'POST',
+            body: JSON.stringify(transactionData)
+        });
+        
+        console.log('✅ ========================================');
+        console.log('✅ Transacción creada exitosamente:');
+        console.log('✅', transaction);
+        console.log('✅ ========================================');
+        
+        // Si está asociada a una inversión, recargar datos
+        console.log('✅ Actualizando interfaz...');
+        if (normalizedInvestmentId && type === 'expense') {
+            console.log('✅ Recargando datos completos (transacción asociada a inversión)...');
+            await loadUserData();
+        } else {
+            console.log('✅ Agregando transacción a lista local...');
+            // Agregar a la lista local
+            transactions.push({
+                ...transaction,
+                categoryGeneral: transaction.category_general,
+                categorySpecific: transaction.category_specific
+            });
+            transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            updateDisplay();
+        }
+        
+        // Limpiar formulario
+        console.log('✅ Limpiando formulario...');
         document.getElementById('transactionForm').reset();
         initializeDate();
         initializeCategories();
         updateEnvelopeSelect();
         updateAccountSelect();
+        
+        console.log('✅ ========================================');
+        console.log('✅ Proceso completado exitosamente');
+        console.log('✅ ========================================');
+        
     } catch (error) {
-        alert('Error al agregar transacción: ' + error.message);
+        console.error('❌ ========================================');
+        console.error('❌ ERROR COMPLETO al agregar transacción:');
+        console.error('❌ Error name:', error.name);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error stack:', error.stack);
+        if (error.response) {
+            console.error('❌ Error response:', error.response);
+        }
+        console.error('❌ ========================================');
+        
+        let errorMsg = 'Error al crear transacción';
+        if (error.message) {
+            errorMsg = error.message;
+        } else if (error.response && error.response.error) {
+            errorMsg = error.response.error;
+        }
+        
+        alert('Error al agregar transacción:\n\n' + errorMsg + '\n\nRevisa la consola para más detalles.');
     }
 }
 
