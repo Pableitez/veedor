@@ -2194,6 +2194,249 @@ function loadCustomCategories() {
     }
 }
 
+// Actualizar panel de mandos del mes seleccionado
+function updateMonthDashboard() {
+    const dashboardMonthInput = document.getElementById('dashboardMonth');
+    const monthDashboard = document.getElementById('monthDashboard');
+    
+    if (!dashboardMonthInput || !monthDashboard) return;
+    
+    const selectedMonth = dashboardMonthInput.value;
+    if (!selectedMonth) {
+        monthDashboard.style.display = 'none';
+        return;
+    }
+    
+    monthDashboard.style.display = 'block';
+    
+    const [year, month] = selectedMonth.split('-').map(Number);
+    const monthIndex = month - 1;
+    
+    // Filtrar transacciones del mes seleccionado
+    const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === monthIndex && tDate.getFullYear() === year;
+    });
+    
+    const monthExpenses = monthTransactions.filter(t => t.type === 'expense');
+    const monthIncome = monthTransactions.filter(t => t.type === 'income');
+    
+    // Gastos por categoría
+    const expensesByCategory = {};
+    monthExpenses.forEach(t => {
+        const catId = t.categoryGeneral;
+        if (!expensesByCategory[catId]) {
+            expensesByCategory[catId] = { amount: 0, transactions: [] };
+        }
+        expensesByCategory[catId].amount += Math.abs(t.amount);
+        expensesByCategory[catId].transactions.push(t);
+    });
+    
+    const expensesContainer = document.getElementById('monthExpensesByCategory');
+    if (expensesContainer) {
+        expensesContainer.innerHTML = '';
+        
+        if (Object.keys(expensesByCategory).length === 0) {
+            expensesContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos registrados para este mes</div>';
+        } else {
+            Object.entries(expensesByCategory).forEach(([catId, data]) => {
+                const category = categories.expense.find(c => c.id === catId) || 
+                               customCategories.expense.find(c => c.id === catId);
+                const categoryName = category ? category.name : catId;
+                
+                // Buscar presupuesto para esta categoría en este mes
+                const budget = budgets.find(b => b.month === selectedMonth && b.category_id === catId);
+                const budgetAmount = budget ? budget.amount : 0;
+                const percentage = budgetAmount > 0 ? (data.amount / budgetAmount) * 100 : 0;
+                
+                let progressColor = '#10b981'; // Verde
+                if (percentage > 80 && percentage <= 100) {
+                    progressColor = '#fbbf24'; // Amarillo
+                } else if (percentage > 100) {
+                    progressColor = '#ef4444'; // Rojo
+                }
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <div>
+                            <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--gray-900);">${categoryName}</h5>
+                            <p style="font-size: 14px; color: var(--gray-600); margin: 0;">${data.transactions.length} transacción${data.transactions.length !== 1 ? 'es' : ''}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="font-size: 20px; font-weight: 700; margin: 0; color: var(--danger-color);">${formatCurrency(data.amount)}</p>
+                            ${budgetAmount > 0 ? `<small style="color: var(--gray-500);">de ${formatCurrency(budgetAmount)}</small>` : ''}
+                        </div>
+                    </div>
+                    ${budgetAmount > 0 ? `
+                        <div style="margin-top: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <small style="font-size: 12px; color: var(--gray-600);">Progreso del presupuesto</small>
+                                <small style="font-size: 12px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
+                            </div>
+                            <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden;">
+                                <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                                <small style="font-size: 11px; color: var(--gray-500);">Restante: ${formatCurrency(Math.max(0, budgetAmount - data.amount))}</small>
+                                ${percentage > 100 ? `<small style="font-size: 11px; color: var(--danger-color); font-weight: 600;">⚠️ Excedido</small>` : ''}
+                            </div>
+                        </div>
+                    ` : '<small style="color: var(--gray-500);">Sin presupuesto establecido</small>'}
+                `;
+                expensesContainer.appendChild(card);
+            });
+        }
+    }
+    
+    // Ingresos por categoría
+    const incomeByCategory = {};
+    monthIncome.forEach(t => {
+        const catId = t.categoryGeneral;
+        if (!incomeByCategory[catId]) {
+            incomeByCategory[catId] = { amount: 0, transactions: [] };
+        }
+        incomeByCategory[catId].amount += t.amount;
+        incomeByCategory[catId].transactions.push(t);
+    });
+    
+    const incomeContainer = document.getElementById('monthIncomeByCategory');
+    if (incomeContainer) {
+        incomeContainer.innerHTML = '';
+        
+        if (Object.keys(incomeByCategory).length === 0) {
+            incomeContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay ingresos registrados para este mes</div>';
+        } else {
+            Object.entries(incomeByCategory).forEach(([catId, data]) => {
+                const category = categories.income.find(c => c.id === catId) || 
+                               customCategories.income.find(c => c.id === catId);
+                const categoryName = category ? category.name : catId;
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--gray-900);">${categoryName}</h5>
+                            <p style="font-size: 14px; color: var(--gray-600); margin: 0;">${data.transactions.length} transacción${data.transactions.length !== 1 ? 'es' : ''}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="font-size: 20px; font-weight: 700; margin: 0; color: var(--success-color);">${formatCurrency(data.amount)}</p>
+                        </div>
+                    </div>
+                `;
+                incomeContainer.appendChild(card);
+            });
+        }
+    }
+    
+    // Estado de presupuestos del mes
+    const monthBudgets = budgets.filter(b => b.month === selectedMonth);
+    const budgetsStatusContainer = document.getElementById('monthBudgetsStatus');
+    if (budgetsStatusContainer) {
+        budgetsStatusContainer.innerHTML = '';
+        
+        if (monthBudgets.length === 0) {
+            budgetsStatusContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay presupuestos establecidos para este mes</div>';
+        } else {
+            monthBudgets.forEach(budget => {
+                const category = categories.expense.find(c => c.id === budget.category_id) || 
+                               customCategories.expense.find(c => c.id === budget.category_id);
+                const categoryName = category ? category.name : budget.category_id;
+                
+                const categoryExpenses = monthExpenses.filter(t => t.categoryGeneral === budget.category_id);
+                const spent = categoryExpenses.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                const remaining = budget.amount - spent;
+                const percentage = (spent / budget.amount) * 100;
+                
+                let progressColor = '#10b981';
+                if (percentage > 80 && percentage <= 100) {
+                    progressColor = '#fbbf24';
+                } else if (percentage > 100) {
+                    progressColor = '#ef4444';
+                }
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);';
+                card.innerHTML = `
+                    <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: var(--gray-900);">${categoryName}</h5>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">Presupuesto:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">Gastado:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--danger-color);">${formatCurrency(spent)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">Restante:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: ${remaining >= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">${formatCurrency(remaining)}</span>
+                    </div>
+                    <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
+                        <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <small style="font-size: 11px; color: var(--gray-500);">${categoryExpenses.length} transacciones</small>
+                        <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}% usado</small>
+                    </div>
+                `;
+                budgetsStatusContainer.appendChild(card);
+            });
+        }
+    }
+    
+    // Estado de sobres del mes
+    const envelopesStatusContainer = document.getElementById('monthEnvelopesStatus');
+    if (envelopesStatusContainer) {
+        envelopesStatusContainer.innerHTML = '';
+        
+        if (envelopes.length === 0) {
+            envelopesStatusContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay sobres creados</div>';
+        } else {
+            envelopes.forEach(envelope => {
+                const envelopeTransactions = monthTransactions.filter(t => t.envelope === envelope.name);
+                const spent = envelopeTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                const remaining = envelope.budget - spent;
+                const percentage = (spent / envelope.budget) * 100;
+                
+                let progressColor = '#10b981';
+                if (percentage > 80 && percentage <= 100) {
+                    progressColor = '#fbbf24';
+                } else if (percentage > 100) {
+                    progressColor = '#ef4444';
+                }
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);';
+                card.innerHTML = `
+                    <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: var(--gray-900);">${envelope.name}</h5>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">Presupuesto:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--gray-900);">${formatCurrency(envelope.budget)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">Gastado:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--danger-color);">${formatCurrency(spent)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">Restante:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: ${remaining >= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">${formatCurrency(remaining)}</span>
+                    </div>
+                    <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
+                        <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <small style="font-size: 11px; color: var(--gray-500);">${envelopeTransactions.length} transacciones</small>
+                        <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}% usado</small>
+                    </div>
+                `;
+                envelopesStatusContainer.appendChild(card);
+            });
+        }
+    }
+}
+
 // Exportar datos
 function exportData() {
     if (!currentUser) return;
