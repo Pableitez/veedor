@@ -424,10 +424,11 @@ function updateUserInfo() {
 // Cargar datos del usuario actual
 async function loadUserData() {
     try {
-        const [transactionsData, envelopesData, loansData] = await Promise.all([
+        const [transactionsData, envelopesData, loansData, investmentsData] = await Promise.all([
             apiRequest('/transactions'),
             apiRequest('/envelopes'),
-            apiRequest('/loans')
+            apiRequest('/loans'),
+            apiRequest('/investments')
         ]);
         
         transactions = transactionsData.map(t => ({
@@ -438,6 +439,7 @@ async function loadUserData() {
         
         envelopes = envelopesData;
         loans = loansData;
+        investments = investmentsData || [];
         
         // Cargar categorías personalizadas
         loadCustomCategories();
@@ -610,6 +612,45 @@ function initializeForms() {
         });
     }
     
+    // Formulario de inversiones
+    const investmentForm = document.getElementById('investmentForm');
+    if (investmentForm) {
+        investmentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addInvestment();
+        });
+        
+        // Calcular rentabilidad automáticamente
+        const investmentAmount = document.getElementById('investmentAmount');
+        const investmentCurrentValue = document.getElementById('investmentCurrentValue');
+        const investmentReturn = document.getElementById('investmentReturn');
+        const investmentProfit = document.getElementById('investmentProfit');
+        
+        if (investmentAmount && investmentCurrentValue && investmentReturn && investmentProfit) {
+            const calculateReturn = () => {
+                const amount = parseFloat(investmentAmount.value) || 0;
+                const current = parseFloat(investmentCurrentValue.value) || 0;
+                
+                if (amount > 0) {
+                    const profit = current - amount;
+                    const returnPercent = ((profit / amount) * 100);
+                    investmentProfit.value = profit.toFixed(2);
+                    investmentReturn.value = returnPercent.toFixed(2);
+                }
+            };
+            
+            investmentAmount.addEventListener('input', calculateReturn);
+            investmentCurrentValue.addEventListener('input', calculateReturn);
+        }
+        
+        // Inicializar fecha
+        const investmentDate = document.getElementById('investmentDate');
+        if (investmentDate) {
+            const today = new Date().toISOString().split('T')[0];
+            investmentDate.value = today;
+        }
+    }
+    
     // Formulario de préstamos
     const loanForm = document.getElementById('loanForm');
     if (loanForm) {
@@ -778,6 +819,7 @@ function updateDisplay() {
     updateEnvelopes();
     updateEnvelopeSelect();
     updateLoans();
+    updateInvestments();
     updateMonthFilter();
 }
 
@@ -1341,6 +1383,192 @@ async function registerLoanPayment(loanId, amount, isEarlyPayment = false) {
 // Exponer funciones globales
 window.showLoanDetails = showLoanDetails;
 window.showEarlyPaymentModal = showEarlyPaymentModal;
+
+// ==================== INVERSIONES ====================
+
+// Agregar inversión
+async function addInvestment() {
+    const name = document.getElementById('investmentName').value.trim();
+    const type = document.getElementById('investmentType').value;
+    const amount = parseFloat(document.getElementById('investmentAmount').value);
+    const currentValue = parseFloat(document.getElementById('investmentCurrentValue').value);
+    const date = document.getElementById('investmentDate').value;
+    const description = document.getElementById('investmentDescription').value.trim();
+    
+    if (!name || !amount || !currentValue || !date || !type) {
+        alert('Por favor completa todos los campos requeridos');
+        return;
+    }
+    
+    try {
+        const investment = await apiRequest('/investments', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                type,
+                amount,
+                current_value: currentValue,
+                date,
+                description: description || null
+            })
+        });
+        
+        investments.push(investment);
+        updateDisplay();
+        document.getElementById('investmentForm').reset();
+        const investmentDate = document.getElementById('investmentDate');
+        if (investmentDate) {
+            const today = new Date().toISOString().split('T')[0];
+            investmentDate.value = today;
+        }
+        alert('✅ Inversión agregada exitosamente');
+    } catch (error) {
+        alert('Error al crear inversión: ' + error.message);
+    }
+}
+
+// Actualizar inversiones
+function updateInvestments() {
+    const grid = document.getElementById('investmentsGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (investments.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay inversiones registradas</p>';
+        return;
+    }
+    
+    const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
+    const totalCurrentValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const totalProfit = totalCurrentValue - totalInvested;
+    const totalReturn = totalInvested > 0 ? ((totalProfit / totalInvested) * 100) : 0;
+    
+    investments.forEach(investment => {
+        const profit = investment.current_value - investment.amount;
+        const returnPercent = investment.amount > 0 ? ((profit / investment.amount) * 100) : 0;
+        const investmentDate = new Date(investment.date);
+        const daysHeld = Math.floor((new Date() - investmentDate) / (1000 * 60 * 60 * 24));
+        
+        const typeNames = {
+            stocks: 'Acciones',
+            bonds: 'Bonos',
+            crypto: 'Criptomonedas',
+            funds: 'Fondos',
+            real_estate: 'Inmuebles',
+            other: 'Otros'
+        };
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.borderLeft = `4px solid ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}`;
+        card.innerHTML = `
+            <h3>${investment.name} <span style="font-size: 12px; color: var(--gray-500); font-weight: normal;">(${typeNames[investment.type] || investment.type})</span></h3>
+            
+            <div style="margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
+                    <div><strong>Invertido:</strong></div>
+                    <div style="text-align: right;">${formatCurrency(investment.amount)}</div>
+                    <div><strong>Valor Actual:</strong></div>
+                    <div style="text-align: right; font-weight: 600;">${formatCurrency(investment.current_value)}</div>
+                    <div><strong>Ganancia/Pérdida:</strong></div>
+                    <div style="text-align: right; color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 16px;">
+                        ${profit >= 0 ? '+' : ''}${formatCurrency(profit)}
+                    </div>
+                    <div><strong>Rentabilidad:</strong></div>
+                    <div style="text-align: right; color: ${returnPercent >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700;">
+                        ${returnPercent >= 0 ? '+' : ''}${returnPercent.toFixed(2)}%
+                    </div>
+                    <div><strong>Días:</strong></div>
+                    <div style="text-align: right; color: var(--gray-600);">${daysHeld}</div>
+                </div>
+            </div>
+            
+            ${investment.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${investment.description}</div>` : ''}
+            
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editInvestment('${investment._id || investment.id}')" style="flex: 1;">✏️ Editar</button>
+                <button class="btn-danger" onclick="deleteInvestment('${investment._id || investment.id}')" style="flex: 1;">🗑️ Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+    
+    // Agregar resumen total
+    const summaryCard = document.createElement('div');
+    summaryCard.className = 'envelope-card';
+    summaryCard.style.gridColumn = '1 / -1';
+    summaryCard.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
+    summaryCard.style.color = 'white';
+    summaryCard.style.border = 'none';
+    summaryCard.innerHTML = `
+        <h3 style="color: white; margin-bottom: 16px;">Resumen de Inversiones</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div>
+                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Total Invertido</div>
+                <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalInvested)}</div>
+            </div>
+            <div>
+                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Valor Actual</div>
+                <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalCurrentValue)}</div>
+            </div>
+            <div>
+                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Ganancia/Pérdida</div>
+                <div style="font-size: 24px; font-weight: 700; color: ${totalProfit >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                    ${totalProfit >= 0 ? '+' : ''}${formatCurrency(totalProfit)}
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Rentabilidad Total</div>
+                <div style="font-size: 24px; font-weight: 700; color: ${totalReturn >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                    ${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%
+                </div>
+            </div>
+        </div>
+    `;
+    grid.insertBefore(summaryCard, grid.firstChild);
+}
+
+// Editar inversión
+async function editInvestment(id) {
+    const investment = investments.find(inv => (inv._id || inv.id) === id);
+    if (!investment) return;
+    
+    const newValue = prompt(`Actualizar valor de "${investment.name}"\n\nValor actual: ${formatCurrency(investment.current_value)}\n\nNuevo valor (€):`, investment.current_value);
+    if (!newValue || isNaN(newValue)) return;
+    
+    try {
+        await apiRequest(`/investments/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                current_value: parseFloat(newValue)
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Inversión actualizada');
+    } catch (error) {
+        alert('Error al actualizar inversión: ' + error.message);
+    }
+}
+
+// Eliminar inversión
+async function deleteInvestment(id) {
+    if (!confirm('¿Estás seguro de eliminar esta inversión?')) return;
+    
+    try {
+        await apiRequest(`/investments/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+    } catch (error) {
+        alert('Error al eliminar inversión: ' + error.message);
+    }
+}
+
+// Exponer funciones globales
+window.editInvestment = editInvestment;
+window.deleteInvestment = deleteInvestment;
 
 // Eliminar préstamo
 async function deleteLoan(id) {

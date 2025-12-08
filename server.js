@@ -89,10 +89,22 @@ const loanSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 });
 
+const investmentSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    type: { type: String, enum: ['stocks', 'bonds', 'crypto', 'funds', 'real_estate', 'other'], required: true },
+    amount: { type: Number, required: true }, // Monto invertido
+    current_value: { type: Number, required: true }, // Valor actual
+    date: { type: String, required: true },
+    description: { type: String, default: null },
+    created_at: { type: Date, default: Date.now }
+});
+
 const User = mongoose.model('User', userSchema);
 const Transaction = mongoose.model('Transaction', transactionSchema);
 const Envelope = mongoose.model('Envelope', envelopeSchema);
 const Loan = mongoose.model('Loan', loanSchema);
+const Investment = mongoose.model('Investment', investmentSchema);
 
 // Conectar a MongoDB
 console.log('=== CONFIGURACIÓN MONGODB ===');
@@ -579,6 +591,86 @@ app.delete('/api/loans/:id', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error eliminando préstamo:', error);
         res.status(500).json({ error: 'Error al eliminar préstamo' });
+    }
+});
+
+// ==================== RUTAS DE INVERSIONES ====================
+
+// Obtener todas las inversiones del usuario
+app.get('/api/investments', authenticateToken, async (req, res) => {
+    try {
+        const investments = await Investment.find({ user_id: req.user.userId })
+            .sort({ created_at: -1 });
+        res.json(investments);
+    } catch (error) {
+        console.error('Error obteniendo inversiones:', error);
+        res.status(500).json({ error: 'Error al obtener inversiones' });
+    }
+});
+
+// Crear inversión
+app.post('/api/investments', authenticateToken, async (req, res) => {
+    try {
+        const { name, type, amount, current_value, date, description } = req.body;
+
+        if (!name || amount === undefined || current_value === undefined || !date || !type) {
+            return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes' });
+        }
+
+        const investment = new Investment({
+            user_id: req.user.userId,
+            name,
+            type,
+            amount,
+            current_value,
+            date,
+            description: description || null
+        });
+
+        await investment.save();
+        res.status(201).json(investment);
+    } catch (error) {
+        console.error('Error creando inversión:', error);
+        res.status(500).json({ error: 'Error al crear inversión' });
+    }
+});
+
+// Actualizar inversión
+app.put('/api/investments/:id', authenticateToken, async (req, res) => {
+    try {
+        const investment = await Investment.findOneAndUpdate(
+            { _id: req.params.id, user_id: req.user.userId },
+            req.body,
+            { new: true }
+        );
+
+        if (!investment) {
+            return res.status(404).json({ error: 'Inversión no encontrada' });
+        }
+
+        res.json(investment);
+    } catch (error) {
+        console.error('Error actualizando inversión:', error);
+        res.status(500).json({ error: 'Error al actualizar inversión' });
+    }
+});
+
+// Eliminar inversión
+app.delete('/api/investments/:id', authenticateToken, async (req, res) => {
+    try {
+        const investment = await Investment.findOneAndDelete({
+            _id: req.params.id,
+            user_id: req.user.userId
+        });
+
+        if (!investment) {
+            return res.status(404).json({ error: 'Inversión no encontrada' });
+        }
+
+        res.json({ message: 'Inversión eliminada exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando inversión:', error);
+        res.status(500).json({ error: 'Error al eliminar inversión' });
     }
 });
 
