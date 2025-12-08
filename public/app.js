@@ -60,9 +60,11 @@ let customCategories = {
 // Estado de la aplicación
 let transactions = [];
 let envelopes = [];
+let budgets = [];
 let charts = {};
 let currentUser = null;
 let authToken = null;
+let summaryPeriod = 'month'; // 'month', 'year', 'all'
 
 // Utilidad para hacer peticiones autenticadas
 async function apiRequest(endpoint, options = {}) {
@@ -748,6 +750,43 @@ function initializeForms() {
     if (exportBtn) {
         exportBtn.addEventListener('click', exportData);
     }
+    
+    // Selector de período en dashboard
+    const summaryPeriodSelect = document.getElementById('summaryPeriod');
+    if (summaryPeriodSelect) {
+        summaryPeriodSelect.addEventListener('change', (e) => {
+            summaryPeriod = e.target.value;
+            updateSummary();
+        });
+    }
+    
+    // Formulario de presupuestos
+    const budgetForm = document.getElementById('budgetForm');
+    if (budgetForm) {
+        budgetForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addBudget();
+        });
+        
+        // Inicializar mes actual
+        const budgetMonth = document.getElementById('budgetMonth');
+        if (budgetMonth) {
+            const now = new Date();
+            const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            budgetMonth.value = currentMonth;
+        }
+        
+        // Llenar categorías de gastos en el selector
+        const budgetCategory = document.getElementById('budgetCategory');
+        if (budgetCategory) {
+            categories.expense.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                budgetCategory.appendChild(option);
+            });
+        }
+    }
 }
 
 // Agregar transacción
@@ -1058,6 +1097,142 @@ function updateEnvelopeSelect() {
         select.appendChild(option);
     });
 }
+
+// ==================== PRESUPUESTOS ====================
+
+// Agregar presupuesto
+async function addBudget() {
+    const category = document.getElementById('budgetCategory').value;
+    const amount = parseFloat(document.getElementById('budgetAmount').value);
+    const month = document.getElementById('budgetMonth').value;
+    
+    if (!category || !amount || !month) {
+        alert('Por favor completa todos los campos');
+        return;
+    }
+    
+    try {
+        const budget = await apiRequest('/budgets', {
+            method: 'POST',
+            body: JSON.stringify({
+                category,
+                amount,
+                month
+            })
+        });
+        
+        // Recargar presupuestos del mes actual
+        const now = new Date();
+        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        if (month === currentMonth) {
+            await loadUserData();
+        }
+        updateDisplay();
+        document.getElementById('budgetForm').reset();
+        const budgetMonth = document.getElementById('budgetMonth');
+        if (budgetMonth) {
+            budgetMonth.value = currentMonth;
+        }
+        alert('✅ Presupuesto establecido exitosamente');
+    } catch (error) {
+        alert('Error al establecer presupuesto: ' + error.message);
+    }
+}
+
+// Actualizar presupuestos
+function updateBudgets() {
+    const grid = document.getElementById('budgetsGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const monthBudgets = budgets.filter(b => b.month === currentMonth);
+    
+    if (monthBudgets.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay presupuestos establecidos para este mes</p>';
+        return;
+    }
+    
+    // Calcular gastos por categoría del mes actual
+    const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === now.getMonth() && 
+               tDate.getFullYear() === now.getFullYear() &&
+               t.type === 'expense';
+    });
+    
+    const expensesByCategory = {};
+    monthTransactions.forEach(t => {
+        expensesByCategory[t.categoryGeneral] = (expensesByCategory[t.categoryGeneral] || 0) + Math.abs(t.amount);
+    });
+    
+    monthBudgets.forEach(budget => {
+        const category = categories.expense.find(c => c.id === budget.category) || 
+                        customCategories.expense.find(c => c.id === budget.category);
+        const categoryName = category ? category.name : budget.category;
+        const spent = expensesByCategory[budget.category] || 0;
+        const remaining = budget.amount - spent;
+        const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
+        const isOverBudget = spent > budget.amount;
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.borderLeft = `4px solid ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'}`;
+        card.innerHTML = `
+            <h3>${categoryName}</h3>
+            <div style="margin: 12px 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 13px; color: var(--gray-600);">Presupuesto:</span>
+                    <span style="font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 13px; color: var(--gray-600);">Gastado:</span>
+                    <span style="font-weight: 600; color: ${isOverBudget ? 'var(--danger)' : 'var(--gray-900)'};">${formatCurrency(spent)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                    <span style="font-size: 13px; color: var(--gray-600);">Restante:</span>
+                    <span style="font-weight: 700; font-size: 16px; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                        ${formatCurrency(remaining)}
+                    </span>
+                </div>
+            </div>
+            <div style="margin: 12px 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 12px; color: var(--gray-600);">Progreso:</span>
+                    <span style="font-size: 12px; font-weight: 600; color: ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--gray-700)'};">
+                        ${percentage.toFixed(1)}%
+                    </span>
+                </div>
+                <div class="envelope-progress">
+                    <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%; background: ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'};"></div>
+                </div>
+            </div>
+            ${isOverBudget ? '<div style="padding: 8px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 12px; font-weight: 600; margin-top: 8px;">⚠️ Presupuesto excedido</div>' : ''}
+            <div class="envelope-actions" style="margin-top: 12px;">
+                <button class="btn-danger" onclick="deleteBudget('${budget._id || budget.id}')" style="width: 100%;">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Eliminar presupuesto
+async function deleteBudget(id) {
+    if (!confirm('¿Estás seguro de eliminar este presupuesto?')) return;
+    
+    try {
+        await apiRequest(`/budgets/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+    } catch (error) {
+        alert('Error al eliminar presupuesto: ' + error.message);
+    }
+}
+
+// Exponer función global
+window.deleteBudget = deleteBudget;
 
 // Actualizar filtro de meses
 function updateMonthFilter() {

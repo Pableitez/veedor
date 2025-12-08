@@ -64,6 +64,14 @@ const envelopeSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 });
 
+const budgetSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    category: { type: String, required: true }, // Categoría general
+    amount: { type: Number, required: true }, // Presupuesto mensual
+    month: { type: String, required: true }, // Formato: YYYY-MM
+    created_at: { type: Date, default: Date.now }
+});
+
 const loanSchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
@@ -105,6 +113,7 @@ const Transaction = mongoose.model('Transaction', transactionSchema);
 const Envelope = mongoose.model('Envelope', envelopeSchema);
 const Loan = mongoose.model('Loan', loanSchema);
 const Investment = mongoose.model('Investment', investmentSchema);
+const Budget = mongoose.model('Budget', budgetSchema);
 
 // Conectar a MongoDB
 console.log('=== CONFIGURACIÓN MONGODB ===');
