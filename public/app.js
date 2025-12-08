@@ -1236,6 +1236,30 @@ function initializeForms() {
         // Inicializar categorías
         updateBudgetCategories();
     }
+    
+    // Formulario de perfil de usuario
+    const userProfileForm = document.getElementById('userProfileForm');
+    if (userProfileForm) {
+        userProfileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveUserProfile();
+        });
+    }
+    
+    // Event listener para cerrar modal de perfil al hacer clic fuera
+    const userProfileModal = document.getElementById('userProfileModal');
+    if (userProfileModal) {
+        userProfileModal.addEventListener('click', (e) => {
+            if (e.target === userProfileModal) {
+                closeUserProfile();
+            }
+        });
+    }
+    
+    const closeUserProfileModalBtn = document.getElementById('closeUserProfileModal');
+    if (closeUserProfileModalBtn) {
+        closeUserProfileModalBtn.addEventListener('click', closeUserProfile);
+    }
 }
 
 // Agregar transacción
