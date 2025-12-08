@@ -1008,15 +1008,54 @@
         </div>
     </div>
 
+    <!-- Modales de Políticas -->
+    <div id="privacyModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; position: sticky; top: 0; background: white; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); z-index: 10;">
+                <h2 style="margin: 0; font-size: 24px; color: var(--primary);">Política de Privacidad</h2>
+                <button onclick="closePrivacyModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-500); padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s;" onmouseover="this.style.background='var(--gray-100)'" onmouseout="this.style.background='none'">×</button>
+            </div>
+            <div id="privacyContent" style="line-height: 1.8; color: var(--gray-700);"></div>
+        </div>
+    </div>
+
+    <div id="cookiesModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; position: sticky; top: 0; background: white; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); z-index: 10;">
+                <h2 style="margin: 0; font-size: 24px; color: var(--primary);">Política de Cookies</h2>
+                <button onclick="closeCookiesModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-500); padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s;" onmouseover="this.style.background='var(--gray-100)'" onmouseout="this.style.background='none'">×</button>
+            </div>
+            <div id="cookiesContent" style="line-height: 1.8; color: var(--gray-700);"></div>
+        </div>
+    </div>
+
+    <div id="termsModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; position: sticky; top: 0; background: white; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); z-index: 10;">
+                <h2 style="margin: 0; font-size: 24px; color: var(--primary);">Términos y Condiciones</h2>
+                <button onclick="closeTermsModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-500); padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s;" onmouseover="this.style.background='var(--gray-100)'" onmouseout="this.style.background='none'">×</button>
+            </div>
+            <div id="termsContent" style="line-height: 1.8; color: var(--gray-700);"></div>
+        </div>
+    </div>
+
     <!-- Cargar aplicación JavaScript directamente -->
-    <script src="/app.js?v=2.2.0"></script>
+    <script src="/app.js?v=2.3.0"></script>
     
     <!-- Footer -->
     <footer style="background: var(--gray-900); color: var(--gray-300); padding: 40px 20px; margin-top: 60px; border-top: 1px solid var(--border-color);">
         <div style="max-width: 1200px; margin: 0 auto;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 30px;">
                 <div>
-                    <h3 style="color: white; margin-bottom: 16px; font-size: 18px;">💰 Veedor</h3>
+                    <h3 style="color: white; margin-bottom: 16px; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="24" height="24" rx="6" fill="white" fill-opacity="0.2"/>
+                            <path d="M12 4L6 8V18H18V8L12 4Z" fill="white" fill-opacity="0.9"/>
+                            <path d="M8 12H16M8 16H16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle cx="12" cy="10" r="1" fill="white"/>
+                        </svg>
+                        Veedor
+                    </h3>
                     <p style="font-size: 14px; line-height: 1.6; color: var(--gray-400);">
                         Control total de tus finanzas personales. Gestiona ingresos, gastos, préstamos, inversiones y más.
                     </p>
