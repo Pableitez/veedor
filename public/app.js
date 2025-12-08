@@ -1280,10 +1280,16 @@ function initializeForms() {
             
             try {
                 savingsGoal = numValue > 0 ? numValue : null;
-                await apiRequest('/user/profile', {
+                const response = await apiRequest('/user/profile', {
                     method: 'PUT',
-                    body: JSON.stringify({ savingsGoal })
+                    body: JSON.stringify({ savingsGoal: savingsGoal })
                 });
+                
+                // Verificar que se guardó correctamente
+                if (response && response.savingsGoal !== undefined) {
+                    savingsGoal = response.savingsGoal;
+                }
+                
                 updateSummary();
                 closeSavingsGoalModal();
                 alert('✅ Meta de ahorro guardada exitosamente');

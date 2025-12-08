@@ -646,6 +646,20 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
         user.updatedAt = new Date();
         try {
             await user.save();
+            // Devolver el usuario actualizado con savingsGoal
+            res.json({
+                firstName: user.firstName || '',
+                lastName: user.lastName || '',
+                age: user.age || null,
+                phone: user.phone || '',
+                address: user.address || '',
+                city: user.city || '',
+                country: user.country || '',
+                birthDate: user.birthDate || null,
+                notes: user.notes || '',
+                savingsGoal: user.savingsGoal || null
+            });
+            return;
         } catch (saveError) {
             console.error('Error guardando perfil:', saveError);
             return res.status(500).json({ error: 'Error al actualizar perfil: ' + (saveError.message || 'Error desconocido') });
@@ -973,6 +987,25 @@ app.post('/api/loans/:id/payment', authenticateToken, async (req, res) => {
         loan.total_paid += amount;
         loan.last_payment_date = date || new Date().toISOString().split('T')[0];
         await loan.save();
+        
+        // Crear transacción automática para el pago del préstamo
+        const paymentDate = date || new Date().toISOString().split('T')[0];
+        const totalPaymentAmount = amount + (is_early_payment && loan.early_payment_commission > 0 ? (amount * loan.early_payment_commission / 100) : 0);
+        
+        const paymentTransaction = new Transaction({
+            user_id: req.user.userId,
+            type: 'expense',
+            date: paymentDate,
+            amount: -Math.abs(totalPaymentAmount),
+            category_general: 'bills',
+            category_specific: 'Préstamo',
+            loan_id: loan._id.toString(),
+            description: `Pago de préstamo: ${loan.name}${is_early_payment ? ' (Amortización anticipada)' : ''}`,
+            is_recurring: !is_early_payment,
+            recurring_frequency: !is_early_payment ? 'monthly' : null
+        });
+        
+        await paymentTransaction.save();
 
         res.json(loan);
     } catch (error) {
@@ -1456,10 +1489,26 @@ app.post('/api/investments/:id/contribution', authenticateToken, async (req, res
             investment.contributions = [];
         }
         
+        const contributionAmount = parseFloat(amount);
+        
+        // Crear transacción automática para el aporte a la inversión
+        const contributionTransaction = new Transaction({
+            user_id: req.user.userId,
+            type: 'expense',
+            date: date,
+            amount: -Math.abs(contributionAmount),
+            category_general: 'investment',
+            category_specific: 'Aporte',
+            investment_id: investment._id.toString(),
+            description: `Aporte a inversión: ${investment.name}`
+        });
+        
+        await contributionTransaction.save();
+        
         investment.contributions.push({
             date: date,
-            amount: parseFloat(amount),
-            transaction_id: null
+            amount: contributionAmount,
+            transaction_id: contributionTransaction._id.toString()
         });
         
         await investment.save();
