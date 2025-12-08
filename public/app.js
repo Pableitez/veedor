@@ -1013,9 +1013,15 @@ window.deleteEnvelope = deleteEnvelope;
 // Calcular cuota mensual usando fórmula de amortización francesa
 function calculateMonthlyPayment(principal, annualRate, months) {
     if (annualRate === 0) return principal / months;
+    if (months <= 0) return 0;
     const monthlyRate = annualRate / 100 / 12;
-    return principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+    const denominator = Math.pow(1 + monthlyRate, months) - 1;
+    if (denominator === 0) return principal / months;
+    return principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) / denominator;
 }
+
+// Exponer función globalmente
+window.calculateMonthlyPayment = calculateMonthlyPayment;
 
 // Calcular tabla de amortización
 function calculateAmortizationTable(principal, annualRate, monthlyPayment, startDate, totalPaid = 0, earlyPayments = []) {
