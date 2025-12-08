@@ -7,7 +7,13 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/veedor';
+// Leer MONGODB_URI desde .env o variable de entorno
+const MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) {
+    console.error('❌ Error: MONGODB_URI no está configurado.');
+    console.error('   Por favor, crea un archivo .env con: MONGODB_URI=tu_uri_de_mongodb');
+    process.exit(1);
+}
 
 const userSchema = new mongoose.Schema({
     email: { type: String, unique: true, required: true, lowercase: true, trim: true },
