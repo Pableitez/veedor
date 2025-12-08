@@ -74,6 +74,7 @@ let transactions = [];
 let envelopes = [];
 let budgets = [];
 let accounts = [];
+let properties = [];
 let assets = [];
 let charts = {};
 let currentUser = null;
@@ -715,8 +716,19 @@ async function loadUserData() {
         }
         accounts = accountsData || [];
         
-        // Actualizar selector de cuentas después de cargar datos
+        // Cargar propiedades por separado para manejar errores
+        let propertiesData = [];
+        try {
+            propertiesData = await apiRequest('/properties');
+        } catch (error) {
+            console.warn('No se pudieron cargar propiedades:', error);
+            propertiesData = [];
+        }
+        properties = propertiesData || [];
+        
+        // Actualizar selectores después de cargar datos
         updateAccountSelect();
+        updatePropertySelect();
         
         // Cargar categorías personalizadas
         loadCustomCategories();
@@ -1521,6 +1533,7 @@ async function addTransaction() {
     const envelope = document.getElementById('envelope').value;
     const accountId = document.getElementById('transactionAccount').value;
     const investmentId = document.getElementById('transactionInvestment').value;
+    const propertyId = document.getElementById('transactionProperty').value;
     const description = document.getElementById('transactionDescription').value;
     
     try {
@@ -1535,6 +1548,7 @@ async function addTransaction() {
                 envelope: envelope || null,
                 account_id: accountId || null,
                 investment_id: investmentId || null,
+                property_id: propertyId || null,
                 description: description || `${categories.general.find(c => c.id === categoryGeneral)?.name} - ${categorySpecific}`
             })
         });
@@ -1932,6 +1946,20 @@ function updateInvestmentSelect() {
         const option = document.createElement('option');
         option.value = investment._id || investment.id;
         option.textContent = investment.name;
+        select.appendChild(option);
+    });
+}
+
+// Actualizar selector de propiedades
+function updatePropertySelect() {
+    const select = document.getElementById('transactionProperty');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Ninguna</option>';
+    properties.forEach(property => {
+        const option = document.createElement('option');
+        option.value = property._id || property.id;
+        option.textContent = property.name;
         select.appendChild(option);
     });
 }
@@ -3227,6 +3255,165 @@ async function deleteInvestment(id) {
         alert('Error al eliminar inversión: ' + error.message);
     }
 }
+
+// ==================== PROPIEDADES/PISOS ====================
+
+// Agregar propiedad
+async function addProperty() {
+    const name = document.getElementById('propertyName').value.trim();
+    const type = document.getElementById('propertyType').value;
+    const address = document.getElementById('propertyAddress').value.trim();
+    const description = document.getElementById('propertyDescription').value.trim();
+    
+    if (!name) {
+        alert('Por favor ingresa el nombre de la propiedad');
+        return;
+    }
+    
+    try {
+        const property = await apiRequest('/properties', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                type,
+                address: address || null,
+                description: description || null
+            })
+        });
+        
+        properties.push(property);
+        updateDisplay();
+        updatePropertySelect();
+        document.getElementById('propertyForm').reset();
+        alert('✅ Propiedad agregada exitosamente');
+    } catch (error) {
+        alert('Error al crear propiedad: ' + error.message);
+    }
+}
+
+// Actualizar propiedades
+function updateProperties() {
+    const grid = document.getElementById('propertiesGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (properties.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay propiedades registradas</p>';
+        return;
+    }
+    
+    properties.forEach(property => {
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.background = 'white';
+        card.style.border = '1px solid var(--border-color)';
+        card.style.borderRadius = 'var(--radius-md)';
+        card.style.padding = '20px';
+        card.style.boxShadow = 'var(--shadow-sm)';
+        
+        const typeNames = {
+            apartment: 'Piso/Apartamento',
+            house: 'Casa',
+            office: 'Oficina',
+            commercial: 'Local Comercial',
+            other: 'Otro'
+        };
+        
+        // Calcular gastos asociados a esta propiedad
+        const propertyExpenses = transactions
+            .filter(t => t.property_id === (property._id || property.id) && t.type === 'expense')
+            .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+        
+        const propertyIncomes = transactions
+            .filter(t => t.property_id === (property._id || property.id) && t.type === 'income')
+            .reduce((sum, t) => sum + t.amount, 0);
+        
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: var(--gray-900);">${property.name}</h3>
+                    <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 4px;">
+                        <strong>Tipo:</strong> ${typeNames[property.type] || property.type}
+                    </div>
+                    ${property.address ? `
+                        <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 4px;">
+                            <strong>Dirección:</strong> ${property.address}
+                        </div>
+                    ` : ''}
+                    ${property.description ? `
+                        <div style="font-size: 13px; color: var(--gray-600); margin-top: 8px;">
+                            ${property.description}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
+                <div>
+                    <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Gastos Totales</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(propertyExpenses)}</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Ingresos Totales</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--success);">${formatCurrency(propertyIncomes)}</div>
+                </div>
+            </div>
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 16px;">
+                <button class="btn-secondary" onclick="editProperty('${property._id || property.id}')" style="flex: 1;">✏️ Editar</button>
+                <button class="btn-danger" onclick="deleteProperty('${property._id || property.id}')" style="flex: 1;">🗑️ Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Editar propiedad
+async function editProperty(id) {
+    const property = properties.find(p => (p._id || p.id) === id);
+    if (!property) return;
+    
+    const newName = prompt('Nombre de la propiedad:', property.name);
+    if (!newName || newName.trim() === '') return;
+    
+    const newAddress = prompt('Dirección (opcional):', property.address || '');
+    const newDescription = prompt('Descripción (opcional):', property.description || '');
+    
+    try {
+        await apiRequest(`/properties/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: newName.trim(),
+                address: newAddress.trim() || null,
+                description: newDescription.trim() || null,
+                type: property.type
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Propiedad actualizada exitosamente');
+    } catch (error) {
+        alert('Error al actualizar propiedad: ' + error.message);
+    }
+}
+
+// Eliminar propiedad
+async function deleteProperty(id) {
+    if (!confirm('¿Estás seguro de eliminar esta propiedad? Esto no eliminará las transacciones asociadas.')) return;
+    
+    try {
+        await apiRequest(`/properties/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Propiedad eliminada exitosamente');
+    } catch (error) {
+        alert('Error al eliminar propiedad: ' + error.message);
+    }
+}
+
+// Exponer funciones globalmente
+window.editProperty = editProperty;
+window.deleteProperty = deleteProperty;
 
 // ==================== CUENTAS BANCARIAS ====================
 

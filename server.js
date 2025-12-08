@@ -169,6 +169,18 @@ const Investment = mongoose.model('Investment', investmentSchema);
 const Budget = mongoose.model('Budget', budgetSchema);
 const Account = mongoose.model('Account', accountSchema);
 
+const propertySchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true }, // Nombre de la propiedad (ej: "Piso Calle Mayor 5", "Casa en la playa")
+    address: { type: String, default: null }, // Dirección completa
+    type: { type: String, enum: ['apartment', 'house', 'office', 'commercial', 'other'], default: 'apartment' }, // Tipo de propiedad
+    description: { type: String, default: null },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
+});
+
+const Property = mongoose.model('Property', propertySchema);
+
 const assetSchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true }, // Nombre del bien (ej: "Piso en Madrid", "Coche Toyota")
