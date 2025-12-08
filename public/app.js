@@ -828,6 +828,22 @@ function initializeForms() {
         }
     }
     
+    // Formulario de patrimonio
+    const assetForm = document.getElementById('assetForm');
+    if (assetForm) {
+        assetForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addAsset();
+        });
+        
+        // Inicializar fecha de adquisición con hoy
+        const assetPurchaseDate = document.getElementById('assetPurchaseDate');
+        if (assetPurchaseDate) {
+            const today = new Date().toISOString().split('T')[0];
+            assetPurchaseDate.value = today;
+        }
+    }
+    
     // Formulario de préstamos
     const loanForm = document.getElementById('loanForm');
     if (loanForm) {
