@@ -71,6 +71,7 @@ const transactionSchema = new mongoose.Schema({
     account_id: { type: String, default: null }, // ID de la cuenta bancaria asociada
     investment_id: { type: String, default: null }, // ID de la inversión asociada (si el gasto/ingreso es para una inversión)
     loan_id: { type: String, default: null }, // ID del préstamo asociado (si es una cuota)
+    property_id: { type: String, default: null }, // ID de la propiedad/piso asociada
     description: { type: String, default: null },
     is_recurring: { type: Boolean, default: false }, // Si es una transacción recurrente
     recurring_frequency: { type: String, enum: ['weekly', 'monthly', 'yearly'], default: null }, // Frecuencia de recurrencia
@@ -694,6 +695,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             envelope: envelope || null,
             account_id: account_id || null,
             investment_id: investment_id || null,
+            property_id: property_id || null,
             description: description || null
         });
 
@@ -1286,6 +1288,92 @@ app.delete('/api/accounts/:id', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error eliminando cuenta:', error);
         res.status(500).json({ error: 'Error al eliminar cuenta' });
+    }
+});
+
+// ==================== RUTAS DE PROPIEDADES/PISOS ====================
+
+// Obtener todas las propiedades del usuario
+app.get('/api/properties', authenticateToken, async (req, res) => {
+    try {
+        const properties = await Property.find({ user_id: req.user.userId })
+            .sort({ created_at: -1 });
+        res.json(properties);
+    } catch (error) {
+        console.error('Error obteniendo propiedades:', error);
+        res.status(500).json({ error: 'Error al obtener propiedades' });
+    }
+});
+
+// Crear propiedad
+app.post('/api/properties', authenticateToken, async (req, res) => {
+    try {
+        const { name, address, type, description } = req.body;
+        
+        if (!name) {
+            return res.status(400).json({ error: 'El nombre de la propiedad es requerido' });
+        }
+        
+        const property = new Property({
+            user_id: req.user.userId,
+            name,
+            address: address || null,
+            type: type || 'apartment',
+            description: description || null
+        });
+        
+        await property.save();
+        res.status(201).json(property);
+    } catch (error) {
+        console.error('Error creando propiedad:', error);
+        res.status(500).json({ error: 'Error al crear propiedad' });
+    }
+});
+
+// Actualizar propiedad
+app.put('/api/properties/:id', authenticateToken, async (req, res) => {
+    try {
+        const { name, address, type, description } = req.body;
+        
+        const property = await Property.findOneAndUpdate(
+            { _id: req.params.id, user_id: req.user.userId },
+            { 
+                name, 
+                address, 
+                type, 
+                description,
+                updated_at: new Date()
+            },
+            { new: true }
+        );
+        
+        if (!property) {
+            return res.status(404).json({ error: 'Propiedad no encontrada' });
+        }
+        
+        res.json(property);
+    } catch (error) {
+        console.error('Error actualizando propiedad:', error);
+        res.status(500).json({ error: 'Error al actualizar propiedad' });
+    }
+});
+
+// Eliminar propiedad
+app.delete('/api/properties/:id', authenticateToken, async (req, res) => {
+    try {
+        const property = await Property.findOneAndDelete({
+            _id: req.params.id,
+            user_id: req.user.userId
+        });
+        
+        if (!property) {
+            return res.status(404).json({ error: 'Propiedad no encontrada' });
+        }
+        
+        res.json({ message: 'Propiedad eliminada exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando propiedad:', error);
+        res.status(500).json({ error: 'Error al eliminar propiedad' });
     }
 });
 
