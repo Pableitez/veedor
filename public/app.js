@@ -4588,7 +4588,16 @@ function updateFinancialHealthMetrics() {
     const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit;
     
     // Calcular deudas totales (histórico)
-    const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
+    // Verificar préstamos activos (que aún no han terminado)
+    const activeDebtLoans = loans.filter(l => {
+        if (l.type !== 'debt') return false;
+        const endDate = new Date(l.end_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return endDate >= today; // Préstamo aún activo
+    });
+    
+    const loansDebt = activeDebtLoans.reduce((sum, loan) => {
         const amortization = calculateAmortizationTable(
             loan.principal,
             loan.interest_rate,
@@ -4599,6 +4608,9 @@ function updateFinancialHealthMetrics() {
         );
         return sum + amortization.finalBalance;
     }, 0);
+    
+    // También verificar si hay préstamos activos aunque el capital restante sea bajo
+    const hasActiveDebts = activeDebtLoans.length > 0;
     
     // Calcular ingresos y gastos del período seleccionado
     const periodIncome = periodTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
@@ -4620,8 +4632,8 @@ function updateFinancialHealthMetrics() {
     
     // 3. Ratio de Salud Financiera (Activos / Deudas)
     const healthRatio = loansDebt > 0 ? (totalAssets / loansDebt) : (totalAssets > 0 ? 999 : (totalAssets < 0 ? -999 : 0));
-    // Si no hay deudas y hay activos positivos = excelente, si activos negativos = peligro
-    const healthStatus = loansDebt === 0 ? (totalAssets > 0 ? 'excellent' : (totalAssets < 0 ? 'danger' : 'warning')) : (healthRatio > 3 ? 'excellent' : healthRatio > 2 ? 'good' : healthRatio > 1 ? 'warning' : 'danger');
+    // Si no hay deudas activas y hay activos positivos = excelente, si activos negativos = peligro
+    const healthStatus = !hasActiveDebts ? (totalAssets > 0 ? 'excellent' : (totalAssets < 0 ? 'danger' : 'warning')) : (healthRatio > 3 ? 'excellent' : healthRatio > 2 ? 'good' : healthRatio > 1 ? 'warning' : 'danger');
     
     // 4. Ratio de Cobertura de Deuda (Ingresos anuales / Deuda)
     const debtCoverageRatio = loansDebt > 0 ? (annualIncome / loansDebt) : (annualIncome > 0 ? 999 : 0);
@@ -4675,7 +4687,7 @@ function updateFinancialHealthMetrics() {
             description: `Activos / Deudas`,
             status: healthStatus,
             icon: '💚',
-            detail: loansDebt === 0 ? (totalAssets > 0 ? 'Sin deudas, activos positivos' : (totalAssets < 0 ? 'Sin deudas, pero activos negativos' : 'Sin deudas ni activos')) : (healthRatio > 3 ? 'Excelente' : healthRatio > 2 ? 'Buena' : healthRatio > 1 ? 'Moderada' : 'Baja')
+            detail: !hasActiveDebts ? (totalAssets > 0 ? 'Sin deudas activas, activos positivos' : (totalAssets < 0 ? 'Sin deudas activas, pero activos negativos' : 'Sin deudas activas ni activos')) : (healthRatio > 3 ? 'Excelente' : healthRatio > 2 ? 'Buena' : healthRatio > 1 ? 'Moderada' : 'Baja')
         },
         {
             title: 'Cobertura de Deuda',
@@ -4683,7 +4695,7 @@ function updateFinancialHealthMetrics() {
             description: `Ingresos anuales / Deuda`,
             status: coverageStatus,
             icon: '🛡️',
-            detail: loansDebt === 0 ? 'Sin deudas' : (debtCoverageRatio > 2 ? 'Excelente' : debtCoverageRatio > 1 ? 'Buena' : debtCoverageRatio > 0.5 ? 'Moderada' : 'Baja')
+            detail: !hasActiveDebts ? 'Sin deudas activas' : (debtCoverageRatio > 2 ? 'Excelente' : debtCoverageRatio > 1 ? 'Buena' : debtCoverageRatio > 0.5 ? 'Moderada' : 'Baja')
         },
         {
             title: 'Ratio de Ahorro',
