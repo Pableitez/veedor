@@ -1704,9 +1704,22 @@ tbody tr:last-child td {
         position: absolute !important;
         margin-top: 8px !important;
         z-index: 10000 !important;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
-        background: white !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        background: var(--bg-primary) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-color) !important;
         border-radius: 12px !important;
+    }
+    
+    #mainNavDropdown .nav-dropdown-item,
+    #settingsDropdown .nav-dropdown-item {
+        color: var(--text-primary) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+    
+    #mainNavDropdown .nav-dropdown-item:hover,
+    #settingsDropdown .nav-dropdown-item:hover {
+        background: var(--bg-secondary) !important;
     }
     
     /* Asegurar que los desplegables sean visibles cuando están abiertos */
