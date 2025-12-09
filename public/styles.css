@@ -838,7 +838,11 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 
 /* Selectores de gráficos - usar variables CSS para modo oscuro */
 .chart-period-select,
-.chart-category-select {
+.chart-category-select,
+.chart-category-filter,
+.chart-loan-filter,
+.chart-asset-filter,
+.chart-account-filter {
     padding: 6px 10px !important;
     border: 1.5px solid var(--border-color) !important;
     border-radius: var(--radius) !important;
@@ -850,14 +854,22 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 }
 
 .chart-period-select:focus,
-.chart-category-select:focus {
+.chart-category-select:focus,
+.chart-category-filter:focus,
+.chart-loan-filter:focus,
+.chart-asset-filter:focus,
+.chart-account-filter:focus {
     outline: none;
     border-color: var(--primary) !important;
     box-shadow: 0 0 0 2px var(--primary-light) !important;
 }
 
 .chart-period-select option,
-.chart-category-select option {
+.chart-category-select option,
+.chart-category-filter option,
+.chart-loan-filter option,
+.chart-asset-filter option,
+.chart-account-filter option {
     background: var(--bg-primary);
     color: var(--text-primary);
 }
