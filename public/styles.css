@@ -2199,8 +2199,39 @@ tbody tr:last-child td {
     .form-group select,
     .form-group textarea {
         padding: 12px 14px !important;
-        font-size: 16px !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
         min-height: 48px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Selectores de gráficos en móvil pequeño */
+    .chart-card > div:first-child {
+        flex-direction: column !important;
+        gap: 10px !important;
+        align-items: stretch !important;
+    }
+    
+    .chart-card > div:first-child > div {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .chart-card .chart-period-select,
+    .chart-card .chart-category-select,
+    .chart-card input[type="date"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+        margin-bottom: 8px !important;
+        padding: 10px 12px !important;
+    }
+    
+    .chart-card > div:first-child label {
+        font-size: 13px !important;
+        white-space: normal !important;
     }
     
     /* Tabs más compactos */
