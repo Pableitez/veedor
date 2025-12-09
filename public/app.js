@@ -303,6 +303,8 @@ if (!localStorage.getItem('veedor_language')) {
 
 function initializeApp() {
     console.log('=== INICIALIZANDO APLICACIÓN ===');
+    // Inicializar modo oscuro primero
+    initDarkMode();
     // Asegurar que el idioma esté en español por defecto
     if (!localStorage.getItem('veedor_language')) {
         localStorage.setItem('veedor_language', 'es');
