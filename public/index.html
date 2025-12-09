@@ -1043,56 +1043,198 @@
                     <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--gray-900);">📈 Gráficas</h2>
                 <div class="charts-container">
                     <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('savings', 'Evolución de Ahorro')">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Evolución de Ahorro</h3>
+                            <select class="chart-period-select" data-chart="savings" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                <option value="1">1 mes</option>
+                                <option value="3">3 meses</option>
+                                <option value="6" selected>6 meses</option>
+                                <option value="12">1 año</option>
+                                <option value="24">2 años</option>
+                                <option value="all">Todo</option>
+                                <option value="custom">Fecha personalizada</option>
+                            </select>
+                        </div>
+                        <div id="savingsCustomDateRange" style="display: none; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;" onclick="event.stopPropagation();">
+                            <input type="date" id="savingsStartDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
+                            <input type="date" id="savingsEndDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
                         </div>
                         <canvas id="savingsChart"></canvas>
                     </div>
                     <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('expenses', 'Gastos por Categoría')">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Gastos por Categoría</h3>
+                            <select class="chart-period-select" data-chart="expenses" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                <option value="1">1 mes</option>
+                                <option value="3">3 meses</option>
+                                <option value="6" selected>6 meses</option>
+                                <option value="12">1 año</option>
+                                <option value="24">2 años</option>
+                                <option value="all">Todo</option>
+                                <option value="custom">Fecha personalizada</option>
+                            </select>
+                        </div>
+                        <div id="expensesCustomDateRange" style="display: none; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;" onclick="event.stopPropagation();">
+                            <input type="date" id="expensesStartDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
+                            <input type="date" id="expensesEndDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
                         </div>
                         <canvas id="expensesChart"></canvas>
                     </div>
                     <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('incomeExpense', 'Ingresos vs Gastos')">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Ingresos vs Gastos</h3>
+                            <select class="chart-period-select" data-chart="incomeExpense" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                <option value="1">1 mes</option>
+                                <option value="3">3 meses</option>
+                                <option value="6" selected>6 meses</option>
+                                <option value="12">1 año</option>
+                                <option value="24">2 años</option>
+                                <option value="all">Todo</option>
+                                <option value="custom">Fecha personalizada</option>
+                            </select>
+                        </div>
+                        <div id="incomeExpenseCustomDateRange" style="display: none; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;" onclick="event.stopPropagation();">
+                            <input type="date" id="incomeExpenseStartDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
+                            <input type="date" id="incomeExpenseEndDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
                         </div>
                         <canvas id="incomeExpenseChart"></canvas>
                     </div>
                     <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('distribution', 'Distribución de Gastos')">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Distribución de Gastos</h3>
+                            <select class="chart-period-select" data-chart="distribution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                <option value="1">1 mes</option>
+                                <option value="3">3 meses</option>
+                                <option value="6" selected>6 meses</option>
+                                <option value="12">1 año</option>
+                                <option value="24">2 años</option>
+                                <option value="all">Todo</option>
+                                <option value="custom">Fecha personalizada</option>
+                            </select>
+                        </div>
+                        <div id="distributionCustomDateRange" style="display: none; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;" onclick="event.stopPropagation();">
+                            <input type="date" id="distributionStartDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
+                            <input type="date" id="distributionEndDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
                         </div>
                         <canvas id="distributionChart"></canvas>
                     </div>
                     <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('incomeEvolution', 'Evolución de Ingresos')">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Evolución de Ingresos</h3>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <select class="chart-period-select" data-chart="incomeEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                    <option value="1">1 mes</option>
+                                    <option value="3">3 meses</option>
+                                    <option value="6" selected>6 meses</option>
+                                    <option value="12">1 año</option>
+                                    <option value="24">2 años</option>
+                                    <option value="all">Todo</option>
+                                    <option value="custom">Fecha personalizada</option>
+                                </select>
+                                <select class="chart-category-filter" data-chart="incomeEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                    <option value="all">Todas las categorías</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="incomeEvolutionCustomDateRange" style="display: none; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;" onclick="event.stopPropagation();">
+                            <input type="date" id="incomeEvolutionStartDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
+                            <input type="date" id="incomeEvolutionEndDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
                         </div>
                         <canvas id="incomeEvolutionChart"></canvas>
                     </div>
                     <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('expensesEvolution', 'Evolución de Gastos')">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Evolución de Gastos</h3>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <select class="chart-period-select" data-chart="expensesEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                    <option value="1">1 mes</option>
+                                    <option value="3">3 meses</option>
+                                    <option value="6" selected>6 meses</option>
+                                    <option value="12">1 año</option>
+                                    <option value="24">2 años</option>
+                                    <option value="all">Todo</option>
+                                    <option value="custom">Fecha personalizada</option>
+                                </select>
+                                <select class="chart-category-filter" data-chart="expensesEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                    <option value="all">Todas las categorías</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="expensesEvolutionCustomDateRange" style="display: none; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;" onclick="event.stopPropagation();">
+                            <input type="date" id="expensesEvolutionStartDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
+                            <input type="date" id="expensesEvolutionEndDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
                         </div>
                         <canvas id="expensesEvolutionChart"></canvas>
                     </div>
                     <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('loansPending', 'Préstamos Pendientes')">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Préstamos Pendientes</h3>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <select class="chart-period-select" data-chart="loansPending" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                    <option value="1">1 mes</option>
+                                    <option value="3">3 meses</option>
+                                    <option value="6" selected>6 meses</option>
+                                    <option value="12">1 año</option>
+                                    <option value="24">2 años</option>
+                                    <option value="all">Todo</option>
+                                    <option value="custom">Fecha personalizada</option>
+                                </select>
+                                <select class="chart-loan-filter" data-chart="loansPending" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                    <option value="all">Todos los préstamos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="loansPendingCustomDateRange" style="display: none; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;" onclick="event.stopPropagation();">
+                            <input type="date" id="loansPendingStartDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
+                            <input type="date" id="loansPendingEndDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
                         </div>
                         <canvas id="loansPendingChart"></canvas>
                     </div>
                     <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('assetsEvolution', 'Evolución del Patrimonio')">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Evolución del Patrimonio</h3>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <select class="chart-period-select" data-chart="assetsEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                    <option value="1">1 mes</option>
+                                    <option value="3">3 meses</option>
+                                    <option value="6" selected>6 meses</option>
+                                    <option value="12">1 año</option>
+                                    <option value="24">2 años</option>
+                                    <option value="all">Todo</option>
+                                    <option value="custom">Fecha personalizada</option>
+                                </select>
+                                <select class="chart-asset-filter" data-chart="assetsEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                    <option value="all">Todos los bienes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="assetsEvolutionCustomDateRange" style="display: none; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;" onclick="event.stopPropagation();">
+                            <input type="date" id="assetsEvolutionStartDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
+                            <input type="date" id="assetsEvolutionEndDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
                         </div>
                         <canvas id="assetsEvolutionChart"></canvas>
                     </div>
                     <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('accountsBalance', 'Evolución de Saldo en Cuentas')">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Evolución de Saldo en Cuentas</h3>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <select class="chart-period-select" data-chart="accountsBalance" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                    <option value="1">1 mes</option>
+                                    <option value="3">3 meses</option>
+                                    <option value="6" selected>6 meses</option>
+                                    <option value="12">1 año</option>
+                                    <option value="24">2 años</option>
+                                    <option value="all">Todo</option>
+                                    <option value="custom">Fecha personalizada</option>
+                                </select>
+                                <select class="chart-account-filter" data-chart="accountsBalance" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;" onclick="event.stopPropagation();">
+                                    <option value="all">Todas las cuentas</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="accountsBalanceCustomDateRange" style="display: none; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;" onclick="event.stopPropagation();">
+                            <input type="date" id="accountsBalanceStartDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
+                            <input type="date" id="accountsBalanceEndDate" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; flex: 1; min-width: 140px;">
                         </div>
                         <canvas id="accountsBalanceChart"></canvas>
                     </div>

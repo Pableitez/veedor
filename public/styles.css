@@ -873,9 +873,12 @@ tbody tr:last-child td {
     border-radius: var(--radius-md);
     padding: 24px;
     transition: all 0.2s;
-    overflow: visible; /* Cambiado para que no corte contenido */
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    overflow: visible !important; /* Cambiado para que no corte contenido */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    min-height: auto !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 .envelope-card:hover {
@@ -1395,6 +1398,14 @@ tbody tr:last-child td {
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         min-height: auto !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+    
+    .envelopes-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
     }
     
     /* Texto dentro de cards en móvil */

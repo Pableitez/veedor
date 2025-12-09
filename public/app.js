@@ -4348,6 +4348,9 @@ function getSelectedPeriod(chartName = null) {
         const chartSelect = document.querySelector(`.chart-period-select[data-chart="${chartName}"]`);
         if (chartSelect) {
             const value = chartSelect.value;
+            if (value === 'custom') {
+                return 'custom';
+            }
             return value === 'all' ? 999 : parseInt(value) || 6;
         }
     }
@@ -4364,6 +4367,31 @@ function getTransactionsByPeriod(chartName = null) {
     
     if (period === 999) { // "all"
         return transactions;
+    }
+    
+    if (period === 'custom') {
+        // Obtener fechas personalizadas
+        const startDateInput = document.getElementById(`${chartName}StartDate`) || 
+                              document.querySelector(`#${chartName}StartDate`);
+        const endDateInput = document.getElementById(`${chartName}EndDate`) || 
+                            document.querySelector(`#${chartName}EndDate`);
+        
+        if (startDateInput && endDateInput && startDateInput.value && endDateInput.value) {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            endDate.setHours(23, 59, 59, 999); // Incluir todo el día final
+            
+            return transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate >= startDate && tDate <= endDate;
+            });
+        }
+        // Si no hay fechas seleccionadas, usar período por defecto
+        const startDate = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate >= startDate;
+        });
     }
     
     const startDate = new Date(now.getFullYear(), now.getMonth() - period, 1);
