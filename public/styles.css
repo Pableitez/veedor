@@ -811,10 +811,11 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 
 .table-section h2 {
     margin-bottom: 20px;
-    color: var(--gray-900);
+    color: var(--text-primary);
     font-size: 20px;
     font-weight: 700;
     letter-spacing: -0.3px;
+    transition: color 0.3s;
 }
 
 .table-controls {
@@ -1812,29 +1813,51 @@ tbody tr:last-child td {
     .table-section {
         margin-bottom: 24px !important;
         overflow: visible !important;
+        padding: 0 !important;
+    }
+    
+    .table-section h2 {
+        font-size: 18px !important;
+        margin-bottom: 16px !important;
+        padding: 0 4px !important;
+    }
+    
+    .table-section h3 {
+        font-size: 16px !important;
+        margin-bottom: 12px !important;
+        padding: 0 4px !important;
     }
     
     .table-container {
-        margin: 0 !important;
+        margin: 0 -12px !important;
+        padding: 0 12px !important;
         border-radius: 8px !important;
         overflow-x: auto !important;
         overflow-y: visible !important;
         -webkit-overflow-scrolling: touch !important;
+        width: calc(100% + 24px) !important;
     }
     
     .table-container table {
         min-width: 600px;
+        font-size: 12px !important;
     }
     
     .table-container th,
     .table-container td {
-        padding: 10px 8px !important;
-        font-size: 13px !important;
+        padding: 10px 6px !important;
+        font-size: 12px !important;
     }
     
     .table-container th {
-        font-size: 12px !important;
+        font-size: 11px !important;
         white-space: nowrap;
+        padding: 8px 6px !important;
+    }
+    
+    /* Contenedor del análisis detallado */
+    #charts-tab > div:last-child {
+        padding: 0 4px !important;
     }
     
     /* Eliminar scroll innecesario en contenedores de análisis */
