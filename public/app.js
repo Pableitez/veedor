@@ -4604,7 +4604,7 @@ function updateDistributionChart() {
     charts.distribution.update();
 }
 
-// Gráfica de evolución de ingresos
+// Gráfica de evolución de ingresos por categoría
 function updateIncomeEvolutionChart() {
     if (!charts.incomeEvolution) return;
     
@@ -4612,17 +4612,32 @@ function updateIncomeEvolutionChart() {
     const period = getSelectedPeriod();
     const now = new Date();
     const months = [];
-    const incomeData = [];
     
-    if (period === 999) {
-        // Todo el historial
-        if (periodTransactions.length === 0) {
-            charts.incomeEvolution.data.labels = [];
-            charts.incomeEvolution.data.datasets = [];
-            charts.incomeEvolution.update();
-            return;
+    if (periodTransactions.length === 0) {
+        charts.incomeEvolution.data.labels = [];
+        charts.incomeEvolution.data.datasets = [];
+        charts.incomeEvolution.update();
+        return;
+    }
+    
+    // Obtener todas las categorías de ingresos únicas
+    const incomeCategories = {};
+    periodTransactions.filter(t => t.type === 'income').forEach(t => {
+        let catName;
+        const incomeCat = categories.income.find(c => c.id === t.categoryGeneral);
+        if (incomeCat) {
+            catName = incomeCat.name;
+        } else {
+            const customCat = customCategories.income.find(c => c.id === t.categoryGeneral);
+            catName = customCat ? customCat.name : t.categoryGeneral;
         }
-        
+        if (!incomeCategories[catName]) {
+            incomeCategories[catName] = [];
+        }
+    });
+    
+    // Generar meses
+    if (period === 999) {
         const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
         let currentMonth = firstDate.getMonth();
         let currentYear = firstDate.getFullYear();
@@ -4634,13 +4649,29 @@ function updateIncomeEvolutionChart() {
             const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
             months.push(monthKey);
             
+            // Calcular ingresos por categoría para este mes
             const monthTransactions = periodTransactions.filter(t => {
                 const tDate = new Date(t.date);
-                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'income';
             });
             
-            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-            incomeData.push(monthIncome);
+            Object.keys(incomeCategories).forEach(catName => {
+                if (!incomeCategories[catName]) incomeCategories[catName] = [];
+                const catIncome = monthTransactions
+                    .filter(t => {
+                        let tCatName;
+                        const incomeCat = categories.income.find(c => c.id === t.categoryGeneral);
+                        if (incomeCat) {
+                            tCatName = incomeCat.name;
+                        } else {
+                            const customCat = customCategories.income.find(c => c.id === t.categoryGeneral);
+                            tCatName = customCat ? customCat.name : t.categoryGeneral;
+                        }
+                        return tCatName === catName;
+                    })
+                    .reduce((sum, t) => sum + t.amount, 0);
+                incomeCategories[catName].push(catIncome);
+            });
             
             currentMonth++;
             if (currentMonth > 11) {
@@ -4656,18 +4687,56 @@ function updateIncomeEvolutionChart() {
             
             const monthTransactions = periodTransactions.filter(t => {
                 const tDate = new Date(t.date);
-                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear();
+                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear() && t.type === 'income';
             });
             
-            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-            incomeData.push(monthIncome);
+            Object.keys(incomeCategories).forEach(catName => {
+                if (!incomeCategories[catName]) incomeCategories[catName] = [];
+                const catIncome = monthTransactions
+                    .filter(t => {
+                        let tCatName;
+                        const incomeCat = categories.income.find(c => c.id === t.categoryGeneral);
+                        if (incomeCat) {
+                            tCatName = incomeCat.name;
+                        } else {
+                            const customCat = customCategories.income.find(c => c.id === t.categoryGeneral);
+                            tCatName = customCat ? customCat.name : t.categoryGeneral;
+                        }
+                        return tCatName === catName;
+                    })
+                    .reduce((sum, t) => sum + t.amount, 0);
+                incomeCategories[catName].push(catIncome);
+            });
         }
     }
     
+    // Colores para las categorías
+    const colors = [
+        '#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444',
+        '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6366f1'
+    ];
+    
+    // Crear datasets para cada categoría
+    const datasets = Object.keys(incomeCategories).map((catName, index) => {
+        const data = incomeCategories[catName];
+        // Solo mostrar categorías que tengan al menos un valor > 0
+        const hasData = data.some(v => v > 0);
+        if (!hasData) return null;
+        
+        return {
+            label: catName,
+            data: data,
+            borderColor: colors[index % colors.length],
+            backgroundColor: colors[index % colors.length] + '20',
+            tension: 0.4,
+            fill: false
+        };
+    }).filter(d => d !== null);
+    
     charts.incomeEvolution.data.labels = months;
-    charts.incomeEvolution.data.datasets = [{
+    charts.incomeEvolution.data.datasets = datasets.length > 0 ? datasets : [{
         label: 'Ingresos',
-        data: incomeData,
+        data: new Array(months.length).fill(0),
         borderColor: '#10b981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
         tension: 0.4,
@@ -4676,7 +4745,7 @@ function updateIncomeEvolutionChart() {
     charts.incomeEvolution.update();
 }
 
-// Gráfica de evolución de gastos
+// Gráfica de evolución de gastos por categoría
 function updateExpensesEvolutionChart() {
     if (!charts.expensesEvolution) return;
     
@@ -4684,16 +4753,32 @@ function updateExpensesEvolutionChart() {
     const period = getSelectedPeriod();
     const now = new Date();
     const months = [];
-    const expensesData = [];
     
-    if (period === 999) {
-        if (periodTransactions.length === 0) {
-            charts.expensesEvolution.data.labels = [];
-            charts.expensesEvolution.data.datasets = [];
-            charts.expensesEvolution.update();
-            return;
+    if (periodTransactions.length === 0) {
+        charts.expensesEvolution.data.labels = [];
+        charts.expensesEvolution.data.datasets = [];
+        charts.expensesEvolution.update();
+        return;
+    }
+    
+    // Obtener todas las categorías de gastos únicas
+    const expenseCategories = {};
+    periodTransactions.filter(t => t.type === 'expense').forEach(t => {
+        let catName;
+        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+        if (expenseCat) {
+            catName = expenseCat.name;
+        } else {
+            const customCat = customCategories.expense.find(c => c.id === t.categoryGeneral);
+            catName = customCat ? customCat.name : t.categoryGeneral;
         }
-        
+        if (!expenseCategories[catName]) {
+            expenseCategories[catName] = [];
+        }
+    });
+    
+    // Generar meses
+    if (period === 999) {
         const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
         let currentMonth = firstDate.getMonth();
         let currentYear = firstDate.getFullYear();
@@ -4705,13 +4790,29 @@ function updateExpensesEvolutionChart() {
             const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
             months.push(monthKey);
             
+            // Calcular gastos por categoría para este mes
             const monthTransactions = periodTransactions.filter(t => {
                 const tDate = new Date(t.date);
-                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'expense';
             });
             
-            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
-            expensesData.push(monthExpenses);
+            Object.keys(expenseCategories).forEach(catName => {
+                if (!expenseCategories[catName]) expenseCategories[catName] = [];
+                const catExpenses = Math.abs(monthTransactions
+                    .filter(t => {
+                        let tCatName;
+                        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+                        if (expenseCat) {
+                            tCatName = expenseCat.name;
+                        } else {
+                            const customCat = customCategories.expense.find(c => c.id === t.categoryGeneral);
+                            tCatName = customCat ? customCat.name : t.categoryGeneral;
+                        }
+                        return tCatName === catName;
+                    })
+                    .reduce((sum, t) => sum + t.amount, 0));
+                expenseCategories[catName].push(catExpenses);
+            });
             
             currentMonth++;
             if (currentMonth > 11) {
@@ -4727,18 +4828,56 @@ function updateExpensesEvolutionChart() {
             
             const monthTransactions = periodTransactions.filter(t => {
                 const tDate = new Date(t.date);
-                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear();
+                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear() && t.type === 'expense';
             });
             
-            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
-            expensesData.push(monthExpenses);
+            Object.keys(expenseCategories).forEach(catName => {
+                if (!expenseCategories[catName]) expenseCategories[catName] = [];
+                const catExpenses = Math.abs(monthTransactions
+                    .filter(t => {
+                        let tCatName;
+                        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+                        if (expenseCat) {
+                            tCatName = expenseCat.name;
+                        } else {
+                            const customCat = customCategories.expense.find(c => c.id === t.categoryGeneral);
+                            tCatName = customCat ? customCat.name : t.categoryGeneral;
+                        }
+                        return tCatName === catName;
+                    })
+                    .reduce((sum, t) => sum + t.amount, 0));
+                expenseCategories[catName].push(catExpenses);
+            });
         }
     }
     
+    // Colores para las categorías
+    const colors = [
+        '#ef4444', '#f59e0b', '#8b5cf6', '#3b82f6', '#10b981',
+        '#ec4899', '#6366f1', '#06b6d4', '#84cc16', '#f97316'
+    ];
+    
+    // Crear datasets para cada categoría
+    const datasets = Object.keys(expenseCategories).map((catName, index) => {
+        const data = expenseCategories[catName];
+        // Solo mostrar categorías que tengan al menos un valor > 0
+        const hasData = data.some(v => v > 0);
+        if (!hasData) return null;
+        
+        return {
+            label: catName,
+            data: data,
+            borderColor: colors[index % colors.length],
+            backgroundColor: colors[index % colors.length] + '20',
+            tension: 0.4,
+            fill: false
+        };
+    }).filter(d => d !== null);
+    
     charts.expensesEvolution.data.labels = months;
-    charts.expensesEvolution.data.datasets = [{
+    charts.expensesEvolution.data.datasets = datasets.length > 0 ? datasets : [{
         label: 'Gastos',
-        data: expensesData,
+        data: new Array(months.length).fill(0),
         borderColor: '#ef4444',
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
         tension: 0.4,
@@ -6204,6 +6343,34 @@ async function saveUserProfile() {
     }
 }
 
+// Eliminar cuenta de usuario
+async function deleteUserAccount() {
+    const confirmed = confirm('⚠️ ¿Estás seguro de que quieres eliminar tu cuenta?\n\nEsta acción eliminará:\n- Todas tus transacciones\n- Todas tus cuentas bancarias\n- Todos tus sobres y presupuestos\n- Todos tus préstamos\n- Todas tus inversiones\n- Todas tus propiedades\n- Todos tus bienes\n\nEsta acción NO se puede deshacer.\n\n¿Deseas continuar?');
+    
+    if (!confirmed) return;
+    
+    const doubleConfirm = confirm('⚠️ ÚLTIMA CONFIRMACIÓN\n\nEstás a punto de eliminar permanentemente tu cuenta y todos tus datos.\n\n¿Estás completamente seguro?');
+    
+    if (!doubleConfirm) return;
+    
+    try {
+        await apiRequest('/user', {
+            method: 'DELETE'
+        });
+        
+        alert('✅ Tu cuenta ha sido eliminada exitosamente. Serás redirigido a la página de inicio.');
+        
+        // Limpiar datos locales
+        localStorage.removeItem('veedor_token');
+        localStorage.removeItem('veedor_user');
+        
+        // Redirigir a la página de inicio
+        window.location.href = '/';
+    } catch (error) {
+        alert('Error al eliminar cuenta: ' + error.message);
+    }
+}
+
 // Mostrar detalles de resumen
 function showSummaryDetails(type) {
     const modal = document.getElementById('summaryDetailsModal');
@@ -6468,6 +6635,7 @@ async function deleteSavingsGoal() {
 // Exponer funciones globales
 window.showUserProfile = showUserProfile;
 window.closeUserProfile = closeUserProfile;
+window.deleteUserAccount = deleteUserAccount;
 window.showSummaryDetails = showSummaryDetails;
 window.closeSummaryDetails = closeSummaryDetails;
 window.showPrivacyModal = showPrivacyModal;

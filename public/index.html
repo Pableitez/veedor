@@ -1201,9 +1201,12 @@
                     <textarea id="profileNotes" rows="4" placeholder="Cualquier información adicional que quieras guardar..." style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; font-family: inherit; resize: vertical;"></textarea>
                 </div>
                 
-                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 24px; padding-bottom: 8px; border-top: 1px solid var(--border-color);">
-                    <button type="button" class="btn-secondary" onclick="closeUserProfile(); return false;">Cancelar</button>
-                    <button type="submit" class="btn-primary">💾 Guardar Cambios</button>
+                <div style="display: flex; gap: 12px; justify-content: space-between; margin-top: 24px; padding-top: 24px; padding-bottom: 8px; border-top: 1px solid var(--border-color);">
+                    <button type="button" class="btn-danger" onclick="deleteUserAccount(); return false;" style="background: #ef4444; color: white; border: none;">🗑️ Eliminar Cuenta</button>
+                    <div style="display: flex; gap: 12px;">
+                        <button type="button" class="btn-secondary" onclick="closeUserProfile(); return false;">Cancelar</button>
+                        <button type="submit" class="btn-primary">💾 Guardar Cambios</button>
+                    </div>
                 </div>
             </form>
         </div>

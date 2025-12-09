@@ -1258,6 +1258,31 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
     }
 });
 
+// Eliminar usuario y todos sus datos
+app.delete('/api/user', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        
+        // Eliminar todos los datos asociados al usuario
+        await Transaction.deleteMany({ user_id: userId });
+        await Envelope.deleteMany({ user_id: userId });
+        await Budget.deleteMany({ user_id: userId });
+        await Loan.deleteMany({ user_id: userId });
+        await Investment.deleteMany({ user_id: userId });
+        await Account.deleteMany({ user_id: userId });
+        await Property.deleteMany({ user_id: userId });
+        await Asset.deleteMany({ user_id: userId });
+        
+        // Eliminar el usuario
+        await User.findByIdAndDelete(userId);
+        
+        res.json({ message: 'Usuario y todos sus datos eliminados exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando usuario:', error);
+        res.status(500).json({ error: 'Error al eliminar usuario' });
+    }
+});
+
 // ==================== RUTAS DE TRANSACCIONES ====================
 
 // Obtener todas las transacciones del usuario
