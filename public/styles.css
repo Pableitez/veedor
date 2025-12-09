@@ -883,17 +883,19 @@ tbody tr:last-child td {
 }
 
 .envelope-card {
-    background: var(--bg-primary);
+    background: white;
     border: 1.5px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: 24px;
-    transition: all 0.2s;
-    overflow: visible !important; /* Cambiado para que no corte contenido */
+    padding: 28px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     min-height: auto !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
+    position: relative;
 }
 
 .envelope-card:hover {
