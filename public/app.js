@@ -642,7 +642,7 @@ async function requestPasswordReset() {
                             <span style="font-size: 16px;">✅</span>
                             <strong style="color: var(--gray-900); font-size: 13px;">Código generado (válido 1h)</strong>
                         </div>
-                        <div style="background: white; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--primary); margin: 6px 0; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                        <div style="background: var(--bg-primary); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--primary); margin: 6px 0; display: flex; align-items: center; justify-content: space-between; gap: 6px; color: var(--text-primary);">
                             <code style="font-size: 10px; font-weight: 600; color: var(--primary); word-break: break-all; flex: 1; font-family: 'Courier New', monospace; line-height: 1.3;">${data.token}</code>
                             <button type="button" onclick="event.preventDefault(); event.stopPropagation(); const token = '${data.token}'; navigator.clipboard.writeText(token).then(() => { const btn = event.target; btn.textContent='✓'; setTimeout(() => { btn.textContent='📋'; }, 2000); }).catch(err => console.error('Error copiando:', err));" style="background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; flex-shrink: 0;" title="Copiar">📋</button>
                         </div>
@@ -780,7 +780,7 @@ async function register() {
     
     try {
         errorMsg.textContent = getTranslation('auth.registering', lang);
-        errorMsg.style.color = '#666';
+        errorMsg.style.color = 'var(--text-tertiary)';
         console.log('Enviando registro a:', `${API_URL}/register`);
         console.log('URL completa:', window.location.origin + API_URL + '/register');
         console.log('Datos:', { email, username, password: '***' });
@@ -3103,7 +3103,7 @@ function updateLoans() {
                     ${loan.tae ? `
                         <div><strong>TAE (Costo Real):</strong></div>
                         <div style="color: ${loan.tae > loan.interest_rate ? '#ef4444' : '#10b981'}; font-weight: 700;">${loan.tae}%</div>
-                        <div style="grid-column: 1/-1; font-size: 11px; color: #666; margin-top: 4px; padding: 6px; background: rgba(255,255,255,0.7); border-radius: 4px;">
+                        <div style="grid-column: 1/-1; font-size: 11px; color: var(--text-tertiary); margin-top: 4px; padding: 6px; background: var(--bg-tertiary); border-radius: 4px; border: 1px solid var(--border-color);">
                             ⚠️ Diferencia: ${(loan.tae - loan.interest_rate).toFixed(2)}% adicional por comisiones y gastos
                         </div>
                     ` : ''}
@@ -3136,7 +3136,7 @@ function updateLoans() {
                             <span>💰 Costo Real del Préstamo:</span>
                             <span style="color: ${loan.type === 'debt' ? '#ef4444' : '#10b981'}; font-size: 16px;">${formatCurrency(realCost)}</span>
                         </div>
-                        <div style="font-size: 11px; color: #666;">
+                        <div style="font-size: 11px; color: var(--text-tertiary);">
                             Intereses (${formatCurrency(totalInterestProjected)}) + Comisiones (${formatCurrency(totalCommissions)})
                         </div>
                     </div>
@@ -3176,7 +3176,7 @@ function updateLoans() {
                 </div>
             ` : ''}
             
-            ${loan.description ? `<div style="margin: 10px 0; font-size: 12px; color: #666; font-style: italic;">${loan.description}</div>` : ''}
+            ${loan.description ? `<div style="margin: 10px 0; font-size: 12px; color: var(--text-tertiary); font-style: italic;">${loan.description}</div>` : ''}
             
             <!-- Cuadro de amortización - Próximas cuotas -->
             <div style="margin: 16px 0; padding: 12px; background: var(--gray-50); border-radius: 6px;">
@@ -3195,7 +3195,7 @@ function updateLoans() {
                         </thead>
                         <tbody>
                             ${amortization.table.slice(0, 12).map((row, idx) => `
-                                <tr style="border-bottom: 1px solid var(--gray-200); ${idx % 2 === 0 ? '' : 'background: white;'}">
+                                <tr style="border-bottom: 1px solid var(--border-color); ${idx % 2 === 0 ? '' : 'background: var(--bg-tertiary);'}">
                                     <td style="padding: 6px; font-weight: 600;">${row.month}</td>
                                     <td style="padding: 6px; text-align: right; color: var(--gray-700);">${formatDate(row.date)}</td>
                                     <td style="padding: 6px; text-align: right; font-weight: 600;">${formatCurrency(row.payment)}</td>
@@ -3296,7 +3296,7 @@ function showLoanDetails(loanId) {
         </div>
         
         <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius); overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; background: var(--bg-primary); border-radius: var(--radius); overflow: hidden; color: var(--text-primary);">
                 <thead>
                     <tr style="background: var(--primary); color: white;">
                         <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px;">Mes</th>
@@ -3313,7 +3313,7 @@ function showLoanDetails(loanId) {
     amortization.table.forEach((row, index) => {
         const isEven = index % 2 === 0;
         contentHTML += `
-            <tr style="border-bottom: 1px solid var(--gray-200); background: ${isEven ? 'white' : 'var(--gray-50)'};">
+            <tr style="border-bottom: 1px solid var(--border-color); background: ${isEven ? 'var(--bg-primary)' : 'var(--bg-tertiary)'};">
                 <td style="padding: 10px; font-weight: 600; color: var(--gray-900);">${row.month}</td>
                 <td style="padding: 10px; text-align: right; color: var(--gray-700);">${formatDate(row.date)}</td>
                 <td style="padding: 10px; text-align: right; font-weight: 600; color: var(--gray-900);">${formatCurrency(row.payment)}</td>
@@ -3924,7 +3924,8 @@ function updateProperties() {
     properties.forEach(property => {
         const card = document.createElement('div');
         card.className = 'envelope-card';
-        card.style.background = 'white';
+        card.style.background = 'var(--bg-primary)';
+        card.style.color = 'var(--text-primary)';
         card.style.border = '1px solid var(--border-color)';
         card.style.borderRadius = 'var(--radius-md)';
         card.style.padding = '20px';
@@ -7883,7 +7884,7 @@ function showFinancialHealthDetail(metric, index) {
     // Agregar detalles específicos según la métrica
     if (index === 0) { // Deuda Pendiente
         detailContent += `
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'};">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'}; color: var(--text-primary); border: 1px solid var(--border-color);">
                 <strong>Préstamos Activos:</strong> ${activeDebtLoans.length} ${hasActiveDebts ? '(Hay deudas activas)' : '(Sin deudas activas)'}
             </div>
             <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
@@ -7895,7 +7896,7 @@ function showFinancialHealthDetail(metric, index) {
         `;
     } else if (index === 1) { // Ratio de Endeudamiento
         detailContent += `
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'};">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'}; color: var(--text-primary); border: 1px solid var(--border-color);">
                 <strong>Préstamos Activos:</strong> ${activeDebtLoans.length} ${hasActiveDebts ? '(Hay deudas activas)' : '(Sin deudas activas)'}
             </div>
             <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
@@ -7910,7 +7911,7 @@ function showFinancialHealthDetail(metric, index) {
         `;
     } else if (index === 2) { // Salud Financiera
         detailContent += `
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'};">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'}; color: var(--text-primary); border: 1px solid var(--border-color);">
                 <strong>Préstamos Activos:</strong> ${activeDebtLoans.length} ${hasActiveDebts ? '(Hay deudas activas)' : '(Sin deudas activas)'}
             </div>
             <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">

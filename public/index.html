@@ -274,9 +274,9 @@
                             <input type="month" id="dashboardMonth" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s;">
                             <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--text-tertiary);" data-translate="dashboard.monthAnalysisHint">Selecciona un mes para ver el análisis detallado</small>
                         </div>
-                        <div style="background: white; padding: 16px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
-                            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;" data-translate="dashboard.summaryView">📊 Vista de Resumen</label>
-                            <select id="summaryPeriod" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s; margin-bottom: 8px;">
+                        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;" data-translate="dashboard.summaryView">📊 Vista de Resumen</label>
+                            <select id="summaryPeriod" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; margin-bottom: 8px;">
                                 <option value="month" data-translate="dashboard.thisMonth">Este Mes</option>
                                 <option value="year" data-translate="dashboard.thisYear">Este Año</option>
                                 <option value="year-select" data-translate="dashboard.specificYear">Año Específico</option>
@@ -482,10 +482,10 @@
             <div class="tab-content" id="properties-tab">
                 <div class="form-section">
                     <h2 style="margin-bottom: 24px;">🏘️ Gestionar Propiedades/Pisos</h2>
-                    <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px;">
+                    <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">Registra tus propiedades o pisos para asociar gastos específicos a cada una (agua, luz, comunidad, etc.).</p>
                     </div>
-                    <form id="propertyForm" style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                    <form id="propertyForm" style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="propertyName">Nombre de la Propiedad</label>
@@ -527,10 +527,10 @@
             <div class="tab-content" id="accounts-tab">
                 <div class="form-section">
                     <h2 style="margin-bottom: 24px;">🏦 Gestionar Cuentas Bancarias</h2>
-                    <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px;">
+                    <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">Registra tus cuentas bancarias para hacer seguimiento de tus saldos en diferentes entidades y tipos de cuenta.</p>
                     </div>
-                    <form id="accountForm" style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                    <form id="accountForm" style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="accountName">Nombre de la Cuenta</label>
@@ -579,7 +579,7 @@
                 <div class="form-section">
                     <h2 style="margin-bottom: 24px;">📋 Gestionar Presupuestos y Sobres</h2>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 24px;" class="budgets-form-grid">
-                        <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); overflow: visible; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
+                        <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); overflow: visible; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box; color: var(--text-primary);">
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
                                 <span style="font-size: 20px;">📊</span>
                                 <h3 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--gray-900);">Presupuesto por Categoría</h3>
@@ -641,7 +641,7 @@
                                 <button type="submit" class="btn-primary" style="width: 100%; margin-top: 8px;">💾 Establecer Presupuesto</button>
                             </form>
                         </div>
-                        <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                        <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
                                 <span style="font-size: 20px;">📦</span>
                                 <h3 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--gray-900);">Sobre (Presupuesto Flexible)</h3>
@@ -725,10 +725,10 @@
                             </div>
                         </div>
                     </div>
-                    <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px;">
+                    <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">Registra tus préstamos e hipotecas para hacer un seguimiento del capital restante, intereses y realizar simulaciones de amortización anticipada.</p>
                     </div>
-                    <form id="loanForm" style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                    <form id="loanForm" style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="loanName">Nombre del Préstamo</label>
@@ -750,12 +750,12 @@
                             <div class="form-group">
                                 <label for="loanInterestRate">TIN - Tipo de Interés Nominal (%)</label>
                                 <input type="number" id="loanInterestRate" step="0.01" min="0" max="100" required>
-                                <small style="color: #666;">Interés puro sin comisiones</small>
+                                <small style="color: var(--text-tertiary);">Interés puro sin comisiones</small>
                             </div>
                             <div class="form-group">
                                 <label for="loanTAE">TAE - Tasa Anual Equivalente (%)</label>
                                 <input type="number" id="loanTAE" step="0.01" min="0" max="100" placeholder="Opcional">
-                                <small style="color: #666; font-weight: 600;">⚠️ IMPORTANTE: Incluye comisiones y gastos. Es el costo REAL del préstamo.</small>
+                                <small style="color: var(--text-tertiary); font-weight: 600;">⚠️ IMPORTANTE: Incluye comisiones y gastos. Es el costo REAL del préstamo.</small>
                             </div>
                         </div>
                         <div class="form-row">
@@ -803,10 +803,10 @@
             <div class="tab-content" id="investments-tab">
                 <div class="form-section">
                     <h2 style="margin-bottom: 24px;">📈 Gestionar Inversiones</h2>
-                    <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px;">
+                    <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">Registra tus inversiones para hacer seguimiento de su rendimiento, ganancias/pérdidas y rentabilidad total.</p>
                     </div>
-                    <form id="investmentForm" style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                    <form id="investmentForm" style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="investmentName">Nombre de la Inversión</label>
@@ -887,10 +887,10 @@
             <div class="tab-content" id="assets-tab">
                 <div class="form-section">
                     <h2 style="margin-bottom: 24px;">🏠 Gestionar Patrimonio</h2>
-                    <div style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px;">
+                    <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--gray-600); margin-bottom: 20px;">Registra tus bienes (viviendas, vehículos, joyas, etc.) y haz seguimiento de la evolución de su valor a lo largo del tiempo.</p>
                     </div>
-                    <form id="assetForm" style="background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
+                    <form id="assetForm" style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="assetName">Nombre del Bien</label>
@@ -941,7 +941,7 @@
 
             <!-- Tab: Análisis -->
             <div class="tab-content" id="charts-tab">
-                <div class="chart-controls" style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <div class="chart-controls" style="margin-bottom: 20px; padding: 15px; background: var(--bg-primary); border-radius: 8px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; border: 1px solid var(--border-color); color: var(--text-primary);">
                     <label style="font-weight: 600;">Período:</label>
                     <select id="chartPeriod" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
                         <option value="1">Último mes</option>
@@ -1262,7 +1262,7 @@
             <form id="customCategoryForm" style="padding: 28px; display: flex; flex-direction: column; gap: 20px;">
                 <div class="form-group">
                     <label for="customCategoryType" style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--gray-700); font-size: 14px;">Tipo de Categoría</label>
-                    <select id="customCategoryType" required style="width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+                    <select id="customCategoryType" required style="width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border-color)'">
                         <option value="">Seleccionar tipo...</option>
                         <option value="income">Ingreso</option>
                         <option value="expense">Gasto</option>
@@ -1271,7 +1271,7 @@
                 </div>
                 <div class="form-group">
                     <label for="customCategoryParent" style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--gray-700); font-size: 14px;">Categoría Padre (Opcional)</label>
-                    <select id="customCategoryParent" style="width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--gray-300)'">
+                    <select id="customCategoryParent" style="width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border-color)'">
                         <option value="">Crear nueva categoría</option>
                     </select>
                     <small style="display: block; margin-top: 6px; color: var(--gray-500); font-size: 12px;">Selecciona una categoría existente para agregar subcategorías, o déjalo vacío para crear una nueva categoría</small>
