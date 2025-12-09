@@ -140,6 +140,156 @@ async function apiRequest(endpoint, options = {}) {
     }
 }
 
+// ==================== SISTEMA DE NOTIFICACIONES TOAST ====================
+function showToast(message, type = 'info', duration = 4000) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        background: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 300px;
+        max-width: 500px;
+        pointer-events: auto;
+        animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-left: 4px solid;
+        position: relative;
+        overflow: hidden;
+    `;
+    
+    const colors = {
+        success: { border: '#10b981', bg: '#f0fdf4', icon: '✅', text: '#065f46' },
+        error: { border: '#ef4444', bg: '#fef2f2', icon: '❌', text: '#991b1b' },
+        warning: { border: '#f59e0b', bg: '#fffbeb', icon: '⚠️', text: '#92400e' },
+        info: { border: '#6366f1', bg: '#eef2ff', icon: 'ℹ️', text: '#3730a3' }
+    };
+    
+    const style = colors[type] || colors.info;
+    toast.style.borderLeftColor = style.border;
+    toast.style.background = style.bg;
+    
+    toast.innerHTML = `
+        <span style="font-size: 20px; flex-shrink: 0;">${style.icon}</span>
+        <span style="flex: 1; color: ${style.text}; font-size: 14px; font-weight: 500; line-height: 1.4;">${message}</span>
+        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: ${style.text}; font-size: 18px; cursor: pointer; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">×</button>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+
+// Exponer función global
+window.showToast = showToast;
+
+// ==================== SISTEMA DE CONFIRMACIÓN ====================
+function showConfirm(title, message, confirmText = 'Confirmar', cancelText = 'Cancelar') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirmModal');
+        const titleEl = document.getElementById('confirmModalTitle');
+        const messageEl = document.getElementById('confirmModalMessage');
+        const confirmBtn = document.getElementById('confirmModalConfirm');
+        const cancelBtn = document.getElementById('confirmModalCancel');
+        
+        if (!modal || !titleEl || !messageEl || !confirmBtn || !cancelBtn) {
+            resolve(false);
+            return;
+        }
+        
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        confirmBtn.textContent = confirmText;
+        cancelBtn.textContent = cancelText;
+        
+        modal.style.display = 'flex';
+        
+        const handleConfirm = () => {
+            modal.style.display = 'none';
+            confirmBtn.onclick = null;
+            cancelBtn.onclick = null;
+            resolve(true);
+        };
+        
+        const handleCancel = () => {
+            modal.style.display = 'none';
+            confirmBtn.onclick = null;
+            cancelBtn.onclick = null;
+            resolve(false);
+        };
+        
+        confirmBtn.onclick = handleConfirm;
+        cancelBtn.onclick = handleCancel;
+        
+        // Cerrar al hacer click fuera del modal
+        modal.onclick = (e) => {
+            if (e.target === modal) handleCancel();
+        };
+    });
+}
+
+// Exponer función global
+window.showConfirm = showConfirm;
+
+// ==================== INDICADORES DE CARGA ====================
+function showLoader(text = 'Cargando...') {
+    const loader = document.getElementById('globalLoader');
+    const loaderText = document.getElementById('globalLoaderText');
+    if (loader) {
+        if (loaderText) loaderText.textContent = text;
+        loader.style.display = 'flex';
+    }
+}
+
+function hideLoader() {
+    const loader = document.getElementById('globalLoader');
+    if (loader) {
+        loader.style.display = 'none';
+    }
+}
+
+// Exponer funciones globales
+window.showLoader = showLoader;
+window.hideLoader = hideLoader;
+
+// ==================== MODO OSCURO ====================
+function toggleDarkMode() {
+    const body = document.body;
+    const isDark = body.classList.contains('dark-mode');
+    
+    if (isDark) {
+        body.classList.remove('dark-mode');
+        localStorage.setItem('veedor_darkMode', 'false');
+        const toggleText = document.getElementById('darkModeToggleText');
+        if (toggleText) toggleText.textContent = '🌙 Modo Oscuro';
+    } else {
+        body.classList.add('dark-mode');
+        localStorage.setItem('veedor_darkMode', 'true');
+        const toggleText = document.getElementById('darkModeToggleText');
+        if (toggleText) toggleText.textContent = '☀️ Modo Claro';
+    }
+}
+
+function initDarkMode() {
+    const savedMode = localStorage.getItem('veedor_darkMode');
+    if (savedMode === 'true') {
+        document.body.classList.add('dark-mode');
+        const toggleText = document.getElementById('darkModeToggleText');
+        if (toggleText) toggleText.textContent = '☀️ Modo Claro';
+    }
+}
+
+// Exponer función global
+window.toggleDarkMode = toggleDarkMode;
+
 // Inicialización - Ejecutar inmediatamente
 console.log('🚀 app.js ejecutándose...');
 console.log('Estado del DOM:', document.readyState);
@@ -1913,7 +2063,7 @@ async function addTransaction() {
         console.log('✅ Validando campos requeridos...');
         if (!type || !date || !amountInput || !categoryGeneral || !categorySpecific) {
             console.error('❌ Validación fallida - campos requeridos faltantes');
-            alert('Por favor completa todos los campos requeridos');
+            showToast('Por favor completa todos los campos requeridos', 'warning');
             return;
         }
         
@@ -1921,7 +2071,7 @@ async function addTransaction() {
         const amount = parseFloat(amountInput);
         if (isNaN(amount) || amount <= 0) {
             console.error('❌ Validación fallida - monto inválido:', amountInput);
-            alert('Por favor ingresa un monto válido mayor a 0');
+            showToast('Por favor ingresa un monto válido mayor a 0', 'warning');
             return;
         }
         console.log('✅ Monto válido:', amount);
@@ -2724,15 +2874,24 @@ function updateMonthFilter() {
 
 // Eliminar transacción
 async function deleteTransaction(id) {
-    if (!confirm('¿Estás seguro de eliminar esta transacción?')) return;
+    const confirmed = await showConfirm(
+        'Eliminar Transacción',
+        '¿Estás seguro de eliminar esta transacción? Esta acción no se puede deshacer.',
+        'Eliminar',
+        'Cancelar'
+    );
+    if (!confirmed) return;
     
     try {
+        showLoader('Eliminando transacción...');
         await apiRequest(`/transactions/${id}`, { method: 'DELETE' });
-        // Recargar datos desde el servidor
         await loadUserData();
         updateDisplay();
+        hideLoader();
+        showToast('Transacción eliminada exitosamente', 'success');
     } catch (error) {
-        alert('Error al eliminar transacción: ' + error.message);
+        hideLoader();
+        showToast('Error al eliminar transacción: ' + error.message, 'error');
     }
 }
 
@@ -3993,14 +4152,24 @@ async function editAccount(id) {
 
 // Eliminar cuenta
 async function deleteAccount(id) {
-    if (!confirm('¿Estás seguro de eliminar esta cuenta?')) return;
+    const confirmed = await showConfirm(
+        'Eliminar Cuenta',
+        '¿Estás seguro de eliminar esta cuenta? Esta acción no se puede deshacer.',
+        'Eliminar',
+        'Cancelar'
+    );
+    if (!confirmed) return;
     
     try {
+        showLoader('Eliminando cuenta...');
         await apiRequest(`/accounts/${id}`, { method: 'DELETE' });
         await loadUserData();
         updateDisplay();
+        hideLoader();
+        showToast('Cuenta eliminada exitosamente', 'success');
     } catch (error) {
-        alert('Error al eliminar cuenta: ' + error.message);
+        hideLoader();
+        showToast('Error al eliminar cuenta: ' + error.message, 'error');
     }
 }
 
