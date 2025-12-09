@@ -488,17 +488,17 @@ async function requestPasswordReset() {
                     const recoveryCodeCopy = getTranslation('auth.recoveryCodeCopy', lang);
                     const recoveryCodeNote = getTranslation('auth.recoveryCodeNote', lang);
                     successMsg.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 14px; border-radius: 12px; border: 1px solid var(--primary); margin-bottom: 12px;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-                            <span style="font-size: 20px;">✅</span>
-                            <strong style="color: var(--gray-900); font-size: 14px;">${recoveryCodeGenerated}</strong>
+                    <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 12px; border-radius: 10px; border: 1px solid var(--primary); margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                            <span style="font-size: 18px;">✅</span>
+                            <strong style="color: var(--gray-900); font-size: 13px;">${recoveryCodeGenerated}</strong>
                         </div>
-                        <p style="margin: 6px 0; color: var(--gray-700); font-size: 13px; line-height: 1.4;">${recoveryCodeCopy}</p>
-                        <div style="background: white; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--primary); margin: 8px 0; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                            <code style="font-size: 13px; font-weight: 600; color: var(--primary); word-break: break-all; flex: 1; font-family: 'Courier New', monospace;">${data.token}</code>
-                            <button onclick="navigator.clipboard.writeText('${data.token}'); this.textContent='✓'; setTimeout(() => this.textContent='📋', 2000);" style="background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; flex-shrink: 0;" title="Copiar">📋</button>
+                        <p style="margin: 4px 0 8px 0; color: var(--gray-700); font-size: 12px; line-height: 1.3;">${recoveryCodeCopy}</p>
+                        <div style="background: white; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--primary); margin: 6px 0; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                            <code style="font-size: 11px; font-weight: 600; color: var(--primary); word-break: break-all; flex: 1; font-family: 'Courier New', monospace; line-height: 1.4;">${data.token}</code>
+                            <button onclick="navigator.clipboard.writeText('${data.token}'); this.textContent='✓'; setTimeout(() => this.textContent='📋', 2000);" style="background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; flex-shrink: 0;" title="Copiar">📋</button>
                         </div>
-                        <p style="margin: 6px 0 0 0; color: var(--gray-600); font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                        <p style="margin: 4px 0 0 0; color: var(--gray-600); font-size: 11px; display: flex; align-items: center; gap: 4px;">
                             <span>⚠️</span>
                             <span>${recoveryCodeNote}</span>
                         </p>
@@ -509,12 +509,12 @@ async function requestPasswordReset() {
                 } else {
                     // Email enviado correctamente
                     successMsg.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 14px; border-radius: 12px; border: 1px solid #22c55e; margin-bottom: 12px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 20px;">✅</span>
-                            <strong style="color: var(--gray-900); font-size: 14px;">${data.message || getTranslation('auth.recoveryCodeSent', lang)}</strong>
+                    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 12px; border-radius: 10px; border: 1px solid #22c55e; margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                            <span style="font-size: 18px;">✅</span>
+                            <strong style="color: var(--gray-900); font-size: 13px;">${data.message || getTranslation('auth.recoveryCodeSent', lang)}</strong>
                         </div>
-                        <p style="margin: 8px 0 0 0; color: var(--gray-700); font-size: 13px; line-height: 1.4;">Revisa tu bandeja de entrada y la carpeta de spam.</p>
+                        <p style="margin: 4px 0 0 0; color: var(--gray-700); font-size: 12px; line-height: 1.3;">Revisa tu bandeja de entrada y la carpeta de spam.</p>
                     </div>
                 `;
                     successMsg.style.display = 'block';
@@ -549,7 +549,7 @@ async function resetPassword() {
     }
     
     try {
-        await apiRequest('/reset-password', {
+        await apiRequest('/api/reset-password', {
             method: 'POST',
             body: JSON.stringify({ token, newPassword })
         });

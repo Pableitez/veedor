@@ -844,36 +844,59 @@ app.post('/api/forgot-password', async (req, res) => {
 // Resetear contraseña con token
 app.post('/api/reset-password', async (req, res) => {
     try {
+        console.log('🔑 ===== INTENTANDO RESETEAR CONTRASEÑA =====');
         const { token, newPassword } = req.body;
         
         if (!token || !newPassword) {
+            console.log('❌ Faltan parámetros: token o newPassword');
             return res.status(400).json({ error: 'Token y nueva contraseña requeridos' });
         }
         
         if (newPassword.length < 4) {
+            console.log('❌ Contraseña muy corta:', newPassword.length);
             return res.status(400).json({ error: 'La contraseña debe tener al menos 4 caracteres' });
         }
         
+        console.log('🔍 Buscando usuario con token:', token.substring(0, 10) + '...');
         const user = await User.findOne({ 
             resetToken: token,
             resetTokenExpiry: { $gt: new Date() }
         });
         
         if (!user) {
-            return res.status(400).json({ error: 'Token inválido o expirado' });
+            console.log('❌ Token no encontrado o expirado');
+            // Verificar si el token existe pero está expirado
+            const expiredUser = await User.findOne({ resetToken: token });
+            if (expiredUser) {
+                console.log('⚠️ Token encontrado pero expirado');
+                return res.status(400).json({ error: 'El código de recuperación ha expirado. Solicita uno nuevo.' });
+            }
+            return res.status(400).json({ error: 'Código de recuperación inválido. Verifica que lo hayas copiado correctamente.' });
         }
+        
+        console.log('✅ Usuario encontrado:', user.email);
         
         // Actualizar contraseña
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         user.password = hashedPassword;
         user.resetToken = null;
         user.resetTokenExpiry = null;
-        await user.save();
         
-        res.json({ message: 'Contraseña actualizada exitosamente' });
+        try {
+            await user.save();
+            console.log('✅ Contraseña actualizada exitosamente para:', user.email);
+            res.json({ message: 'Contraseña actualizada exitosamente' });
+        } catch (saveError) {
+            console.error('❌ Error guardando nueva contraseña:', saveError);
+            console.error('❌ Detalles:', saveError.message);
+            return res.status(500).json({ error: 'Error al guardar la nueva contraseña. Intenta de nuevo.' });
+        }
     } catch (error) {
-        console.error('Error en reset-password:', error);
-        res.status(500).json({ error: 'Error del servidor' });
+        console.error('❌ ===== ERROR EN RESET-PASSWORD =====');
+        console.error('❌ Error completo:', error);
+        console.error('❌ Mensaje:', error.message);
+        console.error('❌ Stack:', error.stack);
+        res.status(500).json({ error: 'Error del servidor. Por favor, intenta de nuevo más tarde.' });
     }
 });
 
