@@ -1641,7 +1641,7 @@
             <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px 32px; color: white; border-radius: 12px 12px 0 0;">
                 <h2 id="confirmModalTitle" style="margin: 0; font-size: 20px; font-weight: 700; color: white;">Confirmar acción</h2>
             </div>
-            <div style="padding: 24px 32px;">
+            <div style="padding: 24px 32px; background: var(--bg-primary); color: var(--text-primary);">
                 <p id="confirmModalMessage" style="margin: 0 0 24px 0; color: var(--text-primary); font-size: 15px; line-height: 1.6;"></p>
                 <div style="display: flex; gap: 12px; justify-content: flex-end;">
                     <button id="confirmModalCancel" class="btn-secondary" style="min-width: 100px;">Cancelar</button>
@@ -1653,9 +1653,9 @@
 
     <!-- Spinner de carga global -->
     <div id="globalLoader" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-        <div style="background: white; padding: 32px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+        <div style="background: var(--bg-primary); padding: 32px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color);">
             <div class="spinner" style="width: 48px; height: 48px; border: 4px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <p style="margin: 0; color: var(--gray-700); font-size: 14px; font-weight: 500;" id="globalLoaderText">Cargando...</p>
+            <p style="margin: 0; color: var(--text-primary); font-size: 14px; font-weight: 500;" id="globalLoaderText">Cargando...</p>
         </div>
     </div>
 </body>

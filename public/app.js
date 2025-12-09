@@ -170,10 +170,6 @@ function showToast(message, type = 'info', duration = 4000) {
         info: { border: '#6366f1', bg: '#eef2ff', icon: 'ℹ️', text: '#3730a3' }
     };
     
-    const style = colors[type] || colors.info;
-    toast.style.borderLeftColor = style.border;
-    toast.style.background = style.bg;
-    
     toast.innerHTML = `
         <span style="font-size: 20px; flex-shrink: 0;">${style.icon}</span>
         <span style="flex: 1; color: ${style.text}; font-size: 14px; font-weight: 500; line-height: 1.4;">${message}</span>
@@ -6204,30 +6200,30 @@ function updateMonthDashboard() {
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div>
-                            <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--gray-900);">${categoryName}</h5>
-                            <p style="font-size: 14px; color: var(--gray-600); margin: 0;">${data.transactions.length} ${data.transactions.length !== 1 ? 'transacciones' : 'transacción'}</p>
+                            <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--text-primary);">${categoryName}</h5>
+                            <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">${data.transactions.length} ${data.transactions.length !== 1 ? 'transacciones' : 'transacción'}</p>
                         </div>
                         <div style="text-align: right;">
                             <p style="font-size: 20px; font-weight: 700; margin: 0; color: var(--danger-color);">${formatCurrency(data.amount)}</p>
-                            ${budgetAmount > 0 ? `<small style="color: var(--gray-500);">de ${formatCurrency(budgetAmount)}</small>` : ''}
+                            ${budgetAmount > 0 ? `<small style="color: var(--text-tertiary);">de ${formatCurrency(budgetAmount)}</small>` : ''}
                         </div>
                     </div>
                     ${budgetAmount > 0 ? `
                         <div style="margin-top: 12px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                <small style="font-size: 12px; color: var(--gray-600);">Progreso del presupuesto</small>
+                                <small style="font-size: 12px; color: var(--text-secondary);">Progreso del presupuesto</small>
                                 <small style="font-size: 12px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
                             </div>
                             <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden;">
                                 <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                                <small style="font-size: 11px; color: var(--gray-500);">Restante: ${formatCurrency(Math.max(0, budgetAmount - data.amount))}</small>
+                                <small style="font-size: 11px; color: var(--text-tertiary);">Restante: ${formatCurrency(Math.max(0, budgetAmount - data.amount))}</small>
                                 ${percentage > 100 ? `<small style="font-size: 11px; color: var(--danger-color); font-weight: 600;">⚠️ Excedido</small>` : ''}
                             </div>
                         </div>
-                    ` : '<small style="color: var(--gray-500);">Sin presupuesto establecido</small>'}
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200);">
+                    ` : '<small style="color: var(--text-tertiary);">Sin presupuesto establecido</small>'}
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
                         <small style="color: var(--primary); font-weight: 500;">👆 Click para ver detalles</small>
                     </div>
                 `;
@@ -6272,7 +6268,7 @@ function updateMonthDashboard() {
                 }
                 
                 const card = document.createElement('div');
-                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); cursor: pointer; transition: all 0.2s;';
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); cursor: pointer; transition: all 0.2s; color: var(--text-primary);';
                 card.onmouseover = function() {
                     this.style.transform = 'translateY(-2px)';
                     this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
@@ -6287,30 +6283,30 @@ function updateMonthDashboard() {
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div>
-                            <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--gray-900);">${categoryName}</h5>
-                            <p style="font-size: 14px; color: var(--gray-600); margin: 0;">${data.transactions.length} ${data.transactions.length !== 1 ? 'transacciones' : 'transacción'}</p>
+                            <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--text-primary);">${categoryName}</h5>
+                            <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">${data.transactions.length} ${data.transactions.length !== 1 ? 'transacciones' : 'transacción'}</p>
                         </div>
                         <div style="text-align: right;">
                             <p style="font-size: 20px; font-weight: 700; margin: 0; color: var(--success);">${formatCurrency(data.amount)}</p>
-                            ${budgetAmount > 0 ? `<small style="color: var(--gray-500);">de ${formatCurrency(budgetAmount)}</small>` : ''}
+                            ${budgetAmount > 0 ? `<small style="color: var(--text-tertiary);">de ${formatCurrency(budgetAmount)}</small>` : ''}
                         </div>
                     </div>
                     ${budgetAmount > 0 ? `
                         <div style="margin-top: 12px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                <small style="font-size: 12px; color: var(--gray-600);">Progreso del presupuesto</small>
+                                <small style="font-size: 12px; color: var(--text-secondary);">Progreso del presupuesto</small>
                                 <small style="font-size: 12px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
                             </div>
                             <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden;">
                                 <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                                <small style="font-size: 11px; color: var(--gray-500);">Diferencia: ${formatCurrency(data.amount - budgetAmount)}</small>
+                                <small style="font-size: 11px; color: var(--text-tertiary);">Diferencia: ${formatCurrency(data.amount - budgetAmount)}</small>
                                 ${percentage < 100 ? `<small style="font-size: 11px; color: var(--warning); font-weight: 600;">⚠️ Por debajo del presupuesto</small>` : ''}
                             </div>
                         </div>
-                    ` : '<small style="color: var(--gray-500);">Sin presupuesto establecido</small>'}
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200);">
+                    ` : '<small style="color: var(--text-tertiary);">Sin presupuesto establecido</small>'}
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
                         <small style="color: var(--primary); font-weight: 500;">👆 Click para ver detalles</small>
                     </div>
                 `;
@@ -6555,12 +6551,12 @@ function showCategoryDetails(categoryName, transactions, type, month, categoryId
                     <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Total ${type === 'expense' ? 'Gastado' : 'Ingresado'}</div>
                     <div style="font-size: 28px; font-weight: 700;">${formatCurrency(total)}</div>
                 </div>
-                <div style="background: var(--gray-100); padding: 20px; border-radius: 12px;">
-                    <div style="font-size: 14px; color: var(--gray-600); margin-bottom: 8px;">Transacciones</div>
-                    <div style="font-size: 28px; font-weight: 700; color: var(--gray-900);">${transactions.length}</div>
+                <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">Transacciones</div>
+                    <div style="font-size: 28px; font-weight: 700; color: var(--text-primary);">${transactions.length}</div>
                 </div>
                 ${budgetAmount > 0 ? `
-                    <div style="background: var(--primary-light); padding: 20px; border-radius: 12px;">
+                    <div style="background: var(--primary-light); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
                         <div style="font-size: 14px; color: var(--primary); margin-bottom: 8px;">Presupuesto</div>
                         <div style="font-size: 28px; font-weight: 700; color: var(--primary-dark);">${formatCurrency(budgetAmount)}</div>
                     </div>
@@ -6569,15 +6565,15 @@ function showCategoryDetails(categoryName, transactions, type, month, categoryId
         </div>
         
         <div>
-            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--gray-900);">Transacciones</h3>
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">Transacciones</h3>
             <div class="table-container">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr style="background: var(--gray-50); border-bottom: 2px solid var(--border-color);">
-                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">Fecha</th>
-                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">Descripción</th>
-                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">Subcategoría</th>
-                            <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">Monto</th>
+                        <tr style="background: var(--bg-tertiary); border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Fecha</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Descripción</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Subcategoría</th>
+                            <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Monto</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -6586,13 +6582,13 @@ function showCategoryDetails(categoryName, transactions, type, month, categoryId
     const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
     
     if (sortedTransactions.length === 0) {
-        content += '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--gray-500);">No hay transacciones</td></tr>';
+        content += '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-tertiary);">No hay transacciones</td></tr>';
     } else {
         sortedTransactions.forEach(t => {
             const date = new Date(t.date);
             const amount = type === 'expense' ? Math.abs(t.amount) : t.amount;
             content += `
-                <tr style="border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='transparent'">
+                <tr style="border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
                     <td style="padding: 12px; color: var(--text-secondary);">${formatDate(date)}</td>
                     <td style="padding: 12px; color: var(--text-secondary);">${t.description || '-'}</td>
                     <td style="padding: 12px; color: var(--text-secondary);">${t.categorySpecific || '-'}</td>
