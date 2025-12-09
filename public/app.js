@@ -410,6 +410,13 @@ function initializeAuth() {
             // Mostrar/ocultar formularios de forma explícita
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
+            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+            
+            // Ocultar formulario de recuperación siempre que se cambie de tab
+            if (forgotPasswordForm) {
+                forgotPasswordForm.style.display = 'none';
+                forgotPasswordForm.classList.remove('active');
+            }
             
             if (loginForm && registerForm) {
                 if (targetTab === 'login') {
@@ -545,20 +552,46 @@ function initializeAuth() {
     const backToLoginLink = document.getElementById('backToLoginLink');
     const forgotPasswordForm = document.getElementById('forgotPasswordForm');
     const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
     
     if (forgotPasswordLink) {
         forgotPasswordLink.addEventListener('click', (e) => {
             e.preventDefault();
-            if (loginForm) loginForm.style.display = 'none';
-            if (forgotPasswordForm) forgotPasswordForm.style.display = 'block';
+            // Ocultar todos los formularios
+            if (loginForm) {
+                loginForm.style.display = 'none';
+                loginForm.classList.remove('active');
+            }
+            if (registerForm) {
+                registerForm.style.display = 'none';
+                registerForm.classList.remove('active');
+            }
+            // Mostrar solo el formulario de recuperación
+            if (forgotPasswordForm) {
+                forgotPasswordForm.style.display = 'block';
+                forgotPasswordForm.classList.add('active');
+            }
         });
     }
     
     if (backToLoginLink) {
         backToLoginLink.addEventListener('click', (e) => {
             e.preventDefault();
-            if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
-            if (loginForm) loginForm.style.display = 'block';
+            // Ocultar formulario de recuperación
+            if (forgotPasswordForm) {
+                forgotPasswordForm.style.display = 'none';
+                forgotPasswordForm.classList.remove('active');
+            }
+            // Ocultar registro
+            if (registerForm) {
+                registerForm.style.display = 'none';
+                registerForm.classList.remove('active');
+            }
+            // Mostrar solo login
+            if (loginForm) {
+                loginForm.style.display = 'block';
+                loginForm.classList.add('active');
+            }
         });
     }
     
@@ -3713,9 +3746,9 @@ function updateInvestments() {
             ` : ''}
             
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
-                <button class="btn-primary" onclick="addMoneyToInvestment('${investment._id || investment.id}')" style="flex: 1;">💰 Añadir Dinero</button>
-                <button class="btn-secondary" onclick="updateInvestmentValue('${investment._id || investment.id}')" style="flex: 1;">📊 Actualizar Valor</button>
-                <button class="btn-danger" onclick="deleteInvestment('${investment._id || investment.id}')" style="flex: 1;">🗑️ Eliminar</button>
+                <button class="btn-primary" onclick="addMoneyToInvestment('${investment._id || investment.id}')" style="flex: 1;">Añadir Dinero</button>
+                <button class="btn-secondary" onclick="updateInvestmentValue('${investment._id || investment.id}')" style="flex: 1;">Actualizar Valor</button>
+                <button class="btn-danger" onclick="deleteInvestment('${investment._id || investment.id}')" style="flex: 1;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -3771,7 +3804,7 @@ function showAddMoneyInvestmentModal(id) {
     // Buscar la inversión
     const investment = investments.find(inv => (inv._id || inv.id) === id);
     if (investment) {
-        titleEl.textContent = `💰 Añadir Dinero a ${investment.name}`;
+        titleEl.textContent = `Añadir Dinero a ${investment.name}`;
         infoEl.innerHTML = `
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
                 <div><strong>Valor Actual:</strong></div>
@@ -4354,8 +4387,8 @@ function updateAssets() {
             ` : ''}
             
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
-                <button class="btn-secondary" onclick="editAsset('${asset._id || asset.id}')" style="flex: 1;">✏️ Editar</button>
-                <button class="btn-danger" onclick="deleteAsset('${asset._id || asset.id}')" style="flex: 1;">🗑️ Eliminar</button>
+                <button class="btn-secondary" onclick="editAsset('${asset._id || asset.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deleteAsset('${asset._id || asset.id}')" style="flex: 1;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
