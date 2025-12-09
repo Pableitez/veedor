@@ -28,7 +28,7 @@ const translations = {
             forgotPassword: "¿Olvidaste tu contraseña?",
             backToLogin: "Volver a Iniciar Sesión",
             welcome: "¡Bienvenido a Veedor!",
-            subtitle: "Control total de tus finanzas personales",
+            subtitle: "Tu dinero, tu control. Toma decisiones inteligentes.",
             recoverPassword: "Recuperar Contraseña",
             sendRecoveryLink: "Enviar Enlace de Recuperación",
             enterRecoveryCode: "Ingresa el código de recuperación y tu nueva contraseña",
