@@ -1596,6 +1596,16 @@ function initializeForms() {
         filterMonth.addEventListener('change', updateDisplay);
     }
     
+    const filterStartDate = document.getElementById('filterStartDate');
+    if (filterStartDate) {
+        filterStartDate.addEventListener('change', updateDisplay);
+    }
+    
+    const filterEndDate = document.getElementById('filterEndDate');
+    if (filterEndDate) {
+        filterEndDate.addEventListener('change', updateDisplay);
+    }
+    
     // Selector de período para gráficas (global - mantener para compatibilidad)
     const chartPeriod = document.getElementById('chartPeriod');
     if (chartPeriod) {
@@ -2381,6 +2391,8 @@ function updateTransactionsTable() {
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
     const filterCategory = document.getElementById('filterCategory')?.value || '';
     const filterMonth = document.getElementById('filterMonth')?.value || '';
+    const filterStartDate = document.getElementById('filterStartDate')?.value || '';
+    const filterEndDate = document.getElementById('filterEndDate')?.value || '';
     
     let filtered = transactions;
     
@@ -2399,6 +2411,24 @@ function updateTransactionsTable() {
         filtered = filtered.filter(t => {
             const tDate = new Date(t.date);
             return `${tDate.getFullYear()}-${String(tDate.getMonth() + 1).padStart(2, '0')}` === filterMonth;
+        });
+    }
+    
+    // Filtro por rango de fechas
+    if (filterStartDate) {
+        const startDate = new Date(filterStartDate);
+        filtered = filtered.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate >= startDate;
+        });
+    }
+    
+    if (filterEndDate) {
+        const endDate = new Date(filterEndDate);
+        endDate.setHours(23, 59, 59, 999); // Incluir todo el día final
+        filtered = filtered.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate <= endDate;
         });
     }
     

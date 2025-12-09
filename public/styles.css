@@ -693,7 +693,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 body.dark-mode input[type="month"]::-webkit-calendar-picker-indicator,
 body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator,
 body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-    filter: invert(0);
+    filter: invert(1) brightness(10);
     opacity: 1;
 }
 
@@ -732,6 +732,8 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     gap: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     letter-spacing: -0.2px;
+    text-align: center;
+    line-height: 1.5;
 }
 
 .btn-primary:hover {
@@ -756,8 +758,11 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    line-height: 1.5;
 }
 
 .btn-secondary:hover {
