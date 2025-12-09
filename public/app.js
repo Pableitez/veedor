@@ -806,10 +806,16 @@ function showMainApp() {
 function updateUserInfo() {
     const currentUserTextEl = document.getElementById('currentUserText');
     if (currentUserTextEl) {
-        const displayName = userProfile.firstName || userProfile.lastName 
-            ? `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim()
-            : currentUser;
+        let displayName = 'Usuario';
+        if (userProfile && (userProfile.firstName || userProfile.lastName)) {
+            displayName = `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim();
+        } else if (currentUser) {
+            displayName = currentUser;
+        }
         currentUserTextEl.textContent = displayName;
+        console.log('✅ Nombre de usuario actualizado:', displayName);
+    } else {
+        console.warn('⚠️ Elemento currentUserText no encontrado');
     }
 }
 

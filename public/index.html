@@ -1042,152 +1042,66 @@
                 <div>
                     <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--gray-900);">📈 Gráficas</h2>
                 <div class="charts-container">
-                    <div class="chart-card">
+                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('savings', 'Evolución de Ahorro')">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3>Evolución de Ahorro</h3>
-                            <select class="chart-period-select" data-chart="savings" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                <option value="1">1 mes</option>
-                                <option value="3">3 meses</option>
-                                <option value="6" selected>6 meses</option>
-                                <option value="12">1 año</option>
-                                <option value="24">2 años</option>
-                                <option value="all">Todo</option>
-                            </select>
+                            <span style="font-size: 12px; color: var(--gray-500);">👆 Click para ampliar</span>
                         </div>
                         <canvas id="savingsChart"></canvas>
                     </div>
-                    <div class="chart-card">
+                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('expenses', 'Gastos por Categoría')">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3>Gastos por Categoría</h3>
-                            <select class="chart-period-select" data-chart="expenses" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                <option value="1">1 mes</option>
-                                <option value="3">3 meses</option>
-                                <option value="6" selected>6 meses</option>
-                                <option value="12">1 año</option>
-                                <option value="all">Todo</option>
-                            </select>
+                            <span style="font-size: 12px; color: var(--gray-500);">👆 Click para ampliar</span>
                         </div>
                         <canvas id="expensesChart"></canvas>
                     </div>
-                    <div class="chart-card">
+                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('incomeExpense', 'Ingresos vs Gastos')">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3>Ingresos vs Gastos</h3>
-                            <select class="chart-period-select" data-chart="incomeExpense" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                <option value="1">1 mes</option>
-                                <option value="3">3 meses</option>
-                                <option value="6" selected>6 meses</option>
-                                <option value="12">1 año</option>
-                                <option value="24">2 años</option>
-                                <option value="all">Todo</option>
-                            </select>
+                            <span style="font-size: 12px; color: var(--gray-500);">👆 Click para ampliar</span>
                         </div>
                         <canvas id="incomeExpenseChart"></canvas>
                     </div>
-                    <div class="chart-card">
+                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('distribution', 'Distribución de Gastos')">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3>Distribución de Gastos</h3>
-                            <select class="chart-period-select" data-chart="distribution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                <option value="1">1 mes</option>
-                                <option value="3">3 meses</option>
-                                <option value="6" selected>6 meses</option>
-                                <option value="12">1 año</option>
-                                <option value="all">Todo</option>
-                            </select>
+                            <span style="font-size: 12px; color: var(--gray-500);">👆 Click para ampliar</span>
                         </div>
                         <canvas id="distributionChart"></canvas>
                     </div>
-                    <div class="chart-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('incomeEvolution', 'Evolución de Ingresos')">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3>Evolución de Ingresos</h3>
-                            <div style="display: flex; gap: 8px;">
-                                <select class="chart-period-select" data-chart="incomeEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                    <option value="1">1 mes</option>
-                                    <option value="3">3 meses</option>
-                                    <option value="6" selected>6 meses</option>
-                                    <option value="12">1 año</option>
-                                    <option value="24">2 años</option>
-                                    <option value="all">Todo</option>
-                                </select>
-                                <select class="chart-category-filter" data-chart="incomeEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                    <option value="all">Todas las categorías</option>
-                                </select>
-                            </div>
+                            <span style="font-size: 12px; color: var(--gray-500);">👆 Click para ampliar</span>
                         </div>
                         <canvas id="incomeEvolutionChart"></canvas>
                     </div>
-                    <div class="chart-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('expensesEvolution', 'Evolución de Gastos')">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3>Evolución de Gastos</h3>
-                            <div style="display: flex; gap: 8px;">
-                                <select class="chart-period-select" data-chart="expensesEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                    <option value="1">1 mes</option>
-                                    <option value="3">3 meses</option>
-                                    <option value="6" selected>6 meses</option>
-                                    <option value="12">1 año</option>
-                                    <option value="24">2 años</option>
-                                    <option value="all">Todo</option>
-                                </select>
-                                <select class="chart-category-filter" data-chart="expensesEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                    <option value="all">Todas las categorías</option>
-                                </select>
-                            </div>
+                            <span style="font-size: 12px; color: var(--gray-500);">👆 Click para ampliar</span>
                         </div>
                         <canvas id="expensesEvolutionChart"></canvas>
                     </div>
-                    <div class="chart-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('loansPending', 'Préstamos Pendientes')">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3>Préstamos Pendientes</h3>
-                            <div style="display: flex; gap: 8px;">
-                                <select class="chart-period-select" data-chart="loansPending" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                    <option value="1">1 mes</option>
-                                    <option value="3">3 meses</option>
-                                    <option value="6" selected>6 meses</option>
-                                    <option value="12">1 año</option>
-                                    <option value="24">2 años</option>
-                                    <option value="all">Todo</option>
-                                </select>
-                                <select class="chart-loan-filter" data-chart="loansPending" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                    <option value="all">Todos los préstamos</option>
-                                </select>
-                            </div>
+                            <span style="font-size: 12px; color: var(--gray-500);">👆 Click para ampliar</span>
                         </div>
                         <canvas id="loansPendingChart"></canvas>
                     </div>
-                    <div class="chart-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('assetsEvolution', 'Evolución del Patrimonio')">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3>Evolución del Patrimonio</h3>
-                            <div style="display: flex; gap: 8px;">
-                                <select class="chart-period-select" data-chart="assetsEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                    <option value="1">1 mes</option>
-                                    <option value="3">3 meses</option>
-                                    <option value="6" selected>6 meses</option>
-                                    <option value="12">1 año</option>
-                                    <option value="24">2 años</option>
-                                    <option value="all">Todo</option>
-                                </select>
-                                <select class="chart-asset-filter" data-chart="assetsEvolution" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                    <option value="all">Todos los bienes</option>
-                                </select>
-                            </div>
+                            <span style="font-size: 12px; color: var(--gray-500);">👆 Click para ampliar</span>
                         </div>
                         <canvas id="assetsEvolutionChart"></canvas>
                     </div>
-                    <div class="chart-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('accountsBalance', 'Evolución de Saldo en Cuentas')">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h3>Evolución de Saldo en Cuentas</h3>
-                            <div style="display: flex; gap: 8px;">
-                                <select class="chart-period-select" data-chart="accountsBalance" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                    <option value="1">1 mes</option>
-                                    <option value="3">3 meses</option>
-                                    <option value="6" selected>6 meses</option>
-                                    <option value="12">1 año</option>
-                                    <option value="24">2 años</option>
-                                    <option value="all">Todo</option>
-                                </select>
-                                <select class="chart-account-filter" data-chart="accountsBalance" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
-                                    <option value="all">Todas las cuentas</option>
-                                </select>
-                            </div>
+                            <span style="font-size: 12px; color: var(--gray-500);">👆 Click para ampliar</span>
                         </div>
                         <canvas id="accountsBalanceChart"></canvas>
                     </div>
@@ -1240,6 +1154,46 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal de Gráfico Detallado -->
+    <div id="chartModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 90vw; max-height: 90vh; width: 1200px; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 id="chartModalTitle" style="margin: 0; font-size: 24px; font-weight: 700; color: white;">Gráfico</h2>
+                    <button onclick="closeChartModal()" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 300; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                </div>
+            </div>
+            <div style="padding: 24px 32px; flex: 1; overflow-y: auto;">
+                <div id="chartModalControls" style="margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; padding: 16px; background: var(--gray-50); border-radius: 8px;">
+                    <!-- Controles se llenarán dinámicamente -->
+                </div>
+                <div style="position: relative; height: 500px; width: 100%;">
+                    <canvas id="chartModalCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Gráfico Detallado -->
+    <div id="chartModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 90vw; max-height: 90vh; width: 1200px; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 id="chartModalTitle" style="margin: 0; font-size: 24px; font-weight: 700; color: white;">Gráfico</h2>
+                    <button onclick="closeChartModal()" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 300; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                </div>
+            </div>
+            <div style="padding: 24px 32px; flex: 1; overflow-y: auto;">
+                <div id="chartModalControls" style="margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; padding: 16px; background: var(--gray-50); border-radius: 8px;">
+                    <!-- Controles se llenarán dinámicamente -->
+                </div>
+                <div style="position: relative; height: 500px; width: 100%;">
+                    <canvas id="chartModalCanvas"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 
