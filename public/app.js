@@ -276,10 +276,14 @@ function toggleDarkMode() {
 
 function initDarkMode() {
     const savedMode = localStorage.getItem('veedor_darkMode');
-    if (savedMode === 'true') {
+    // Por defecto, activar modo oscuro si no hay preferencia guardada
+    if (savedMode === null || savedMode === 'true') {
         document.body.classList.add('dark-mode');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = '☀️ Modo Claro';
+        if (savedMode === null) {
+            localStorage.setItem('veedor_darkMode', 'true');
+        }
     }
 }
 
