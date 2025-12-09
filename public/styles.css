@@ -199,6 +199,10 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     overflow: hidden;
 }
 
+body.dark-mode .auth-screen {
+    background: linear-gradient(135deg, #1F2937 0%, #111827 50%, #0F172A 100%);
+}
+
 .auth-screen::before {
     content: '';
     position: absolute;
