@@ -554,6 +554,8 @@ header h1 {
     max-width: 1400px;
     margin: 0 auto;
     width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 /* ============================================
@@ -603,6 +605,9 @@ header h1 {
 
 .tab-content {
     display: none;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .tab-content.active {
@@ -1593,7 +1598,12 @@ tbody tr:last-child td {
     }
     
     .main-content {
-        padding: 16px 12px;
+        padding: 16px 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        margin: 0 !important;
     }
     
     .tabs {
@@ -1610,7 +1620,13 @@ tbody tr:last-child td {
     }
     
     .form-section {
-        padding: 20px 16px;
+        padding: 20px 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        overflow-x: hidden !important;
     }
     
     .table-controls {
