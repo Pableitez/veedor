@@ -1170,27 +1170,22 @@ function switchToTab(targetTab, doScroll = false) {
         if (doScroll) {
             // Scroll suave a la sección - esperar a que el DOM se actualice y el tab esté visible
             setTimeout(() => {
-                // Obtener el contenedor main-content
-                const mainContent = document.querySelector('.main-content');
-                if (mainContent && targetTabContent) {
-                    // Calcular la posición exacta del tab dentro del main-content
-                    const mainContentRect = mainContent.getBoundingClientRect();
-                    const tabContentRect = targetTabContent.getBoundingClientRect();
-                    
+                if (targetTabContent) {
                     // Obtener altura del header sticky
                     const header = document.querySelector('header');
                     const headerHeight = header ? header.offsetHeight : 80;
                     
-                    // Calcular posición de scroll: posición del main-content + offset del tab dentro del main-content - altura del header
-                    const scrollPosition = mainContentRect.top + window.pageYOffset - headerHeight - 20; // 20px de margen adicional
+                    // Obtener posición del tab content
+                    const tabRect = targetTabContent.getBoundingClientRect();
+                    const scrollPosition = tabRect.top + window.pageYOffset - headerHeight - 20; // 20px de margen adicional
                     
-                    // Hacer scroll
+                    // Hacer scroll suave
                     window.scrollTo({ 
                         top: Math.max(0, scrollPosition), 
                         behavior: 'smooth' 
                     });
                 }
-            }, 300);
+            }, 100);
         }
     }
     
