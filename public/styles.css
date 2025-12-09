@@ -1521,6 +1521,40 @@ tbody tr:last-child td {
         max-width: 98% !important;
         max-height: 95vh !important;
         margin: 10px auto !important;
+        border-radius: 12px !important;
+    }
+    
+    .modal-policy-title {
+        font-size: 18px !important;
+    }
+    
+    .modal-policy-content {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    .modal-policy-content h3 {
+        font-size: 16px !important;
+        margin-top: 20px !important;
+        margin-bottom: 12px !important;
+        font-weight: 600 !important;
+    }
+    
+    .modal-policy-content p {
+        font-size: 14px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .modal-policy-content ul,
+    .modal-policy-content ol {
+        font-size: 14px !important;
+        padding-left: 20px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .modal-policy-content li {
+        margin-bottom: 8px !important;
+        line-height: 1.6 !important;
     }
     
     #cookiesModal .modal-content > div:first-child,
@@ -1532,6 +1566,12 @@ tbody tr:last-child td {
         z-index: 10 !important;
     }
     
+    #cookiesModal .modal-content > div:first-child h2,
+    #termsModal .modal-content > div:first-child h2,
+    #privacyModal .modal-content > div:first-child h2 {
+        font-size: 18px !important;
+    }
+    
     #cookiesContent,
     #termsContent,
     #privacyContent {
@@ -1539,6 +1579,37 @@ tbody tr:last-child td {
         max-height: calc(95vh - 100px) !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    #cookiesContent h3,
+    #termsContent h3,
+    #privacyContent h3 {
+        font-size: 16px !important;
+        margin-top: 18px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    #cookiesContent p,
+    #termsContent p,
+    #privacyContent p {
+        font-size: 14px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    #cookiesContent ul,
+    #termsContent ul,
+    #privacyContent ul {
+        font-size: 14px !important;
+        padding-left: 20px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    #cookiesContent li,
+    #termsContent li,
+    #privacyContent li {
+        margin-bottom: 6px !important;
     }
     
     .card {
@@ -1689,6 +1760,87 @@ tbody tr:last-child td {
     #privacyContent {
         padding: 16px !important;
         max-height: calc(95vh - 80px) !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* Estilos específicos para contenido de modales de políticas en móvil */
+    #cookiesContent h3,
+    #termsContent h3,
+    #privacyContent h3 {
+        font-size: 16px !important;
+        margin-top: 20px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    #cookiesContent p,
+    #termsContent p,
+    #privacyContent p {
+        font-size: 14px !important;
+        margin-bottom: 12px !important;
+        line-height: 1.6 !important;
+    }
+    
+    #cookiesContent ul,
+    #termsContent ul,
+    #privacyContent ul {
+        font-size: 14px !important;
+        padding-left: 20px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    #cookiesContent li,
+    #termsContent li,
+    #privacyContent li {
+        margin-bottom: 8px !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* Modal de gráfico en móvil */
+    #chartModal .modal-content {
+        width: 98% !important;
+        max-width: 98% !important;
+        max-height: 95vh !important;
+        margin: 5px auto !important;
+    }
+    
+    #chartModal .chart-modal-header {
+        padding: 16px !important;
+    }
+    
+    #chartModal .chart-modal-title {
+        font-size: 18px !important;
+    }
+    
+    #chartModal .chart-modal-close {
+        padding: 6px 10px !important;
+        font-size: 16px !important;
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    #chartModal .chart-modal-body {
+        padding: 16px !important;
+    }
+    
+    #chartModal .chart-modal-controls {
+        padding: 12px !important;
+        gap: 12px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    #chartModal .chart-modal-controls label {
+        font-size: 13px !important;
+    }
+    
+    #chartModal .chart-modal-controls select {
+        padding: 6px 10px !important;
+        font-size: 13px !important;
+        min-width: 120px !important;
+    }
+    
+    #chartModal .chart-modal-canvas-container {
+        height: 300px !important;
     }
     
     /* Tablas más compactas */
