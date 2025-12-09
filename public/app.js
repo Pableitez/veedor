@@ -1432,11 +1432,48 @@ function initializeForms() {
         filterMonth.addEventListener('change', updateDisplay);
     }
     
-    // Selector de período para gráficas
+    // Selector de período para gráficas (global - mantener para compatibilidad)
     const chartPeriod = document.getElementById('chartPeriod');
     if (chartPeriod) {
         chartPeriod.addEventListener('change', updateCharts);
     }
+    
+    // Selectores individuales de período para cada gráfico
+    document.querySelectorAll('.chart-period-select').forEach(select => {
+        select.addEventListener('change', () => {
+            const chartName = select.getAttribute('data-chart');
+            updateSingleChart(chartName);
+        });
+    });
+    
+    // Selectores de filtros de categorías/tipos
+    document.querySelectorAll('.chart-category-filter').forEach(select => {
+        select.addEventListener('change', () => {
+            const chartName = select.getAttribute('data-chart');
+            updateSingleChart(chartName);
+        });
+    });
+    
+    document.querySelectorAll('.chart-loan-filter').forEach(select => {
+        select.addEventListener('change', () => {
+            updateSingleChart('loansPending');
+        });
+    });
+    
+    document.querySelectorAll('.chart-asset-filter').forEach(select => {
+        select.addEventListener('change', () => {
+            updateSingleChart('assetsEvolution');
+        });
+    });
+    
+    document.querySelectorAll('.chart-account-filter').forEach(select => {
+        select.addEventListener('change', () => {
+            updateSingleChart('accountsBalance');
+        });
+    });
+    
+    // Poblar filtros cuando se cargan los datos
+    updateChartFilters();
     
     // Botón para agregar categoría personalizada
     const addCustomCategoryBtn = document.getElementById('addCustomCategoryBtn');
@@ -1986,6 +2023,9 @@ function updateDisplay() {
         updateAssets(); // Actualizar patrimonio
         updateMonthFilter();
         updateMonthDashboard();
+        
+        // Actualizar filtros de gráficos
+        updateChartFilters();
         
         // Actualizar gráficas siempre (no solo cuando el tab está activo)
         updateCharts();
@@ -4296,8 +4336,15 @@ function initializeCharts() {
     }
 }
 
-// Obtener período seleccionado
-function getSelectedPeriod() {
+// Obtener período seleccionado (global o específico de gráfico)
+function getSelectedPeriod(chartName = null) {
+    if (chartName) {
+        const chartSelect = document.querySelector(`.chart-period-select[data-chart="${chartName}"]`);
+        if (chartSelect) {
+            const value = chartSelect.value;
+            return value === 'all' ? 999 : parseInt(value) || 6;
+        }
+    }
     const periodSelect = document.getElementById('chartPeriod');
     if (!periodSelect) return 6;
     const value = periodSelect.value;
@@ -4305,8 +4352,8 @@ function getSelectedPeriod() {
 }
 
 // Obtener transacciones filtradas por período
-function getTransactionsByPeriod() {
-    const period = getSelectedPeriod();
+function getTransactionsByPeriod(chartName = null) {
+    const period = getSelectedPeriod(chartName);
     const now = new Date();
     
     if (period === 999) { // "all"
@@ -4318,6 +4365,114 @@ function getTransactionsByPeriod() {
         const tDate = new Date(t.date);
         return tDate >= startDate;
     });
+}
+
+// Actualizar un gráfico específico
+function updateSingleChart(chartName) {
+    switch(chartName) {
+        case 'savings':
+            updateSavingsChart();
+            break;
+        case 'expenses':
+            updateExpensesChart();
+            break;
+        case 'incomeExpense':
+            updateIncomeExpenseChart();
+            break;
+        case 'distribution':
+            updateDistributionChart();
+            break;
+        case 'incomeEvolution':
+            updateIncomeEvolutionChart();
+            break;
+        case 'expensesEvolution':
+            updateExpensesEvolutionChart();
+            break;
+        case 'loansPending':
+            updateLoansOutstandingChart();
+            break;
+        case 'assetsEvolution':
+            updateAssetsEvolutionChart();
+            break;
+        case 'accountsBalance':
+            updateAccountsBalanceChart();
+            break;
+    }
+}
+
+// Actualizar filtros de los gráficos
+function updateChartFilters() {
+    // Filtros de categorías de ingresos
+    const incomeFilter = document.querySelector('.chart-category-filter[data-chart="incomeEvolution"]');
+    if (incomeFilter) {
+        const currentValue = incomeFilter.value;
+        incomeFilter.innerHTML = '<option value="all">Todas las categorías</option>';
+        const incomeCats = [...categories.income, ...customCategories.income];
+        incomeCats.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            incomeFilter.appendChild(option);
+        });
+        if (currentValue) incomeFilter.value = currentValue;
+    }
+    
+    // Filtros de categorías de gastos
+    const expenseFilter = document.querySelector('.chart-category-filter[data-chart="expensesEvolution"]');
+    if (expenseFilter) {
+        const currentValue = expenseFilter.value;
+        expenseFilter.innerHTML = '<option value="all">Todas las categorías</option>';
+        const expenseCats = [...categories.expense, ...customCategories.expense];
+        expenseCats.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            expenseFilter.appendChild(option);
+        });
+        if (currentValue) expenseFilter.value = currentValue;
+    }
+    
+    // Filtros de préstamos
+    const loanFilter = document.querySelector('.chart-loan-filter[data-chart="loansPending"]');
+    if (loanFilter) {
+        const currentValue = loanFilter.value;
+        loanFilter.innerHTML = '<option value="all">Todos los préstamos</option>';
+        loans.forEach(loan => {
+            const option = document.createElement('option');
+            option.value = loan._id || loan.id;
+            option.textContent = loan.name || `Préstamo ${loan._id || loan.id}`;
+            loanFilter.appendChild(option);
+        });
+        if (currentValue) loanFilter.value = currentValue;
+    }
+    
+    // Filtros de bienes
+    const assetFilter = document.querySelector('.chart-asset-filter[data-chart="assetsEvolution"]');
+    if (assetFilter) {
+        const currentValue = assetFilter.value;
+        assetFilter.innerHTML = '<option value="all">Todos los bienes</option>';
+        assets.forEach(asset => {
+            const option = document.createElement('option');
+            option.value = asset._id || asset.id;
+            option.textContent = asset.name || `Bien ${asset._id || asset.id}`;
+            assetFilter.appendChild(option);
+        });
+        if (currentValue) assetFilter.value = currentValue;
+    }
+    
+    // Filtros de cuentas
+    const accountFilter = document.querySelector('.chart-account-filter[data-chart="accountsBalance"]');
+    if (accountFilter) {
+        const currentValue = accountFilter.value;
+        accountFilter.innerHTML = '<option value="all">Todas las cuentas</option>';
+        accounts.forEach(account => {
+            const option = document.createElement('option');
+            option.value = account._id || account.id;
+            option.textContent = account.name || `Cuenta ${account._id || account.id}`;
+            accountFilter.appendChild(option);
+        });
+        if (currentValue) accountFilter.value = currentValue;
+    }
 }
 
 // Actualizar gráficas
@@ -4360,7 +4515,7 @@ function updateCharts() {
 function updateSavingsChart() {
     if (!charts.savings) return;
     
-    const period = getSelectedPeriod();
+    const period = getSelectedPeriod('savings');
     const now = new Date();
     const months = [];
     const savings = [];
@@ -4447,7 +4602,7 @@ function updateSavingsChart() {
 function updateExpensesChart() {
     if (!charts.expenses) return;
     
-    const periodTransactions = getTransactionsByPeriod();
+    const periodTransactions = getTransactionsByPeriod('expenses');
     const expenses = periodTransactions.filter(t => t.type === 'expense');
     
     const categoryTotals = {};
@@ -4485,13 +4640,13 @@ function updateExpensesChart() {
 function updateIncomeExpenseChart() {
     if (!charts.incomeExpense) return;
     
-    const period = getSelectedPeriod();
+    const period = getSelectedPeriod('incomeExpense');
     const now = new Date();
     const months = [];
     const incomes = [];
     const expenses = [];
     
-    const periodTransactions = getTransactionsByPeriod();
+    const periodTransactions = getTransactionsByPeriod('incomeExpense');
     
     if (period === 999) {
         // Todo el historial
@@ -4573,7 +4728,7 @@ function updateIncomeExpenseChart() {
 function updateDistributionChart() {
     if (!charts.distribution) return;
     
-    const periodTransactions = getTransactionsByPeriod();
+    const periodTransactions = getTransactionsByPeriod('distribution');
     const expenses = periodTransactions.filter(t => t.type === 'expense');
     
     const categoryTotals = {};
@@ -4608,8 +4763,16 @@ function updateDistributionChart() {
 function updateIncomeEvolutionChart() {
     if (!charts.incomeEvolution) return;
     
-    const periodTransactions = getTransactionsByPeriod();
-    const period = getSelectedPeriod();
+    const period = getSelectedPeriod('incomeEvolution');
+    const categoryFilter = document.querySelector('.chart-category-filter[data-chart="incomeEvolution"]');
+    const selectedCategory = categoryFilter ? categoryFilter.value : 'all';
+    
+    let periodTransactions = getTransactionsByPeriod('incomeEvolution');
+    
+    // Filtrar por categoría si está seleccionada
+    if (selectedCategory !== 'all') {
+        periodTransactions = periodTransactions.filter(t => t.categoryGeneral === selectedCategory);
+    }
     const now = new Date();
     const months = [];
     
@@ -4749,8 +4912,16 @@ function updateIncomeEvolutionChart() {
 function updateExpensesEvolutionChart() {
     if (!charts.expensesEvolution) return;
     
-    const periodTransactions = getTransactionsByPeriod();
-    const period = getSelectedPeriod();
+    const period = getSelectedPeriod('expensesEvolution');
+    const categoryFilter = document.querySelector('.chart-category-filter[data-chart="expensesEvolution"]');
+    const selectedCategory = categoryFilter ? categoryFilter.value : 'all';
+    
+    let periodTransactions = getTransactionsByPeriod('expensesEvolution');
+    
+    // Filtrar por categoría si está seleccionada
+    if (selectedCategory !== 'all') {
+        periodTransactions = periodTransactions.filter(t => t.categoryGeneral === selectedCategory);
+    }
     const now = new Date();
     const months = [];
     
@@ -4890,7 +5061,14 @@ function updateExpensesEvolutionChart() {
 function updateLoansOutstandingChart() {
     if (!charts.loansPending) return;
     
-    const period = getSelectedPeriod();
+    const period = getSelectedPeriod('loansPending');
+    const loanFilter = document.querySelector('.chart-loan-filter[data-chart="loansPending"]');
+    const selectedLoan = loanFilter ? loanFilter.value : 'all';
+    
+    let filteredLoans = loans;
+    if (selectedLoan !== 'all') {
+        filteredLoans = loans.filter(loan => (loan._id || loan.id) === selectedLoan);
+    }
     const now = new Date();
     const months = [];
     const outstandingData = [];
@@ -4912,7 +5090,7 @@ function updateLoansOutstandingChart() {
         
         // Calcular préstamos pendientes en ese mes
         let totalOutstanding = 0;
-        loans.forEach(loan => {
+        filteredLoans.forEach(loan => {
             const loanDate = new Date(loan.start_date);
             if (loanDate <= date) {
                 // Calcular cuánto se ha pagado hasta esa fecha
@@ -4945,7 +5123,14 @@ function updateLoansOutstandingChart() {
 function updateAssetsEvolutionChart() {
     if (!charts.assetsEvolution) return;
     
-    const period = getSelectedPeriod();
+    const period = getSelectedPeriod('assetsEvolution');
+    const assetFilter = document.querySelector('.chart-asset-filter[data-chart="assetsEvolution"]');
+    const selectedAsset = assetFilter ? assetFilter.value : 'all';
+    
+    let filteredAssets = assets;
+    if (selectedAsset !== 'all') {
+        filteredAssets = assets.filter(asset => (asset._id || asset.id) === selectedAsset);
+    }
     const now = new Date();
     const months = [];
     const assetsData = [];
@@ -4966,7 +5151,7 @@ function updateAssetsEvolutionChart() {
         
         // Calcular patrimonio total en ese mes
         let totalAssets = 0;
-        assets.forEach(asset => {
+        filteredAssets.forEach(asset => {
             const assetDate = new Date(asset.purchase_date);
             if (assetDate <= date) {
                 // Buscar valor histórico más cercano a esa fecha
@@ -5004,19 +5189,27 @@ function updateAssetsEvolutionChart() {
 function updateAccountsBalanceChart() {
     if (!charts.accountsBalance) return;
     
-    const period = getSelectedPeriod();
+    const period = getSelectedPeriod('accountsBalance');
+    const accountFilter = document.querySelector('.chart-account-filter[data-chart="accountsBalance"]');
+    const selectedAccount = accountFilter ? accountFilter.value : 'all';
+    
+    let filteredAccounts = accounts;
+    if (selectedAccount !== 'all') {
+        filteredAccounts = accounts.filter(account => (account._id || account.id) === selectedAccount);
+    }
+    
     const now = new Date();
     const months = [];
     const balanceData = [];
     
-    if (accounts.length === 0) {
+    if (filteredAccounts.length === 0) {
         charts.accountsBalance.data.labels = [];
         charts.accountsBalance.data.datasets = [];
         charts.accountsBalance.update();
         return;
     }
     
-    const periodTransactions = getTransactionsByPeriod();
+    const periodTransactions = getTransactionsByPeriod('accountsBalance');
     const periodMonths = period === 999 ? 12 : period;
     
     for (let i = periodMonths - 1; i >= 0; i--) {
@@ -5026,7 +5219,7 @@ function updateAccountsBalanceChart() {
         
         // Calcular saldo total de cuentas en ese mes
         let totalBalance = 0;
-        accounts.forEach(account => {
+        filteredAccounts.forEach(account => {
             // Saldo inicial de la cuenta
             let accountBalance = account.balance || 0;
             
