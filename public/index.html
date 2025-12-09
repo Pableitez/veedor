@@ -20,7 +20,7 @@
                         <button id="authLanguageDropdownBtn" onclick="toggleAuthLanguageDropdown()" style="padding: 8px 12px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; color: var(--primary); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;" onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.1)'" title="Idioma">
                             <span id="authCurrentLanguageFlag" style="font-size: 18px;">🇪🇸</span>
                         </button>
-                        <div id="authLanguageDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 180px; z-index: 1000; overflow: hidden;">
+                        <div id="authLanguageDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-primary); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 180px; z-index: 1000; overflow: hidden; border: 1px solid var(--border-color);">
                             <a href="javascript:void(0);" onclick="changeLanguage('es'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="es" style="display: flex; align-items: center; gap: 8px;">
                                 <span>🇪🇸</span> <span data-translate="settings.spanish">Español</span>
                             </a>
@@ -174,7 +174,7 @@
                     <button id="mainNavDropdownBtn" onclick="toggleMainNavDropdown()" style="padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; font-size: 18px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'" title="Menú de Navegación">
                         <span>☰</span>
                     </button>
-                    <div id="mainNavDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 240px; z-index: 1000; overflow: hidden;">
+                    <div id="mainNavDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-primary); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 240px; z-index: 1000; overflow: hidden; border: 1px solid var(--border-color);">
                         <a href="javascript:void(0);" onclick="scrollToDashboard(); toggleMainNavDropdown();" class="nav-dropdown-item" id="nav-dashboard" style="font-weight: 600; background: var(--primary-light); color: var(--primary);">
                             📊 <span data-translate="nav.dashboard">Panel de Mandos Principal</span>
                         </a>
@@ -212,7 +212,7 @@
                     <button id="languageDropdownBtn" onclick="toggleLanguageDropdown()" style="padding: 6px 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'" title="Idioma">
                         <span id="currentLanguageFlag" style="font-size: 18px;">🇪🇸</span>
                     </button>
-                    <div id="languageDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 180px; z-index: 1000; overflow: hidden;">
+                    <div id="languageDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-primary); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 180px; z-index: 1000; overflow: hidden; border: 1px solid var(--border-color);">
                         <a href="javascript:void(0);" onclick="changeLanguage('es'); toggleLanguageDropdown();" class="nav-dropdown-item" data-lang="es" style="display: flex; align-items: center; gap: 8px;">
                             <span>🇪🇸</span> <span>Español</span>
                         </a>
@@ -236,7 +236,7 @@
                             <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                         </svg>
                     </button>
-                    <div id="settingsDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000; overflow: hidden;">
+                    <div id="settingsDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-primary); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000; overflow: hidden; border: 1px solid var(--border-color);">
                         <a href="javascript:void(0);" onclick="showUserProfile(); toggleSettingsDropdown();" class="nav-dropdown-item" style="display: flex; align-items: center; gap: 8px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -282,7 +282,7 @@
                                 <option value="year-select" data-translate="dashboard.specificYear">Año Específico</option>
                                 <option value="all" data-translate="dashboard.allTime">Todos los Tiempos</option>
                             </select>
-                            <input type="number" id="summaryYear" min="2000" max="2100" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 14px; background: white; cursor: pointer; transition: all 0.2s; display: none; margin-top: 8px;" data-translate-placeholder="dashboard.selectYear" placeholder="Selecciona el año">
+                            <input type="number" id="summaryYear" min="2000" max="2100" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: none; margin-top: 8px;" data-translate-placeholder="dashboard.selectYear" placeholder="Selecciona el año">
                             <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--gray-500);" data-translate="dashboard.summaryPeriodHint">Período para las tarjetas de resumen</small>
                         </div>
                     </div>
