@@ -599,15 +599,23 @@ async function sendPasswordResetEmail(email, resetToken) {
             console.error('💡 - Si tienes 2FA activado, DEBES usar una App Password, no tu contraseña normal');
             console.error('💡 - Genera una aquí: https://myaccount.google.com/apppasswords');
         } else if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT') {
-            console.error('💡 ERROR DE CONEXIÓN (Render puede bloquear puerto 465):');
-            console.error('💡 SOLUCIÓN: Cambia a puerto 587 (TLS) en Render:');
-            console.error('💡   1. Ve a Environment Variables en Render');
-            console.error('💡   2. Cambia EMAIL_PORT de 465 a 587');
-            console.error('💡   3. Cambia EMAIL_SECURE de true a false');
-            console.error('💡   4. Guarda y espera el redeploy');
-            console.error('💡 ALTERNATIVA: Usa un servicio de email como SendGrid o Mailgun');
-            console.error('💡 - SendGrid: https://sendgrid.com (gratis hasta 100 emails/día)');
-            console.error('💡 - Mailgun: https://mailgun.com (gratis hasta 5,000 emails/mes)');
+            console.error('💡 ===== SOLUCIÓN AL ERROR DE CONEXIÓN =====');
+            console.error('💡 Render bloquea el puerto 465. DEBES cambiar a puerto 587:');
+            console.error('💡');
+            console.error('💡 PASOS EN RENDER:');
+            console.error('💡 1. Ve a: https://dashboard.render.com');
+            console.error('💡 2. Selecciona tu servicio "veedor"');
+            console.error('💡 3. Ve a la pestaña "Environment"');
+            console.error('💡 4. Busca EMAIL_PORT y cámbialo de 465 a 587');
+            console.error('💡 5. Busca EMAIL_SECURE y cámbialo de true a false');
+            console.error('💡 6. Haz clic en "Save Changes"');
+            console.error('💡 7. Espera 2-3 minutos a que se redepliegue');
+            console.error('💡');
+            console.error('💡 CONFIGURACIÓN CORRECTA:');
+            console.error('💡   EMAIL_PORT = 587');
+            console.error('💡   EMAIL_SECURE = false');
+            console.error('💡');
+            console.error('💡 ALTERNATIVA: Usa SendGrid o Mailgun si Gmail sigue fallando');
         } else if (error.code === 'EENVELOPE') {
             console.error('💡 ERROR EN EL ENVÍO:');
             console.error('💡 - Verifica que el email del destinatario sea válido');
