@@ -1296,6 +1296,21 @@
         </div>
     </div>
 
+    <!-- Modal de Detalles de Categoría -->
+    <div id="categoryDetailsModal" class="modal" style="display: none; z-index: 10002;">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 id="categoryDetailsModalTitle" style="margin: 0; font-size: 24px; font-weight: 700; color: white;">Detalles de Categoría</h2>
+                    <button onclick="closeCategoryDetailsModal()" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 300; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                </div>
+            </div>
+            <div style="padding: 24px 32px; flex: 1; overflow-y: auto;">
+                <div id="categoryDetailsContent"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Gráfico Detallado -->
     <div id="chartModal" class="modal" style="display: none;">
         <div class="modal-content chart-modal-content" style="max-width: 90vw; max-height: 90vh; width: 1200px; padding: 0; overflow: hidden; display: flex; flex-direction: column;">

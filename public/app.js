@@ -6189,12 +6189,23 @@ function updateMonthDashboard() {
                 }
                 
                 const card = document.createElement('div');
-                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);';
+                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); cursor: pointer; transition: all 0.2s;';
+                card.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                    this.style.borderColor = 'var(--primary)';
+                };
+                card.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                    this.style.borderColor = 'var(--border-color)';
+                };
+                card.onclick = () => showCategoryDetails(categoryName, data.transactions, 'expense', selectedMonth, catId, budgetAmount);
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div>
                             <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--gray-900);">${categoryName}</h5>
-                            <p style="font-size: 14px; color: var(--gray-600); margin: 0;">${data.transactions.length} transacción${data.transactions.length !== 1 ? 'es' : ''}</p>
+                            <p style="font-size: 14px; color: var(--gray-600); margin: 0;">${data.transactions.length} ${data.transactions.length !== 1 ? 'transacciones' : 'transacción'}</p>
                         </div>
                         <div style="text-align: right;">
                             <p style="font-size: 20px; font-weight: 700; margin: 0; color: var(--danger-color);">${formatCurrency(data.amount)}</p>
@@ -6216,6 +6227,9 @@ function updateMonthDashboard() {
                             </div>
                         </div>
                     ` : '<small style="color: var(--gray-500);">Sin presupuesto establecido</small>'}
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200);">
+                        <small style="color: var(--primary); font-weight: 500;">👆 Click para ver detalles</small>
+                    </div>
                 `;
                 expensesContainer.appendChild(card);
             });
@@ -6258,12 +6272,23 @@ function updateMonthDashboard() {
                 }
                 
                 const card = document.createElement('div');
-                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);';
+                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); cursor: pointer; transition: all 0.2s;';
+                card.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                    this.style.borderColor = 'var(--primary)';
+                };
+                card.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                    this.style.borderColor = 'var(--border-color)';
+                };
+                card.onclick = () => showCategoryDetails(categoryName, data.transactions, 'income', selectedMonth, catId, budgetAmount);
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div>
                             <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--gray-900);">${categoryName}</h5>
-                            <p style="font-size: 14px; color: var(--gray-600); margin: 0;">${data.transactions.length} transacción${data.transactions.length !== 1 ? 'es' : ''}</p>
+                            <p style="font-size: 14px; color: var(--gray-600); margin: 0;">${data.transactions.length} ${data.transactions.length !== 1 ? 'transacciones' : 'transacción'}</p>
                         </div>
                         <div style="text-align: right;">
                             <p style="font-size: 20px; font-weight: 700; margin: 0; color: var(--success);">${formatCurrency(data.amount)}</p>
@@ -6285,6 +6310,9 @@ function updateMonthDashboard() {
                             </div>
                         </div>
                     ` : '<small style="color: var(--gray-500);">Sin presupuesto establecido</small>'}
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200);">
+                        <small style="color: var(--primary); font-weight: 500;">👆 Click para ver detalles</small>
+                    </div>
                 `;
                 incomeContainer.appendChild(card);
             });
