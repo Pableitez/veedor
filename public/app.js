@@ -6497,26 +6497,26 @@ function updateMonthDashboard() {
                 }
                 
                 const card = document.createElement('div');
-                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);';
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);';
                 card.innerHTML = `
-                    <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: var(--gray-900);">${envelope.name}</h5>
+                    <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-primary);">${envelope.name}</h5>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">Presupuesto:</span>
-                        <span style="font-size: 14px; font-weight: 600; color: var(--gray-900);">${formatCurrency(envelope.budget)}</span>
+                        <span style="font-size: 14px; color: var(--text-secondary);">Presupuesto:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${formatCurrency(envelope.budget)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">Gastado:</span>
+                        <span style="font-size: 14px; color: var(--text-secondary);">Gastado:</span>
                         <span style="font-size: 14px; font-weight: 600; color: var(--danger-color);">${formatCurrency(spent)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">Restante:</span>
+                        <span style="font-size: 14px; color: var(--text-secondary);">Restante:</span>
                         <span style="font-size: 14px; font-weight: 600; color: ${remaining >= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">${formatCurrency(remaining)}</span>
                     </div>
                     <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
                         <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <small style="font-size: 11px; color: var(--gray-500);">${envelopeTransactions.length} transacciones</small>
+                        <small style="font-size: 11px; color: var(--text-tertiary);">${envelopeTransactions.length} transacciones</small>
                         <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}% usado</small>
                     </div>
                 `;
