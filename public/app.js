@@ -483,38 +483,37 @@ async function requestPasswordReset() {
         
             if (successMsg) {
                 if (data.token) {
-                    // Usuario encontrado - mostrar token (solo en desarrollo cuando el email falla)
-                    const recoveryCodeGenerated = getTranslation('auth.recoveryCodeGenerated', lang);
-                    const recoveryCodeCopy = getTranslation('auth.recoveryCodeCopy', lang);
-                    const recoveryCodeNote = getTranslation('auth.recoveryCodeNote', lang);
+                    // SOLO si el email falla - mostrar token como fallback de emergencia
+                    // Esto NO debería pasar en producción si el email está bien configurado
                     successMsg.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 12px; border-radius: 10px; border: 1px solid var(--primary); margin-bottom: 14px;">
+                    <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 12px; border-radius: 10px; border: 1px solid #f59e0b; margin-bottom: 14px;">
                         <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
-                            <span style="font-size: 18px;">✅</span>
-                            <strong style="color: var(--gray-900); font-size: 13px;">${recoveryCodeGenerated}</strong>
+                            <span style="font-size: 18px;">⚠️</span>
+                            <strong style="color: var(--gray-900); font-size: 13px;">Email no enviado - Código de emergencia</strong>
                         </div>
-                        <p style="margin: 4px 0 8px 0; color: var(--gray-700); font-size: 12px; line-height: 1.3;">${recoveryCodeCopy}</p>
-                        <div style="background: white; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--primary); margin: 6px 0; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                        <p style="margin: 4px 0 8px 0; color: var(--gray-700); font-size: 12px; line-height: 1.3;">El email no pudo enviarse. Usa este código temporal para recuperar tu contraseña:</p>
+                        <div style="background: white; padding: 8px 10px; border-radius: 6px; border: 1px solid #f59e0b; margin: 6px 0; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
                             <code style="font-size: 11px; font-weight: 600; color: var(--primary); word-break: break-all; flex: 1; font-family: 'Courier New', monospace; line-height: 1.4;">${data.token}</code>
                             <button type="button" onclick="event.preventDefault(); event.stopPropagation(); const token = '${data.token}'; navigator.clipboard.writeText(token).then(() => { const btn = event.target; btn.textContent='✓'; setTimeout(() => { btn.textContent='📋'; }, 2000); }).catch(err => console.error('Error copiando:', err));" style="background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; flex-shrink: 0;" title="Copiar">📋</button>
                         </div>
-                        <p style="margin: 4px 0 0 0; color: var(--orange-600); font-size: 11px; display: flex; align-items: center; gap: 4px;">
-                            <span>⚠️</span>
-                            <span>El email no pudo enviarse. Usa este código para recuperar tu contraseña.</span>
+                        <p style="margin: 6px 0 0 0; color: #b45309; font-size: 11px; display: flex; align-items: center; gap: 4px; font-weight: 500;">
+                            <span>🔒</span>
+                            <span>IMPORTANTE: Este código solo se muestra porque el email falló. Configura el email correctamente en producción.</span>
                         </p>
                     </div>
                 `;
                     successMsg.style.display = 'block';
                     if (resetSection) resetSection.style.display = 'block';
                 } else {
-                    // Email enviado correctamente
+                    // Email enviado correctamente - NO mostrar código
                     successMsg.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 12px; border-radius: 10px; border: 1px solid #22c55e; margin-bottom: 14px;">
-                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-                            <span style="font-size: 18px;">✅</span>
-                            <strong style="color: var(--gray-900); font-size: 13px;">${data.message || getTranslation('auth.recoveryCodeSent', lang)}</strong>
+                    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 14px; border-radius: 10px; border: 1px solid #22c55e; margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                            <span style="font-size: 20px;">✅</span>
+                            <strong style="color: var(--gray-900); font-size: 14px;">Email de recuperación enviado</strong>
                         </div>
-                        <p style="margin: 4px 0 0 0; color: var(--gray-700); font-size: 12px; line-height: 1.3;">Revisa tu bandeja de entrada y la carpeta de spam.</p>
+                        <p style="margin: 4px 0 8px 0; color: var(--gray-700); font-size: 13px; line-height: 1.4;">Hemos enviado un código de recuperación a tu email. Revisa tu bandeja de entrada y la carpeta de spam.</p>
+                        <p style="margin: 8px 0 0 0; color: var(--gray-600); font-size: 12px; line-height: 1.3; font-style: italic;">El código expirará en 1 hora. Si no lo recibes en unos minutos, verifica tu carpeta de spam o solicita uno nuevo.</p>
                     </div>
                 `;
                     successMsg.style.display = 'block';

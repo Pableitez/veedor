@@ -591,6 +591,32 @@ app.get('/api/health', (req, res) => {
 
 // ==================== RUTAS DE AUTENTICACIÓN ====================
 
+// Endpoint de diagnóstico de email (solo para verificar configuración)
+app.get('/api/email-status', (req, res) => {
+    const status = {
+        transporterConfigured: emailTransporter !== null,
+        emailHost: process.env.EMAIL_HOST ? 'Configurado' : 'No configurado',
+        emailUser: process.env.EMAIL_USER ? 'Configurado' : 'No configurado',
+        emailPass: process.env.EMAIL_PASS ? 'Configurado' : 'No configurado',
+        emailPort: process.env.EMAIL_PORT || 'No configurado',
+        emailSecure: process.env.EMAIL_SECURE || 'No configurado',
+        appUrl: process.env.APP_URL || 'No configurado',
+        isPlaceholder: (() => {
+            const isPlaceholder = (value) => {
+                if (!value) return false;
+                const lower = value.toLowerCase();
+                return lower.includes('tuemail') || 
+                       lower.includes('tupassword') || 
+                       lower.includes('tu_password') ||
+                       lower.includes('example') ||
+                       lower.includes('placeholder');
+            };
+            return isPlaceholder(process.env.EMAIL_USER) || isPlaceholder(process.env.EMAIL_PASS);
+        })()
+    };
+    res.json(status);
+});
+
 // Registro
 app.post('/api/register', async (req, res) => {
     try {
@@ -817,24 +843,35 @@ app.post('/api/forgot-password', async (req, res) => {
         console.log(`🔑 Token de recuperación generado para ${email}: ${resetToken.substring(0, 10)}...`);
         
         // Enviar email de recuperación
-        console.log('📧 Intentando enviar email de recuperación...');
+        console.log('📧 ===== INTENTANDO ENVIAR EMAIL DE RECUPERACIÓN =====');
+        console.log('📧 Email del usuario:', user.email);
+        console.log('📧 Token generado:', resetToken.substring(0, 20) + '...');
+        
         const emailSent = await sendPasswordResetEmail(user.email, resetToken);
         
         if (emailSent) {
-            // Si el email se envió correctamente, no devolver el token por seguridad
-            console.log('✅ Email enviado exitosamente');
+            // Si el email se envió correctamente, NO devolver el token por seguridad
+            console.log('✅ ===== EMAIL ENVIADO EXITOSAMENTE =====');
+            console.log('✅ El código de recuperación fue enviado por email');
+            console.log('✅ NO se devuelve el token al cliente por seguridad');
             res.json({ 
-                message: 'Si el email está registrado, recibirás un código de recuperación por email.',
-                token: null,
+                message: 'Email de recuperación enviado',
+                token: null, // NUNCA devolver el token si el email se envió
                 expiresAt: resetTokenExpiry
             });
         } else {
-            // Si el email no se pudo enviar, devolver el token como fallback
-            console.log('⚠️ Email no enviado. Devolviendo token como fallback.');
-            console.log('⚠️ Verifica la configuración de email en Render (EMAIL_HOST, EMAIL_USER, EMAIL_PASS)');
+            // Si el email no se pudo enviar, devolver el token como fallback de EMERGENCIA
+            console.log('⚠️ ===== EMAIL NO ENVIADO - FALLBACK DE EMERGENCIA =====');
+            console.log('⚠️ El email no pudo enviarse. Devolviendo token como fallback.');
+            console.log('⚠️ ESTO NO DEBERÍA PASAR EN PRODUCCIÓN');
+            console.log('⚠️ Verifica la configuración de email en Render:');
+            console.log('⚠️   - EMAIL_HOST debe estar configurado');
+            console.log('⚠️   - EMAIL_USER debe estar configurado');
+            console.log('⚠️   - EMAIL_PASS debe ser una App Password de Gmail');
+            console.log('⚠️   - EMAIL_PORT debe ser 465 (con EMAIL_SECURE=true)');
             res.json({ 
-                message: 'Código de recuperación generado. El email no pudo enviarse, pero aquí está el código:',
-                token: resetToken, // Fallback si el email falla
+                message: 'Email no enviado - Código de emergencia',
+                token: resetToken, // SOLO como fallback de emergencia
                 expiresAt: resetTokenExpiry
             });
         }
