@@ -5581,6 +5581,19 @@ function updateModalChart() {
         accountFilter = accountSelect ? accountSelect.value : 'all';
     }
     
+    // Si es fecha personalizada del modal, sincronizar con el gráfico pequeño
+    if (period === 'custom') {
+        const modalStartDate = document.getElementById('modalStartDate');
+        const modalEndDate = document.getElementById('modalEndDate');
+        const originalStartDate = document.getElementById(`${currentChartType}StartDate`);
+        const originalEndDate = document.getElementById(`${currentChartType}EndDate`);
+        
+        if (modalStartDate && modalEndDate && originalStartDate && originalEndDate) {
+            originalStartDate.value = modalStartDate.value;
+            originalEndDate.value = modalEndDate.value;
+        }
+    }
+    
     // Actualizar el período en el selector del gráfico original temporalmente
     const originalPeriodSelect = document.querySelector(`.chart-period-select[data-chart="${currentChartType}"]`);
     if (originalPeriodSelect && periodSelect) {
