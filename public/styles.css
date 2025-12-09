@@ -1634,12 +1634,14 @@ tbody tr:last-child td {
     /* Tablas de análisis detallado en móvil */
     .table-section {
         margin-bottom: 24px !important;
+        overflow: visible !important;
     }
     
     .table-container {
         margin: 0 !important;
         border-radius: 8px !important;
         overflow-x: auto !important;
+        overflow-y: visible !important;
         -webkit-overflow-scrolling: touch !important;
     }
     
@@ -1656,6 +1658,15 @@ tbody tr:last-child td {
     .table-container th {
         font-size: 12px !important;
         white-space: nowrap;
+    }
+    
+    /* Eliminar scroll innecesario en contenedores de análisis */
+    #charts-tab {
+        overflow: visible !important;
+    }
+    
+    #charts-tab > div {
+        overflow: visible !important;
     }
     
     footer {
