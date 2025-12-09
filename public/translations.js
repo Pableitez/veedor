@@ -3,7 +3,7 @@ const translations = {
     es: {
         // Navegación
         nav: {
-            dashboard: "Panel de Mandos Principal",
+            dashboard: "Dashboard",
             transactions: "Transacciones",
             accounts: "Cuentas",
             properties: "Propiedades",
@@ -59,7 +59,7 @@ const translations = {
         },
         // Dashboard
         dashboard: {
-            title: "Panel de Mandos",
+            title: "Dashboard",
             monthAnalysis: "Análisis del Mes",
             monthAnalysisHint: "Selecciona un mes para ver el análisis detallado",
             summaryView: "Vista de Resumen",
