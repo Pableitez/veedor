@@ -6530,6 +6530,100 @@ function updateMonthDashboard() {
     }
 }
 
+// ==================== MODAL DE DETALLES DE CATEGORÍA ====================
+function showCategoryDetails(categoryName, transactions, type, month, categoryId, budgetAmount) {
+    const modal = document.getElementById('categoryDetailsModal');
+    const modalTitle = document.getElementById('categoryDetailsModalTitle');
+    const modalContent = document.getElementById('categoryDetailsContent');
+    
+    if (!modal || !modalTitle || !modalContent) {
+        console.error('Modal elements not found');
+        return;
+    }
+    
+    const [year, monthNum] = month.split('-');
+    const monthName = new Date(year, parseInt(monthNum) - 1, 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+    
+    modalTitle.textContent = `${categoryName} - ${monthName}`;
+    
+    const total = transactions.reduce((sum, t) => sum + (type === 'expense' ? Math.abs(t.amount) : t.amount), 0);
+    
+    let content = `
+        <div style="margin-bottom: 24px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                <div style="background: ${type === 'expense' ? 'var(--danger)' : 'var(--success)'}; padding: 20px; border-radius: 12px; color: white;">
+                    <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Total ${type === 'expense' ? 'Gastado' : 'Ingresado'}</div>
+                    <div style="font-size: 28px; font-weight: 700;">${formatCurrency(total)}</div>
+                </div>
+                <div style="background: var(--gray-100); padding: 20px; border-radius: 12px;">
+                    <div style="font-size: 14px; color: var(--gray-600); margin-bottom: 8px;">Transacciones</div>
+                    <div style="font-size: 28px; font-weight: 700; color: var(--gray-900);">${transactions.length}</div>
+                </div>
+                ${budgetAmount > 0 ? `
+                    <div style="background: var(--primary-light); padding: 20px; border-radius: 12px;">
+                        <div style="font-size: 14px; color: var(--primary); margin-bottom: 8px;">Presupuesto</div>
+                        <div style="font-size: 28px; font-weight: 700; color: var(--primary-dark);">${formatCurrency(budgetAmount)}</div>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+        
+        <div>
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--gray-900);">Transacciones</h3>
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: var(--gray-50); border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">Fecha</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">Descripción</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">Subcategoría</th>
+                            <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.5px;">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    
+    const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (sortedTransactions.length === 0) {
+        content += '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--gray-500);">No hay transacciones</td></tr>';
+    } else {
+        sortedTransactions.forEach(t => {
+            const date = new Date(t.date);
+            const amount = type === 'expense' ? Math.abs(t.amount) : t.amount;
+            content += `
+                <tr style="border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 12px; color: var(--text-secondary);">${formatDate(date)}</td>
+                    <td style="padding: 12px; color: var(--text-secondary);">${t.description || '-'}</td>
+                    <td style="padding: 12px; color: var(--text-secondary);">${t.categorySpecific || '-'}</td>
+                    <td style="padding: 12px; text-align: right; font-weight: 600; color: ${type === 'expense' ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(amount)}</td>
+                </tr>
+            `;
+        });
+    }
+    
+    content += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    modalContent.innerHTML = content;
+    modal.style.display = 'flex';
+}
+
+function closeCategoryDetailsModal() {
+    const modal = document.getElementById('categoryDetailsModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Exponer funciones globales
+window.showCategoryDetails = showCategoryDetails;
+window.closeCategoryDetailsModal = closeCategoryDetailsModal;
+
 // Exportar datos
 function exportData() {
     if (!currentUser) return;
