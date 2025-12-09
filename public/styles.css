@@ -836,6 +836,32 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     color: var(--text-primary);
 }
 
+/* Selectores de gráficos - usar variables CSS para modo oscuro */
+.chart-period-select,
+.chart-category-select {
+    padding: 6px 10px !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: var(--radius) !important;
+    font-size: 12px !important;
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chart-period-select:focus,
+.chart-category-select:focus {
+    outline: none;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px var(--primary-light) !important;
+}
+
+.chart-period-select option,
+.chart-category-select option {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
 .table-controls input:focus,
 .table-controls select:focus {
     outline: none;
