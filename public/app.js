@@ -481,30 +481,46 @@ async function requestPasswordReset() {
             body: JSON.stringify({ email })
         });
         
-        if (successMsg) {
-            if (data.token) {
-                // Usuario encontrado - mostrar token
-                const recoveryCodeGenerated = getTranslation('auth.recoveryCodeGenerated', lang);
-                const recoveryCodeCopy = getTranslation('auth.recoveryCodeCopy', lang);
-                const recoveryCodeNote = getTranslation('auth.recoveryCodeNote', lang);
-                successMsg.innerHTML = `
-                    <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--primary); margin-bottom: 12px;">
-                        <strong style="color: var(--gray-900); display: block; margin-bottom: 8px;">✅ ${recoveryCodeGenerated}</strong>
-                        <p style="margin: 8px 0; color: var(--gray-700); font-size: 13px;">${recoveryCodeCopy}</p>
-                        <div style="background: white; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border-color); margin: 8px 0;">
-                            <code style="font-size: 14px; font-weight: 600; color: var(--primary); word-break: break-all; display: block;">${data.token}</code>
+            if (successMsg) {
+                if (data.token) {
+                    // Usuario encontrado - mostrar token (solo en desarrollo cuando el email falla)
+                    const recoveryCodeGenerated = getTranslation('auth.recoveryCodeGenerated', lang);
+                    const recoveryCodeCopy = getTranslation('auth.recoveryCodeCopy', lang);
+                    const recoveryCodeNote = getTranslation('auth.recoveryCodeNote', lang);
+                    successMsg.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 14px; border-radius: 12px; border: 1px solid var(--primary); margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <span style="font-size: 20px;">✅</span>
+                            <strong style="color: var(--gray-900); font-size: 14px;">${recoveryCodeGenerated}</strong>
                         </div>
-                        <p style="margin: 8px 0 0 0; color: var(--gray-600); font-size: 12px;">⚠️ ${recoveryCodeNote}</p>
+                        <p style="margin: 6px 0; color: var(--gray-700); font-size: 13px; line-height: 1.4;">${recoveryCodeCopy}</p>
+                        <div style="background: white; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--primary); margin: 8px 0; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                            <code style="font-size: 13px; font-weight: 600; color: var(--primary); word-break: break-all; flex: 1; font-family: 'Courier New', monospace;">${data.token}</code>
+                            <button onclick="navigator.clipboard.writeText('${data.token}'); this.textContent='✓'; setTimeout(() => this.textContent='📋', 2000);" style="background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; flex-shrink: 0;" title="Copiar">📋</button>
+                        </div>
+                        <p style="margin: 6px 0 0 0; color: var(--gray-600); font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                            <span>⚠️</span>
+                            <span>${recoveryCodeNote}</span>
+                        </p>
                     </div>
                 `;
-                successMsg.style.display = 'block';
-                if (resetSection) resetSection.style.display = 'block';
-            } else {
-                // Usuario no encontrado o mensaje genérico
-                successMsg.textContent = data.message || getTranslation('auth.recoveryCodeSent', lang);
-                successMsg.style.display = 'block';
+                    successMsg.style.display = 'block';
+                    if (resetSection) resetSection.style.display = 'block';
+                } else {
+                    // Email enviado correctamente
+                    successMsg.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 14px; border-radius: 12px; border: 1px solid #22c55e; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 20px;">✅</span>
+                            <strong style="color: var(--gray-900); font-size: 14px;">${data.message || getTranslation('auth.recoveryCodeSent', lang)}</strong>
+                        </div>
+                        <p style="margin: 8px 0 0 0; color: var(--gray-700); font-size: 13px; line-height: 1.4;">Revisa tu bandeja de entrada y la carpeta de spam.</p>
+                    </div>
+                `;
+                    successMsg.style.display = 'block';
+                    if (resetSection) resetSection.style.display = 'block';
+                }
             }
-        }
     } catch (error) {
         console.error('Error en requestPasswordReset:', error);
         if (errorMsg) {

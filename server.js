@@ -284,29 +284,111 @@ mongoose.connection.on('reconnected', () => {
 let emailTransporter = null;
 
 function setupEmailTransporter() {
+    console.log('🔧 ===== CONFIGURANDO EMAIL TRANSPORTER =====');
+    console.log('🔧 Verificando variables de entorno...');
+    console.log('🔧 EMAIL_HOST:', process.env.EMAIL_HOST ? '✅ Configurado' : '❌ No configurado');
+    console.log('🔧 EMAIL_USER:', process.env.EMAIL_USER ? '✅ Configurado' : '❌ No configurado');
+    console.log('🔧 EMAIL_PASS:', process.env.EMAIL_PASS ? '✅ Configurado (oculto)' : '❌ No configurado');
+    console.log('🔧 EMAIL_PORT:', process.env.EMAIL_PORT || 'No configurado (usará 587 por defecto)');
+    console.log('🔧 EMAIL_SECURE:', process.env.EMAIL_SECURE || 'No configurado');
+    console.log('🔧 APP_URL:', process.env.APP_URL || 'No configurado');
+    
+    // Validar que no sean placeholders
+    const isPlaceholder = (value) => {
+        if (!value) return false;
+        const lower = value.toLowerCase();
+        return lower.includes('tuemail') || 
+               lower.includes('tupassword') || 
+               lower.includes('tu_password') ||
+               lower.includes('example') ||
+               lower.includes('placeholder');
+    };
+    
     // Si hay credenciales de email configuradas, crear transporter
     if (process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        // Validar placeholders
+        if (isPlaceholder(process.env.EMAIL_USER) || isPlaceholder(process.env.EMAIL_PASS)) {
+            console.error('❌ ERROR: Los valores de EMAIL_USER o EMAIL_PASS parecen ser placeholders');
+            console.error('❌ Por favor, configura valores reales en Render');
+            console.error('💡 Para Gmail, necesitas usar una "Contraseña de aplicación" (App Password)');
+            console.error('💡 Ve a: https://myaccount.google.com/apppasswords');
+            emailTransporter = null;
+            return;
+        }
+        
         const emailPort = parseInt(process.env.EMAIL_PORT || '587');
         const emailSecure = process.env.EMAIL_SECURE === 'true' || process.env.EMAIL_SECURE === '1' || emailPort === 465;
+        const isGmail = process.env.EMAIL_HOST.includes('gmail.com');
         
-        emailTransporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: emailPort,
-            secure: emailSecure, // true para 465 (SSL), false para 587 (TLS)
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            },
-            tls: {
-                rejectUnauthorized: false // Para desarrollo, en producción debería ser true
+        try {
+            // Configuración optimizada para Gmail
+            const transporterConfig = {
+                host: process.env.EMAIL_HOST,
+                port: emailPort,
+                secure: emailSecure,
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                },
+                tls: {
+                    rejectUnauthorized: false,
+                    ciphers: 'SSLv3'
+                }
+            };
+            
+            // Configuración adicional para Gmail con SSL (puerto 465)
+            if (isGmail && emailSecure) {
+                transporterConfig.requireTLS = false;
+                transporterConfig.connectionTimeout = 10000;
+                transporterConfig.greetingTimeout = 10000;
             }
-        });
-        console.log('✅ Transporter de email configurado');
-        console.log('📧 Email configurado para:', process.env.EMAIL_USER);
-        console.log('📧 Host:', process.env.EMAIL_HOST);
-        console.log('📧 Puerto:', emailPort);
-        console.log('📧 Secure (SSL):', emailSecure);
-        console.log('📧 APP_URL:', process.env.APP_URL || 'No configurado');
+            
+            emailTransporter = nodemailer.createTransport(transporterConfig);
+            
+            // Verificar la conexión de forma asíncrona (no bloquea el inicio)
+            emailTransporter.verify(function(error, success) {
+                if (error) {
+                    console.error('❌ ===== ERROR VERIFICANDO CONEXIÓN DE EMAIL =====');
+                    console.error('❌ Error:', error.message);
+                    console.error('❌ Código:', error.code);
+                    
+                    // Mensajes de ayuda específicos para errores comunes
+                    if (error.code === 'EAUTH') {
+                        console.error('💡 ERROR DE AUTENTICACIÓN:');
+                        console.error('💡 - Verifica que EMAIL_USER sea tu email completo');
+                        console.error('💡 - Verifica que EMAIL_PASS sea una "Contraseña de aplicación" (App Password)');
+                        console.error('💡 - Si tienes 2FA activado en Gmail, DEBES usar una App Password');
+                        console.error('💡 - Genera una aquí: https://myaccount.google.com/apppasswords');
+                    } else if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT') {
+                        console.error('💡 ERROR DE CONEXIÓN:');
+                        console.error('💡 - Verifica que EMAIL_HOST sea correcto (smtp.gmail.com)');
+                        console.error('💡 - Verifica que EMAIL_PORT sea 465 (SSL) o 587 (TLS)');
+                        console.error('💡 - Verifica que EMAIL_SECURE sea true para puerto 465');
+                    } else {
+                        console.error('💡 Revisa los logs anteriores para más detalles');
+                    }
+                } else {
+                    console.log('✅ Conexión de email verificada correctamente');
+                    console.log('✅ El servidor de email está listo para enviar correos');
+                }
+            });
+            
+            console.log('✅ Transporter de email configurado exitosamente');
+            console.log('📧 Email configurado para:', process.env.EMAIL_USER);
+            console.log('📧 Host:', process.env.EMAIL_HOST);
+            console.log('📧 Puerto:', emailPort);
+            console.log('📧 Secure (SSL):', emailSecure);
+            console.log('📧 Es Gmail:', isGmail);
+            console.log('📧 APP_URL:', process.env.APP_URL || 'No configurado');
+            
+            if (isGmail) {
+                console.log('💡 NOTA: Si tienes problemas, asegúrate de usar una "Contraseña de aplicación"');
+                console.log('💡 Genera una aquí: https://myaccount.google.com/apppasswords');
+            }
+        } catch (error) {
+            console.error('❌ Error creando transporter de email:', error);
+            emailTransporter = null;
+        }
     } else {
         console.log('⚠️ Email no configurado. Los emails de verificación no se enviarán.');
         console.log('💡 Configura EMAIL_HOST, EMAIL_USER, EMAIL_PASS en las variables de entorno para habilitar emails');
@@ -316,6 +398,7 @@ function setupEmailTransporter() {
             EMAIL_PASS: process.env.EMAIL_PASS ? 'Configurado' : 'No configurado'
         });
     }
+    console.log('🔧 ===== FIN CONFIGURACIÓN EMAIL =====');
 }
 
 // Función para enviar email de verificación
@@ -415,23 +498,57 @@ async function sendPasswordResetEmail(email, resetToken) {
     };
 
     try {
-        console.log('📧 Intentando enviar email de recuperación a:', email);
+        console.log('📧 ===== INTENTANDO ENVIAR EMAIL DE RECUPERACIÓN =====');
+        console.log('📧 Destinatario:', email);
         console.log('📧 Desde:', process.env.EMAIL_USER);
         console.log('📧 Host:', process.env.EMAIL_HOST);
         console.log('📧 Puerto:', process.env.EMAIL_PORT || '587');
+        console.log('📧 Secure:', process.env.EMAIL_SECURE);
+        console.log('📧 Transporter configurado:', emailTransporter ? 'Sí' : 'No');
+        
+        if (!emailTransporter) {
+            console.error('❌ ERROR: emailTransporter es null o undefined');
+            console.error('❌ Verifica que las variables de entorno estén configuradas correctamente en Render');
+            return false;
+        }
         
         const info = await emailTransporter.sendMail(mailOptions);
         console.log('✅ Email de recuperación enviado exitosamente a', email);
         console.log('📧 Message ID:', info.messageId);
+        console.log('📧 Response:', info.response);
         return true;
     } catch (error) {
-        console.error('❌ Error enviando email de recuperación:', error);
+        console.error('❌ ===== ERROR ENVIANDO EMAIL DE RECUPERACIÓN =====');
+        console.error('❌ Error completo:', error);
+        console.error('❌ Mensaje:', error.message);
+        console.error('❌ Código:', error.code);
         console.error('❌ Detalles del error:', {
             code: error.code,
             command: error.command,
             response: error.response,
-            responseCode: error.responseCode
+            responseCode: error.responseCode,
+            errno: error.errno,
+            syscall: error.syscall
         });
+        
+        // Mensajes de ayuda específicos
+        if (error.code === 'EAUTH') {
+            console.error('💡 ERROR DE AUTENTICACIÓN:');
+            console.error('💡 - Verifica que EMAIL_USER sea tu email completo de Gmail');
+            console.error('💡 - Verifica que EMAIL_PASS sea una "Contraseña de aplicación" (App Password)');
+            console.error('💡 - Si tienes 2FA activado, DEBES usar una App Password, no tu contraseña normal');
+            console.error('💡 - Genera una aquí: https://myaccount.google.com/apppasswords');
+            console.error('💡 - La App Password es una cadena de 16 caracteres sin espacios');
+        } else if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT') {
+            console.error('💡 ERROR DE CONEXIÓN:');
+            console.error('💡 - Verifica que EMAIL_HOST sea: smtp.gmail.com');
+            console.error('💡 - Verifica que EMAIL_PORT sea: 465 (con EMAIL_SECURE=true) o 587 (con EMAIL_SECURE=false)');
+            console.error('💡 - Verifica tu conexión a internet');
+        } else if (error.code === 'EENVELOPE') {
+            console.error('💡 ERROR EN EL ENVÍO:');
+            console.error('💡 - Verifica que el email del destinatario sea válido');
+        }
+        
         return false;
     }
 }
