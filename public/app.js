@@ -5875,15 +5875,15 @@ async function saveUserProfile() {
         
         // Actualizar datos locales
         userProfile = {
-            firstName: data.user.firstName || '',
-            lastName: data.user.lastName || '',
-            age: data.user.age || null,
-            phone: data.user.phone || '',
-            address: data.user.address || '',
-            city: data.user.city || '',
-            country: data.user.country || '',
-            birthDate: data.user.birthDate || null,
-            notes: data.user.notes || ''
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
+            age: data.age || null,
+            phone: data.phone || '',
+            address: data.address || '',
+            city: data.city || '',
+            country: data.country || '',
+            birthDate: data.birthDate || null,
+            notes: data.notes || ''
         };
         
         updateUserInfo();
