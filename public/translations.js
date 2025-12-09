@@ -3,7 +3,7 @@ const translations = {
     es: {
         // Navegación
         nav: {
-            dashboard: "Dashboard",
+            dashboard: "Resumen",
             transactions: "Transacciones",
             accounts: "Cuentas",
             properties: "Propiedades",
