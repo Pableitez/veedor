@@ -802,6 +802,9 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 .table-section {
     margin-top: 32px;
     overflow: visible;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
 }
 
 /* Eliminar scroll innecesario en sección de análisis */
