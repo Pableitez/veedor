@@ -5455,11 +5455,34 @@ function updateModalChart() {
     if (!currentChartType) return;
     
     const modalCanvas = document.getElementById('chartModalCanvas');
-    if (!modalCanvas) return;
+    if (!modalCanvas) {
+        console.warn('Canvas del modal no encontrado');
+        return;
+    }
     
     // Obtener período seleccionado
     const periodSelect = document.getElementById('modalChartPeriod');
     const period = periodSelect ? (periodSelect.value === 'all' ? 999 : parseInt(periodSelect.value) || 6) : 6;
+    
+    // Obtener filtros adicionales
+    let categoryFilter = 'all';
+    let loanFilter = 'all';
+    let assetFilter = 'all';
+    let accountFilter = 'all';
+    
+    if (currentChartType === 'incomeEvolution' || currentChartType === 'expensesEvolution') {
+        const categorySelect = document.getElementById('modalChartCategoryFilter');
+        categoryFilter = categorySelect ? categorySelect.value : 'all';
+    } else if (currentChartType === 'loansPending') {
+        const loanSelect = document.getElementById('modalChartLoanFilter');
+        loanFilter = loanSelect ? loanSelect.value : 'all';
+    } else if (currentChartType === 'assetsEvolution') {
+        const assetSelect = document.getElementById('modalChartAssetFilter');
+        assetFilter = assetSelect ? assetSelect.value : 'all';
+    } else if (currentChartType === 'accountsBalance') {
+        const accountSelect = document.getElementById('modalChartAccountFilter');
+        accountFilter = accountSelect ? accountSelect.value : 'all';
+    }
     
     // Actualizar el período en el selector del gráfico original temporalmente
     const originalPeriodSelect = document.querySelector(`.chart-period-select[data-chart="${currentChartType}"]`);
@@ -5467,68 +5490,97 @@ function updateModalChart() {
         originalPeriodSelect.value = periodSelect.value;
     }
     
-    // Actualizar el gráfico original con el nuevo período
+    // Aplicar filtros a los selectores originales si existen
+    if (currentChartType === 'incomeEvolution' || currentChartType === 'expensesEvolution') {
+        const originalCategorySelect = document.querySelector(`.chart-category-filter[data-chart="${currentChartType}"]`);
+        if (originalCategorySelect && categoryFilter !== 'all') {
+            originalCategorySelect.value = categoryFilter;
+        }
+    } else if (currentChartType === 'loansPending') {
+        const originalLoanSelect = document.querySelector(`.chart-loan-filter[data-chart="${currentChartType}"]`);
+        if (originalLoanSelect && loanFilter !== 'all') {
+            originalLoanSelect.value = loanFilter;
+        }
+    } else if (currentChartType === 'assetsEvolution') {
+        const originalAssetSelect = document.querySelector(`.chart-asset-filter[data-chart="${currentChartType}"]`);
+        if (originalAssetSelect && assetFilter !== 'all') {
+            originalAssetSelect.value = assetFilter;
+        }
+    } else if (currentChartType === 'accountsBalance') {
+        const originalAccountSelect = document.querySelector(`.chart-account-filter[data-chart="${currentChartType}"]`);
+        if (originalAccountSelect && accountFilter !== 'all') {
+            originalAccountSelect.value = accountFilter;
+        }
+    }
+    
+    // Actualizar el gráfico original con el nuevo período y filtros
     updateSingleChart(currentChartType);
     
-    // Obtener el gráfico original actualizado
-    let originalChart = null;
-    switch(currentChartType) {
-        case 'savings':
-            originalChart = charts.savings;
-            break;
-        case 'expenses':
-            originalChart = charts.expenses;
-            break;
-        case 'incomeExpense':
-            originalChart = charts.incomeExpense;
-            break;
-        case 'distribution':
-            originalChart = charts.distribution;
-            break;
-        case 'incomeEvolution':
-            originalChart = charts.incomeEvolution;
-            break;
-        case 'expensesEvolution':
-            originalChart = charts.expensesEvolution;
-            break;
-        case 'loansPending':
-            originalChart = charts.loansPending;
-            break;
-        case 'assetsEvolution':
-            originalChart = charts.assetsEvolution;
-            break;
-        case 'accountsBalance':
-            originalChart = charts.accountsBalance;
-            break;
-    }
-    
-    if (originalChart && originalChart.data) {
-        // Destruir gráfico anterior del modal
-        if (chartModalChart) {
-            chartModalChart.destroy();
+    // Esperar un momento para que el gráfico se actualice
+    setTimeout(() => {
+        // Obtener el gráfico original actualizado
+        let originalChart = null;
+        switch(currentChartType) {
+            case 'savings':
+                originalChart = charts.savings;
+                break;
+            case 'expenses':
+                originalChart = charts.expenses;
+                break;
+            case 'incomeExpense':
+                originalChart = charts.incomeExpense;
+                break;
+            case 'distribution':
+                originalChart = charts.distribution;
+                break;
+            case 'incomeEvolution':
+                originalChart = charts.incomeEvolution;
+                break;
+            case 'expensesEvolution':
+                originalChart = charts.expensesEvolution;
+                break;
+            case 'loansPending':
+                originalChart = charts.loansPending;
+                break;
+            case 'assetsEvolution':
+                originalChart = charts.assetsEvolution;
+                break;
+            case 'accountsBalance':
+                originalChart = charts.accountsBalance;
+                break;
         }
         
-        // Clonar datos del gráfico original
-        const clonedData = JSON.parse(JSON.stringify(originalChart.data));
-        
-        // Crear nuevo gráfico en el modal
-        chartModalChart = new Chart(modalCanvas, {
-            type: originalChart.config.type,
-            data: clonedData,
-            options: {
-                ...originalChart.options,
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    ...originalChart.options.plugins,
-                    legend: {
-                        display: true,
-                        position: 'top'
+        if (originalChart && originalChart.data) {
+            // Destruir gráfico anterior del modal
+            if (chartModalChart) {
+                chartModalChart.destroy();
+                chartModalChart = null;
+            }
+            
+            // Clonar datos del gráfico original
+            const clonedData = JSON.parse(JSON.stringify(originalChart.data));
+            
+            // Crear nuevo gráfico en el modal
+            chartModalChart = new Chart(modalCanvas, {
+                type: originalChart.config.type,
+                data: clonedData,
+                options: {
+                    ...originalChart.options,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        ...originalChart.options.plugins,
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
                     }
                 }
-            }
-        });
-    }
+            });
+        } else {
+            console.warn('Gráfico original no encontrado o sin datos:', currentChartType);
+        }
+    }, 100);
 }
 
 // Exponer funciones globalmente
@@ -7200,6 +7252,78 @@ function showFinancialHealthDetail(metric, index) {
     const avgMonthlyExpenses = monthsInPeriod > 0 ? periodExpenses / monthsInPeriod : periodExpenses;
     const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
     
+    // Generar gráfico según la métrica
+    if (index === 0 || index === 1) { // Deuda vs Activos
+        chartHTML = '<div style="margin: 20px 0;"><canvas id="metricChart" style="max-height: 300px;"></canvas></div>';
+        chartData = {
+            type: 'doughnut',
+            data: {
+                labels: ['Deuda', 'Activos'],
+                datasets: [{
+                    data: [loansDebt, Math.max(0, totalAssets - loansDebt)],
+                    backgroundColor: ['#ef4444', '#10b981']
+                }]
+            }
+        };
+    } else if (index === 4) { // Ratio de Ahorro - Ingresos vs Gastos
+        chartHTML = '<div style="margin: 20px 0;"><canvas id="metricChart" style="max-height: 300px;"></canvas></div>';
+        chartData = {
+            type: 'bar',
+            data: {
+                labels: ['Ingresos', 'Gastos', 'Ahorro'],
+                datasets: [{
+                    label: 'Euros',
+                    data: [periodIncome, periodExpenses, Math.max(0, periodSavings)],
+                    backgroundColor: ['#10b981', '#ef4444', '#6366f1']
+                }]
+            },
+            options: {
+                scales: { y: { beginAtZero: true } }
+            }
+        };
+    } else if (index === 5) { // Liquidez - Evolución temporal
+        const months = [];
+        const balances = [];
+        let runningBalance = totalTransactionsBalance;
+        for (let i = monthsInPeriod - 1; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            months.push(date.toLocaleDateString('es-ES', { month: 'short' }));
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear();
+            });
+            runningBalance += monthTransactions.reduce((sum, t) => sum + t.amount, 0);
+            balances.push(runningBalance);
+        }
+        chartHTML = '<div style="margin: 20px 0;"><canvas id="metricChart" style="max-height: 300px;"></canvas></div>';
+        chartData = {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Balance',
+                    data: balances,
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            }
+        };
+    } else if (index === 6) { // Ratio de Inversión
+        chartHTML = '<div style="margin: 20px 0;"><canvas id="metricChart" style="max-height: 300px;"></canvas></div>';
+        chartData = {
+            type: 'doughnut',
+            data: {
+                labels: ['Inversiones', 'Otros Activos'],
+                datasets: [{
+                    data: [investmentsValue, Math.max(0, totalAssets - investmentsValue)],
+                    backgroundColor: ['#10b981', '#6366f1']
+                }]
+            }
+        };
+    }
+    
     let detailContent = `
         <div style="display: flex; flex-direction: column; gap: 20px;">
             <div style="background: var(--gray-50); padding: 20px; border-radius: 12px;">
@@ -7209,6 +7333,8 @@ function showFinancialHealthDetail(metric, index) {
                 </div>
                 <p style="margin: 0; color: var(--gray-600); font-size: 14px;">${metric.description}</p>
             </div>
+            
+            ${chartHTML}
             
             <div>
                 <h3 style="margin: 0 0 12px 0; font-size: 16px; color: var(--gray-900);">Detalles del Cálculo</h3>
@@ -7292,6 +7418,31 @@ function showFinancialHealthDetail(metric, index) {
     
     contentEl.innerHTML = detailContent;
     modal.style.display = 'flex';
+    
+    // Crear gráfico si hay datos
+    if (chartData) {
+        setTimeout(() => {
+            const canvas = document.getElementById('metricChart');
+            if (canvas && typeof Chart !== 'undefined') {
+                // Destruir gráfico anterior si existe
+                if (window.metricChartInstance) {
+                    window.metricChartInstance.destroy();
+                }
+                window.metricChartInstance = new Chart(canvas, {
+                    type: chartData.type,
+                    data: chartData.data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: true }
+                        },
+                        ...chartData.options
+                    }
+                });
+            }
+        }, 100);
+    }
 }
 
 // ==================== SISTEMA DE TRADUCCIÓN ====================
