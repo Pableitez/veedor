@@ -525,7 +525,7 @@ function initializeAuth() {
     // Botón cambiar usuario
     const switchUserBtn = document.getElementById('switchUserBtn');
     if (switchUserBtn) {
-        switchUserBtn.addEventListener('click', () => {
+        switchUserBtn.addEventListener('click', async () => {
             const confirmed = await showConfirm(
                 'Cerrar Sesión',
                 '¿Deseas cerrar sesión y cambiar de usuario?',
