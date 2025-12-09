@@ -817,21 +817,24 @@ app.post('/api/forgot-password', async (req, res) => {
         console.log(`🔑 Token de recuperación generado para ${email}: ${resetToken.substring(0, 10)}...`);
         
         // Enviar email de recuperación
+        console.log('📧 Intentando enviar email de recuperación...');
         const emailSent = await sendPasswordResetEmail(user.email, resetToken);
         
         if (emailSent) {
             // Si el email se envió correctamente, no devolver el token por seguridad
+            console.log('✅ Email enviado exitosamente');
             res.json({ 
                 message: 'Si el email está registrado, recibirás un código de recuperación por email.',
                 token: null,
                 expiresAt: resetTokenExpiry
             });
         } else {
-            // Si el email no se pudo enviar (desarrollo o error), devolver el token para pruebas
-            console.log('⚠️ Email no enviado. Devolviendo token para desarrollo.');
+            // Si el email no se pudo enviar, devolver el token como fallback
+            console.log('⚠️ Email no enviado. Devolviendo token como fallback.');
+            console.log('⚠️ Verifica la configuración de email en Render (EMAIL_HOST, EMAIL_USER, EMAIL_PASS)');
             res.json({ 
-                message: 'Código de recuperación generado. El email no pudo enviarse, pero aquí está el código para pruebas:',
-                token: resetToken, // Solo si el email falla - para desarrollo
+                message: 'Código de recuperación generado. El email no pudo enviarse, pero aquí está el código:',
+                token: resetToken, // Fallback si el email falla
                 expiresAt: resetTokenExpiry
             });
         }

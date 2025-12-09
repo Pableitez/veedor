@@ -496,11 +496,11 @@ async function requestPasswordReset() {
                         <p style="margin: 4px 0 8px 0; color: var(--gray-700); font-size: 12px; line-height: 1.3;">${recoveryCodeCopy}</p>
                         <div style="background: white; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--primary); margin: 6px 0; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
                             <code style="font-size: 11px; font-weight: 600; color: var(--primary); word-break: break-all; flex: 1; font-family: 'Courier New', monospace; line-height: 1.4;">${data.token}</code>
-                            <button onclick="navigator.clipboard.writeText('${data.token}'); this.textContent='✓'; setTimeout(() => this.textContent='📋', 2000);" style="background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; flex-shrink: 0;" title="Copiar">📋</button>
+                            <button type="button" onclick="event.preventDefault(); event.stopPropagation(); const token = '${data.token}'; navigator.clipboard.writeText(token).then(() => { const btn = event.target; btn.textContent='✓'; setTimeout(() => { btn.textContent='📋'; }, 2000); }).catch(err => console.error('Error copiando:', err));" style="background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; flex-shrink: 0;" title="Copiar">📋</button>
                         </div>
-                        <p style="margin: 4px 0 0 0; color: var(--gray-600); font-size: 11px; display: flex; align-items: center; gap: 4px;">
+                        <p style="margin: 4px 0 0 0; color: var(--orange-600); font-size: 11px; display: flex; align-items: center; gap: 4px;">
                             <span>⚠️</span>
-                            <span>${recoveryCodeNote}</span>
+                            <span>El email no pudo enviarse. Usa este código para recuperar tu contraseña.</span>
                         </p>
                     </div>
                 `;
@@ -549,7 +549,7 @@ async function resetPassword() {
     }
     
     try {
-        await apiRequest('/api/reset-password', {
+        await apiRequest('/reset-password', {
             method: 'POST',
             body: JSON.stringify({ token, newPassword })
         });
