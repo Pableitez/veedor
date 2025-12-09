@@ -1987,12 +1987,8 @@ function updateDisplay() {
         updateMonthFilter();
         updateMonthDashboard();
         
-        // Actualizar métricas y tablas de análisis si estamos en el tab de análisis
-        const chartsTab = document.getElementById('charts-tab');
-        if (chartsTab && chartsTab.classList.contains('active')) {
-            updateFinancialHealthMetrics();
-            updateAnalysisTables();
-        }
+        // Actualizar gráficas siempre (no solo cuando el tab está activo)
+        updateCharts();
     } catch (error) {
         console.error('Error en updateDisplay:', error);
     }
@@ -4606,6 +4602,325 @@ function updateDistributionChart() {
         ]
     }];
     charts.distribution.update();
+}
+
+// Gráfica de evolución de ingresos
+function updateIncomeEvolutionChart() {
+    if (!charts.incomeEvolution) return;
+    
+    const periodTransactions = getTransactionsByPeriod();
+    const period = getSelectedPeriod();
+    const now = new Date();
+    const months = [];
+    const incomeData = [];
+    
+    if (period === 999) {
+        // Todo el historial
+        if (periodTransactions.length === 0) {
+            charts.incomeEvolution.data.labels = [];
+            charts.incomeEvolution.data.datasets = [];
+            charts.incomeEvolution.update();
+            return;
+        }
+        
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        let currentMonth = firstDate.getMonth();
+        let currentYear = firstDate.getFullYear();
+        const endMonth = now.getMonth();
+        const endYear = now.getFullYear();
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            });
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            incomeData.push(monthIncome);
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    } else {
+        for (let i = period - 1; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear();
+            });
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            incomeData.push(monthIncome);
+        }
+    }
+    
+    charts.incomeEvolution.data.labels = months;
+    charts.incomeEvolution.data.datasets = [{
+        label: 'Ingresos',
+        data: incomeData,
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.incomeEvolution.update();
+}
+
+// Gráfica de evolución de gastos
+function updateExpensesEvolutionChart() {
+    if (!charts.expensesEvolution) return;
+    
+    const periodTransactions = getTransactionsByPeriod();
+    const period = getSelectedPeriod();
+    const now = new Date();
+    const months = [];
+    const expensesData = [];
+    
+    if (period === 999) {
+        if (periodTransactions.length === 0) {
+            charts.expensesEvolution.data.labels = [];
+            charts.expensesEvolution.data.datasets = [];
+            charts.expensesEvolution.update();
+            return;
+        }
+        
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        let currentMonth = firstDate.getMonth();
+        let currentYear = firstDate.getFullYear();
+        const endMonth = now.getMonth();
+        const endYear = now.getFullYear();
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            });
+            
+            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            expensesData.push(monthExpenses);
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    } else {
+        for (let i = period - 1; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear();
+            });
+            
+            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            expensesData.push(monthExpenses);
+        }
+    }
+    
+    charts.expensesEvolution.data.labels = months;
+    charts.expensesEvolution.data.datasets = [{
+        label: 'Gastos',
+        data: expensesData,
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.expensesEvolution.update();
+}
+
+// Gráfica de préstamos pendientes
+function updateLoansOutstandingChart() {
+    if (!charts.loansPending) return;
+    
+    const period = getSelectedPeriod();
+    const now = new Date();
+    const months = [];
+    const outstandingData = [];
+    
+    if (loans.length === 0) {
+        charts.loansPending.data.labels = [];
+        charts.loansPending.data.datasets = [];
+        charts.loansPending.update();
+        return;
+    }
+    
+    // Calcular préstamos pendientes por mes
+    const periodMonths = period === 999 ? 12 : period;
+    
+    for (let i = periodMonths - 1; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        // Calcular préstamos pendientes en ese mes
+        let totalOutstanding = 0;
+        loans.forEach(loan => {
+            const loanDate = new Date(loan.start_date);
+            if (loanDate <= date) {
+                // Calcular cuánto se ha pagado hasta esa fecha
+                const paymentsUntilDate = loan.payments.filter(p => {
+                    const pDate = new Date(p.date);
+                    return pDate <= date;
+                });
+                const paidAmount = paymentsUntilDate.reduce((sum, p) => sum + p.amount, 0);
+                const outstanding = loan.principal_amount - paidAmount;
+                totalOutstanding += Math.max(0, outstanding);
+            }
+        });
+        
+        outstandingData.push(totalOutstanding);
+    }
+    
+    charts.loansPending.data.labels = months;
+    charts.loansPending.data.datasets = [{
+        label: 'Préstamos Pendientes',
+        data: outstandingData,
+        borderColor: '#f59e0b',
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.loansPending.update();
+}
+
+// Gráfica de evolución del patrimonio
+function updateAssetsEvolutionChart() {
+    if (!charts.assetsEvolution) return;
+    
+    const period = getSelectedPeriod();
+    const now = new Date();
+    const months = [];
+    const assetsData = [];
+    
+    if (assets.length === 0) {
+        charts.assetsEvolution.data.labels = [];
+        charts.assetsEvolution.data.datasets = [];
+        charts.assetsEvolution.update();
+        return;
+    }
+    
+    const periodMonths = period === 999 ? 12 : period;
+    
+    for (let i = periodMonths - 1; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        // Calcular patrimonio total en ese mes
+        let totalAssets = 0;
+        assets.forEach(asset => {
+            const assetDate = new Date(asset.purchase_date);
+            if (assetDate <= date) {
+                // Buscar valor histórico más cercano a esa fecha
+                let assetValue = asset.current_value || 0;
+                if (asset.value_history && asset.value_history.length > 0) {
+                    const historicalValues = asset.value_history.filter(v => {
+                        const vDate = new Date(v.date);
+                        return vDate <= date;
+                    });
+                    if (historicalValues.length > 0) {
+                        const latest = historicalValues[historicalValues.length - 1];
+                        assetValue = latest.value || asset.current_value || 0;
+                    }
+                }
+                totalAssets += assetValue;
+            }
+        });
+        
+        assetsData.push(totalAssets);
+    }
+    
+    charts.assetsEvolution.data.labels = months;
+    charts.assetsEvolution.data.datasets = [{
+        label: 'Patrimonio Total',
+        data: assetsData,
+        borderColor: '#8b5cf6',
+        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.assetsEvolution.update();
+}
+
+// Gráfica de evolución de saldo en cuentas
+function updateAccountsBalanceChart() {
+    if (!charts.accountsBalance) return;
+    
+    const period = getSelectedPeriod();
+    const now = new Date();
+    const months = [];
+    const balanceData = [];
+    
+    if (accounts.length === 0) {
+        charts.accountsBalance.data.labels = [];
+        charts.accountsBalance.data.datasets = [];
+        charts.accountsBalance.update();
+        return;
+    }
+    
+    const periodTransactions = getTransactionsByPeriod();
+    const periodMonths = period === 999 ? 12 : period;
+    
+    for (let i = periodMonths - 1; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        // Calcular saldo total de cuentas en ese mes
+        let totalBalance = 0;
+        accounts.forEach(account => {
+            // Saldo inicial de la cuenta
+            let accountBalance = account.balance || 0;
+            
+            // Sumar transacciones hasta esa fecha
+            const accountTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate <= date && t.account_id === account._id;
+            });
+            
+            accountTransactions.forEach(t => {
+                if (t.type === 'income') {
+                    accountBalance += t.amount;
+                } else if (t.type === 'expense') {
+                    accountBalance -= Math.abs(t.amount);
+                }
+            });
+            
+            totalBalance += accountBalance;
+        });
+        
+        balanceData.push(totalBalance);
+    }
+    
+    charts.accountsBalance.data.labels = months;
+    charts.accountsBalance.data.datasets = [{
+        label: 'Saldo Total',
+        data: balanceData,
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.accountsBalance.update();
 }
 
 // Mostrar modal para agregar categoría personalizada
