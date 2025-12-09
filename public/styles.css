@@ -1142,6 +1142,14 @@ tbody tr:last-child td {
 /* ============================================
    RESPONSIVIDAD MÓVIL COMPLETA - 768px
    ============================================ */
+/* Grid de formularios de presupuestos responsive */
+@media (max-width: 1024px) {
+    .budgets-form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+}
+
 @media (max-width: 768px) {
     /* Layout general */
     .form-row {
@@ -1432,6 +1440,21 @@ tbody tr:last-child td {
     .envelopes-grid {
         grid-template-columns: 1fr !important;
         gap: 12px !important;
+    }
+    
+    /* Grid de formularios de presupuestos en móvil */
+    .budgets-form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    
+    .budgets-form-grid > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
     }
     
     /* Texto dentro de cards en móvil */

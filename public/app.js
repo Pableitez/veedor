@@ -5416,7 +5416,7 @@ function openChartModal(chartType, title) {
         `;
         modalControls.appendChild(filterDiv);
         
-        // Poblar categorías
+        // Poblar categorías y sincronizar con el gráfico pequeño
         setTimeout(() => {
             const categorySelect = document.getElementById('modalChartCategoryFilter');
             if (categorySelect) {
@@ -5427,6 +5427,12 @@ function openChartModal(chartType, title) {
                     option.textContent = cat.name;
                     categorySelect.appendChild(option);
                 });
+                
+                // Sincronizar con el selector del gráfico pequeño
+                const originalCategorySelect = document.querySelector(`.chart-category-filter[data-chart="${chartType}"]`);
+                if (originalCategorySelect && originalCategorySelect.value) {
+                    categorySelect.value = originalCategorySelect.value;
+                }
             }
         }, 100);
     } else if (chartType === 'loansPending') {
