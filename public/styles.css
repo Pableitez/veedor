@@ -874,6 +874,33 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     color: var(--text-primary);
 }
 
+/* Selectores del modal de gráficos ampliados */
+#modalChartPeriod,
+#modalChartCategoryFilter,
+#modalChartLoanFilter,
+#modalChartAssetFilter,
+#modalChartAccountFilter {
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+#modalChartPeriod option,
+#modalChartCategoryFilter option,
+#modalChartLoanFilter option,
+#modalChartAssetFilter option,
+#modalChartAccountFilter option {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+#modalStartDate,
+#modalEndDate {
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
 .table-controls input:focus,
 .table-controls select:focus {
     outline: none;

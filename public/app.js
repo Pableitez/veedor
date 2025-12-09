@@ -5653,8 +5653,8 @@ function openChartModal(chartType, title) {
     periodDiv.style.alignItems = 'center';
     periodDiv.style.gap = '8px';
     periodDiv.innerHTML = `
-        <label style="font-weight: 600; font-size: 14px;">Período:</label>
-        <select id="modalChartPeriod" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
+            <label style="font-weight: 600; font-size: 14px; color: var(--text-secondary);">Período:</label>
+        <select id="modalChartPeriod" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; min-width: 150px; background: var(--bg-primary); color: var(--text-primary);">
             <option value="1" ${currentPeriod === '1' ? 'selected' : ''}>1 mes</option>
             <option value="3" ${currentPeriod === '3' ? 'selected' : ''}>3 meses</option>
             <option value="6" ${currentPeriod === '6' || !isCustom ? 'selected' : ''}>6 meses</option>
@@ -5677,10 +5677,10 @@ function openChartModal(chartType, title) {
     customDateRangeDiv.style.alignItems = 'center';
     customDateRangeDiv.style.width = '100%';
     customDateRangeDiv.innerHTML = `
-        <label style="font-weight: 600; font-size: 14px; white-space: nowrap;">Desde:</label>
-        <input type="date" id="modalStartDate" value="${startDateValue}" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px; flex: 1;">
-        <label style="font-weight: 600; font-size: 14px; white-space: nowrap;">Hasta:</label>
-        <input type="date" id="modalEndDate" value="${endDateValue}" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px; flex: 1;">
+        <label style="font-weight: 600; font-size: 14px; white-space: nowrap; color: var(--text-secondary);">Desde:</label>
+        <input type="date" id="modalStartDate" value="${startDateValue}" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; min-width: 150px; flex: 1; background: var(--bg-primary); color: var(--text-primary);">
+        <label style="font-weight: 600; font-size: 14px; white-space: nowrap; color: var(--text-secondary);">Hasta:</label>
+        <input type="date" id="modalEndDate" value="${endDateValue}" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; min-width: 150px; flex: 1; background: var(--bg-primary); color: var(--text-primary);">
     `;
     modalControls.appendChild(customDateRangeDiv);
     
@@ -5693,8 +5693,8 @@ function openChartModal(chartType, title) {
         const filterType = chartType === 'incomeEvolution' ? 'income' : 'expense';
         const filterLabel = chartType === 'incomeEvolution' ? 'Categoría de Ingreso:' : 'Categoría de Gasto:';
         filterDiv.innerHTML = `
-            <label style="font-weight: 600; font-size: 14px;">${filterLabel}</label>
-            <select id="modalChartCategoryFilter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 200px;">
+            <label style="font-weight: 600; font-size: 14px; color: var(--text-secondary);">${filterLabel}</label>
+            <select id="modalChartCategoryFilter" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; min-width: 200px; background: var(--bg-primary); color: var(--text-primary);">
                 <option value="all">Todas las categorías</option>
             </select>
         `;
@@ -5725,8 +5725,8 @@ function openChartModal(chartType, title) {
         filterDiv.style.alignItems = 'center';
         filterDiv.style.gap = '8px';
         filterDiv.innerHTML = `
-            <label style="font-weight: 600; font-size: 14px;">Préstamo:</label>
-            <select id="modalChartLoanFilter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 200px;">
+            <label style="font-weight: 600; font-size: 14px; color: var(--text-secondary);">Préstamo:</label>
+            <select id="modalChartLoanFilter" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; min-width: 200px; background: var(--bg-primary); color: var(--text-primary);">
                 <option value="all">Todos los préstamos</option>
             </select>
         `;
@@ -5749,8 +5749,8 @@ function openChartModal(chartType, title) {
         filterDiv.style.alignItems = 'center';
         filterDiv.style.gap = '8px';
         filterDiv.innerHTML = `
-            <label style="font-weight: 600; font-size: 14px;">Bien:</label>
-            <select id="modalChartAssetFilter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 200px;">
+            <label style="font-weight: 600; font-size: 14px; color: var(--text-secondary);">Bien:</label>
+            <select id="modalChartAssetFilter" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; min-width: 200px; background: var(--bg-primary); color: var(--text-primary);">
                 <option value="all">Todos los bienes</option>
             </select>
         `;
@@ -5773,8 +5773,8 @@ function openChartModal(chartType, title) {
         filterDiv.style.alignItems = 'center';
         filterDiv.style.gap = '8px';
         filterDiv.innerHTML = `
-            <label style="font-weight: 600; font-size: 14px;">Cuenta:</label>
-            <select id="modalChartAccountFilter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 200px;">
+            <label style="font-weight: 600; font-size: 14px; color: var(--text-secondary);">Cuenta:</label>
+            <select id="modalChartAccountFilter" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; min-width: 200px; background: var(--bg-primary); color: var(--text-primary);">
                 <option value="all">Todas las cuentas</option>
             </select>
         `;
