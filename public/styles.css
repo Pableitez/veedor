@@ -469,16 +469,6 @@ header h1 {
     color: var(--text-primary);
 }
 
-.card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gray-200);
-    transition: all 0.2s;
-}
 
 .card:hover {
     transform: translateY(-4px) scale(1.01);

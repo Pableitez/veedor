@@ -4504,56 +4504,75 @@ window.deleteLoan = deleteLoan;
 
 // Inicializar gráficas
 function initializeCharts() {
-    charts.savings = new Chart(document.getElementById('savingsChart'), {
-        type: 'line',
-        data: { labels: [], datasets: [] },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { display: true }
-            }
-        }
-    });
+    // Verificar que estamos en la aplicación principal, no en la página de login
+    const mainApp = document.getElementById('mainApp');
+    if (!mainApp || mainApp.style.display === 'none') {
+        return; // No inicializar gráficos si estamos en la página de login
+    }
     
-    charts.expenses = new Chart(document.getElementById('expensesChart'), {
-        type: 'bar',
-        data: { labels: [], datasets: [] },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { display: false }
+    // Verificar que los elementos existan antes de crear los gráficos
+    const savingsChartEl = document.getElementById('savingsChart');
+    if (savingsChartEl && !charts.savings) {
+        charts.savings = new Chart(savingsChartEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: true }
+                }
             }
-        }
-    });
+        });
+    }
     
-    charts.incomeExpense = new Chart(document.getElementById('incomeExpenseChart'), {
-        type: 'bar',
-        data: { labels: [], datasets: [] },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { display: true }
-            },
-            scales: {
-                y: { beginAtZero: true }
+    const expensesChartEl = document.getElementById('expensesChart');
+    if (expensesChartEl && !charts.expenses) {
+        charts.expenses = new Chart(expensesChartEl, {
+            type: 'bar',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                }
             }
-        }
-    });
+        });
+    }
     
-    charts.distribution = new Chart(document.getElementById('distributionChart'), {
-        type: 'doughnut',
-        data: { labels: [], datasets: [] },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { position: 'right' }
+    const incomeExpenseChartEl = document.getElementById('incomeExpenseChart');
+    if (incomeExpenseChartEl && !charts.incomeExpense) {
+        charts.incomeExpense = new Chart(incomeExpenseChartEl, {
+            type: 'bar',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
             }
-        }
-    });
+        });
+    }
+    
+    const distributionChartEl = document.getElementById('distributionChart');
+    if (distributionChartEl && !charts.distribution) {
+        charts.distribution = new Chart(distributionChartEl, {
+            type: 'doughnut',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+    }
     
     // Nuevas gráficas
     const incomeEvolutionEl = document.getElementById('incomeEvolutionChart');
