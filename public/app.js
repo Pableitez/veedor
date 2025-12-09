@@ -5261,6 +5261,280 @@ function updateAccountsBalanceChart() {
     charts.accountsBalance.update();
 }
 
+// Modal de gráfico detallado
+let chartModalChart = null;
+let currentChartType = null;
+
+function openChartModal(chartType, title) {
+    currentChartType = chartType;
+    const modal = document.getElementById('chartModal');
+    const modalTitle = document.getElementById('chartModalTitle');
+    const modalControls = document.getElementById('chartModalControls');
+    const modalCanvas = document.getElementById('chartModalCanvas');
+    
+    if (!modal || !modalTitle || !modalControls || !modalCanvas) return;
+    
+    modalTitle.textContent = title;
+    modal.style.display = 'flex';
+    
+    // Limpiar canvas anterior
+    if (chartModalChart) {
+        chartModalChart.destroy();
+        chartModalChart = null;
+    }
+    
+    // Crear controles según el tipo de gráfico
+    modalControls.innerHTML = '';
+    
+    // Selector de período (todos los gráficos)
+    const periodDiv = document.createElement('div');
+    periodDiv.style.display = 'flex'; 
+    periodDiv.style.alignItems = 'center';
+    periodDiv.style.gap = '8px';
+    periodDiv.innerHTML = `
+        <label style="font-weight: 600; font-size: 14px;">Período:</label>
+        <select id="modalChartPeriod" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
+            <option value="1">1 mes</option>
+            <option value="3">3 meses</option>
+            <option value="6" selected>6 meses</option>
+            <option value="12">1 año</option>
+            <option value="24">2 años</option>
+            <option value="all">Todo el historial</option>
+        </select>
+    `;
+    modalControls.appendChild(periodDiv);
+    
+    // Filtros específicos según el tipo
+    if (chartType === 'incomeEvolution' || chartType === 'expensesEvolution') {
+        const filterDiv = document.createElement('div');
+        filterDiv.style.display = 'flex';
+        filterDiv.style.alignItems = 'center';
+        filterDiv.style.gap = '8px';
+        const filterType = chartType === 'incomeEvolution' ? 'income' : 'expense';
+        const filterLabel = chartType === 'incomeEvolution' ? 'Categoría de Ingreso:' : 'Categoría de Gasto:';
+        filterDiv.innerHTML = `
+            <label style="font-weight: 600; font-size: 14px;">${filterLabel}</label>
+            <select id="modalChartCategoryFilter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 200px;">
+                <option value="all">Todas las categorías</option>
+            </select>
+        `;
+        modalControls.appendChild(filterDiv);
+        
+        // Poblar categorías
+        setTimeout(() => {
+            const categorySelect = document.getElementById('modalChartCategoryFilter');
+            if (categorySelect) {
+                const cats = filterType === 'income' ? [...categories.income, ...customCategories.income] : [...categories.expense, ...customCategories.expense];
+                cats.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.name;
+                    categorySelect.appendChild(option);
+                });
+            }
+        }, 100);
+    } else if (chartType === 'loansPending') {
+        const filterDiv = document.createElement('div');
+        filterDiv.style.display = 'flex';
+        filterDiv.style.alignItems = 'center';
+        filterDiv.style.gap = '8px';
+        filterDiv.innerHTML = `
+            <label style="font-weight: 600; font-size: 14px;">Préstamo:</label>
+            <select id="modalChartLoanFilter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 200px;">
+                <option value="all">Todos los préstamos</option>
+            </select>
+        `;
+        modalControls.appendChild(filterDiv);
+        
+        setTimeout(() => {
+            const loanSelect = document.getElementById('modalChartLoanFilter');
+            if (loanSelect) {
+                loans.forEach(loan => {
+                    const option = document.createElement('option');
+                    option.value = loan._id || loan.id;
+                    option.textContent = loan.name || `Préstamo ${loan._id || loan.id}`;
+                    loanSelect.appendChild(option);
+                });
+            }
+        }, 100);
+    } else if (chartType === 'assetsEvolution') {
+        const filterDiv = document.createElement('div');
+        filterDiv.style.display = 'flex';
+        filterDiv.style.alignItems = 'center';
+        filterDiv.style.gap = '8px';
+        filterDiv.innerHTML = `
+            <label style="font-weight: 600; font-size: 14px;">Bien:</label>
+            <select id="modalChartAssetFilter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 200px;">
+                <option value="all">Todos los bienes</option>
+            </select>
+        `;
+        modalControls.appendChild(filterDiv);
+        
+        setTimeout(() => {
+            const assetSelect = document.getElementById('modalChartAssetFilter');
+            if (assetSelect) {
+                assets.forEach(asset => {
+                    const option = document.createElement('option');
+                    option.value = asset._id || asset.id;
+                    option.textContent = asset.name || `Bien ${asset._id || asset.id}`;
+                    assetSelect.appendChild(option);
+                });
+            }
+        }, 100);
+    } else if (chartType === 'accountsBalance') {
+        const filterDiv = document.createElement('div');
+        filterDiv.style.display = 'flex';
+        filterDiv.style.alignItems = 'center';
+        filterDiv.style.gap = '8px';
+        filterDiv.innerHTML = `
+            <label style="font-weight: 600; font-size: 14px;">Cuenta:</label>
+            <select id="modalChartAccountFilter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 200px;">
+                <option value="all">Todas las cuentas</option>
+            </select>
+        `;
+        modalControls.appendChild(filterDiv);
+        
+        setTimeout(() => {
+            const accountSelect = document.getElementById('modalChartAccountFilter');
+            if (accountSelect) {
+                accounts.forEach(account => {
+                    const option = document.createElement('option');
+                    option.value = account._id || account.id;
+                    option.textContent = account.name || `Cuenta ${account._id || account.id}`;
+                    accountSelect.appendChild(option);
+                });
+            }
+        }, 100);
+    }
+    
+    // Event listeners para los controles
+    setTimeout(() => {
+        const periodSelect = document.getElementById('modalChartPeriod');
+        if (periodSelect) {
+            periodSelect.onchange = () => updateModalChart();
+        }
+        
+        const categoryFilter = document.getElementById('modalChartCategoryFilter');
+        if (categoryFilter) {
+            categoryFilter.onchange = () => updateModalChart();
+        }
+        
+        const loanFilter = document.getElementById('modalChartLoanFilter');
+        if (loanFilter) {
+            loanFilter.onchange = () => updateModalChart();
+        }
+        
+        const assetFilter = document.getElementById('modalChartAssetFilter');
+        if (assetFilter) {
+            assetFilter.onchange = () => updateModalChart();
+        }
+        
+        const accountFilter = document.getElementById('modalChartAccountFilter');
+        if (accountFilter) {
+            accountFilter.onchange = () => updateModalChart();
+        }
+        
+        // Inicializar gráfico
+        updateModalChart();
+    }, 200);
+}
+
+function closeChartModal() {
+    const modal = document.getElementById('chartModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    if (chartModalChart) {
+        chartModalChart.destroy();
+        chartModalChart = null;
+    }
+    currentChartType = null;
+}
+
+function updateModalChart() {
+    if (!currentChartType) return;
+    
+    const modalCanvas = document.getElementById('chartModalCanvas');
+    if (!modalCanvas) return;
+    
+    // Obtener período seleccionado
+    const periodSelect = document.getElementById('modalChartPeriod');
+    const period = periodSelect ? (periodSelect.value === 'all' ? 999 : parseInt(periodSelect.value) || 6) : 6;
+    
+    // Actualizar el período en el selector del gráfico original temporalmente
+    const originalPeriodSelect = document.querySelector(`.chart-period-select[data-chart="${currentChartType}"]`);
+    if (originalPeriodSelect && periodSelect) {
+        originalPeriodSelect.value = periodSelect.value;
+    }
+    
+    // Actualizar el gráfico original con el nuevo período
+    updateSingleChart(currentChartType);
+    
+    // Obtener el gráfico original actualizado
+    let originalChart = null;
+    switch(currentChartType) {
+        case 'savings':
+            originalChart = charts.savings;
+            break;
+        case 'expenses':
+            originalChart = charts.expenses;
+            break;
+        case 'incomeExpense':
+            originalChart = charts.incomeExpense;
+            break;
+        case 'distribution':
+            originalChart = charts.distribution;
+            break;
+        case 'incomeEvolution':
+            originalChart = charts.incomeEvolution;
+            break;
+        case 'expensesEvolution':
+            originalChart = charts.expensesEvolution;
+            break;
+        case 'loansPending':
+            originalChart = charts.loansPending;
+            break;
+        case 'assetsEvolution':
+            originalChart = charts.assetsEvolution;
+            break;
+        case 'accountsBalance':
+            originalChart = charts.accountsBalance;
+            break;
+    }
+    
+    if (originalChart && originalChart.data) {
+        // Destruir gráfico anterior del modal
+        if (chartModalChart) {
+            chartModalChart.destroy();
+        }
+        
+        // Clonar datos del gráfico original
+        const clonedData = JSON.parse(JSON.stringify(originalChart.data));
+        
+        // Crear nuevo gráfico en el modal
+        chartModalChart = new Chart(modalCanvas, {
+            type: originalChart.config.type,
+            data: clonedData,
+            options: {
+                ...originalChart.options,
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    ...originalChart.options.plugins,
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    }
+}
+
+// Exponer funciones globalmente
+window.openChartModal = openChartModal;
+window.closeChartModal = closeChartModal;
+
 // Mostrar modal para agregar categoría personalizada
 function showAddCustomCategoryModal() {
     const modal = document.getElementById('customCategoryModal');
