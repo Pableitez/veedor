@@ -59,7 +59,7 @@ const translations = {
         },
         // Dashboard
         dashboard: {
-            title: "Dashboard",
+            title: "Resumen",
             monthAnalysis: "Análisis del Mes",
             monthAnalysisHint: "Selecciona un mes para ver el análisis detallado",
             summaryView: "Vista de Resumen",
@@ -367,7 +367,7 @@ const translations = {
             loginError: "Error signing in"
         },
         dashboard: {
-            title: "Dashboard",
+            title: "Resumen",
             monthAnalysis: "Month Analysis",
             monthAnalysisHint: "Select a month to see detailed analysis",
             summaryView: "Summary View",
@@ -660,7 +660,7 @@ const translations = {
             loginError: "Fehler beim Anmelden"
         },
         dashboard: {
-            title: "Dashboard",
+            title: "Resumen",
             monthAnalysis: "Monatsanalyse",
             monthAnalysisHint: "Wählen Sie einen Monat, um eine detaillierte Analyse zu sehen",
             summaryView: "Zusammenfassung",
