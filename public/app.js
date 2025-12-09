@@ -6185,7 +6185,7 @@ function updateMonthDashboard() {
                 }
                 
                 const card = document.createElement('div');
-                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); cursor: pointer; transition: all 0.2s;';
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); cursor: pointer; transition: all 0.2s; color: var(--text-primary);';
                 card.onmouseover = function() {
                     this.style.transform = 'translateY(-2px)';
                     this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
