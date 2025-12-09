@@ -1024,6 +1024,23 @@ tbody tr:last-child td {
 }
 
 /* ============================================
+   GRID DE FORMULARIOS DE PRESUPUESTOS
+   ============================================ */
+
+.budgets-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+.budgets-form-grid > div {
+    overflow: visible;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 
