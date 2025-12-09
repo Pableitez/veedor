@@ -1155,7 +1155,7 @@ function toggleSettingsDropdown() {
     }
 }
 
-// Toggle del menú desplegable de Panel de Mandos (mantener para compatibilidad)
+// Toggle del menú desplegable de Resumen (mantener para compatibilidad)
 function toggleDashboardDropdown() {
     toggleMainNavDropdown(); // Redirigir al menú principal
 }
@@ -1196,14 +1196,20 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// Mostrar panel de mandos del mes
+// Mostrar análisis del mes seleccionado
 function showMonthDashboard() {
     const monthDashboard = document.getElementById('monthDashboard');
+    const monthAnalysisSelector = document.getElementById('monthAnalysisSelector');
     const dashboardMonthInput = document.getElementById('dashboardMonth');
     
     if (!monthDashboard || !dashboardMonthInput) {
         console.error('No se encontró monthDashboard o dashboardMonthInput');
         return;
+    }
+    
+    // Mostrar el selector de análisis del mes
+    if (monthAnalysisSelector) {
+        monthAnalysisSelector.style.display = 'block';
     }
     
     // Si no hay mes seleccionado, establecer el mes actual
@@ -1908,7 +1914,7 @@ function initializeForms() {
         }
     }
     
-    // Selector de mes para el panel de mandos
+    // Selector de mes para el análisis del mes
     const dashboardMonthInput = document.getElementById('dashboardMonth');
     if (dashboardMonthInput) {
         // Establecer mes actual por defecto
@@ -3292,9 +3298,9 @@ function updateLoans() {
             </div>
             
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 10px;">
-                <button class="btn-secondary" onclick="showLoanDetails('${loan._id || loan.id}')" style="flex: 1;">📊 Detalles</button>
-                <button class="btn-secondary" onclick="showEarlyPaymentModal('${loan._id || loan.id}')" style="flex: 1;">💰 Amortizar</button>
-                <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')" style="flex: 1;">🗑️ Eliminar</button>
+                <button class="btn-secondary" onclick="showLoanDetails('${loan._id || loan.id}')" style="flex: 1;">Detalles</button>
+                <button class="btn-secondary" onclick="showEarlyPaymentModal('${loan._id || loan.id}')" style="flex: 1;">Amortizar</button>
+                <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')" style="flex: 1;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -4050,8 +4056,8 @@ function updateProperties() {
                 </div>
             </div>
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 16px;">
-                <button class="btn-secondary" onclick="editProperty('${property._id || property.id}')" style="flex: 1;">✏️ Editar</button>
-                <button class="btn-danger" onclick="deleteProperty('${property._id || property.id}')" style="flex: 1;">🗑️ Eliminar</button>
+                <button class="btn-secondary" onclick="editProperty('${property._id || property.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deleteProperty('${property._id || property.id}')" style="flex: 1;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -4199,8 +4205,8 @@ function updateAccounts() {
             ${account.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${account.description}</div>` : ''}
             
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
-                <button class="btn-secondary" onclick="editAccount('${account._id || account.id}')" style="flex: 1;">✏️ Editar</button>
-                <button class="btn-danger" onclick="deleteAccount('${account._id || account.id}')" style="flex: 1;">🗑️ Eliminar</button>
+                <button class="btn-secondary" onclick="editAccount('${account._id || account.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deleteAccount('${account._id || account.id}')" style="flex: 1;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -6214,20 +6220,27 @@ function loadCustomCategories() {
     }
 }
 
-// Actualizar panel de mandos del mes seleccionado
+// Actualizar análisis del mes seleccionado
 function updateMonthDashboard() {
     const dashboardMonthInput = document.getElementById('dashboardMonth');
     const monthDashboard = document.getElementById('monthDashboard');
+    const monthAnalysisSelector = document.getElementById('monthAnalysisSelector');
     
     if (!dashboardMonthInput || !monthDashboard) return;
     
     const selectedMonth = dashboardMonthInput.value;
     if (!selectedMonth) {
         monthDashboard.style.display = 'none';
+        if (monthAnalysisSelector) {
+            monthAnalysisSelector.style.display = 'none';
+        }
         return;
     }
     
     monthDashboard.style.display = 'block';
+    if (monthAnalysisSelector) {
+        monthAnalysisSelector.style.display = 'block';
+    }
     
     const [year, month] = selectedMonth.split('-').map(Number);
     const monthIndex = month - 1;
