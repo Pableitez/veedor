@@ -59,7 +59,7 @@
                     <path d="M20 20 L26 26 M60 20 L54 26 M20 60 L26 54 M60 60 L54 54" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
                 </svg>
                 <h1 style="font-size: 36px; font-weight: 800; letter-spacing: -1px; margin: 0 0 8px 0; background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Veedor</h1>
-                <p style="font-size: 16px; color: var(--gray-600); margin: 0; font-weight: 500;" data-translate="auth.subtitle">Tu dinero, tu control. Toma decisiones inteligentes.</p>
+                <p style="font-size: 16px; color: var(--text-secondary); margin: 0; font-weight: 500;" data-translate="auth.subtitle">Tu dinero, tu control. Toma decisiones inteligentes.</p>
             </div>
             
             <div class="auth-tabs">
@@ -267,7 +267,7 @@
 
         <div class="dashboard" style="margin-top: 0;">
                 <div style="margin-bottom: 24px;">
-                    <h2 style="font-size: 20px; font-weight: 700; color: var(--gray-900); margin: 0 0 20px 0;">Panel de Mandos</h2>
+                    <h2 style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 0 0 20px 0;">Panel de Mandos</h2>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                         <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light);">
                             <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;" data-translate="dashboard.monthAnalysis">📅 Análisis del Mes</label>
@@ -283,7 +283,7 @@
                                 <option value="all" data-translate="dashboard.allTime">Todos los Tiempos</option>
                             </select>
                             <input type="number" id="summaryYear" min="2000" max="2100" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: none; margin-top: 8px;" data-translate-placeholder="dashboard.selectYear" placeholder="Selecciona el año">
-                            <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--gray-500);" data-translate="dashboard.summaryPeriodHint">Período para las tarjetas de resumen</small>
+                            <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--text-tertiary);" data-translate="dashboard.summaryPeriodHint">Período para las tarjetas de resumen</small>
                         </div>
                     </div>
                 </div>
@@ -324,11 +324,11 @@
                 
                 <!-- Panel de Mandos del Mes -->
                 <div id="monthDashboard" style="margin-top: 32px; display: none;">
-                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--gray-900);" data-translate="dashboard.selectedMonthAnalysis">Análisis del Mes Seleccionado</h3>
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--text-primary);" data-translate="dashboard.selectedMonthAnalysis">Análisis del Mes Seleccionado</h3>
                     
                     <!-- Gastos por Categoría -->
                     <div style="margin-bottom: 32px;">
-                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--gray-800);" data-translate="dashboard.expensesByCategory">📊 Gastos por Categoría</h4>
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);" data-translate="dashboard.expensesByCategory">📊 Gastos por Categoría</h4>
                         <div id="monthExpensesByCategory" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
                         </div>
                     </div>
