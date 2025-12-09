@@ -878,20 +878,30 @@ app.post('/api/reset-password', async (req, res) => {
         }
         
         console.log('✅ Usuario encontrado:', user.email);
+        console.log('✅ Username del usuario:', user.username);
         
-        // Actualizar contraseña
+        // Actualizar contraseña usando updateOne para evitar problemas de validación
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedPassword;
-        user.resetToken = null;
-        user.resetTokenExpiry = null;
         
         try {
-            await user.save();
+            // Usar updateOne en lugar de save() para evitar validación de campos requeridos
+            await User.updateOne(
+                { _id: user._id },
+                {
+                    $set: {
+                        password: hashedPassword,
+                        resetToken: null,
+                        resetTokenExpiry: null,
+                        updatedAt: new Date()
+                    }
+                }
+            );
             console.log('✅ Contraseña actualizada exitosamente para:', user.email);
             res.json({ message: 'Contraseña actualizada exitosamente' });
         } catch (saveError) {
             console.error('❌ Error guardando nueva contraseña:', saveError);
             console.error('❌ Detalles:', saveError.message);
+            console.error('❌ Stack:', saveError.stack);
             return res.status(500).json({ error: 'Error al guardar la nueva contraseña. Intenta de nuevo.' });
         }
     } catch (error) {
