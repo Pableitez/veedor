@@ -477,22 +477,48 @@ async function sendPasswordResetEmail(email, resetToken) {
     
     const mailOptions = {
         from: `"Veedor" <${process.env.EMAIL_USER}>`,
-        to: email,
+        to: email, // El email se envía al usuario que lo solicita, no a EMAIL_USER
         subject: 'Recuperar Contraseña - Veedor',
         html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h2 style="color: #6366F1;">Recuperar Contraseña</h2>
-                <p>Has solicitado restablecer tu contraseña. Usa el siguiente código para recuperar tu contraseña:</p>
-                <div style="background: #F3F4F6; border: 2px solid #6366F1; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
-                    <p style="font-size: 24px; font-weight: bold; color: #6366F1; letter-spacing: 4px; margin: 0; font-family: monospace;">${resetToken}</p>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #ffffff;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #6366F1; margin: 0; font-size: 28px;">Veedor</h1>
+                    <p style="color: #6B7280; margin: 5px 0 0 0; font-size: 14px;">Control total de tus finanzas personales</p>
                 </div>
-                <p>O haz clic en el siguiente enlace:</p>
-                <p style="text-align: center; margin: 30px 0;">
-                    <a href="${resetUrl}" style="background: #6366F1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Restablecer Contraseña</a>
-                </p>
-                <p>O copia y pega este enlace en tu navegador:</p>
-                <p style="word-break: break-all; color: #666; font-size: 12px;">${resetUrl}</p>
-                <p style="color: #999; font-size: 12px; margin-top: 30px;">Este código expirará en 1 hora. Si no solicitaste este cambio, ignora este email.</p>
+                
+                <div style="background: #F9FAFB; border-radius: 12px; padding: 30px; margin-bottom: 20px;">
+                    <h2 style="color: #111827; margin-top: 0; font-size: 22px;">Recuperar Contraseña</h2>
+                    <p style="color: #374151; font-size: 16px; line-height: 1.6;">Hola,</p>
+                    <p style="color: #374151; font-size: 16px; line-height: 1.6;">Has solicitado restablecer tu contraseña en Veedor. Usa el siguiente código para crear una nueva contraseña:</p>
+                    
+                    <div style="background: #FFFFFF; border: 2px solid #6366F1; border-radius: 8px; padding: 24px; text-align: center; margin: 30px 0;">
+                        <p style="font-size: 20px; font-weight: bold; color: #6366F1; letter-spacing: 2px; margin: 0; font-family: 'Courier New', monospace; word-break: break-all;">${resetToken}</p>
+                    </div>
+                    
+                    <p style="color: #374151; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">Para restablecer tu contraseña:</p>
+                    <ol style="color: #374151; font-size: 16px; line-height: 1.8; padding-left: 20px;">
+                        <li>Ve a la página de recuperación de contraseña</li>
+                        <li>Ingresa el código de arriba</li>
+                        <li>Crea tu nueva contraseña</li>
+                    </ol>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="${resetUrl}" style="background: #6366F1; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 16px;">Restablecer Contraseña</a>
+                    </div>
+                    
+                    <p style="color: #6B7280; font-size: 14px; line-height: 1.6; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB;">
+                        <strong>⚠️ Importante:</strong> Este código expirará en <strong>1 hora</strong>. Si no solicitaste este cambio, puedes ignorar este email de forma segura.
+                    </p>
+                </div>
+                
+                <div style="text-align: center; padding-top: 20px; border-top: 1px solid #E5E7EB;">
+                    <p style="color: #9CA3AF; font-size: 12px; margin: 5px 0;">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
+                    <p style="word-break: break-all; color: #6366F1; font-size: 12px; margin: 5px 0;">${resetUrl}</p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB;">
+                    <p style="color: #9CA3AF; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} Veedor. Todos los derechos reservados.</p>
+                </div>
             </div>
         `
     };
