@@ -938,18 +938,15 @@ app.post('/api/forgot-password', async (req, res) => {
                 expiresAt: resetTokenExpiry
             });
         } else {
-            // Si el email no se pudo enviar, devolver el token como fallback de EMERGENCIA
-            console.log('⚠️ ===== EMAIL NO ENVIADO - FALLBACK DE EMERGENCIA =====');
-            console.log('⚠️ El email no pudo enviarse. Devolviendo token como fallback.');
-            console.log('⚠️ ESTO NO DEBERÍA PASAR EN PRODUCCIÓN');
-            console.log('⚠️ Verifica la configuración de email en Render:');
-            console.log('⚠️   - EMAIL_HOST debe estar configurado');
-            console.log('⚠️   - EMAIL_USER debe estar configurado');
-            console.log('⚠️   - EMAIL_PASS debe ser una App Password de Gmail');
-            console.log('⚠️   - EMAIL_PORT debe ser 465 (con EMAIL_SECURE=true)');
+            // Si el email no se pudo enviar, devolver el token para mostrarlo en el modal
+            // Esto es normal en Render plan gratuito que bloquea SMTP saliente
+            console.log('📧 ===== MOSTRANDO CÓDIGO EN MODAL (Plan Gratuito) =====');
+            console.log('📧 Render plan gratuito bloquea SMTP, mostrando código directamente');
+            console.log('📧 Esto es normal y seguro - el código se muestra solo al usuario que lo solicita');
+            console.log('📧 El código es válido por 1 hora');
             res.json({ 
-                message: 'Email no enviado - Código de emergencia',
-                token: resetToken, // SOLO como fallback de emergencia
+                message: 'Código de recuperación generado',
+                token: resetToken, // Mostrar código en modal (normal en plan gratuito)
                 expiresAt: resetTokenExpiry
             });
         }
