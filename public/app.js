@@ -1881,6 +1881,7 @@ function initializeForms() {
             }
             
             updateSummary();
+            updateMonthDashboard(); // Actualizar también el análisis del mes seleccionado
         });
         
         // Listener para cambio de año
@@ -1890,6 +1891,7 @@ function initializeForms() {
                     const yearValue = parseInt(summaryYearInput.value);
                     if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
                         updateSummary();
+                        updateMonthDashboard(); // Actualizar también el análisis del mes seleccionado
                     }
                 }
             });
@@ -1899,6 +1901,7 @@ function initializeForms() {
                     const yearValue = parseInt(summaryYearInput.value);
                     if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
                         updateSummary();
+                        updateMonthDashboard(); // Actualizar también el análisis del mes seleccionado
                     }
                 }
             });
