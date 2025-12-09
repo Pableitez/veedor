@@ -331,22 +331,43 @@ function setupEmailTransporter() {
                     pass: process.env.EMAIL_PASS
                 },
                 tls: {
-                    rejectUnauthorized: false,
-                    ciphers: 'SSLv3'
-                }
+                    rejectUnauthorized: false
+                },
+                // Timeouts aumentados para evitar ETIMEDOUT
+                connectionTimeout: 30000, // 30 segundos
+                greetingTimeout: 30000,
+                socketTimeout: 30000,
+                // Configuración adicional para Gmail
+                pool: true,
+                maxConnections: 1,
+                maxMessages: 3
             };
             
-            // Configuración adicional para Gmail con SSL (puerto 465)
+            // Configuración específica para Gmail con SSL (puerto 465)
             if (isGmail && emailSecure) {
                 transporterConfig.requireTLS = false;
-                transporterConfig.connectionTimeout = 10000;
-                transporterConfig.greetingTimeout = 10000;
+                // Para puerto 465 (SSL), no necesitamos TLS
+                delete transporterConfig.tls;
+            } else if (isGmail && !emailSecure) {
+                // Para puerto 587 (TLS)
+                transporterConfig.requireTLS = true;
+                transporterConfig.tls = {
+                    rejectUnauthorized: false
+                };
             }
             
             emailTransporter = nodemailer.createTransport(transporterConfig);
             
             // Verificar la conexión de forma asíncrona (no bloquea el inicio)
+            // Usar un timeout más largo para la verificación inicial
+            const verifyTimeout = setTimeout(() => {
+                console.warn('⚠️ La verificación de conexión de email está tomando más tiempo del esperado...');
+                console.warn('⚠️ Esto puede ser normal en el primer inicio. El email funcionará cuando se necesite.');
+            }, 10000);
+            
             emailTransporter.verify(function(error, success) {
+                clearTimeout(verifyTimeout);
+                
                 if (error) {
                     console.error('❌ ===== ERROR VERIFICANDO CONEXIÓN DE EMAIL =====');
                     console.error('❌ Error:', error.message);
@@ -356,17 +377,22 @@ function setupEmailTransporter() {
                     if (error.code === 'EAUTH') {
                         console.error('💡 ERROR DE AUTENTICACIÓN:');
                         console.error('💡 - Verifica que EMAIL_USER sea tu email completo');
-                        console.error('💡 - Verifica que EMAIL_PASS sea una "Contraseña de aplicación" (App Password)');
+                        console.error('💡 - Verifica que EMAIL_PASS sea una "Contraseña de aplicación" (App Password) de 16 caracteres');
                         console.error('💡 - Si tienes 2FA activado en Gmail, DEBES usar una App Password');
                         console.error('💡 - Genera una aquí: https://myaccount.google.com/apppasswords');
+                        console.error('💡 - La App Password debe tener exactamente 16 caracteres (sin espacios)');
                     } else if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT') {
-                        console.error('💡 ERROR DE CONEXIÓN:');
-                        console.error('💡 - Verifica que EMAIL_HOST sea correcto (smtp.gmail.com)');
-                        console.error('💡 - Verifica que EMAIL_PORT sea 465 (SSL) o 587 (TLS)');
-                        console.error('💡 - Verifica que EMAIL_SECURE sea true para puerto 465');
+                        console.error('💡 ERROR DE CONEXIÓN (esto puede ser temporal):');
+                        console.error('💡 - El timeout puede ocurrir durante la verificación inicial');
+                        console.error('💡 - El email debería funcionar cuando se intente enviar');
+                        console.error('💡 - Verifica que EMAIL_HOST sea: smtp.gmail.com');
+                        console.error('💡 - Verifica que EMAIL_PORT sea: 465 (con EMAIL_SECURE=true)');
+                        console.error('💡 - Verifica que no haya restricciones de firewall en Render');
+                        console.error('💡 - Si el problema persiste, intenta usar puerto 587 con EMAIL_SECURE=false');
                     } else {
                         console.error('💡 Revisa los logs anteriores para más detalles');
                     }
+                    console.warn('⚠️ NOTA: El servidor continuará. El email se intentará enviar cuando sea necesario.');
                 } else {
                     console.log('✅ Conexión de email verificada correctamente');
                     console.log('✅ El servidor de email está listo para enviar correos');
