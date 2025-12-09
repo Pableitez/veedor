@@ -918,6 +918,32 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     scrollbar-color: var(--border-color) var(--bg-primary);
 }
 
+/* Scrollbars globales mejorados */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) var(--bg-primary);
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}
+
 .table-container::-webkit-scrollbar {
     height: 8px;
 }

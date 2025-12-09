@@ -7091,11 +7091,25 @@ function updateFinancialHealthMetrics() {
         };
         card.onclick = () => showFinancialHealthDetail(metric, index);
         
+        // Colores de status adaptados al modo oscuro
+        const isDarkMode = document.body.classList.contains('dark-mode');
         const statusColors = {
-            excellent: { bg: '#D1FAE5', text: '#065F46' },
-            good: { bg: '#DCFCE7', text: '#166534' },
-            warning: { bg: '#FEF3C7', text: '#92400E' },
-            danger: { bg: '#FEE2E2', text: '#991B1B' }
+            excellent: { 
+                bg: isDarkMode ? 'rgba(16, 185, 129, 0.2)' : '#D1FAE5', 
+                text: isDarkMode ? '#10b981' : '#065F46' 
+            },
+            good: { 
+                bg: isDarkMode ? 'rgba(34, 197, 94, 0.2)' : '#DCFCE7', 
+                text: isDarkMode ? '#22c55e' : '#166534' 
+            },
+            warning: { 
+                bg: isDarkMode ? 'rgba(251, 191, 36, 0.2)' : '#FEF3C7', 
+                text: isDarkMode ? '#fbbf24' : '#92400E' 
+            },
+            danger: { 
+                bg: isDarkMode ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2', 
+                text: isDarkMode ? '#ef4444' : '#991B1B' 
+            }
         };
         
         const statusStyle = statusColors[metric.status] || statusColors.warning;
@@ -7105,19 +7119,19 @@ function updateFinancialHealthMetrics() {
                 <div>
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                         <span style="font-size: 20px;">${metric.icon}</span>
-                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--gray-900);">${metric.title}</h3>
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-primary);">${metric.title}</h3>
                     </div>
-                    <p style="margin: 0; font-size: 12px; color: var(--gray-600);">${metric.description}</p>
+                    <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">${metric.description}</p>
                 </div>
                 <span style="padding: 4px 10px; background: ${statusStyle.bg}; color: ${statusStyle.text}; border-radius: var(--radius-full); font-size: 11px; font-weight: 600;">
                     ${metric.status === 'excellent' ? 'Excelente' : metric.status === 'good' ? 'Bueno' : metric.status === 'warning' ? 'Moderado' : 'Bajo'}
                 </span>
             </div>
             <div style="margin-top: 16px;">
-                <div style="font-size: 28px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px;">
+                <div style="font-size: 28px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
                     ${metric.value}
                 </div>
-                <div style="font-size: 13px; color: var(--gray-600);">
+                <div style="font-size: 13px; color: var(--text-secondary);">
                     ${metric.detail}
                 </div>
             </div>
@@ -7945,18 +7959,18 @@ function showFinancialHealthDetail(metric, index) {
     
     let detailContent = `
         <div style="display: flex; flex-direction: column; gap: 20px;">
-            <div style="background: var(--gray-50); padding: 20px; border-radius: 12px;">
-                <h3 style="margin: 0 0 12px 0; font-size: 18px; color: var(--gray-900);">Valor Actual</h3>
+            <div style="background: var(--bg-secondary); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
+                <h3 style="margin: 0 0 12px 0; font-size: 18px; color: var(--text-primary);">Valor Actual</h3>
                 <div style="font-size: 32px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">
                     ${metric.value}
                 </div>
-                <p style="margin: 0; color: var(--gray-600); font-size: 14px;">${metric.description}</p>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">${metric.description}</p>
             </div>
             
             ${chartHTML}
             
             <div>
-                <h3 style="margin: 0 0 12px 0; font-size: 16px; color: var(--gray-900);">Detalles del Cálculo</h3>
+                <h3 style="margin: 0 0 12px 0; font-size: 16px; color: var(--text-primary);">Detalles del Cálculo</h3>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
     `;
     
@@ -7966,10 +7980,10 @@ function showFinancialHealthDetail(metric, index) {
             <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'}; color: var(--text-primary); border: 1px solid var(--border-color);">
                 <strong>Préstamos Activos:</strong> ${activeDebtLoans.length} ${hasActiveDebts ? '(Hay deudas activas)' : '(Sin deudas activas)'}
             </div>
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Capital Restante Total:</strong> ${formatCurrency(loansDebt)}
             </div>
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Activos Totales:</strong> ${formatCurrency(totalAssets)}
             </div>
         `;
@@ -7978,13 +7992,13 @@ function showFinancialHealthDetail(metric, index) {
             <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'}; color: var(--text-primary); border: 1px solid var(--border-color);">
                 <strong>Préstamos Activos:</strong> ${activeDebtLoans.length} ${hasActiveDebts ? '(Hay deudas activas)' : '(Sin deudas activas)'}
             </div>
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Capital Restante Total:</strong> ${formatCurrency(loansDebt)}
             </div>
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Activos Totales:</strong> ${formatCurrency(totalAssets)}
             </div>
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--primary);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--primary); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Ratio:</strong> ${(loansDebt / (totalAssets || 1) * 100).toFixed(2)}%
             </div>
         `;
@@ -7993,31 +8007,31 @@ function showFinancialHealthDetail(metric, index) {
             <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'}; color: var(--text-primary); border: 1px solid var(--border-color);">
                 <strong>Préstamos Activos:</strong> ${activeDebtLoans.length} ${hasActiveDebts ? '(Hay deudas activas)' : '(Sin deudas activas)'}
             </div>
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Capital Restante Total:</strong> ${formatCurrency(loansDebt)}
             </div>
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Activos Totales:</strong> ${formatCurrency(totalAssets)}
             </div>
         `;
     } else if (index === 4) { // Ratio de Ahorro
         detailContent += `
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Ingresos del Período:</strong> ${formatCurrency(periodIncome)}
             </div>
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Gastos del Período:</strong> ${formatCurrency(periodExpenses)}
             </div>
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--primary);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--primary); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Ahorro del Período:</strong> ${formatCurrency(periodSavings)}
             </div>
         `;
     } else if (index === 7) { // Servicio de Deuda
         detailContent += `
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--danger);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Pagos Mensuales de Préstamos:</strong> ${formatCurrency(monthlyLoanPayments)}
             </div>
-            <div style="padding: 12px; background: white; border-radius: 8px; border-left: 3px solid var(--success);">
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
                 <strong>Ingresos Mensuales Promedio:</strong> ${formatCurrency(avgMonthlyIncome)} ${avgMonthlyIncome === 0 ? '(sin ingresos)' : ''}
             </div>
         `;
@@ -8028,7 +8042,7 @@ function showFinancialHealthDetail(metric, index) {
             </div>
             
             <div style="padding: 16px; background: var(--primary-light); border-radius: 12px; border: 1px solid var(--primary);">
-                <p style="margin: 0; color: var(--gray-700); font-size: 14px; line-height: 1.6;">
+                <p style="margin: 0; color: var(--text-primary); font-size: 14px; line-height: 1.6;">
                     <strong>Interpretación:</strong> ${metric.detail}
                 </p>
             </div>
