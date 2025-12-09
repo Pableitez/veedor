@@ -6221,18 +6221,12 @@ function updateMonthDashboard() {
                                 <small style="font-size: 12px; color: var(--text-secondary);">Progreso del presupuesto</small>
                                 <small style="font-size: 12px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
                             </div>
-                            <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden;">
-                                <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
                                 <small style="font-size: 11px; color: var(--text-tertiary);">Restante: ${formatCurrency(Math.max(0, budgetAmount - data.amount))}</small>
                                 ${percentage > 100 ? `<small style="font-size: 11px; color: var(--danger-color); font-weight: 600;">⚠️ Excedido</small>` : ''}
                             </div>
                         </div>
                     ` : '<small style="color: var(--text-tertiary);">Sin presupuesto establecido</small>'}
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
-                        <small style="color: var(--primary); font-weight: 500;">👆 Click para ver detalles</small>
-                    </div>
                 `;
                 expensesContainer.appendChild(card);
             });
