@@ -4576,7 +4576,7 @@ function initializeCharts() {
     
     // Nuevas gráficas
     const incomeEvolutionEl = document.getElementById('incomeEvolutionChart');
-    if (incomeEvolutionEl) {
+    if (incomeEvolutionEl && !charts.incomeEvolution) {
         charts.incomeEvolution = new Chart(incomeEvolutionEl, {
             type: 'line',
             data: { labels: [], datasets: [] },
@@ -4590,7 +4590,7 @@ function initializeCharts() {
     }
     
     const expensesEvolutionEl = document.getElementById('expensesEvolutionChart');
-    if (expensesEvolutionEl) {
+    if (expensesEvolutionEl && !charts.expensesEvolution) {
         charts.expensesEvolution = new Chart(expensesEvolutionEl, {
             type: 'line',
             data: { labels: [], datasets: [] },
@@ -4604,7 +4604,7 @@ function initializeCharts() {
     }
     
     const loansPendingEl = document.getElementById('loansPendingChart');
-    if (loansPendingEl) {
+    if (loansPendingEl && !charts.loansPending) {
         charts.loansPending = new Chart(loansPendingEl, {
             type: 'line',
             data: { labels: [], datasets: [] },
@@ -4618,7 +4618,7 @@ function initializeCharts() {
     }
     
     const assetsEvolutionEl = document.getElementById('assetsEvolutionChart');
-    if (assetsEvolutionEl) {
+    if (assetsEvolutionEl && !charts.assetsEvolution) {
         charts.assetsEvolution = new Chart(assetsEvolutionEl, {
             type: 'line',
             data: { labels: [], datasets: [] },
@@ -4632,7 +4632,7 @@ function initializeCharts() {
     }
     
     const accountsBalanceEl = document.getElementById('accountsBalanceChart');
-    if (accountsBalanceEl) {
+    if (accountsBalanceEl && !charts.accountsBalance) {
         charts.accountsBalance = new Chart(accountsBalanceEl, {
             type: 'line',
             data: { labels: [], datasets: [] },
