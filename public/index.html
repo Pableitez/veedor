@@ -89,33 +89,33 @@
             
             <!-- Formulario de Recuperación de Contraseña -->
             <div id="forgotPasswordForm" class="auth-form" style="display: none;">
-                <h3 style="margin-bottom: 20px; font-size: 22px; font-weight: 700;" data-translate="auth.recoverPassword">Recuperar Contraseña</h3>
+                <h3 style="margin-bottom: 16px; font-size: 20px; font-weight: 700;" data-translate="auth.recoverPassword">Recuperar Contraseña</h3>
                 <form id="forgotPasswordFormElement">
-                    <div class="form-group">
-                        <label for="forgotEmail" data-translate="auth.email">Email</label>
-                        <input type="email" id="forgotEmail" required>
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label for="forgotEmail" data-translate="auth.email" style="font-size: 13px;">Email</label>
+                        <input type="email" id="forgotEmail" required style="padding: 10px 14px; font-size: 14px;">
                     </div>
-                    <button type="submit" class="btn-primary btn-full" data-translate="auth.sendRecoveryLink">Enviar Enlace de Recuperación</button>
-                    <p id="forgotPasswordError" class="error-message"></p>
-                    <p id="forgotPasswordSuccess" class="success-message" style="display: none;"></p>
+                    <button type="submit" class="btn-primary btn-full" data-translate="auth.sendRecoveryLink" style="padding: 11px; font-size: 14px;">Enviar Enlace de Recuperación</button>
+                    <p id="forgotPasswordError" class="error-message" style="font-size: 12px; margin-top: 10px;"></p>
+                    <p id="forgotPasswordSuccess" class="success-message" style="display: none; margin-top: 10px;"></p>
                 </form>
-                <div id="resetPasswordSection" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--gray-200);">
-                    <h4 style="margin-bottom: 16px; font-size: 16px; font-weight: 600; color: var(--gray-800);" data-translate="auth.enterRecoveryCode">Ingresa el código de recuperación y tu nueva contraseña</h4>
+                <div id="resetPasswordSection" style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
+                    <h4 style="margin-bottom: 12px; font-size: 15px; font-weight: 600; color: var(--gray-800);" data-translate="auth.enterRecoveryCode">Ingresa el código y nueva contraseña</h4>
                     <form id="resetPasswordFormElement">
-                        <div class="form-group" style="margin-bottom: 12px;">
-                            <label for="resetToken" data-translate="auth.recoveryCode" style="font-size: 13px;">Código de Recuperación</label>
-                            <input type="text" id="resetToken" required data-translate-placeholder="auth.pasteRecoveryCode" placeholder="Pega el código copiado arriba" style="padding: 10px 14px; font-size: 14px;">
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label for="resetToken" data-translate="auth.recoveryCode" style="font-size: 12px;">Código</label>
+                            <input type="text" id="resetToken" required data-translate-placeholder="auth.pasteRecoveryCode" placeholder="Pega el código" style="padding: 9px 12px; font-size: 13px;">
                         </div>
-                        <div class="form-group" style="margin-bottom: 16px;">
-                            <label for="resetNewPassword" data-translate="auth.newPassword" style="font-size: 13px;">Nueva Contraseña</label>
-                            <input type="password" id="resetNewPassword" required minlength="4" style="padding: 10px 14px; font-size: 14px;">
+                        <div class="form-group" style="margin-bottom: 14px;">
+                            <label for="resetNewPassword" data-translate="auth.newPassword" style="font-size: 12px;">Nueva Contraseña</label>
+                            <input type="password" id="resetNewPassword" required minlength="4" style="padding: 9px 12px; font-size: 13px;">
                         </div>
-                        <button type="submit" class="btn-primary btn-full" data-translate="auth.resetPassword" style="padding: 12px; font-size: 15px; margin-top: 4px;">Restablecer Contraseña</button>
-                        <p id="resetPasswordError" class="error-message" style="font-size: 13px; margin-top: 10px;"></p>
+                        <button type="submit" class="btn-primary btn-full" data-translate="auth.resetPassword" style="padding: 11px; font-size: 14px; margin-top: 2px;">Restablecer Contraseña</button>
+                        <p id="resetPasswordError" class="error-message" style="font-size: 12px; margin-top: 8px;"></p>
                     </form>
                 </div>
-                <p style="text-align: center; margin-top: 20px;">
-                    <a href="#" id="backToLoginLink" style="color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 500;" data-translate="auth.backToLogin">Volver a Iniciar Sesión</a>
+                <p style="text-align: center; margin-top: 16px;">
+                    <a href="#" id="backToLoginLink" style="color: var(--primary); text-decoration: none; font-size: 12px; font-weight: 500;" data-translate="auth.backToLogin">Volver a Iniciar Sesión</a>
                 </p>
             </div>
             

@@ -485,20 +485,15 @@ async function requestPasswordReset() {
                 if (data.token) {
                     // Mostrar código directamente (normal en Render plan gratuito)
                     successMsg.innerHTML = `
-                    <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 14px; border-radius: 10px; border: 1px solid var(--primary); margin-bottom: 14px;">
-                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
-                            <span style="font-size: 18px;">✅</span>
-                            <strong style="color: var(--gray-900); font-size: 14px;">Código de recuperación generado</strong>
+                    <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 10px; border-radius: 8px; border: 1px solid var(--primary); margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+                            <span style="font-size: 16px;">✅</span>
+                            <strong style="color: var(--gray-900); font-size: 13px;">Código generado (válido 1h)</strong>
                         </div>
-                        <p style="margin: 4px 0 8px 0; color: var(--gray-700); font-size: 13px; line-height: 1.4;">Copia este código y úsalo para recuperar tu contraseña (válido por 1 hora):</p>
-                        <div style="background: white; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--primary); margin: 8px 0; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-                            <code style="font-size: 12px; font-weight: 600; color: var(--primary); word-break: break-all; flex: 1; font-family: 'Courier New', monospace; line-height: 1.4;">${data.token}</code>
-                            <button type="button" onclick="event.preventDefault(); event.stopPropagation(); const token = '${data.token}'; navigator.clipboard.writeText(token).then(() => { const btn = event.target; btn.textContent='✓'; setTimeout(() => { btn.textContent='📋'; }, 2000); }).catch(err => console.error('Error copiando:', err));" style="background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; flex-shrink: 0;" title="Copiar">📋</button>
+                        <div style="background: white; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--primary); margin: 6px 0; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                            <code style="font-size: 10px; font-weight: 600; color: var(--primary); word-break: break-all; flex: 1; font-family: 'Courier New', monospace; line-height: 1.3;">${data.token}</code>
+                            <button type="button" onclick="event.preventDefault(); event.stopPropagation(); const token = '${data.token}'; navigator.clipboard.writeText(token).then(() => { const btn = event.target; btn.textContent='✓'; setTimeout(() => { btn.textContent='📋'; }, 2000); }).catch(err => console.error('Error copiando:', err));" style="background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; flex-shrink: 0;" title="Copiar">📋</button>
                         </div>
-                        <p style="margin: 6px 0 0 0; color: var(--gray-600); font-size: 11px; display: flex; align-items: center; gap: 4px;">
-                            <span>💡</span>
-                            <span>En producción con email configurado, este código se enviaría por email automáticamente.</span>
-                        </p>
                     </div>
                 `;
                     successMsg.style.display = 'block';
