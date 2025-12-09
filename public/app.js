@@ -6443,7 +6443,7 @@ function updateMonthDashboard() {
                 }
                 
                 const card = document.createElement('div');
-                card.style.cssText = 'background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); border-left: 4px solid ' + (isOverBudget ? 'var(--danger)' : progressColor) + ';';
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); border-left: 4px solid ' + (isOverBudget ? 'var(--danger)' : progressColor) + '; color: var(--text-primary);';
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${category.name}</h5>
