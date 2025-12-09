@@ -1448,7 +1448,31 @@ function initializeForms() {
     document.querySelectorAll('.chart-period-select').forEach(select => {
         select.addEventListener('change', () => {
             const chartName = select.getAttribute('data-chart');
+            const value = select.value;
+            
+            // Mostrar/ocultar selector de fecha personalizada
+            const customDateRange = document.getElementById(`${chartName}CustomDateRange`);
+            if (customDateRange) {
+                if (value === 'custom') {
+                    customDateRange.style.display = 'flex';
+                } else {
+                    customDateRange.style.display = 'none';
+                }
+            }
+            
             updateSingleChart(chartName);
+        });
+    });
+    
+    // Listeners para fechas personalizadas
+    document.querySelectorAll('[id$="StartDate"], [id$="EndDate"]').forEach(input => {
+        input.addEventListener('change', () => {
+            // Extraer el nombre del gráfico del ID
+            const id = input.id;
+            const chartName = id.replace(/StartDate|EndDate/, '');
+            if (chartName) {
+                updateSingleChart(chartName);
+            }
         });
     });
     
