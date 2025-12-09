@@ -4394,7 +4394,22 @@ function getTransactionsByPeriod(chartName = null) {
     }
     
     if (period === 'custom') {
-        // Obtener fechas personalizadas
+        // Primero intentar obtener fechas del modal (si estamos en el modal)
+        const modalStartDate = document.getElementById('modalStartDate');
+        const modalEndDate = document.getElementById('modalEndDate');
+        
+        if (modalStartDate && modalEndDate && modalStartDate.value && modalEndDate.value) {
+            const startDate = new Date(modalStartDate.value);
+            const endDate = new Date(modalEndDate.value);
+            endDate.setHours(23, 59, 59, 999);
+            
+            return transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate >= startDate && tDate <= endDate;
+            });
+        }
+        
+        // Si no está en el modal, obtener fechas del gráfico pequeño
         const startDateInput = document.getElementById(`${chartName}StartDate`) || 
                               document.querySelector(`#${chartName}StartDate`);
         const endDateInput = document.getElementById(`${chartName}EndDate`) || 
@@ -5352,9 +5367,26 @@ function openChartModal(chartType, title) {
             <option value="12">1 año</option>
             <option value="24">2 años</option>
             <option value="all">Todo el historial</option>
+            <option value="custom">Fecha personalizada</option>
         </select>
     `;
     modalControls.appendChild(periodDiv);
+    
+    // Contenedor para fechas personalizadas del modal
+    const customDateRangeDiv = document.createElement('div');
+    customDateRangeDiv.id = 'modalCustomDateRange';
+    customDateRangeDiv.style.display = 'none';
+    customDateRangeDiv.style.gap = '8px';
+    customDateRangeDiv.style.flexWrap = 'wrap';
+    customDateRangeDiv.style.flexDirection = 'row';
+    customDateRangeDiv.style.marginTop = '8px';
+    customDateRangeDiv.innerHTML = `
+        <label style="font-weight: 600; font-size: 14px;">Desde:</label>
+        <input type="date" id="modalStartDate" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
+        <label style="font-weight: 600; font-size: 14px;">Hasta:</label>
+        <input type="date" id="modalEndDate" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
+    `;
+    modalControls.appendChild(customDateRangeDiv);
     
     // Filtros específicos según el tipo
     if (chartType === 'incomeEvolution' || chartType === 'expensesEvolution') {
@@ -5514,7 +5546,20 @@ function updateModalChart() {
     
     // Obtener período seleccionado
     const periodSelect = document.getElementById('modalChartPeriod');
-    const period = periodSelect ? (periodSelect.value === 'all' ? 999 : parseInt(periodSelect.value) || 6) : 6;
+    let period = periodSelect ? (periodSelect.value === 'all' ? 999 : (periodSelect.value === 'custom' ? 'custom' : parseInt(periodSelect.value) || 6)) : 6;
+    
+    // Si es fecha personalizada, obtener las fechas del modal
+    if (period === 'custom') {
+        const modalStartDate = document.getElementById('modalStartDate');
+        const modalEndDate = document.getElementById('modalEndDate');
+        if (modalStartDate && modalEndDate && modalStartDate.value && modalEndDate.value) {
+            // Usar fechas personalizadas del modal
+            period = 'custom';
+        } else {
+            // Si no hay fechas, usar período por defecto
+            period = 6;
+        }
+    }
     
     // Obtener filtros adicionales
     let categoryFilter = 'all';
