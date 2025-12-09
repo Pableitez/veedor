@@ -5353,6 +5353,17 @@ function openChartModal(chartType, title) {
     // Crear controles según el tipo de gráfico
     modalControls.innerHTML = '';
     
+    // Obtener el período actual del gráfico pequeño
+    const originalPeriodSelect = document.querySelector(`.chart-period-select[data-chart="${chartType}"]`);
+    const currentPeriod = originalPeriodSelect ? originalPeriodSelect.value : '6';
+    const isCustom = currentPeriod === 'custom';
+    
+    // Obtener fechas del gráfico pequeño si está en modo custom
+    const originalStartDate = document.getElementById(`${chartType}StartDate`);
+    const originalEndDate = document.getElementById(`${chartType}EndDate`);
+    const startDateValue = (originalStartDate && originalStartDate.value) ? originalStartDate.value : '';
+    const endDateValue = (originalEndDate && originalEndDate.value) ? originalEndDate.value : '';
+    
     // Selector de período (todos los gráficos)
     const periodDiv = document.createElement('div');
     periodDiv.style.display = 'flex'; 
@@ -5361,13 +5372,13 @@ function openChartModal(chartType, title) {
     periodDiv.innerHTML = `
         <label style="font-weight: 600; font-size: 14px;">Período:</label>
         <select id="modalChartPeriod" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
-            <option value="1">1 mes</option>
-            <option value="3">3 meses</option>
-            <option value="6" selected>6 meses</option>
-            <option value="12">1 año</option>
-            <option value="24">2 años</option>
-            <option value="all">Todo el historial</option>
-            <option value="custom">Fecha personalizada</option>
+            <option value="1" ${currentPeriod === '1' ? 'selected' : ''}>1 mes</option>
+            <option value="3" ${currentPeriod === '3' ? 'selected' : ''}>3 meses</option>
+            <option value="6" ${currentPeriod === '6' || !isCustom ? 'selected' : ''}>6 meses</option>
+            <option value="12" ${currentPeriod === '12' ? 'selected' : ''}>1 año</option>
+            <option value="24" ${currentPeriod === '24' ? 'selected' : ''}>2 años</option>
+            <option value="all" ${currentPeriod === 'all' ? 'selected' : ''}>Todo el historial</option>
+            <option value="custom" ${isCustom ? 'selected' : ''}>Fecha personalizada</option>
         </select>
     `;
     modalControls.appendChild(periodDiv);
@@ -5375,16 +5386,17 @@ function openChartModal(chartType, title) {
     // Contenedor para fechas personalizadas del modal
     const customDateRangeDiv = document.createElement('div');
     customDateRangeDiv.id = 'modalCustomDateRange';
-    customDateRangeDiv.style.display = 'none';
+    customDateRangeDiv.style.display = isCustom ? 'flex' : 'none';
     customDateRangeDiv.style.gap = '8px';
     customDateRangeDiv.style.flexWrap = 'wrap';
     customDateRangeDiv.style.flexDirection = 'row';
     customDateRangeDiv.style.marginTop = '8px';
+    customDateRangeDiv.style.alignItems = 'center';
     customDateRangeDiv.innerHTML = `
         <label style="font-weight: 600; font-size: 14px;">Desde:</label>
-        <input type="date" id="modalStartDate" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
+        <input type="date" id="modalStartDate" value="${startDateValue}" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
         <label style="font-weight: 600; font-size: 14px;">Hasta:</label>
-        <input type="date" id="modalEndDate" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
+        <input type="date" id="modalEndDate" value="${endDateValue}" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
     `;
     modalControls.appendChild(customDateRangeDiv);
     
