@@ -526,7 +526,13 @@ function initializeAuth() {
     const switchUserBtn = document.getElementById('switchUserBtn');
     if (switchUserBtn) {
         switchUserBtn.addEventListener('click', () => {
-            if (confirm('¿Deseas cerrar sesión y cambiar de usuario?')) {
+            const confirmed = await showConfirm(
+                'Cerrar Sesión',
+                '¿Deseas cerrar sesión y cambiar de usuario?',
+                'Cerrar Sesión',
+                'Cancelar'
+            );
+            if (confirmed) {
                 logout();
             }
         });
@@ -3851,14 +3857,24 @@ async function processUpdateInvestmentValue() {
 
 // Eliminar inversión
 async function deleteInvestment(id) {
-    if (!confirm('¿Estás seguro de eliminar esta inversión?')) return;
+    const confirmed = await showConfirm(
+        'Eliminar Inversión',
+        '¿Estás seguro de eliminar esta inversión? Esta acción no se puede deshacer.',
+        'Eliminar',
+        'Cancelar'
+    );
+    if (!confirmed) return;
     
     try {
+        showLoader('Eliminando inversión...');
         await apiRequest(`/investments/${id}`, { method: 'DELETE' });
         await loadUserData();
         updateDisplay();
+        hideLoader();
+        showToast('Inversión eliminada exitosamente', 'success');
     } catch (error) {
-        alert('Error al eliminar inversión: ' + error.message);
+        hideLoader();
+        showToast('Error al eliminar inversión: ' + error.message, 'error');
     }
 }
 
@@ -4378,14 +4394,24 @@ async function processUpdateAssetValue() {
 
 // Eliminar bien
 async function deleteAsset(id) {
-    if (!confirm('¿Estás seguro de eliminar este bien?')) return;
+    const confirmed = await showConfirm(
+        'Eliminar Bien',
+        '¿Estás seguro de eliminar este bien? Esta acción no se puede deshacer.',
+        'Eliminar',
+        'Cancelar'
+    );
+    if (!confirmed) return;
     
     try {
+        showLoader('Eliminando bien...');
         await apiRequest(`/assets/${id}`, { method: 'DELETE' });
         await loadUserData();
         updateDisplay();
+        hideLoader();
+        showToast('Bien eliminado exitosamente', 'success');
     } catch (error) {
-        alert('Error al eliminar bien: ' + error.message);
+        hideLoader();
+        showToast('Error al eliminar bien: ' + error.message, 'error');
     }
 }
 
@@ -7278,7 +7304,7 @@ async function deleteUserAccount() {
             method: 'DELETE'
         });
         
-        alert('✅ Tu cuenta ha sido eliminada exitosamente. Serás redirigido a la página de inicio.');
+        showToast('Tu cuenta ha sido eliminada exitosamente. Serás redirigido a la página de inicio.', 'success', 5000);
         
         // Limpiar datos locales
         localStorage.removeItem('veedor_token');
@@ -7287,7 +7313,7 @@ async function deleteUserAccount() {
         // Redirigir a la página de inicio
         window.location.href = '/';
     } catch (error) {
-        alert('Error al eliminar cuenta: ' + error.message);
+        showToast('Error al eliminar cuenta: ' + error.message, 'error');
     }
 }
 
