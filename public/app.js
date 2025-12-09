@@ -5509,31 +5509,110 @@ function openChartModal(chartType, title) {
         }, 100);
     }
     
-    // Event listeners para los controles
+    // Event listeners para los controles con sincronización bidireccional
     setTimeout(() => {
         const periodSelect = document.getElementById('modalChartPeriod');
         if (periodSelect) {
-            periodSelect.onchange = () => updateModalChart();
+            periodSelect.onchange = () => {
+                const value = periodSelect.value;
+                const customDateRange = document.getElementById('modalCustomDateRange');
+                if (customDateRange) {
+                    if (value === 'custom') {
+                        customDateRange.style.display = 'flex';
+                    } else {
+                        customDateRange.style.display = 'none';
+                    }
+                }
+                // Sincronizar con el gráfico pequeño
+                const originalPeriodSelect = document.querySelector(`.chart-period-select[data-chart="${chartType}"]`);
+                if (originalPeriodSelect) {
+                    originalPeriodSelect.value = value;
+                    if (value === 'custom') {
+                        const originalCustomDateRange = document.getElementById(`${chartType}CustomDateRange`);
+                        if (originalCustomDateRange) {
+                            originalCustomDateRange.style.display = 'flex';
+                        }
+                    } else {
+                        const originalCustomDateRange = document.getElementById(`${chartType}CustomDateRange`);
+                        if (originalCustomDateRange) {
+                            originalCustomDateRange.style.display = 'none';
+                        }
+                    }
+                }
+                updateModalChart();
+            };
         }
         
+        // Listeners para fechas personalizadas del modal
+        const modalStartDate = document.getElementById('modalStartDate');
+        const modalEndDate = document.getElementById('modalEndDate');
+        if (modalStartDate) {
+            modalStartDate.onchange = () => {
+                // Sincronizar con el gráfico pequeño
+                const originalStartDate = document.getElementById(`${chartType}StartDate`);
+                if (originalStartDate) {
+                    originalStartDate.value = modalStartDate.value;
+                }
+                updateModalChart();
+            };
+        }
+        if (modalEndDate) {
+            modalEndDate.onchange = () => {
+                // Sincronizar con el gráfico pequeño
+                const originalEndDate = document.getElementById(`${chartType}EndDate`);
+                if (originalEndDate) {
+                    originalEndDate.value = modalEndDate.value;
+                }
+                updateModalChart();
+            };
+        }
+        
+        // Sincronizar filtros de categoría del modal con el gráfico pequeño
         const categoryFilter = document.getElementById('modalChartCategoryFilter');
         if (categoryFilter) {
-            categoryFilter.onchange = () => updateModalChart();
+            categoryFilter.onchange = () => {
+                const originalCategorySelect = document.querySelector(`.chart-category-filter[data-chart="${chartType}"]`);
+                if (originalCategorySelect) {
+                    originalCategorySelect.value = categoryFilter.value;
+                }
+                updateModalChart();
+            };
         }
         
+        // Sincronizar filtros de préstamo
         const loanFilter = document.getElementById('modalChartLoanFilter');
         if (loanFilter) {
-            loanFilter.onchange = () => updateModalChart();
+            loanFilter.onchange = () => {
+                const originalLoanSelect = document.querySelector(`.chart-loan-filter[data-chart="${chartType}"]`);
+                if (originalLoanSelect) {
+                    originalLoanSelect.value = loanFilter.value;
+                }
+                updateModalChart();
+            };
         }
         
+        // Sincronizar filtros de bienes
         const assetFilter = document.getElementById('modalChartAssetFilter');
         if (assetFilter) {
-            assetFilter.onchange = () => updateModalChart();
+            assetFilter.onchange = () => {
+                const originalAssetSelect = document.querySelector(`.chart-asset-filter[data-chart="${chartType}"]`);
+                if (originalAssetSelect) {
+                    originalAssetSelect.value = assetFilter.value;
+                }
+                updateModalChart();
+            };
         }
         
+        // Sincronizar filtros de cuentas
         const accountFilter = document.getElementById('modalChartAccountFilter');
         if (accountFilter) {
-            accountFilter.onchange = () => updateModalChart();
+            accountFilter.onchange = () => {
+                const originalAccountSelect = document.querySelector(`.chart-account-filter[data-chart="${chartType}"]`);
+                if (originalAccountSelect) {
+                    originalAccountSelect.value = accountFilter.value;
+                }
+                updateModalChart();
+            };
         }
         
         // Inicializar gráfico
