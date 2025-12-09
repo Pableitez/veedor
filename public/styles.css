@@ -790,6 +790,16 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 
 .table-section {
     margin-top: 32px;
+    overflow: visible;
+}
+
+/* Eliminar scroll innecesario en sección de análisis */
+#charts-tab {
+    overflow: visible;
+}
+
+#charts-tab > div {
+    overflow: visible;
 }
 
 .table-section h2 {
