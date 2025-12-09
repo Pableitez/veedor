@@ -5392,11 +5392,12 @@ function openChartModal(chartType, title) {
     customDateRangeDiv.style.flexDirection = 'row';
     customDateRangeDiv.style.marginTop = '8px';
     customDateRangeDiv.style.alignItems = 'center';
+    customDateRangeDiv.style.width = '100%';
     customDateRangeDiv.innerHTML = `
-        <label style="font-weight: 600; font-size: 14px;">Desde:</label>
-        <input type="date" id="modalStartDate" value="${startDateValue}" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
-        <label style="font-weight: 600; font-size: 14px;">Hasta:</label>
-        <input type="date" id="modalEndDate" value="${endDateValue}" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px;">
+        <label style="font-weight: 600; font-size: 14px; white-space: nowrap;">Desde:</label>
+        <input type="date" id="modalStartDate" value="${startDateValue}" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px; flex: 1;">
+        <label style="font-weight: 600; font-size: 14px; white-space: nowrap;">Hasta:</label>
+        <input type="date" id="modalEndDate" value="${endDateValue}" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 150px; flex: 1;">
     `;
     modalControls.appendChild(customDateRangeDiv);
     
@@ -5513,12 +5514,30 @@ function openChartModal(chartType, title) {
     setTimeout(() => {
         const periodSelect = document.getElementById('modalChartPeriod');
         if (periodSelect) {
+            // Asegurar que el contenedor de fechas se muestre si ya está en modo custom al abrir
+            const customDateRange = document.getElementById('modalCustomDateRange');
+            if (customDateRange && periodSelect.value === 'custom') {
+                customDateRange.style.display = 'flex';
+            }
+            
             periodSelect.onchange = () => {
                 const value = periodSelect.value;
                 const customDateRange = document.getElementById('modalCustomDateRange');
                 if (customDateRange) {
                     if (value === 'custom') {
                         customDateRange.style.display = 'flex';
+                        // Si no hay fechas, establecer valores por defecto
+                        const modalStartDate = document.getElementById('modalStartDate');
+                        const modalEndDate = document.getElementById('modalEndDate');
+                        if (modalStartDate && !modalStartDate.value) {
+                            const today = new Date();
+                            const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 6, 1);
+                            modalStartDate.value = sixMonthsAgo.toISOString().split('T')[0];
+                        }
+                        if (modalEndDate && !modalEndDate.value) {
+                            const today = new Date();
+                            modalEndDate.value = today.toISOString().split('T')[0];
+                        }
                     } else {
                         customDateRange.style.display = 'none';
                     }
