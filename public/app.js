@@ -3862,6 +3862,10 @@ function updateInvestments() {
         const card = document.createElement('div');
         card.className = 'envelope-card';
         card.style.borderLeft = `4px solid ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}`;
+        card.style.overflow = 'visible';
+        card.style.wordWrap = 'break-word';
+        card.style.overflowWrap = 'break-word';
+        card.style.boxSizing = 'border-box';
         card.innerHTML = `
             <h3>${investment.name} <span style="font-size: 12px; color: var(--gray-500); font-weight: normal;">(${typeNames[investment.type] || investment.type})</span></h3>
             
@@ -3916,19 +3920,19 @@ function updateInvestments() {
             ${investment.periodic_contribution && investment.periodic_contribution.enabled ? `
                 <div class="periodic-contribution-container" style="margin: 12px 0; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border-left: 3px solid var(--primary); overflow: visible !important; word-wrap: break-word !important; overflow-wrap: break-word !important; box-sizing: border-box !important; width: 100% !important; max-width: 100% !important;">
                     <div style="font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 8px;">Aporte Periódico Activo</div>
-                    <div class="periodic-contribution-grid">
-                        <div><strong>Frecuencia:</strong></div>
-                        <div>${investment.periodic_contribution.frequency === 'weekly' ? 'Semanal' : investment.periodic_contribution.frequency === 'monthly' ? 'Mensual' : 'Anual'}</div>
-                        <div><strong>Monto:</strong></div>
-                        <div style="font-weight: 600;">${formatCurrency(investment.periodic_contribution.amount)}</div>
-                        <div><strong>Inicio:</strong></div>
-                        <div>${formatDate(new Date(investment.periodic_contribution.start_date))}</div>
+                    <div class="periodic-contribution-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; width: 100%; box-sizing: border-box; overflow: visible !important;">
+                        <div style="color: var(--text-secondary); word-wrap: break-word; overflow-wrap: break-word; overflow: visible !important;"><strong>Frecuencia:</strong></div>
+                        <div style="text-align: right; color: var(--text-primary); word-wrap: break-word; overflow-wrap: break-word; overflow: visible !important;">${investment.periodic_contribution.frequency === 'weekly' ? 'Semanal' : investment.periodic_contribution.frequency === 'monthly' ? 'Mensual' : 'Anual'}</div>
+                        <div style="color: var(--text-secondary); word-wrap: break-word; overflow-wrap: break-word; overflow: visible !important;"><strong>Monto:</strong></div>
+                        <div style="text-align: right; font-weight: 600; color: var(--text-primary); word-wrap: break-word; overflow-wrap: break-word; overflow: visible !important;">${formatCurrency(investment.periodic_contribution.amount)}</div>
+                        <div style="color: var(--text-secondary); word-wrap: break-word; overflow-wrap: break-word; overflow: visible !important;"><strong>Inicio:</strong></div>
+                        <div style="text-align: right; color: var(--text-primary); word-wrap: break-word; overflow-wrap: break-word; overflow: visible !important;">${formatDate(new Date(investment.periodic_contribution.start_date))}</div>
                         ${investment.periodic_contribution.end_date ? `
-                            <div><strong>Fin:</strong></div>
-                            <div>${formatDate(new Date(investment.periodic_contribution.end_date))}</div>
+                            <div style="color: var(--text-secondary); word-wrap: break-word; overflow-wrap: break-word; overflow: visible !important;"><strong>Fin:</strong></div>
+                            <div style="text-align: right; color: var(--text-primary); word-wrap: break-word; overflow-wrap: break-word; overflow: visible !important;">${formatDate(new Date(investment.periodic_contribution.end_date))}</div>
                         ` : `
-                            <div><strong>Fin:</strong></div>
-                            <div style="color: var(--text-tertiary);">Indefinido</div>
+                            <div style="color: var(--text-secondary); word-wrap: break-word; overflow-wrap: break-word; overflow: visible !important;"><strong>Fin:</strong></div>
+                            <div style="text-align: right; color: var(--text-tertiary); word-wrap: break-word; overflow-wrap: break-word; overflow: visible !important;">Indefinido</div>
                         `}
                     </div>
                     ${investment.periodic_contribution.completed_contributions && investment.periodic_contribution.completed_contributions.length > 0 ? `
