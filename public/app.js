@@ -3401,7 +3401,7 @@ function updateLoans() {
             </div>
             
             ${loan.early_payments && loan.early_payments.length > 0 ? `
-                <div style="margin: 10px 0; padding: 8px; background: rgba(251, 191, 36, 0.15); border-radius: 6px; font-size: 12px; border: 1px solid var(--border-color);">
+                <div style="margin: 10px 0; padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 12px; border-left: 3px solid var(--warning); border: 1px solid var(--border-color);">
                     <strong style="color: var(--text-primary);">Amortizaciones Anticipadas:</strong> <span style="color: var(--text-primary);">${loan.early_payments.length}</span>
                     <div style="margin-top: 4px; color: var(--text-secondary);">
                         ${loan.early_payments.map(ep => 
@@ -3415,7 +3415,7 @@ function updateLoans() {
             
             <!-- Cuadro de amortización - Próximas cuotas -->
             <div style="margin: 16px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-color);">
-                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">📅 Próximas Cuotas</h4>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">Próximas Cuotas</h4>
                 <div style="max-height: 200px; overflow-y: auto;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
                         <thead>
@@ -3885,26 +3885,26 @@ function updateInvestments() {
                         `}
                     </div>
                     ${investment.periodic_contribution.completed_contributions && investment.periodic_contribution.completed_contributions.length > 0 ? `
-                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(99, 102, 241, 0.2);">
-                            <div style="font-size: 11px; font-weight: 600; color: var(--primary); margin-bottom: 6px;">✅ Aportes Realizados (${investment.periodic_contribution.completed_contributions.length})</div>
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+                            <div style="font-size: 11px; font-weight: 600; color: var(--primary); margin-bottom: 6px;">Aportes Realizados (${investment.periodic_contribution.completed_contributions.length})</div>
                             <div style="max-height: 100px; overflow-y: auto; font-size: 12px;">
                                 ${investment.periodic_contribution.completed_contributions.slice(-5).map(c => `
-                                    <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(99, 102, 241, 0.1);">
-                                        <span>${formatDate(new Date(c.date))}</span>
-                                        <span style="font-weight: 600;">${formatCurrency(c.amount)}</span>
+                                    <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border-color);">
+                                        <span style="color: var(--text-secondary);">${formatDate(new Date(c.date))}</span>
+                                        <span style="font-weight: 600; color: var(--text-primary);">${formatCurrency(c.amount)}</span>
                                     </div>
                                 `).join('')}
                                 ${investment.periodic_contribution.completed_contributions.length > 5 ? `
-                                    <div style="text-align: center; padding-top: 4px; color: var(--gray-500); font-size: 11px;">
+                                    <div style="text-align: center; padding-top: 4px; color: var(--text-tertiary); font-size: 11px;">
                                         +${investment.periodic_contribution.completed_contributions.length - 5} más
                                     </div>
                                 ` : ''}
                             </div>
                         </div>
                     ` : `
-                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(99, 102, 241, 0.2);">
-                            <div style="font-size: 11px; color: var(--gray-500); text-align: center;">
-                                💡 Asocia un gasto a esta inversión para registrar el aporte
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+                            <div style="font-size: 11px; color: var(--text-tertiary); text-align: center;">
+                                Asocia un gasto a esta inversión para registrar el aporte
                             </div>
                         </div>
                     `}
