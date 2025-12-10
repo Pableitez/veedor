@@ -1904,27 +1904,63 @@ tbody tr:last-child td {
 /* Pantallas de 15 pulgadas y laptops (1366x768, 1440x900, etc.) */
 @media (max-width: 1440px) and (max-height: 900px) {
     .auth-container {
-        padding: 28px 36px !important;
-        max-height: calc(100vh - 30px) !important;
+        padding: 24px 32px !important;
+        max-height: calc(100vh - 25px) !important;
         max-width: 600px !important;
-        margin: 15px auto !important;
+        margin: 12px auto !important;
+    }
+    
+    .auth-header {
+        margin-bottom: 14px !important;
+    }
+    
+    .auth-header svg {
+        width: 64px !important;
+        height: 64px !important;
+        margin-bottom: 10px !important;
     }
     
     .auth-header h1 {
         font-size: 28px !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 6px !important;
     }
     
     .auth-header p {
-        font-size: 14px !important;
+        font-size: 13px !important;
     }
     
     .auth-tabs {
-        margin-bottom: 20px !important;
+        margin-bottom: 18px !important;
+    }
+    
+    .auth-tab-btn {
+        padding: 10px 14px !important;
+        font-size: 14px !important;
     }
     
     .auth-form .form-group {
-        margin-bottom: 14px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-form .form-group label {
+        font-size: 12px !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .auth-form .form-group input {
+        padding: 10px 14px !important;
+        font-size: 13px !important;
+    }
+    
+    .auth-form .form-group small {
+        font-size: 11px !important;
+        margin-top: 3px !important;
+    }
+    
+    .btn-full {
+        padding: 11px 20px !important;
+        font-size: 14px !important;
+        margin-top: 4px !important;
     }
 }
 
