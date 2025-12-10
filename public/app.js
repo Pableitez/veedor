@@ -7855,7 +7855,7 @@ function updateModalChart() {
                 break;
         }
         
-        if (originalChart && originalChart.data) {
+        if (originalChart && originalChart.data && originalChart.data.labels && originalChart.data.labels.length > 0) {
             // Destruir gráfico anterior del modal
             if (chartModalChart) {
                 chartModalChart.destroy();
@@ -7865,6 +7865,13 @@ function updateModalChart() {
             // Clonar datos del gráfico original
             const clonedData = JSON.parse(JSON.stringify(originalChart.data));
             
+            // Asegurar que el canvas tenga dimensiones
+            const container = modalCanvas.parentElement;
+            if (container) {
+                container.style.height = '400px';
+                container.style.width = '100%';
+            }
+            
             // Crear nuevo gráfico en el modal
             chartModalChart = new Chart(modalCanvas, {
                 type: originalChart.config.type,
@@ -7872,7 +7879,8 @@ function updateModalChart() {
                 options: {
                     ...originalChart.options,
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
                     plugins: {
                         ...originalChart.options.plugins,
                         legend: {
@@ -7883,7 +7891,16 @@ function updateModalChart() {
                 }
             });
         } else {
-            console.warn('Gráfico original no encontrado o sin datos:', currentChartType);
+            console.warn('Gráfico original no encontrado, sin datos o sin labels:', currentChartType, originalChart);
+            // Mostrar mensaje en el canvas si no hay datos
+            const ctx = modalCanvas.getContext('2d');
+            if (ctx) {
+                ctx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
+                ctx.fillStyle = 'var(--text-secondary)';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No hay datos para mostrar', modalCanvas.width / 2, modalCanvas.height / 2);
+            }
         }
     }, 100);
 }
