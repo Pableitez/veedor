@@ -896,15 +896,24 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     .periodic-contribution-grid {
         grid-template-columns: 1fr !important;
         gap: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     .periodic-contribution-grid > div {
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
-        padding: 8px 0 !important;
+        padding: 10px 0 !important;
         border-bottom: 1px solid var(--border-color) !important;
-        min-height: 32px !important;
+        min-height: 40px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: visible !important;
     }
     
     .periodic-contribution-grid > div:last-child {
@@ -914,11 +923,36 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     .periodic-contribution-grid > div strong {
         font-size: 13px !important;
         font-weight: 600 !important;
+        flex-shrink: 0 !important;
+        margin-right: 12px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
     }
     
     .periodic-contribution-grid > div:not(:has(strong)) {
         font-size: 13px !important;
         text-align: right !important;
+        flex: 1 !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        min-width: 0 !important;
+    }
+    
+    /* Asegurar que el contenedor padre no corte el contenido */
+    .envelope-card,
+    .card {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Contenedor de aportaciones periódicas */
+    .envelope-card > div,
+    .card > div {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
     }
 }
 
