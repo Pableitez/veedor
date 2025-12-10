@@ -486,14 +486,30 @@
                         <table id="transactionsTable">
                             <thead>
                                 <tr>
-                                    <th data-translate="transactions.date">Fecha</th>
-                                    <th data-translate="transactions.type">Tipo</th>
-                                    <th data-translate="transactions.category">Categoría</th>
-                                    <th data-translate="transactions.description">Descripción</th>
-                                    <th data-translate="transactions.account">Cuenta</th>
-                                    <th data-translate="transactions.property">Propiedad</th>
-                                    <th data-translate="transactions.envelope">Sobre</th>
-                                    <th data-translate="transactions.amount">Monto</th>
+                                    <th class="sortable" data-sort="date" data-translate="transactions.date" style="cursor: pointer; user-select: none;">
+                                        Fecha <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="type" data-translate="transactions.type" style="cursor: pointer; user-select: none;">
+                                        Tipo <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="category" data-translate="transactions.category" style="cursor: pointer; user-select: none;">
+                                        Categoría <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="description" data-translate="transactions.description" style="cursor: pointer; user-select: none;">
+                                        Descripción <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="account" data-translate="transactions.account" style="cursor: pointer; user-select: none;">
+                                        Cuenta <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="property" data-translate="transactions.property" style="cursor: pointer; user-select: none;">
+                                        Propiedad <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="envelope" data-translate="transactions.envelope" style="cursor: pointer; user-select: none;">
+                                        Sobre <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="amount" data-translate="transactions.amount" style="cursor: pointer; user-select: none;">
+                                        Monto <span class="sort-indicator"></span>
+                                    </th>
                                     <th data-translate="transactions.actions">Acciones</th>
                                 </tr>
                             </thead>

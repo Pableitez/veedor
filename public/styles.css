@@ -1039,8 +1039,17 @@ tbody tr {
 
 tbody tr:hover {
     background: var(--bg-tertiary);
-    transform: scale(1.01);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Indicadores de ordenamiento */
+.sort-indicator {
+    font-size: 10px;
+    color: var(--primary);
+    margin-left: 4px;
+}
+
+th.sortable:hover {
+    background: var(--bg-secondary);
 }
 
 tbody tr:last-child td {

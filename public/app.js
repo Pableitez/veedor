@@ -2526,6 +2526,10 @@ async function updateSummary() {
 }
 
 // Actualizar tabla de transacciones
+// Variables globales para ordenamiento
+let transactionsSortColumn = 'date';
+let transactionsSortDirection = 'desc'; // 'asc' o 'desc'
+
 function updateTransactionsTable() {
     const tbody = document.getElementById('transactionsBody');
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
