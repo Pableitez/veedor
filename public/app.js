@@ -7710,18 +7710,18 @@ function showSummaryDetails(type) {
         const totalAccountsBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
         content = `
             <div style="display: grid; gap: 16px;">
-                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid #10b981;">
-                    <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Saldo Total: ${formatCurrency(totalAccountsBalance)}</h3>
+                <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--success);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--text-primary);">Saldo Total: ${formatCurrency(totalAccountsBalance)}</h3>
                 </div>
-                ${accounts.length === 0 ? '<p style="text-align: center; color: var(--gray-500); padding: 20px;">No hay cuentas registradas</p>' : ''}
+                ${accounts.length === 0 ? '<p style="text-align: center; color: var(--text-tertiary); padding: 20px;">No hay cuentas registradas</p>' : ''}
                 ${accounts.map(acc => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--gray-50); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-primary); border-radius: var(--radius); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;" onclick="closeSummaryDetails(); switchToTab('accounts', true);" onmouseover="this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-primary)'; this.style.borderColor='var(--border-color)';">
                         <div>
-                            <strong>${acc.name}</strong>
-                            <br><small style="color: var(--gray-600);">${acc.type || 'Cuenta bancaria'}</small>
+                            <strong style="color: var(--text-primary);">${acc.name}</strong>
+                            <br><small style="color: var(--text-secondary);">${acc.type || 'Cuenta bancaria'}</small>
                         </div>
                         <div style="text-align: right;">
-                            <strong style="color: ${acc.balance >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(acc.balance)}</strong>
+                            <strong style="color: ${acc.balance >= 0 ? 'var(--success)' : 'var(--danger)'}">${formatCurrency(acc.balance)}</strong>
                         </div>
                     </div>
                 `).join('')}
