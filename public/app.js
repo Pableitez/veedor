@@ -80,16 +80,8 @@ if (window.VEEDOR_LOADED) {
         const modal = document.getElementById('savingsGoalModal');
         if (modal) modal.style.display = 'none';
     };
-    window.openChartModal = function(chartType, title) {
-        const modal = document.getElementById('chartModal');
-        const modalTitle = document.getElementById('chartModalTitle');
-        if (modal && modalTitle) {
-            if (title) modalTitle.textContent = title;
-            modal.style.display = 'flex';
-        } else {
-            console.warn('Modal de gráfico no encontrado');
-        }
-    };
+    // openChartModal será definida más adelante, no crear stub aquí
+    // para evitar que intercepte las llamadas antes de que la función real esté lista
     window.closeChartModal = function() { 
         const modal = document.getElementById('chartModal');
         if (modal) modal.style.display = 'none';
@@ -8280,7 +8272,18 @@ function updateMonthDashboard() {
                 }
                 
                 const card = document.createElement('div');
-                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); border-left: 4px solid var(--success); color: var(--text-primary);';
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); border-left: 4px solid var(--success); color: var(--text-primary); cursor: pointer; transition: all 0.2s;';
+                card.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                    this.style.borderColor = 'var(--primary)';
+                };
+                card.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                    this.style.borderColor = 'var(--border-color)';
+                };
+                card.onclick = () => showCategoryDetails(category.name, categoryIncome, 'income', selectedMonth, budget.category_id, budget.amount);
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${category.name}</h5>
@@ -8326,7 +8329,18 @@ function updateMonthDashboard() {
                 }
                 
                 const card = document.createElement('div');
-                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); border-left: 4px solid ' + (isOverBudget ? 'var(--danger)' : progressColor) + '; color: var(--text-primary);';
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); border-left: 4px solid ' + (isOverBudget ? 'var(--danger)' : progressColor) + '; color: var(--text-primary); cursor: pointer; transition: all 0.2s;';
+                card.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                    this.style.borderColor = 'var(--primary)';
+                };
+                card.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                    this.style.borderColor = 'var(--border-color)';
+                };
+                card.onclick = () => showCategoryDetails(category.name, categoryExpenses, 'expense', selectedMonth, budget.category_id, budget.amount);
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${category.name}</h5>
@@ -8380,7 +8394,22 @@ function updateMonthDashboard() {
                 }
                 
                 const card = document.createElement('div');
-                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);';
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary); cursor: pointer; transition: all 0.2s;';
+                card.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                    this.style.borderColor = 'var(--primary)';
+                };
+                card.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                    this.style.borderColor = 'var(--border-color)';
+                };
+                // Los sobres no tienen un modal específico, pero los hacemos clickeables para consistencia
+                card.onclick = () => {
+                    // Por ahora, solo mostrar un mensaje o podríamos crear un modal de detalles de sobre
+                    console.log('Sobre:', envelope.name);
+                };
                 card.innerHTML = `
                     <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-primary);">${envelope.name}</h5>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
