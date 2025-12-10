@@ -9823,8 +9823,8 @@ function showFinancialHealthDetail(metric, index) {
                 </div>
             </div>
             
-            <div style="padding: 16px; background: var(--primary-light); border-radius: 12px; border: 1px solid var(--primary);">
-                <p style="margin: 0; color: var(--text-primary); font-size: 14px; line-height: 1.6;">
+            <div style="padding: 14px; background: var(--primary-light); border-radius: 10px; border: 1px solid var(--primary);">
+                <p style="margin: 0; color: var(--text-primary); font-size: 13px; line-height: 1.5;">
                     <strong>Interpretación:</strong> ${metric.detail}
                 </p>
             </div>
@@ -9848,9 +9848,17 @@ function showFinancialHealthDetail(metric, index) {
                     data: chartData.data,
                     options: {
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
+                        aspectRatio: chartData.type === 'doughnut' ? 1 : 2,
                         plugins: {
-                            legend: { display: true }
+                            legend: { 
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    font: { size: 12 },
+                                    padding: 10
+                                }
+                            }
                         },
                         ...chartData.options
                     }
