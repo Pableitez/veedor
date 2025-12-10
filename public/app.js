@@ -3119,21 +3119,67 @@ function updateBudgets() {
     });
 }
 
-// Eliminar presupuesto
-async function deleteBudget(id) {
-    if (!confirm('¿Estás seguro de eliminar este presupuesto?')) return;
+// Editar presupuesto
+async function editBudget(id) {
+    const budget = budgets.find(b => (b._id || b.id) === id);
+    if (!budget) return;
+    
+    const newAmount = prompt('Monto del presupuesto (€):', budget.amount);
+    if (!newAmount) return;
+    const amountValue = parseFloat(newAmount);
+    if (isNaN(amountValue) || amountValue <= 0) {
+        showToast('Por favor ingresa un monto válido', 'error');
+        return;
+    }
     
     try {
-        await apiRequest(`/budgets/${id}`, { method: 'DELETE' });
+        showLoader('Actualizando presupuesto...');
+        await apiRequest(`/budgets/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                amount: amountValue,
+                category: budget.category,
+                period_type: budget.period_type,
+                period_value: budget.period_value
+            })
+        });
+        
         await loadUserData();
         updateDisplay();
+        hideLoader();
+        showToast('Presupuesto actualizado exitosamente', 'success');
     } catch (error) {
-        alert('Error al eliminar presupuesto: ' + error.message);
+        hideLoader();
+        showToast('Error al actualizar presupuesto: ' + error.message, 'error');
     }
 }
 
-// Exponer función global
+// Eliminar presupuesto
+async function deleteBudget(id) {
+    const confirmed = await showConfirm(
+        'Eliminar Presupuesto',
+        '¿Estás seguro de eliminar este presupuesto? Esta acción no se puede deshacer.',
+        'Eliminar',
+        'Cancelar'
+    );
+    if (!confirmed) return;
+    
+    try {
+        showLoader('Eliminando presupuesto...');
+        await apiRequest(`/budgets/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Presupuesto eliminado exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al eliminar presupuesto: ' + error.message, 'error');
+    }
+}
+
+// Exponer funciones globales
 window.deleteBudget = deleteBudget;
+window.editBudget = editBudget;
 
 // Actualizar filtro de meses
 function updateMonthFilter() {
@@ -4186,6 +4232,40 @@ async function processUpdateInvestmentValue() {
     }
 }
 
+// Editar inversión
+async function editInvestment(id) {
+    const investment = investments.find(inv => (inv._id || inv.id) === id);
+    if (!investment) return;
+    
+    const newName = prompt('Nombre de la inversión:', investment.name);
+    if (!newName || newName.trim() === '') return;
+    
+    const newType = prompt('Tipo (stocks/bonds/crypto/funds/real_estate/other):', investment.type);
+    if (!newType) return;
+    
+    const newDescription = prompt('Descripción (opcional):', investment.description || '');
+    
+    try {
+        showLoader('Actualizando inversión...');
+        await apiRequest(`/investments/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: newName.trim(),
+                type: newType,
+                description: newDescription.trim() || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Inversión actualizada exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar inversión: ' + error.message, 'error');
+    }
+}
+
 // Eliminar inversión
 async function deleteInvestment(id) {
     const confirmed = await showConfirm(
@@ -4208,6 +4288,9 @@ async function deleteInvestment(id) {
         showToast('Error al eliminar inversión: ' + error.message, 'error');
     }
 }
+
+// Exponer funciones globales
+window.editInvestment = editInvestment;
 
 // ==================== PROPIEDADES/PISOS ====================
 
@@ -4634,6 +4717,7 @@ async function deleteAccount(id) {
 // Exponer funciones globales
 window.addMoneyToInvestment = addMoneyToInvestment;
 window.updateInvestmentValue = updateInvestmentValue;
+window.editInvestment = editInvestment;
 window.deleteInvestment = deleteInvestment;
 window.editAccount = editAccount;
 window.deleteAccount = deleteAccount;
@@ -4912,22 +4996,100 @@ async function deleteAsset(id) {
 window.editAsset = editAsset;
 window.deleteAsset = deleteAsset;
 
-// Eliminar préstamo
-async function deleteLoan(id) {
-    if (!confirm('¿Estás seguro de eliminar este préstamo?')) return;
+// Editar préstamo
+async function editLoan(id) {
+    const loan = loans.find(l => (l._id || l.id) === id);
+    if (!loan) return;
+    
+    const newName = prompt('Nombre del préstamo:', loan.name);
+    if (!newName || newName.trim() === '') return;
+    
+    const newType = prompt('Tipo (debt/credit):', loan.type);
+    if (!newType) return;
+    
+    const newPrincipal = prompt('Principal (€):', loan.principal);
+    if (!newPrincipal) return;
+    const principalValue = parseFloat(newPrincipal);
+    if (isNaN(principalValue) || principalValue <= 0) {
+        showToast('Por favor ingresa un principal válido', 'error');
+        return;
+    }
+    
+    const newInterestRate = prompt('Tasa de interés anual (%):', loan.interest_rate);
+    if (!newInterestRate) return;
+    const interestValue = parseFloat(newInterestRate);
+    if (isNaN(interestValue) || interestValue < 0) {
+        showToast('Por favor ingresa una tasa de interés válida', 'error');
+        return;
+    }
+    
+    const newMonthlyPayment = prompt('Pago mensual (€):', loan.monthly_payment);
+    if (!newMonthlyPayment) return;
+    const monthlyValue = parseFloat(newMonthlyPayment);
+    if (isNaN(monthlyValue) || monthlyValue <= 0) {
+        showToast('Por favor ingresa un pago mensual válido', 'error');
+        return;
+    }
+    
+    const newStartDate = prompt('Fecha de inicio (YYYY-MM-DD):', loan.start_date);
+    if (!newStartDate) return;
+    
+    const newDescription = prompt('Descripción (opcional):', loan.description || '');
     
     try {
+        showLoader('Actualizando préstamo...');
+        await apiRequest(`/loans/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: newName.trim(),
+                type: newType,
+                principal: principalValue,
+                interest_rate: interestValue,
+                monthly_payment: monthlyValue,
+                start_date: newStartDate,
+                description: newDescription.trim() || null,
+                opening_commission: loan.opening_commission || 0,
+                early_payment_commission: loan.early_payment_commission || 0,
+                payment_day: loan.payment_day || 1
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Préstamo actualizado exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar préstamo: ' + error.message, 'error');
+    }
+}
+
+// Eliminar préstamo
+async function deleteLoan(id) {
+    const confirmed = await showConfirm(
+        'Eliminar Préstamo',
+        '¿Estás seguro de eliminar este préstamo? Esta acción no se puede deshacer.',
+        'Eliminar',
+        'Cancelar'
+    );
+    if (!confirmed) return;
+    
+    try {
+        showLoader('Eliminando préstamo...');
         await apiRequest(`/loans/${id}`, { method: 'DELETE' });
         await loadUserData();
         updateDisplay();
+        hideLoader();
+        showToast('Préstamo eliminado exitosamente', 'success');
     } catch (error) {
-        console.error('Error eliminando préstamo:', error);
-        alert('Error al eliminar préstamo: ' + (error.message || 'Error desconocido'));
+        hideLoader();
+        showToast('Error al eliminar préstamo: ' + error.message, 'error');
     }
 }
 
 // Exponer funciones al scope global para onclick handlers
 window.deleteLoan = deleteLoan;
+window.editLoan = editLoan;
 
 // Inicializar gráficas
 function initializeCharts() {
