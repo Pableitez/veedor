@@ -9,9 +9,19 @@ if (window.VEEDOR_LOADED) {
     window.showUserProfile = function() { console.warn('showUserProfile aún no está disponible'); };
     window.closeUserProfile = function() { console.warn('closeUserProfile aún no está disponible'); };
     window.showSummaryDetails = function() { console.warn('showSummaryDetails aún no está disponible'); };
-    window.closeSummaryDetails = function() { console.warn('closeSummaryDetails aún no está disponible'); };
+    window.closeSummaryDetails = function() { 
+        const modal = document.getElementById('summaryDetailsModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.closeCategoryDetailsModal = function() { 
+        const modal = document.getElementById('categoryDetailsModal');
+        if (modal) modal.style.display = 'none';
+    };
     window.showSavingsGoalModal = function() { console.warn('showSavingsGoalModal aún no está disponible'); };
-    window.closeSavingsGoalModal = function() { console.warn('closeSavingsGoalModal aún no está disponible'); };
+    window.closeSavingsGoalModal = function() { 
+        const modal = document.getElementById('savingsGoalModal');
+        if (modal) modal.style.display = 'none';
+    };
     window.deleteSavingsGoal = function() { console.warn('deleteSavingsGoal aún no está disponible'); };
     
     // Configuración de la API
