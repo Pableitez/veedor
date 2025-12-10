@@ -807,6 +807,29 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     padding: 0;
 }
 
+/* Aportes periódicos responsive */
+.periodic-contribution-grid {
+    grid-template-columns: 1fr 1fr !important;
+}
+
+@media (max-width: 768px) {
+    .periodic-contribution-grid {
+        grid-template-columns: 1fr !important;
+        gap: 4px !important;
+    }
+    
+    .periodic-contribution-grid > div {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 4px 0 !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+    
+    .periodic-contribution-grid > div:last-child {
+        border-bottom: none !important;
+    }
+}
+
 /* Eliminar scroll innecesario en sección de análisis */
 #charts-tab {
     overflow: visible;

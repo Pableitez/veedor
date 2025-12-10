@@ -3244,9 +3244,9 @@ function updateLoans() {
             </div>
             
             ${loan.early_payments && loan.early_payments.length > 0 ? `
-                <div style="margin: 10px 0; padding: 8px; background: #fef3c7; border-radius: 6px; font-size: 12px;">
-                    <strong>Amortizaciones Anticipadas:</strong> ${loan.early_payments.length}
-                    <div style="margin-top: 4px;">
+                <div style="margin: 10px 0; padding: 8px; background: rgba(251, 191, 36, 0.15); border-radius: 6px; font-size: 12px; border: 1px solid var(--border-color);">
+                    <strong style="color: var(--text-primary);">Amortizaciones Anticipadas:</strong> <span style="color: var(--text-primary);">${loan.early_payments.length}</span>
+                    <div style="margin-top: 4px; color: var(--text-secondary);">
                         ${loan.early_payments.map(ep => 
                             `${formatDate(new Date(ep.date))}: ${formatCurrency(ep.amount)}${ep.commission > 0 ? ` (+ ${formatCurrency(ep.commission)} comisión)` : ''}`
                         ).join('<br>')}
