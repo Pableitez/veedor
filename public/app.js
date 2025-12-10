@@ -8423,11 +8423,8 @@ function updateMonthDashboard() {
                     this.style.boxShadow = 'var(--shadow-light)';
                     this.style.borderColor = 'var(--border-color)';
                 };
-                // Los sobres no tienen un modal específico, pero los hacemos clickeables para consistencia
-                card.onclick = () => {
-                    // Por ahora, solo mostrar un mensaje o podríamos crear un modal de detalles de sobre
-                    console.log('Sobre:', envelope.name);
-                };
+                // Abrir modal de detalles del sobre
+                card.onclick = () => showEnvelopeDetails(envelope.name, envelopeTransactions, selectedMonth, envelope.budget);
                 card.innerHTML = `
                     <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-primary);">${envelope.name}</h5>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
