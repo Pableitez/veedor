@@ -21,6 +21,10 @@ if (window.VEEDOR_LOADED) {
     window.showPrivacyModal = function() { 
         const modal = document.getElementById('privacyModal');
         if (modal) {
+            // Intentar cargar contenido si la función está disponible
+            if (typeof loadPolicyContent === 'function') {
+                loadPolicyContent('privacy.html', 'privacyContent');
+            }
             modal.style.display = 'flex';
         } else {
             console.warn('Modal de privacidad no encontrado');
@@ -29,6 +33,10 @@ if (window.VEEDOR_LOADED) {
     window.showCookiesModal = function() { 
         const modal = document.getElementById('cookiesModal');
         if (modal) {
+            // Intentar cargar contenido si la función está disponible
+            if (typeof loadPolicyContent === 'function') {
+                loadPolicyContent('cookies.html', 'cookiesContent');
+            }
             modal.style.display = 'flex';
         } else {
             console.warn('Modal de cookies no encontrado');
@@ -37,10 +45,26 @@ if (window.VEEDOR_LOADED) {
     window.showTermsModal = function() { 
         const modal = document.getElementById('termsModal');
         if (modal) {
+            // Intentar cargar contenido si la función está disponible
+            if (typeof loadPolicyContent === 'function') {
+                loadPolicyContent('terms.html', 'termsContent');
+            }
             modal.style.display = 'flex';
         } else {
             console.warn('Modal de términos no encontrado');
         }
+    };
+    window.closePrivacyModal = function() { 
+        const modal = document.getElementById('privacyModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.closeCookiesModal = function() { 
+        const modal = document.getElementById('cookiesModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.closeTermsModal = function() { 
+        const modal = document.getElementById('termsModal');
+        if (modal) modal.style.display = 'none';
     };
     window.showSummaryDetails = function() { console.warn('showSummaryDetails aún no está disponible'); };
     window.closeSummaryDetails = function() { 
@@ -56,7 +80,16 @@ if (window.VEEDOR_LOADED) {
         const modal = document.getElementById('savingsGoalModal');
         if (modal) modal.style.display = 'none';
     };
-    window.openChartModal = function() { console.warn('openChartModal aún no está disponible'); };
+    window.openChartModal = function(chartType, title) {
+        const modal = document.getElementById('chartModal');
+        const modalTitle = document.getElementById('chartModalTitle');
+        if (modal && modalTitle) {
+            if (title) modalTitle.textContent = title;
+            modal.style.display = 'flex';
+        } else {
+            console.warn('Modal de gráfico no encontrado');
+        }
+    };
     window.closeChartModal = function() { 
         const modal = document.getElementById('chartModal');
         if (modal) modal.style.display = 'none';
