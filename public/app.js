@@ -1544,11 +1544,11 @@ function initializeForms() {
         transactionForm.addEventListener('submit', async (e) => {
             console.log('🎯 EVENTO SUBMIT DISPARADO!');
             e.preventDefault();
-            console.log('🔄 Llamando a addTransaction()...');
+            console.log('🔄 Llamando a updateTransaction()...');
             try {
-                await addTransaction();
+                await updateTransaction();
             } catch (error) {
-                console.error('❌ Error en addTransaction desde event listener:', error);
+                console.error('❌ Error en updateTransaction desde event listener:', error);
             }
         });
         console.log('✅ Event listener agregado al formulario');
@@ -2582,6 +2582,16 @@ async function updateSummary() {
 let transactionsSortColumn = 'date';
 let transactionsSortDirection = 'desc'; // 'asc' o 'desc'
 
+// Variables para modo edición
+let currentEditingTransactionId = null;
+let currentEditingEnvelopeId = null;
+let currentEditingInvestmentId = null;
+let currentEditingLoanId = null;
+let currentEditingPropertyId = null;
+let currentEditingAccountId = null;
+let currentEditingAssetId = null;
+let currentEditingBudgetId = null;
+
 function updateTransactionsTable() {
     const tbody = document.getElementById('transactionsBody');
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -3230,8 +3240,222 @@ async function deleteTransaction(id) {
     }
 }
 
+// Editar transacción - Abre formulario pre-rellenado
+async function editTransaction(id) {
+    const transaction = transactions.find(t => (t._id || t.id) === id);
+    if (!transaction) return;
+    
+    // Cambiar al tab de transacciones
+    switchToTab('transactions', true);
+    
+    // Esperar un momento para que el tab se abra
+    setTimeout(() => {
+        // Pre-llenar formulario
+        const typeEl = document.getElementById('transactionType');
+        const dateEl = document.getElementById('transactionDate');
+        const amountEl = document.getElementById('transactionAmount');
+        const categoryGeneralEl = document.getElementById('categoryGeneral');
+        const categorySpecificEl = document.getElementById('categorySpecific');
+        const envelopeEl = document.getElementById('envelope');
+        const accountIdEl = document.getElementById('transactionAccount');
+        const investmentIdEl = document.getElementById('transactionInvestment');
+        const propertyIdEl = document.getElementById('transactionProperty');
+        const descriptionEl = document.getElementById('transactionDescription');
+        const submitBtn = document.querySelector('#transactionForm button[type="submit"]');
+        
+        if (!typeEl || !dateEl || !amountEl || !categoryGeneralEl || !categorySpecificEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        // Establecer modo edición
+        currentEditingTransactionId = id;
+        
+        // Pre-llenar campos
+        typeEl.value = transaction.type;
+        dateEl.value = transaction.date;
+        amountEl.value = Math.abs(transaction.amount);
+        
+        // Inicializar categorías si no están cargadas
+        initializeCategories();
+        
+        // Esperar a que se carguen las categorías
+        setTimeout(() => {
+            categoryGeneralEl.value = transaction.categoryGeneral;
+            
+            // Actualizar categorías específicas según el tipo
+            const type = typeEl.value;
+            const cats = type === 'income' ? categories.income : categories.expense;
+            const selectedCat = cats.find(c => c.id === transaction.categoryGeneral);
+            if (selectedCat) {
+                categorySpecificEl.innerHTML = '<option value="">Seleccionar...</option>';
+                selectedCat.subcategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    categorySpecificEl.appendChild(option);
+                });
+            }
+            
+            categorySpecificEl.value = transaction.categorySpecific;
+            
+            // Pre-llenar campos opcionales
+            if (envelopeEl) {
+                updateEnvelopeSelect();
+                setTimeout(() => {
+                    if (transaction.envelope_id) {
+                        envelopeEl.value = transaction.envelope_id;
+                    } else if (transaction.envelope) {
+                        // Buscar por nombre si no hay ID
+                        const envelopeOption = Array.from(envelopeEl.options).find(opt => opt.textContent === transaction.envelope);
+                        if (envelopeOption) envelopeEl.value = envelopeOption.value;
+                    }
+                }, 100);
+            }
+            
+            if (accountIdEl) {
+                updateAccountSelect();
+                setTimeout(() => {
+                    if (transaction.account_id) accountIdEl.value = transaction.account_id;
+                }, 100);
+            }
+            
+            if (investmentIdEl) {
+                updateInvestmentSelect();
+                setTimeout(() => {
+                    if (transaction.investment_id) investmentIdEl.value = transaction.investment_id;
+                }, 100);
+            }
+            
+            if (propertyIdEl) {
+                updatePropertySelect();
+                setTimeout(() => {
+                    if (transaction.property_id) propertyIdEl.value = transaction.property_id;
+                }, 100);
+            }
+            
+            if (descriptionEl) {
+                descriptionEl.value = transaction.description || '';
+            }
+            
+            // Cambiar botón a "Actualizar"
+            const submitBtnEl = document.getElementById('transactionSubmitBtn') || submitBtn;
+            const cancelBtn = document.getElementById('transactionCancelBtn');
+            
+            if (submitBtnEl) {
+                submitBtnEl.textContent = 'Actualizar Transacción';
+                submitBtnEl.classList.remove('btn-primary');
+                submitBtnEl.classList.add('btn-secondary');
+            }
+            
+            if (cancelBtn) {
+                cancelBtn.style.display = 'inline-block';
+            }
+            
+            // Scroll al formulario
+            const form = document.getElementById('transactionForm');
+            if (form) {
+                form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 200);
+    }, 300);
+}
+
+// Actualizar transacción
+async function updateTransaction() {
+    if (!currentEditingTransactionId) {
+        // Modo crear
+        await addTransaction();
+        return;
+    }
+    
+    try {
+        const typeEl = document.getElementById('transactionType');
+        const dateEl = document.getElementById('transactionDate');
+        const amountEl = document.getElementById('transactionAmount');
+        const categoryGeneralEl = document.getElementById('categoryGeneral');
+        const categorySpecificEl = document.getElementById('categorySpecific');
+        const envelopeEl = document.getElementById('envelope');
+        const accountIdEl = document.getElementById('transactionAccount');
+        const investmentIdEl = document.getElementById('transactionInvestment');
+        const propertyIdEl = document.getElementById('transactionProperty');
+        const descriptionEl = document.getElementById('transactionDescription');
+        
+        if (!typeEl || !dateEl || !amountEl || !categoryGeneralEl || !categorySpecificEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const type = typeEl.value;
+        const date = dateEl.value;
+        const amount = parseFloat(amountEl.value);
+        const categoryGeneral = categoryGeneralEl.value;
+        const categorySpecific = categorySpecificEl.value;
+        const envelope = envelopeEl ? envelopeEl.value : '';
+        const accountId = accountIdEl ? accountIdEl.value : '';
+        const investmentId = investmentIdEl ? investmentIdEl.value : '';
+        const propertyId = propertyIdEl ? propertyIdEl.value : '';
+        const description = descriptionEl ? descriptionEl.value : '';
+        
+        if (!type || !date || isNaN(amount) || amount <= 0 || !categoryGeneral || !categorySpecific) {
+            showToast('Por favor completa todos los campos requeridos', 'warning');
+            return;
+        }
+        
+        showLoader('Actualizando transacción...');
+        
+        await apiRequest(`/transactions/${currentEditingTransactionId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                type,
+                date,
+                amount: type === 'expense' ? -Math.abs(amount) : Math.abs(amount),
+                categoryGeneral,
+                categorySpecific,
+                envelope: envelope || null,
+                account_id: accountId || null,
+                investment_id: investmentId || null,
+                property_id: propertyId || null,
+                description: description || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Transacción actualizada exitosamente', 'success');
+        
+        // Restaurar formulario a modo crear
+        resetTransactionForm();
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar transacción: ' + error.message, 'error');
+    }
+}
+
+// Restaurar formulario de transacciones a modo crear
+function resetTransactionForm() {
+    currentEditingTransactionId = null;
+    const form = document.getElementById('transactionForm');
+    if (form) {
+        form.reset();
+        initializeDate();
+        initializeCategories();
+        updateEnvelopeSelect();
+        updateAccountSelect();
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.textContent = 'Agregar Transacción';
+            submitBtn.classList.remove('btn-secondary');
+            submitBtn.classList.add('btn-primary');
+        }
+    }
+}
+
 // Exponer funciones al scope global para onclick handlers
 window.deleteTransaction = deleteTransaction;
+window.editTransaction = editTransaction;
 
 // Eliminar sobre
 async function deleteEnvelope(id) {
