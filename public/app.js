@@ -2257,7 +2257,9 @@ async function addTransaction() {
         }
         
         console.log('✅ Validando monto...');
-        const amount = parseFloat(amountInput);
+        // Normalizar el monto: reemplazar comas por puntos para parseFloat
+        const normalizedAmountInput = normalizeNumber(amountInput);
+        const amount = parseFloat(normalizedAmountInput);
         if (isNaN(amount) || amount <= 0) {
             console.error('❌ Validación fallida - monto inválido:', amountInput);
             showToast('Por favor ingresa un monto válido mayor a 0', 'warning');
@@ -3546,6 +3548,15 @@ function closeEditTransactionModal() {
     }
 }
 
+// Función auxiliar para normalizar números (reemplazar comas por puntos)
+function normalizeNumber(value) {
+    if (typeof value === 'string') {
+        // Reemplazar comas por puntos y eliminar espacios
+        return value.replace(',', '.').replace(/\s/g, '');
+    }
+    return value;
+}
+
 // Actualizar transacción desde modal
 async function updateTransactionFromModal() {
     if (!currentEditingTransactionId) return;
@@ -3569,7 +3580,9 @@ async function updateTransactionFromModal() {
         
         const type = typeEl.value;
         const date = dateEl.value;
-        const amount = parseFloat(amountEl.value);
+        // Normalizar el monto: reemplazar comas por puntos para parseFloat
+        const amountValue = normalizeNumber(amountEl.value);
+        const amount = parseFloat(amountValue);
         const categoryGeneral = categoryGeneralEl.value;
         const categorySpecific = categorySpecificEl.value;
         const envelope = envelopeEl ? envelopeEl.value : '';
@@ -3579,7 +3592,7 @@ async function updateTransactionFromModal() {
         const description = descriptionEl ? descriptionEl.value : '';
         
         if (!type || !date || isNaN(amount) || amount <= 0 || !categoryGeneral || !categorySpecific) {
-            showToast('Por favor completa todos los campos requeridos', 'warning');
+            showToast('Por favor completa todos los campos requeridos correctamente', 'warning');
             return;
         }
         
