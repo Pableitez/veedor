@@ -1166,15 +1166,35 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 }
 
 @media (max-width: 768px) {
+    /* Contenedor de aportaciones periódicas */
+    .periodic-contribution-container {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 12px !important;
+        margin: 12px 0 !important;
+    }
+    
+    .periodic-contribution-title {
+        font-size: 12px !important;
+        margin-bottom: 10px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
     .periodic-contribution-grid {
         grid-template-columns: 1fr !important;
-        gap: 12px !important;
+        gap: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
     }
     
-    .periodic-contribution-grid > div {
+    .periodic-contribution-label,
+    .periodic-contribution-value {
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
@@ -1187,13 +1207,19 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         overflow: visible !important;
+        text-align: left !important;
     }
     
-    .periodic-contribution-grid > div:last-child {
-        border-bottom: none !important;
+    .periodic-contribution-label {
+        color: var(--text-secondary) !important;
     }
     
-    .periodic-contribution-grid > div strong {
+    .periodic-contribution-value {
+        text-align: right !important;
+        color: var(--text-primary) !important;
+    }
+    
+    .periodic-contribution-label strong {
         font-size: 13px !important;
         font-weight: 600 !important;
         flex-shrink: 0 !important;
@@ -1202,25 +1228,36 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         overflow-wrap: break-word !important;
     }
     
-    .periodic-contribution-grid > div:not(:has(strong)) {
+    .periodic-contribution-value {
         font-size: 13px !important;
-        text-align: right !important;
         flex: 1 !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         min-width: 0 !important;
     }
     
-    /* Contenedor de aportaciones periódicas */
-    .periodic-contribution-container {
+    .periodic-contribution-completed {
         overflow: visible !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
-        box-sizing: border-box !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 12px !important;
-        margin: 12px 0 !important;
+    }
+    
+    .periodic-contribution-completed-list {
+        overflow-x: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    .periodic-contribution-completed-item {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: visible !important;
+    }
+    
+    .periodic-contribution-empty {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
     }
     
     /* Asegurar que el contenedor padre no corte el contenido */
