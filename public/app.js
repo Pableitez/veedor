@@ -702,10 +702,10 @@ async function requestPasswordReset() {
             body: JSON.stringify({ email })
         });
         
-            if (successMsg) {
-                if (data.token) {
+        if (successMsg) {
+            if (data.token) {
                     // Mostrar código directamente (normal en Render plan gratuito)
-                    successMsg.innerHTML = `
+                successMsg.innerHTML = `
                     <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 10px; border-radius: 8px; border: 1px solid var(--primary); margin-bottom: 12px;">
                         <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 6px;">
                             <span style="font-size: 16px;">✅</span>
@@ -717,9 +717,9 @@ async function requestPasswordReset() {
                         </div>
                     </div>
                 `;
-                    successMsg.style.display = 'block';
-                    if (resetSection) resetSection.style.display = 'block';
-                } else {
+                successMsg.style.display = 'block';
+                if (resetSection) resetSection.style.display = 'block';
+            } else {
                     // Email enviado correctamente - NO mostrar código
                     successMsg.innerHTML = `
                     <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 14px; border-radius: 10px; border: 1px solid #22c55e; margin-bottom: 14px;">
@@ -731,10 +731,10 @@ async function requestPasswordReset() {
                         <p style="margin: 8px 0 0 0; color: var(--gray-600); font-size: 12px; line-height: 1.3; font-style: italic;">El código expirará en 1 hora. Si no lo recibes en unos minutos, verifica tu carpeta de spam o solicita uno nuevo.</p>
                     </div>
                 `;
-                    successMsg.style.display = 'block';
+                successMsg.style.display = 'block';
                     if (resetSection) resetSection.style.display = 'block';
-                }
             }
+        }
     } catch (error) {
         console.error('Error en requestPasswordReset:', error);
         if (errorMsg) {
@@ -2561,7 +2561,7 @@ async function updateSummary() {
                     if (isAchieved) {
                         savingsGoalProgressText.textContent = `¡Meta alcanzada! 🎉`;
                         savingsGoalProgressText.style.color = 'rgba(255,255,255,1)';
-                    } else {
+            } else {
                         const remaining = savingsGoal - periodSavings;
                         savingsGoalProgressText.textContent = `${progress.toFixed(1)}% - Faltan ${formatCurrency(remaining)}`;
                         savingsGoalProgressText.style.color = 'rgba(255,255,255,0.9)';
@@ -4216,7 +4216,7 @@ function updateLoans() {
                     <button class="btn-secondary" onclick="editLoan('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Editar</button>
                     <button onclick="showLoanDetails('${loan._id || loan.id}')" class="btn-secondary" style="flex: 1; min-width: 100px; font-size: 13px; padding: 8px;">
                         Ver Cuadro
-                    </button>
+                </button>
                     <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Eliminar</button>
                 </div>
             </div>
@@ -5856,59 +5856,7 @@ function updateAssets() {
     grid.appendChild(summaryCard);
 }
 
-// Editar bien (completo)
-async function editAsset(id) {
-    const asset = assets.find(a => (a._id || a.id) === id);
-    if (!asset) return;
-    
-    const newName = prompt('Nombre del bien:', asset.name);
-    if (!newName || newName.trim() === '') return;
-    
-    const newType = prompt('Tipo (vehicle/jewelry/electronics/art/other):', asset.type);
-    if (!newType) return;
-    
-    const newPurchasePrice = prompt('Precio de compra (€):', asset.purchase_price || 0);
-    if (newPurchasePrice === null) return;
-    const purchaseValue = parseFloat(newPurchasePrice);
-    if (isNaN(purchaseValue) || purchaseValue < 0) {
-        showToast('Por favor ingresa un precio de compra válido', 'error');
-        return;
-    }
-    
-    const newCurrentValue = prompt('Valor actual (€):', asset.current_value || 0);
-    if (newCurrentValue === null) return;
-    const currentValue = parseFloat(newCurrentValue);
-    if (isNaN(currentValue) || currentValue < 0) {
-        showToast('Por favor ingresa un valor actual válido', 'error');
-        return;
-    }
-    
-    const newLocation = prompt('Ubicación (opcional):', asset.location || '');
-    const newDescription = prompt('Descripción (opcional):', asset.description || '');
-    
-    try {
-        showLoader('Actualizando bien...');
-        await apiRequest(`/assets/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                name: newName.trim(),
-                type: newType,
-                purchase_price: purchaseValue,
-                current_value: currentValue,
-                location: newLocation.trim() || null,
-                description: newDescription.trim() || null
-            })
-        });
-        
-        await loadUserData();
-        updateDisplay();
-        hideLoader();
-        showToast('Bien actualizado exitosamente', 'success');
-    } catch (error) {
-        hideLoader();
-        showToast('Error al actualizar bien: ' + error.message, 'error');
-    }
-}
+// Editar bien ya está implementado arriba con modal
 
 // Procesar actualización de valor de bien desde el modal
 async function processUpdateAssetValue() {
@@ -6239,64 +6187,64 @@ function initializeCharts() {
     const savingsChartEl = document.getElementById('savingsChart');
     if (savingsChartEl && !charts.savings) {
         charts.savings = new Chart(savingsChartEl, {
-            type: 'line',
-            data: { labels: [], datasets: [] },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { display: true }
-                }
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: true }
             }
-        });
+        }
+    });
     }
     
     const expensesChartEl = document.getElementById('expensesChart');
     if (expensesChartEl && !charts.expenses) {
         charts.expenses = new Chart(expensesChartEl, {
-            type: 'bar',
-            data: { labels: [], datasets: [] },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { display: false }
-                }
+        type: 'bar',
+        data: { labels: [], datasets: [] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false }
             }
-        });
+        }
+    });
     }
     
     const incomeExpenseChartEl = document.getElementById('incomeExpenseChart');
     if (incomeExpenseChartEl && !charts.incomeExpense) {
         charts.incomeExpense = new Chart(incomeExpenseChartEl, {
-            type: 'bar',
-            data: { labels: [], datasets: [] },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { display: true }
-                },
-                scales: {
-                    y: { beginAtZero: true }
-                }
+        type: 'bar',
+        data: { labels: [], datasets: [] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: true }
+            },
+            scales: {
+                y: { beginAtZero: true }
             }
-        });
+        }
+    });
     }
     
     const distributionChartEl = document.getElementById('distributionChart');
     if (distributionChartEl && !charts.distribution) {
         charts.distribution = new Chart(distributionChartEl, {
-            type: 'doughnut',
-            data: { labels: [], datasets: [] },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { position: 'right' }
-                }
+        type: 'doughnut',
+        data: { labels: [], datasets: [] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { position: 'right' }
             }
-        });
+        }
+    });
     }
     
     // Nuevas gráficas
@@ -8116,7 +8064,7 @@ function updateMonthDashboard() {
                                 <small style="font-size: 11px; color: var(--text-tertiary);">Diferencia: ${formatCurrency(data.amount - budgetAmount)}</small>
                                 ${percentage < 100 ? `<small style="font-size: 11px; color: var(--warning); font-weight: 600; background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--warning);">⚠️ Por debajo del presupuesto</small>` : ''}
                             </div>
-                        </div>
+                            </div>
                     ` : '<small style="color: var(--text-tertiary);">Sin presupuesto establecido</small>'}
                 `;
                 incomeContainer.appendChild(card);
