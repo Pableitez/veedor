@@ -76,11 +76,18 @@ let budgets = [];
 let accounts = [];
 let properties = [];
 let assets = [];
+let loans = [];
+let investments = [];
 let charts = {};
 let currentUser = null;
 let currentUserEmail = null;
 let authToken = null;
 let summaryPeriod = 'month'; // 'month', 'year', 'all'
+
+// Variables para debounce y cache
+let globalSearchTimeout = null;
+let filterDebounceTimeouts = {};
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
 // Utilidad para hacer peticiones autenticadas
 async function apiRequest(endpoint, options = {}) {
@@ -141,39 +148,64 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 // ==================== SISTEMA DE NOTIFICACIONES TOAST ====================
-function showToast(message, type = 'info', duration = 4000) {
+function showToast(message, type = 'info', duration = 5000) {
     const container = document.getElementById('toastContainer');
     if (!container) return;
     
     const toast = document.createElement('div');
+    const isDark = document.body.classList.contains('dark-mode');
+    
+    const colors = {
+        success: { 
+            border: '#10b981', 
+            bg: isDark ? 'rgba(16, 185, 129, 0.15)' : '#f0fdf4', 
+            icon: '✅', 
+            text: isDark ? '#10b981' : '#065f46' 
+        },
+        error: { 
+            border: '#ef4444', 
+            bg: isDark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2', 
+            icon: '❌', 
+            text: isDark ? '#ef4444' : '#991b1b' 
+        },
+        warning: { 
+            border: '#f59e0b', 
+            bg: isDark ? 'rgba(251, 191, 36, 0.15)' : '#fffbeb', 
+            icon: '⚠️', 
+            text: isDark ? '#fbbf24' : '#92400e' 
+        },
+        info: { 
+            border: '#6366f1', 
+            bg: isDark ? 'rgba(99, 102, 241, 0.15)' : '#eef2ff', 
+            icon: 'ℹ️', 
+            text: isDark ? '#818cf8' : '#3730a3' 
+        }
+    };
+    
+    const style = colors[type] || colors.info;
+    
     toast.style.cssText = `
-        background: white;
+        background: ${style.bg};
         padding: 16px 20px;
         border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
         display: flex;
         align-items: center;
         gap: 12px;
         min-width: 300px;
         max-width: 500px;
         pointer-events: auto;
-        animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-left: 4px solid;
+        animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border-left: 4px solid ${style.border};
         position: relative;
         overflow: hidden;
+        z-index: 10002;
     `;
     
-    const colors = {
-        success: { border: '#10b981', bg: '#f0fdf4', icon: '✅', text: '#065f46' },
-        error: { border: '#ef4444', bg: '#fef2f2', icon: '❌', text: '#991b1b' },
-        warning: { border: '#f59e0b', bg: '#fffbeb', icon: '⚠️', text: '#92400e' },
-        info: { border: '#6366f1', bg: '#eef2ff', icon: 'ℹ️', text: '#3730a3' }
-    };
-    
     toast.innerHTML = `
-        <span style="font-size: 20px; flex-shrink: 0;">${style.icon}</span>
-        <span style="flex: 1; color: ${style.text}; font-size: 14px; font-weight: 500; line-height: 1.4;">${message}</span>
-        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: ${style.text}; font-size: 18px; cursor: pointer; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">×</button>
+        <span style="font-size: 22px; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${style.icon}</span>
+        <span style="flex: 1; color: ${style.text}; font-size: 15px; font-weight: 600; line-height: 1.5;">${message}</span>
+        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: ${style.text}; font-size: 20px; cursor: pointer; padding: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: all 0.2s; border-radius: 4px;" onmouseover="this.style.opacity='1'; this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.opacity='0.7'; this.style.background='transparent'">×</button>
     `;
     
     container.appendChild(toast);
@@ -1064,6 +1096,23 @@ async function loadUserData() {
         
         // Cargar categorías personalizadas
         loadCustomCategories();
+        
+        // Guardar en cache
+        const cacheKey = `veedor_data_cache_${currentUser}`;
+        const cacheData = {
+            transactions,
+            envelopes,
+            loans,
+            investments,
+            budgets,
+            accounts,
+            properties,
+            assets
+        };
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+            data: cacheData,
+            timestamp: Date.now()
+        }));
         
         // Cargar meta de ahorro desde el perfil del usuario
         try {
@@ -8740,6 +8789,271 @@ function initializeTranslationsOnLoad() {
 
 // Inicializar traducciones
 initializeTranslationsOnLoad();
+
+// ==================== BÚSQUEDA GLOBAL ====================
+function handleGlobalSearch(query) {
+    if (globalSearchTimeout) {
+        clearTimeout(globalSearchTimeout);
+    }
+    
+    globalSearchTimeout = setTimeout(() => {
+        performGlobalSearch(query);
+    }, 300); // Debounce de 300ms
+}
+
+function performGlobalSearch(query) {
+    const resultsContainer = document.getElementById('globalSearchResults');
+    if (!resultsContainer) return;
+    
+    if (!query || query.trim().length < 2) {
+        resultsContainer.style.display = 'none';
+        return;
+    }
+    
+    const searchTerm = query.toLowerCase().trim();
+    const results = [];
+    
+    // Buscar en transacciones
+    transactions.forEach(t => {
+        const match = 
+            (t.description || '').toLowerCase().includes(searchTerm) ||
+            (t.categoryGeneral || '').toLowerCase().includes(searchTerm) ||
+            (t.categorySpecific || '').toLowerCase().includes(searchTerm) ||
+            t.amount.toString().includes(searchTerm);
+        if (match) {
+            results.push({
+                type: 'transaction',
+                title: t.description || 'Sin descripción',
+                subtitle: `${t.categoryGeneral} - ${t.categorySpecific} | ${formatCurrency(t.amount)}`,
+                date: t.date,
+                action: () => {
+                    switchToTab('transactions', true);
+                    setTimeout(() => {
+                        document.getElementById('globalSearch').value = '';
+                        resultsContainer.style.display = 'none';
+                    }, 100);
+                }
+            });
+        }
+    });
+    
+    // Buscar en cuentas
+    accounts.forEach(acc => {
+        const match = 
+            (acc.name || '').toLowerCase().includes(searchTerm) ||
+            (acc.bank || '').toLowerCase().includes(searchTerm) ||
+            acc.balance.toString().includes(searchTerm);
+        if (match) {
+            results.push({
+                type: 'account',
+                title: acc.name,
+                subtitle: `${acc.type} | ${formatCurrency(acc.balance)}`,
+                action: () => {
+                    switchToTab('accounts', true);
+                    setTimeout(() => {
+                        document.getElementById('globalSearch').value = '';
+                        resultsContainer.style.display = 'none';
+                    }, 100);
+                }
+            });
+        }
+    });
+    
+    // Buscar en préstamos
+    loans.forEach(loan => {
+        const match = 
+            (loan.name || '').toLowerCase().includes(searchTerm) ||
+            loan.principal.toString().includes(searchTerm);
+        if (match) {
+            results.push({
+                type: 'loan',
+                title: loan.name,
+                subtitle: `${loan.type === 'debt' ? 'Debo' : 'Me deben'} | ${formatCurrency(loan.principal)}`,
+                action: () => {
+                    switchToTab('loans', true);
+                    setTimeout(() => {
+                        document.getElementById('globalSearch').value = '';
+                        resultsContainer.style.display = 'none';
+                    }, 100);
+                }
+            });
+        }
+    });
+    
+    // Buscar en inversiones
+    investments.forEach(inv => {
+        const match = 
+            (inv.name || '').toLowerCase().includes(searchTerm) ||
+            inv.current_value.toString().includes(searchTerm);
+        if (match) {
+            results.push({
+                type: 'investment',
+                title: inv.name,
+                subtitle: `${inv.type} | ${formatCurrency(inv.current_value)}`,
+                action: () => {
+                    switchToTab('investments', true);
+                    setTimeout(() => {
+                        document.getElementById('globalSearch').value = '';
+                        resultsContainer.style.display = 'none';
+                    }, 100);
+                }
+            });
+        }
+    });
+    
+    // Mostrar resultados
+    if (results.length === 0) {
+        resultsContainer.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: var(--text-tertiary);">
+                No se encontraron resultados
+            </div>
+        `;
+    } else {
+        resultsContainer.innerHTML = results.slice(0, 10).map(r => `
+            <div onclick="(${r.action.toString()})()" style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-secondary)'" onmouseout="this.style.background='transparent'">
+                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">${r.title}</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">${r.subtitle}</div>
+            </div>
+        `).join('');
+    }
+    
+    resultsContainer.style.display = 'block';
+}
+
+// Cerrar búsqueda al hacer clic fuera
+document.addEventListener('click', (e) => {
+    const searchInput = document.getElementById('globalSearch');
+    const resultsContainer = document.getElementById('globalSearchResults');
+    if (searchInput && resultsContainer && !searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+        resultsContainer.style.display = 'none';
+    }
+});
+
+// Exponer función global
+window.handleGlobalSearch = handleGlobalSearch;
+
+// ==================== LAZY LOADING DE GRÁFICOS ====================
+let chartsInitialized = false;
+
+function initializeChartsLazy() {
+    if (chartsInitialized) return;
+    
+    const chartsTab = document.getElementById('charts-tab');
+    if (!chartsTab) return;
+    
+    // Observar cuando la pestaña de gráficos es visible
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !chartsInitialized) {
+                chartsInitialized = true;
+                initializeCharts();
+                setTimeout(() => updateCharts(), 200);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    observer.observe(chartsTab);
+}
+
+// Modificar switchToTab para inicializar gráficos lazy
+const originalSwitchToTab = switchToTab;
+switchToTab = function(tabName, doScroll) {
+    if (originalSwitchToTab) {
+        originalSwitchToTab(tabName, doScroll);
+    }
+    
+    if (tabName === 'charts' && !chartsInitialized) {
+        initializeChartsLazy();
+    }
+};
+
+// Exponer función global
+window.switchToTab = switchToTab;
+
+// ==================== DEBOUNCE UTILITY ====================
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ==================== SKELETON LOADERS ====================
+function showSkeletonLoader(containerId, count = 3) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = Array(count).fill(0).map(() => `
+        <div class="skeleton-card" style="background: var(--bg-primary); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border-color);">
+            <div class="skeleton-line" style="height: 20px; background: var(--bg-tertiary); border-radius: 4px; margin-bottom: 12px; animation: skeleton-pulse 1.5s ease-in-out infinite;"></div>
+            <div class="skeleton-line" style="height: 16px; background: var(--bg-tertiary); border-radius: 4px; width: 60%; margin-bottom: 8px; animation: skeleton-pulse 1.5s ease-in-out infinite;"></div>
+            <div class="skeleton-line" style="height: 16px; background: var(--bg-tertiary); border-radius: 4px; width: 40%; animation: skeleton-pulse 1.5s ease-in-out infinite;"></div>
+        </div>
+    `).join('');
+}
+
+// ==================== EXPORTAR DATOS ====================
+function exportToCSV(data, filename) {
+    if (!data || data.length === 0) {
+        showToast('No hay datos para exportar', 'warning');
+        return;
+    }
+    
+    const headers = Object.keys(data[0]);
+    const csvContent = [
+        headers.join(','),
+        ...data.map(row => headers.map(header => {
+            const value = row[header];
+            if (value === null || value === undefined) return '';
+            return `"${String(value).replace(/"/g, '""')}"`;
+        }).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Datos exportados correctamente', 'success');
+}
+
+function exportTransactions() {
+    const data = transactions.map(t => ({
+        Fecha: t.date,
+        Tipo: t.type === 'income' ? 'Ingreso' : 'Gasto',
+        Categoría: `${t.categoryGeneral} - ${t.categorySpecific}`,
+        Descripción: t.description || '',
+        Monto: t.amount,
+        Cuenta: accounts.find(a => (a._id || a.id) === t.account_id)?.name || '',
+        Propiedad: properties.find(p => (p._id || p.id) === t.property_id)?.name || '',
+        Sobre: t.envelope || ''
+    }));
+    exportToCSV(data, 'transacciones');
+}
+
+function exportAccounts() {
+    const data = accounts.map(a => ({
+        Nombre: a.name,
+        Tipo: a.type,
+        Banco: a.bank || '',
+        Saldo: a.balance,
+        Descripción: a.description || ''
+    }));
+    exportToCSV(data, 'cuentas');
+}
+
+// Exponer funciones globales
+window.exportTransactions = exportTransactions;
+window.exportAccounts = exportAccounts;
 
 // Cerrar el bloque de protección contra carga múltiple
 }
