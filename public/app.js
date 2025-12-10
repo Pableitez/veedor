@@ -6508,7 +6508,16 @@ function updateMonthDashboard() {
             
             if (totalIncomeBudget > 0 || totalExpenseBudget > 0) {
                 const summaryCard = document.createElement('div');
-                summaryCard.style.cssText = 'background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px; border-radius: var(--radius); border: none; box-shadow: var(--shadow-light); color: white; grid-column: 1/-1;';
+                summaryCard.style.cssText = 'background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px; border-radius: var(--radius); border: none; box-shadow: var(--shadow-light); color: white; grid-column: 1/-1; cursor: pointer; transition: all 0.2s;';
+                summaryCard.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.15)';
+                };
+                summaryCard.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                };
+                summaryCard.onclick = () => switchToTab('envelopes', true);
                 summaryCard.innerHTML = `
                     <h5 style="font-size: 18px; font-weight: 700; margin: 0 0 20px 0; color: white;">📊 Resumen del Mes</h5>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
@@ -6516,7 +6525,7 @@ function updateMonthDashboard() {
                             <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Ingresos</div>
                             <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalIncomeBudget)}</div>
                             <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalIncomeActual)}</div>
-                            <div style="font-size: 12px; margin-top: 4px; color: ${totalIncomeActual >= totalIncomeBudget ? '#D1FAE5' : '#FEE2E2'};">
+                            <div style="font-size: 12px; margin-top: 4px; color: ${totalIncomeActual >= totalIncomeBudget ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'};">
                                 ${totalIncomeBudget > 0 ? ((totalIncomeActual / totalIncomeBudget) * 100).toFixed(1) + '%' : '-'}
                             </div>
                         </div>
@@ -6524,7 +6533,7 @@ function updateMonthDashboard() {
                             <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Gastos</div>
                             <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalExpenseBudget)}</div>
                             <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalExpenseActual)}</div>
-                            <div style="font-size: 12px; margin-top: 4px; color: ${totalExpenseActual <= totalExpenseBudget ? '#D1FAE5' : '#FEE2E2'};">
+                            <div style="font-size: 12px; margin-top: 4px; color: ${totalExpenseActual <= totalExpenseBudget ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'};">
                                 ${totalExpenseBudget > 0 ? ((totalExpenseActual / totalExpenseBudget) * 100).toFixed(1) + '%' : '-'}
                             </div>
                         </div>
