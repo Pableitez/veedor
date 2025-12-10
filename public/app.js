@@ -3392,9 +3392,9 @@ function showLoanDetails(loanId) {
         const isEven = index % 2 === 0;
         contentHTML += `
             <tr style="border-bottom: 1px solid var(--border-color); background: ${isEven ? 'var(--bg-primary)' : 'var(--bg-tertiary)'};">
-                <td style="padding: 10px; font-weight: 600; color: var(--gray-900);">${row.month}</td>
-                <td style="padding: 10px; text-align: right; color: var(--gray-700);">${formatDate(row.date)}</td>
-                <td style="padding: 10px; text-align: right; font-weight: 600; color: var(--gray-900);">${formatCurrency(row.payment)}</td>
+                <td style="padding: 10px; font-weight: 600; color: var(--text-primary);">${row.month}</td>
+                <td style="padding: 10px; text-align: right; color: var(--text-secondary);">${formatDate(row.date)}</td>
+                <td style="padding: 10px; text-align: right; font-weight: 600; color: var(--text-primary);">${formatCurrency(row.payment)}</td>
                 <td style="padding: 10px; text-align: right; color: var(--success);">${formatCurrency(row.principal)}</td>
                 <td style="padding: 10px; text-align: right; color: var(--danger);">${formatCurrency(row.interest)}</td>
                 <td style="padding: 10px; text-align: right; font-weight: 600; color: ${row.balance > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(row.balance)}</td>
@@ -3404,10 +3404,10 @@ function showLoanDetails(loanId) {
     
     contentHTML += `
                 </tbody>
-                <tfoot style="background: var(--gray-100); font-weight: 700;">
+                <tfoot style="background: var(--bg-tertiary); font-weight: 700; border-top: 2px solid var(--border-color);">
                     <tr>
-                        <td colspan="2" style="padding: 12px; text-align: left;">TOTALES</td>
-                        <td style="padding: 12px; text-align: right;">${formatCurrency(amortization.table.reduce((sum, r) => sum + r.payment, 0))}</td>
+                        <td colspan="2" style="padding: 12px; text-align: left; color: var(--text-primary);">TOTALES</td>
+                        <td style="padding: 12px; text-align: right; color: var(--text-primary);">${formatCurrency(amortization.table.reduce((sum, r) => sum + r.payment, 0))}</td>
                         <td style="padding: 12px; text-align: right; color: var(--success);">${formatCurrency(loan.principal - remainingPrincipal)}</td>
                         <td style="padding: 12px; text-align: right; color: var(--danger);">${formatCurrency(totalInterest)}</td>
                         <td style="padding: 12px; text-align: right; color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(remainingPrincipal)}</td>
@@ -3712,7 +3712,7 @@ function updateInvestments() {
             ${investment.periodic_contribution && investment.periodic_contribution.enabled ? `
                 <div style="margin: 12px 0; padding: 12px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius); border-left: 3px solid var(--primary);">
                     <div style="font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 8px;">💡 Aporte Periódico Activo</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;" class="periodic-contribution-grid">
                         <div><strong>Frecuencia:</strong></div>
                         <div style="text-align: right;">${investment.periodic_contribution.frequency === 'weekly' ? 'Semanal' : investment.periodic_contribution.frequency === 'monthly' ? 'Mensual' : 'Anual'}</div>
                         <div><strong>Monto:</strong></div>
@@ -3724,7 +3724,7 @@ function updateInvestments() {
                             <div style="text-align: right;">${formatDate(new Date(investment.periodic_contribution.end_date))}</div>
                         ` : `
                             <div><strong>Fin:</strong></div>
-                            <div style="text-align: right; color: var(--gray-500);">Indefinido</div>
+                            <div style="text-align: right; color: var(--text-tertiary);">Indefinido</div>
                         `}
                     </div>
                     ${investment.periodic_contribution.completed_contributions && investment.periodic_contribution.completed_contributions.length > 0 ? `
