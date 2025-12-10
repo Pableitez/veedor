@@ -80,8 +80,25 @@ if (window.VEEDOR_LOADED) {
         const modal = document.getElementById('savingsGoalModal');
         if (modal) modal.style.display = 'none';
     };
-    // openChartModal será definida más adelante, no crear stub aquí
-    // para evitar que intercepte las llamadas antes de que la función real esté lista
+    window.openChartModal = function(chartType, title) {
+        // Si la función real ya está disponible, usarla
+        if (typeof window._openChartModalReal === 'function') {
+            return window._openChartModalReal(chartType, title);
+        }
+        // Si no, intentar abrir el modal básico y esperar a que la función real esté lista
+        const modal = document.getElementById('chartModal');
+        const modalTitle = document.getElementById('chartModalTitle');
+        if (modal && modalTitle) {
+            if (title) modalTitle.textContent = title;
+            modal.style.display = 'flex';
+            // Intentar llamar a la función real después de un breve delay
+            setTimeout(() => {
+                if (typeof window._openChartModalReal === 'function') {
+                    window._openChartModalReal(chartType, title);
+                }
+            }, 100);
+        }
+    };
     window.closeChartModal = function() { 
         const modal = document.getElementById('chartModal');
         if (modal) modal.style.display = 'none';
