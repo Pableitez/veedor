@@ -7734,7 +7734,7 @@ function showSummaryDetails(type) {
     let content = '';
     
     if (type === 'balance') {
-        title = '📊 Detalles del Balance Total';
+        title = 'Detalles del Balance Total';
         const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
         const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
         const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
