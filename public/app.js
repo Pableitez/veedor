@@ -3219,25 +3219,25 @@ function updateLoans() {
                         </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                        <strong>Total a Pagar:</strong>
-                        <span style="font-weight: 700;">${formatCurrency(totalAmount)}</span>
+                        <strong style="color: var(--text-primary);">Total a Pagar:</strong>
+                        <span style="font-weight: 700; color: var(--text-primary);">${formatCurrency(totalAmount)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <strong>Progreso:</strong>
-                        <span>${((totalPaid / totalAmount) * 100).toFixed(1)}%</span>
+                        <strong style="color: var(--text-primary);">Progreso:</strong>
+                        <span style="color: var(--text-primary);">${((totalPaid / totalAmount) * 100).toFixed(1)}%</span>
                     </div>
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #ddd;">
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                            <strong>Meses Transcurridos:</strong>
-                            <span>${monthsElapsed} / ${totalMonths}</span>
+                            <strong style="color: var(--text-primary);">Meses Transcurridos:</strong>
+                            <span style="color: var(--text-primary);">${monthsElapsed} / ${totalMonths}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                            <strong>Meses Restantes:</strong>
-                            <span>${monthsRemaining}</span>
+                            <strong style="color: var(--text-primary);">Meses Restantes:</strong>
+                            <span style="color: var(--text-primary);">${monthsRemaining}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
-                            <strong>Próximo Pago:</strong>
-                            <span>${formatDate(nextPaymentDate)}</span>
+                            <strong style="color: var(--text-primary);">Próximo Pago:</strong>
+                            <span style="color: var(--text-primary);">${formatDate(nextPaymentDate)}</span>
                         </div>
                     </div>
                 </div>
