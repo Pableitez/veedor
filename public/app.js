@@ -2622,6 +2622,56 @@ function updateTransactionsTable() {
     
     if (!tbody) return;
     
+    // Ordenar transacciones
+    filtered.sort((a, b) => {
+        let aValue, bValue;
+        
+        switch(transactionsSortColumn) {
+            case 'date':
+                aValue = new Date(a.date).getTime();
+                bValue = new Date(b.date).getTime();
+                break;
+            case 'type':
+                aValue = a.type;
+                bValue = b.type;
+                break;
+            case 'category':
+                aValue = `${a.categoryGeneral} - ${a.categorySpecific}`.toLowerCase();
+                bValue = `${b.categoryGeneral} - ${b.categorySpecific}`.toLowerCase();
+                break;
+            case 'description':
+                aValue = (a.description || '').toLowerCase();
+                bValue = (b.description || '').toLowerCase();
+                break;
+            case 'account':
+                const accountA = accounts.find(acc => (acc._id || acc.id) === a.account_id);
+                const accountB = accounts.find(acc => (acc._id || acc.id) === b.account_id);
+                aValue = accountA ? accountA.name.toLowerCase() : '';
+                bValue = accountB ? accountB.name.toLowerCase() : '';
+                break;
+            case 'property':
+                const propertyA = properties.find(prop => (prop._id || prop.id) === a.property_id);
+                const propertyB = properties.find(prop => (prop._id || prop.id) === b.property_id);
+                aValue = propertyA ? propertyA.name.toLowerCase() : '';
+                bValue = propertyB ? propertyB.name.toLowerCase() : '';
+                break;
+            case 'envelope':
+                aValue = (a.envelope || '').toLowerCase();
+                bValue = (b.envelope || '').toLowerCase();
+                break;
+            case 'amount':
+                aValue = a.amount;
+                bValue = b.amount;
+                break;
+            default:
+                return 0;
+        }
+        
+        if (aValue < bValue) return transactionsSortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return transactionsSortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+    
     tbody.innerHTML = '';
     
     if (filtered.length === 0) {
