@@ -1876,6 +1876,10 @@ function initializeForms() {
             const value = e.target.value;
             summaryPeriod = value;
             
+            const summaryCustomDateRange = document.getElementById('summaryCustomDateRange');
+            const summaryStartDate = document.getElementById('summaryStartDate');
+            const summaryEndDate = document.getElementById('summaryEndDate');
+            
             // Mostrar/ocultar selector de año
             if (summaryYearInput) {
                 if (value === 'year-select') {
@@ -1886,9 +1890,43 @@ function initializeForms() {
                 }
             }
             
+            // Mostrar/ocultar selector de rango personalizado
+            if (summaryCustomDateRange) {
+                if (value === 'custom') {
+                    summaryCustomDateRange.style.display = 'flex';
+                    // Establecer fechas por defecto (últimos 6 meses)
+                    if (summaryStartDate && summaryEndDate) {
+                        const today = new Date();
+                        const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+                        summaryStartDate.value = sixMonthsAgo.toISOString().split('T')[0];
+                        summaryEndDate.value = today.toISOString().split('T')[0];
+                    }
+                } else {
+                    summaryCustomDateRange.style.display = 'none';
+                }
+            }
+            
             updateSummary();
             updateMonthDashboard(); // Actualizar también el análisis del mes seleccionado
         });
+        
+        // Listeners para fechas personalizadas
+        const summaryStartDate = document.getElementById('summaryStartDate');
+        const summaryEndDate = document.getElementById('summaryEndDate');
+        if (summaryStartDate) {
+            summaryStartDate.addEventListener('change', () => {
+                if (summaryPeriod === 'custom') {
+                    updateSummary();
+                }
+            });
+        }
+        if (summaryEndDate) {
+            summaryEndDate.addEventListener('change', () => {
+                if (summaryPeriod === 'custom') {
+                    updateSummary();
+                }
+            });
+        }
         
         // Listener para cambio de año
         if (summaryYearInput) {
@@ -2365,7 +2403,7 @@ async function updateSummary() {
         periodIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
         periodExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
         periodSavings = periodIncome - periodExpenses;
-        periodLabel = 'Todos los tiempos';
+        periodLabel = 'Historial completo';
     }
     
     // Actualizar elementos según período
@@ -2385,7 +2423,7 @@ async function updateSummary() {
     const totalAccountsBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
     
     if (totalBalanceEl) totalBalanceEl.textContent = formatCurrency(totalBalance);
-    if (totalBalancePeriodEl) totalBalancePeriodEl.textContent = 'Todos los tiempos';
+    if (totalBalancePeriodEl) totalBalancePeriodEl.textContent = periodLabel;
     
     // Actualizar saldo de cuentas en el resumen
     const totalAccountsBalanceEl = document.getElementById('totalAccountsBalance');
@@ -2407,6 +2445,45 @@ async function updateSummary() {
     }
     if (periodSavingsLabelEl) periodSavingsLabelEl.textContent = `Ahorro ${periodLabel}`;
     if (periodSavingsSubLabelEl) periodSavingsSubLabelEl.textContent = periodLabel;
+    
+    // Actualizar meta de ahorro
+    const savingsGoalEl = document.getElementById('savingsGoal');
+    const savingsGoalProgress = document.getElementById('savingsGoalProgress');
+    const savingsGoalProgressBar = document.getElementById('savingsGoalProgressBar');
+    const savingsGoalProgressText = document.getElementById('savingsGoalProgressText');
+    
+    if (savingsGoalEl) {
+        if (savingsGoal && savingsGoal > 0) {
+            savingsGoalEl.textContent = formatCurrency(savingsGoal);
+            
+            // Calcular progreso basado en el ahorro del período
+            const progress = Math.min((periodSavings / savingsGoal) * 100, 100);
+            const isAchieved = periodSavings >= savingsGoal;
+            
+            if (savingsGoalProgress) {
+                savingsGoalProgress.style.display = 'block';
+                if (savingsGoalProgressBar) {
+                    savingsGoalProgressBar.style.width = `${Math.max(0, progress)}%`;
+                    savingsGoalProgressBar.style.background = isAchieved ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)';
+                }
+                if (savingsGoalProgressText) {
+                    if (isAchieved) {
+                        savingsGoalProgressText.textContent = `¡Meta alcanzada! 🎉`;
+                        savingsGoalProgressText.style.color = 'rgba(255,255,255,1)';
+                    } else {
+                        const remaining = savingsGoal - periodSavings;
+                        savingsGoalProgressText.textContent = `${progress.toFixed(1)}% - Faltan ${formatCurrency(remaining)}`;
+                        savingsGoalProgressText.style.color = 'rgba(255,255,255,0.9)';
+                    }
+                }
+            }
+        } else {
+            savingsGoalEl.textContent = 'Sin meta';
+            if (savingsGoalProgress) {
+                savingsGoalProgress.style.display = 'none';
+            }
+        }
+    }
     
     // Actualizar meta de ahorro
     const savingsGoalEl = document.getElementById('savingsGoal');
@@ -2900,7 +2977,7 @@ function updateBudgets() {
             </div>
             ${isOverBudget ? `<div style="padding: 8px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 12px; font-weight: 600; margin-top: 8px;">⚠️ ${isIncome ? 'Por debajo del presupuesto' : 'Presupuesto excedido'}</div>` : ''}
             <div style="margin-top: 8px; padding: 6px; background: ${isIncome ? 'var(--success-light)' : 'var(--gray-50)'}; border-radius: var(--radius); font-size: 11px; color: var(--gray-700);">
-                ${isIncome ? '💰 Ingreso' : '💸 Gasto'}
+                ${isIncome ? 'Ingreso' : 'Gasto'}
             </div>
             <div class="envelope-actions" style="margin-top: 12px;">
                 <button class="btn-danger" onclick="deleteBudget('${budget._id || budget.id}')" style="width: 100%;">Eliminar</button>
@@ -3211,7 +3288,7 @@ function updateLoans() {
                     </div>
                     <div style="margin-top: 8px; padding: 8px; background: ${loan.type === 'debt' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)'}; border-radius: 4px; border-left: 3px solid ${loan.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; border: 1px solid var(--border-color);">
                         <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 4px;">
-                            <span style="color: var(--text-primary);">💰 Costo Real del Préstamo:</span>
+                            <span style="color: var(--text-primary);">Costo Real del Préstamo:</span>
                             <span style="color: ${loan.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; font-size: 16px;">${formatCurrency(realCost)}</span>
                         </div>
                         <div style="font-size: 11px; color: var(--text-tertiary);">
@@ -3293,7 +3370,7 @@ function updateLoans() {
                     </table>
                 </div>
                 <button onclick="showLoanDetails('${loan._id || loan.id}')" class="btn-secondary" style="width: 100%; margin-top: 12px; font-size: 13px; padding: 8px;">
-                    📊 Ver Cuadro de Amortización Completo
+                    Ver Cuadro de Amortización Completo
                 </button>
             </div>
             
@@ -3328,7 +3405,7 @@ function showLoanDetails(loanId) {
     if (!modal || !modalTitle || !modalContent) return;
     
     // Título del modal
-    modalTitle.textContent = `📊 Tabla de Amortización - ${loan.name}`;
+    modalTitle.textContent = `Tabla de Amortización - ${loan.name}`;
     
     // Calcular resumen
     const totalPaid = (loan.total_paid || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
@@ -3663,11 +3740,11 @@ function updateInvestments() {
             
             <div style="margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
-                    <div><strong>💰 Total Invertido:</strong></div>
+                    <div><strong>Total Invertido:</strong></div>
                     <div style="text-align: right; font-weight: 600;">${formatCurrency(totalInvested)}</div>
-                    <div><strong>💵 Valor Actual:</strong></div>
+                    <div><strong>Valor Actual:</strong></div>
                     <div style="text-align: right; font-weight: 600; font-size: 16px;">${formatCurrency(investment.current_value)}</div>
-                    <div><strong>📈 Ganancia/Pérdida:</strong></div>
+                    <div><strong>Ganancia/Pérdida:</strong></div>
                     <div style="text-align: right; color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 18px;">
                         ${profit >= 0 ? '+' : ''}${formatCurrency(profit)}
                     </div>
@@ -7715,7 +7792,7 @@ function showSummaryDetails(type) {
             </div>
         `;
     } else if (type === 'accounts') {
-        title = '💰 Detalles de Cuentas Bancarias';
+        title = 'Detalles de Cuentas Bancarias';
         const totalAccountsBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
         content = `
             <div style="display: grid; gap: 16px;">
@@ -7737,7 +7814,7 @@ function showSummaryDetails(type) {
             </div>
         `;
     } else if (type === 'income') {
-        title = '💵 Detalles de Ingresos';
+        title = 'Detalles de Ingresos';
         let periodTransactions = [];
         if (summaryPeriod === 'month') {
             periodTransactions = transactions.filter(t => {
@@ -7775,7 +7852,7 @@ function showSummaryDetails(type) {
             </div>
         `;
     } else if (type === 'expenses') {
-        title = '💸 Detalles de Gastos';
+        title = 'Detalles de Gastos';
         let periodTransactions = [];
         if (summaryPeriod === 'month') {
             periodTransactions = transactions.filter(t => {
@@ -7813,7 +7890,7 @@ function showSummaryDetails(type) {
             </div>
         `;
     } else if (type === 'savings') {
-        title = '💰 Detalles de Ahorro';
+        title = 'Detalles de Ahorro';
         let periodIncome = 0, periodExpenses = 0;
         if (summaryPeriod === 'month') {
             const monthTransactions = transactions.filter(t => {

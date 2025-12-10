@@ -277,9 +277,14 @@
                         <option value="month" data-translate="dashboard.thisMonth">Este Mes</option>
                         <option value="year" data-translate="dashboard.thisYear">Este Año</option>
                         <option value="year-select" data-translate="dashboard.specificYear">Año Específico</option>
-                        <option value="all" data-translate="dashboard.allTime">Todos los Tiempos</option>
+                        <option value="all" data-translate="dashboard.allTime">Historial Completo</option>
+                        <option value="custom" data-translate="dashboard.customRange">Rango Personalizado</option>
                     </select>
                     <input type="number" id="summaryYear" min="2000" max="2100" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: none; margin-top: 8px;" data-translate-placeholder="dashboard.selectYear" placeholder="Selecciona el año">
+                    <div id="summaryCustomDateRange" style="display: none; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                        <input type="date" id="summaryStartDate" style="flex: 1; min-width: 150px; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary);">
+                        <input type="date" id="summaryEndDate" style="flex: 1; min-width: 150px; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
                     <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--text-tertiary);" data-translate="dashboard.summaryPeriodHint">Período para las tarjetas de resumen</small>
                 </div>
                 
@@ -287,17 +292,27 @@
                 <div class="card" style="cursor: pointer;" onclick="showSummaryDetails('balance')" title="Haz clic para ver detalles">
                     <h3>Balance Total</h3>
                         <p class="amount" id="totalBalance">0,00 €</p>
-                        <small id="totalBalancePeriod">Todos los tiempos</small>
+                        <small id="totalBalancePeriod">Historial completo</small>
                     </div>
                     <div class="card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; cursor: pointer;" onclick="showSummaryDetails('accounts')" title="Haz clic para ver detalles">
-                        <h3 style="color: white;">💰 Saldo en Cuentas</h3>
+                        <h3 style="color: white;">Saldo en Cuentas</h3>
                         <p class="amount" id="totalAccountsBalance" style="color: white;">0,00 €</p>
                         <small style="color: rgba(255,255,255,0.9);">Total en todas las cuentas</small>
                     </div>
-                    <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; cursor: pointer;" onclick="showSummaryDetails('savings')" title="Haz clic para ver detalles">
-                        <h3 style="color: white;">Meta de Ahorro</h3>
-                        <p class="amount" id="savingsGoal" style="color: white;">Sin meta</p>
-                        <button id="setSavingsGoalBtn" class="btn-secondary" style="margin-top: 12px; font-size: 13px; padding: 8px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" onclick="event.stopPropagation(); showSavingsGoalModal();">Establecer Meta</button>
+                    <div class="card" style="background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 50%, #5B21B6 100%); color: white; border: none; cursor: pointer; position: relative; overflow: hidden;" onclick="showSummaryDetails('savings')" title="Haz clic para ver detalles">
+                        <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                        <div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; background: rgba(255,255,255,0.08); border-radius: 50%;"></div>
+                        <div style="position: relative; z-index: 1;">
+                            <h3 style="color: white; margin-bottom: 8px; font-size: 18px; font-weight: 700;">Tu Meta de Ahorro</h3>
+                            <p class="amount" id="savingsGoal" style="color: white; font-size: 28px; font-weight: 700; margin: 12px 0;">Sin meta</p>
+                            <div id="savingsGoalProgress" style="display: none; margin-top: 12px;">
+                                <div style="background: rgba(255,255,255,0.2); border-radius: 8px; height: 8px; overflow: hidden; margin-bottom: 8px;">
+                                    <div id="savingsGoalProgressBar" style="background: white; height: 100%; border-radius: 8px; transition: width 0.3s;"></div>
+                                </div>
+                                <small id="savingsGoalProgressText" style="color: rgba(255,255,255,0.9); font-size: 12px; font-weight: 600;"></small>
+                            </div>
+                            <button id="setSavingsGoalBtn" class="btn-secondary" style="margin-top: 12px; font-size: 13px; padding: 8px 16px; background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.4); color: white; font-weight: 600; transition: all 0.2s;" onclick="event.stopPropagation(); showSavingsGoalModal();" onmouseover="this.style.background='rgba(255,255,255,0.35)';" onmouseout="this.style.background='rgba(255,255,255,0.25)';">Establecer Meta</button>
+                        </div>
                     </div>
                 </div>
                 <div class="summary-cards">
@@ -321,7 +336,9 @@
                 <!-- Selector de Análisis del Mes - Posicionado sobre el análisis del mes -->
                 <div id="monthAnalysisSelector" style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-top: 32px; margin-bottom: 20px; display: none;">
                     <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;" data-translate="dashboard.monthAnalysis">Análisis del Mes</label>
-                    <input type="month" id="dashboardMonth" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s;">
+                    <div style="position: relative; cursor: pointer;" onclick="document.getElementById('dashboardMonth').showPicker ? document.getElementById('dashboardMonth').showPicker() : document.getElementById('dashboardMonth').focus();">
+                        <input type="month" id="dashboardMonth" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; pointer-events: auto;">
+                    </div>
                     <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--text-tertiary);" data-translate="dashboard.monthAnalysisHint">Selecciona un mes para ver el análisis detallado</small>
                 </div>
                 
