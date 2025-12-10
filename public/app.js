@@ -3350,15 +3350,15 @@ function showLoanDetails(loanId) {
                     <div style="font-size: 18px; font-weight: 700; color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(remainingPrincipal)}</div>
                 </div>
                 <div>
-                    <strong style="color: var(--gray-600); font-size: 12px;">Total Pagado</strong>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--gray-900);">${formatCurrency(totalPaid)}</div>
+                    <strong style="color: var(--text-secondary); font-size: 12px;">Total Pagado</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-primary);">${formatCurrency(totalPaid)}</div>
                 </div>
                 <div>
-                    <strong style="color: var(--gray-600); font-size: 12px;">Intereses Totales</strong>
+                    <strong style="color: var(--text-secondary); font-size: 12px;">Intereses Totales</strong>
                     <div style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(totalInterest)}</div>
                 </div>
                 <div>
-                    <strong style="color: var(--gray-600); font-size: 12px;">Comisiones Totales</strong>
+                    <strong style="color: var(--text-secondary); font-size: 12px;">Comisiones Totales</strong>
                     <div style="font-size: 18px; font-weight: 700; color: var(--warning);">${formatCurrency(totalCommissions)}</div>
                 </div>
                 <div>
