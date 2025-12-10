@@ -1863,6 +1863,50 @@ function initializeForms() {
     
     // Botón de perfil de usuario ya se maneja con onclick en HTML
     
+    // Inicializar ordenamiento de tabla de transacciones
+    const sortableHeaders = document.querySelectorAll('#transactionsTable th.sortable');
+    sortableHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+            const sortColumn = header.getAttribute('data-sort');
+            
+            // Si se hace clic en la misma columna, cambiar dirección
+            if (transactionsSortColumn === sortColumn) {
+                transactionsSortDirection = transactionsSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                transactionsSortColumn = sortColumn;
+                transactionsSortDirection = 'asc';
+            }
+            
+            // Actualizar indicadores visuales
+            sortableHeaders.forEach(h => {
+                const indicator = h.querySelector('.sort-indicator');
+                if (indicator) {
+                    indicator.textContent = '';
+                }
+                h.style.color = '';
+            });
+            
+            const indicator = header.querySelector('.sort-indicator');
+            if (indicator) {
+                indicator.textContent = transactionsSortDirection === 'asc' ? ' ▲' : ' ▼';
+            }
+            header.style.color = 'var(--primary)';
+            
+            // Actualizar tabla
+            updateTransactionsTable();
+        });
+    });
+    
+    // Establecer ordenamiento inicial (por fecha descendente)
+    const dateHeader = document.querySelector('#transactionsTable th[data-sort="date"]');
+    if (dateHeader) {
+        const indicator = dateHeader.querySelector('.sort-indicator');
+        if (indicator) {
+            indicator.textContent = ' ▼';
+        }
+        dateHeader.style.color = 'var(--primary)';
+    }
+    
     // Selector de período en dashboard
     const summaryPeriodSelect = document.getElementById('summaryPeriod');
     const summaryYearInput = document.getElementById('summaryYear');
