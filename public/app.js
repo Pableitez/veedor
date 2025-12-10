@@ -22,6 +22,11 @@ if (window.VEEDOR_LOADED) {
         const modal = document.getElementById('savingsGoalModal');
         if (modal) modal.style.display = 'none';
     };
+    window.openChartModal = function() { console.warn('openChartModal aún no está disponible'); };
+    window.closeChartModal = function() { 
+        const modal = document.getElementById('chartModal');
+        if (modal) modal.style.display = 'none';
+    };
     window.deleteSavingsGoal = function() { console.warn('deleteSavingsGoal aún no está disponible'); };
     
     // Configuración de la API
