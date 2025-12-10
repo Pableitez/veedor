@@ -1487,6 +1487,24 @@ function switchToTab(targetTab, doScroll = false) {
             updateAssets();
         }, 100);
     }
+    
+    // Actualizar préstamos cuando se cambia al tab de préstamos
+    if (targetTab === 'loans') {
+        setTimeout(() => {
+            updateLoans();
+            // Actualizar selector de cuentas en el formulario de préstamos
+            updateAccountSelect('loanAccount');
+        }, 100);
+    }
+    
+    // Actualizar inversiones cuando se cambia al tab de inversiones
+    if (targetTab === 'investments') {
+        setTimeout(() => {
+            updateInvestments();
+            // Actualizar selector de cuentas en el formulario de inversiones (aportes periódicos)
+            updateAccountSelect('contributionAccount');
+        }, 100);
+    }
 }
 
 // Inicializar tabs
@@ -3993,6 +4011,7 @@ async function addLoan() {
     const endDate = document.getElementById('loanEndDate').value;
     const monthlyPayment = parseFloat(document.getElementById('loanMonthlyPayment').value);
     const type = document.getElementById('loanType').value;
+    const accountId = document.getElementById('loanAccount') ? document.getElementById('loanAccount').value : '';
     const description = document.getElementById('loanDescription').value.trim();
     const openingCommission = parseFloat(document.getElementById('loanOpeningCommission').value) || 0;
     const earlyPaymentCommission = parseFloat(document.getElementById('loanEarlyPaymentCommission').value) || 0;
@@ -4015,6 +4034,7 @@ async function addLoan() {
                 end_date: endDate,
                 monthly_payment: monthlyPayment,
                 type,
+                account_id: accountId || null,
                 description: description || null,
                 opening_commission: openingCommission,
                 early_payment_commission: earlyPaymentCommission,
@@ -4506,6 +4526,7 @@ async function addInvestment() {
     const contributionAmount = parseFloat(document.getElementById('contributionAmount')?.value || 0);
     const contributionStartDate = document.getElementById('contributionStartDate')?.value || null;
     const contributionEndDate = document.getElementById('contributionEndDate')?.value || null;
+    const contributionAccountId = document.getElementById('contributionAccount')?.value || '';
     
     if (!name || isNaN(currentValue) || !type) {
         alert('Por favor completa todos los campos requeridos');
@@ -4530,6 +4551,7 @@ async function addInvestment() {
                 amount: enablePeriodic ? contributionAmount : 0,
                 start_date: enablePeriodic ? contributionStartDate : null,
                 end_date: enablePeriodic ? (contributionEndDate || null) : null,
+                account_id: enablePeriodic ? (contributionAccountId || null) : null, // Cuenta para aportes periódicos
                 completed_contributions: []
             }
         };

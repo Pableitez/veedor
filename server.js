@@ -143,6 +143,7 @@ const investmentSchema = new mongoose.Schema({
         amount: { type: Number, default: 0 },
         start_date: { type: String, default: null },
         end_date: { type: String, default: null }, // null = indefinido
+        account_id: { type: String, default: null }, // ID de la cuenta para aportes periódicos
         completed_contributions: [{ // Aportes realizados por el usuario
             date: { type: String, required: true },
             amount: { type: Number, required: true },
@@ -1404,6 +1405,12 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             try {
                 const investment = await Investment.findOne({ _id: normalizedInvestmentId, user_id: req.user.userId });
                 if (investment) {
+                    // Si la transacción no tiene cuenta pero la inversión tiene cuenta configurada en aportes periódicos, usarla
+                    if (!normalizedAccountId && investment.periodic_contribution?.account_id) {
+                        transaction.account_id = investment.periodic_contribution.account_id;
+                        await transaction.save();
+                    }
+                    
                     if (!investment.contributions) {
                         investment.contributions = [];
                     }
@@ -1684,7 +1691,7 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
     try {
         const { 
             name, principal, interest_rate, tae, start_date, end_date, monthly_payment, type, description,
-            opening_commission, early_payment_commission, payment_frequency, payment_day
+            opening_commission, early_payment_commission, payment_frequency, payment_day, account_id
         } = req.body;
 
         if (!name || principal === undefined || interest_rate === undefined || !start_date || !end_date || monthly_payment === undefined || !type) {
@@ -1734,6 +1741,7 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
                     category_general: 'Préstamos e Hipotecas',
                     category_specific: 'Cuota de Préstamo',
                     loan_id: loan._id.toString(),
+                    account_id: account_id || null, // Asociar cuenta si se especificó
                     description: `Cuota mensual: ${name}`,
                     is_recurring: true,
                     recurring_frequency: payment_frequency || 'monthly',
@@ -2283,6 +2291,9 @@ app.post('/api/investments/:id/contribution', authenticateToken, async (req, res
         
         const contributionAmount = parseFloat(amount);
         
+        // Obtener account_id de los aportes periódicos si existe
+        const accountId = investment.periodic_contribution?.account_id || null;
+        
         // Crear transacción automática para el aporte a la inversión
         const contributionTransaction = new Transaction({
             user_id: req.user.userId,
@@ -2292,6 +2303,7 @@ app.post('/api/investments/:id/contribution', authenticateToken, async (req, res
             category_general: 'investment',
             category_specific: 'Aporte',
             investment_id: investment._id.toString(),
+            account_id: accountId, // Asociar cuenta si está configurada en aportes periódicos
             description: `Aporte a inversión: ${investment.name}`
         });
         
