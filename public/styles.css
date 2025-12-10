@@ -298,10 +298,10 @@ body.dark-mode .auth-screen {
     background: var(--bg-primary);
     border-radius: 28px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 32px 40px;
-    max-width: 650px;
+    padding: 28px 36px;
+    max-width: 600px;
     width: 100%;
-    max-height: 85vh;
+    max-height: calc(100vh - 40px);
     overflow-y: auto;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-sizing: border-box;
@@ -313,20 +313,20 @@ body.dark-mode .auth-screen {
 
 .auth-header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .auth-header h1 {
-    font-size: 36px;
+    font-size: 30px;
     font-weight: 800;
     color: var(--primary);
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     letter-spacing: -1px;
 }
 
 .auth-header p {
     color: var(--text-secondary);
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     margin: 0;
 }
@@ -334,7 +334,7 @@ body.dark-mode .auth-screen {
 .auth-tabs {
     display: flex;
     gap: 0;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     border-bottom: 2px solid var(--border-color);
 }
 
@@ -371,7 +371,11 @@ body.dark-mode .auth-screen {
 }
 
 .auth-form .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
+}
+
+.auth-form .form-group:last-child {
+    margin-bottom: 0;
 }
 
 .auth-form .form-group label {
@@ -891,12 +895,35 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.periodic-contribution-grid > div {
+    color: var(--text-secondary);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow: visible;
+}
+
+.periodic-contribution-grid > div:not(:has(strong)) {
+    color: var(--text-primary);
+    text-align: right;
+}
+
+.periodic-contribution-container {
+    overflow: visible !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
 @media (max-width: 768px) {
     .periodic-contribution-grid {
         grid-template-columns: 1fr !important;
-        gap: 12px !important;
+        gap: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
@@ -906,15 +933,16 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
-        padding: 10px 0 !important;
+        padding: 12px 0 !important;
         border-bottom: 1px solid var(--border-color) !important;
-        min-height: 40px !important;
+        min-height: 44px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         overflow: visible !important;
+        font-size: 14px !important;
     }
     
     .periodic-contribution-grid > div:last-child {
@@ -922,21 +950,23 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     }
     
     .periodic-contribution-grid > div strong {
-        font-size: 13px !important;
+        font-size: 14px !important;
         font-weight: 600 !important;
         flex-shrink: 0 !important;
-        margin-right: 12px !important;
+        margin-right: 16px !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
+        color: var(--text-secondary) !important;
     }
     
     .periodic-contribution-grid > div:not(:has(strong)) {
-        font-size: 13px !important;
+        font-size: 14px !important;
         text-align: right !important;
         flex: 1 !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         min-width: 0 !important;
+        color: var(--text-primary) !important;
     }
     
     /* Asegurar que el contenedor padre no corte el contenido */
@@ -949,6 +979,16 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     }
     
     /* Contenedor de aportaciones periódicas */
+    .periodic-contribution-container {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 12px !important;
+    }
+    
     .envelope-card > div,
     .card > div {
         overflow: visible !important;
@@ -1653,27 +1693,63 @@ tbody tr:last-child td {
 /* Pantallas de 15 pulgadas y laptops (1366x768, 1440x900, etc.) */
 @media (max-width: 1440px) and (max-height: 900px) {
     .auth-container {
-        padding: 28px 36px !important;
-        max-height: 90vh !important;
-        max-width: 600px !important;
+        padding: 24px 32px !important;
+        max-height: calc(100vh - 30px) !important;
+        max-width: 580px !important;
         margin: 15px auto !important;
     }
     
+    .auth-header {
+        margin-bottom: 14px !important;
+    }
+    
+    .auth-header svg {
+        width: 64px !important;
+        height: 64px !important;
+        margin-bottom: 12px !important;
+    }
+    
     .auth-header h1 {
-        font-size: 28px !important;
-        margin-bottom: 8px !important;
+        font-size: 26px !important;
+        margin-bottom: 6px !important;
     }
     
     .auth-header p {
-        font-size: 14px !important;
+        font-size: 13px !important;
     }
     
     .auth-tabs {
-        margin-bottom: 20px !important;
+        margin-bottom: 18px !important;
+    }
+    
+    .auth-tab-btn {
+        padding: 10px 14px !important;
+        font-size: 14px !important;
     }
     
     .auth-form .form-group {
-        margin-bottom: 14px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-form .form-group label {
+        font-size: 13px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .auth-form .form-group input {
+        padding: 10px 14px !important;
+        font-size: 14px !important;
+    }
+    
+    .auth-form .form-group small {
+        font-size: 11px !important;
+        margin-top: 4px !important;
+    }
+    
+    .btn-full {
+        padding: 12px 20px !important;
+        font-size: 14px !important;
+        margin-top: 6px !important;
     }
 }
 
