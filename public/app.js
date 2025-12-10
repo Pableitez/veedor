@@ -1562,7 +1562,7 @@ function initializeForms() {
     if (envelopeForm) {
         envelopeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            await addEnvelope();
+            await updateEnvelope();
         });
     }
     
@@ -2368,7 +2368,7 @@ async function addEnvelope() {
         
         envelopes.push(envelope);
         updateDisplay();
-        document.getElementById('envelopeForm').reset();
+        resetEnvelopeForm();
         updateEnvelopeSelect();
     } catch (error) {
         alert('Error al crear sobre: ' + error.message);
@@ -3472,42 +3472,111 @@ async function deleteEnvelope(id) {
     }
 }
 
-// Editar sobre
+// Editar sobre - Abre formulario pre-rellenado
 async function editEnvelope(id) {
     const envelope = envelopes.find(e => (e._id || e.id) === id);
     if (!envelope) return;
     
-    const newName = prompt('Nombre del sobre:', envelope.name);
-    if (!newName || newName.trim() === '') return;
+    // Cambiar al tab de sobres
+    switchToTab('envelopes', true);
     
-    const newBudget = prompt('Presupuesto (€):', envelope.budget || 0);
-    if (newBudget === null) return;
-    
-    const budgetValue = parseFloat(newBudget);
-    if (isNaN(budgetValue) || budgetValue < 0) {
-        showToast('Por favor ingresa un presupuesto válido', 'error');
+    setTimeout(() => {
+        const nameEl = document.getElementById('envelopeName');
+        const budgetEl = document.getElementById('envelopeBudget');
+        const submitBtn = document.querySelector('#envelopeForm button[type="submit"]');
+        const cancelBtn = document.getElementById('envelopeCancelBtn');
+        
+        if (!nameEl || !budgetEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        currentEditingEnvelopeId = id;
+        
+        nameEl.value = envelope.name;
+        budgetEl.value = envelope.budget || 0;
+        
+        if (submitBtn) {
+            submitBtn.textContent = 'Actualizar Sobre';
+            submitBtn.classList.remove('btn-primary');
+            submitBtn.classList.add('btn-secondary');
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.style.display = 'inline-block';
+        }
+        
+        const form = document.getElementById('envelopeForm');
+        if (form) {
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 300);
+}
+
+// Actualizar sobre
+async function updateEnvelope() {
+    if (!currentEditingEnvelopeId) {
+        await addEnvelope();
         return;
     }
     
     try {
+        const nameEl = document.getElementById('envelopeName');
+        const budgetEl = document.getElementById('envelopeBudget');
+        
+        if (!nameEl || !budgetEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const budget = parseFloat(budgetEl.value);
+        
+        if (!name || isNaN(budget) || budget < 0) {
+            showToast('Por favor completa todos los campos correctamente', 'warning');
+            return;
+        }
+        
         showLoader('Actualizando sobre...');
-        await apiRequest(`/envelopes/${id}`, {
+        await apiRequest(`/envelopes/${currentEditingEnvelopeId}`, {
             method: 'PUT',
-            body: JSON.stringify({
-                name: newName.trim(),
-                budget: budgetValue
-            })
+            body: JSON.stringify({ name, budget })
         });
         
         await loadUserData();
         updateDisplay();
         hideLoader();
         showToast('Sobre actualizado exitosamente', 'success');
+        
+        resetEnvelopeForm();
     } catch (error) {
         hideLoader();
         showToast('Error al actualizar sobre: ' + error.message, 'error');
     }
 }
+
+// Restaurar formulario de sobres
+function resetEnvelopeForm() {
+    currentEditingEnvelopeId = null;
+    const form = document.getElementById('envelopeForm');
+    if (form) {
+        form.reset();
+        const submitBtn = document.getElementById('envelopeSubmitBtn') || form.querySelector('button[type="submit"]');
+        const cancelBtn = document.getElementById('envelopeCancelBtn');
+        
+        if (submitBtn) {
+            submitBtn.textContent = 'Agregar Sobre';
+            submitBtn.classList.remove('btn-secondary');
+            submitBtn.classList.add('btn-primary');
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.style.display = 'none';
+        }
+    }
+}
+
+window.resetEnvelopeForm = resetEnvelopeForm;
 
 // Exponer funciones al scope global para onclick handlers
 window.deleteEnvelope = deleteEnvelope;
