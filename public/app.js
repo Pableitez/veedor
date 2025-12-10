@@ -8346,27 +8346,27 @@ function showCategoryDetails(categoryName, transactions, type, month, categoryId
     const total = transactions.reduce((sum, t) => sum + (type === 'expense' ? Math.abs(t.amount) : t.amount), 0);
     
     let content = `
-        <div style="margin-bottom: 24px;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                <div style="background: ${type === 'expense' ? 'var(--danger)' : 'var(--success)'}; padding: 20px; border-radius: 12px; color: white;">
-                    <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Total ${type === 'expense' ? 'Gastado' : 'Ingresado'}</div>
-                    <div style="font-size: 28px; font-weight: 700;">${formatCurrency(total)}</div>
+        <div style="margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                <div style="background: ${type === 'expense' ? 'var(--danger)' : 'var(--success)'}; padding: 16px; border-radius: 10px; color: white;">
+                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Total ${type === 'expense' ? 'Gastado' : 'Ingresado'}</div>
+                    <div style="font-size: 22px; font-weight: 700;">${formatCurrency(total)}</div>
                 </div>
-                <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
-                    <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">Transacciones</div>
-                    <div style="font-size: 28px; font-weight: 700; color: var(--text-primary);">${transactions.length}</div>
+                <div style="background: var(--bg-tertiary); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">Transacciones</div>
+                    <div style="font-size: 22px; font-weight: 700; color: var(--text-primary);">${transactions.length}</div>
                 </div>
                 ${budgetAmount > 0 ? `
-                    <div style="background: var(--primary-light); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
-                        <div style="font-size: 14px; color: var(--primary); margin-bottom: 8px;">Presupuesto</div>
-                        <div style="font-size: 28px; font-weight: 700; color: var(--primary-dark);">${formatCurrency(budgetAmount)}</div>
+                    <div style="background: var(--primary-light); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                        <div style="font-size: 12px; color: var(--primary); margin-bottom: 6px;">Presupuesto</div>
+                        <div style="font-size: 22px; font-weight: 700; color: var(--primary-dark);">${formatCurrency(budgetAmount)}</div>
                     </div>
                 ` : ''}
             </div>
         </div>
         
         <div>
-            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">Transacciones</h3>
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">Transacciones</h3>
             <div class="table-container">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
@@ -9111,15 +9111,42 @@ function closeTermsModal() {
 // Cerrar modales al hacer clic fuera
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
-        ['privacyModal', 'cookiesModal', 'termsModal', 'summaryDetailsModal'].forEach(modalId => {
+        const modalsToClose = [
+            'privacyModal', 
+            'cookiesModal', 
+            'termsModal', 
+            'summaryDetailsModal',
+            'categoryDetailsModal',
+            'savingsGoalModal',
+            'addMoneyInvestmentModal',
+            'updateInvestmentValueModal',
+            'updateAccountBalanceModal',
+            'updateAssetValueModal',
+            'userProfileModal',
+            'chartModal'
+        ];
+        
+        modalsToClose.forEach(modalId => {
             const modal = document.getElementById(modalId);
             if (modal) {
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) {
                         if (modalId === 'privacyModal') closePrivacyModal();
-                        if (modalId === 'cookiesModal') closeCookiesModal();
-                        if (modalId === 'termsModal') closeTermsModal();
-                        if (modalId === 'summaryDetailsModal') closeSummaryDetails();
+                        else if (modalId === 'cookiesModal') closeCookiesModal();
+                        else if (modalId === 'termsModal') closeTermsModal();
+                        else if (modalId === 'summaryDetailsModal') closeSummaryDetails();
+                        else if (modalId === 'categoryDetailsModal') closeCategoryDetailsModal();
+                        else if (modalId === 'savingsGoalModal') closeSavingsGoalModal();
+                        else if (modalId === 'addMoneyInvestmentModal') closeAddMoneyInvestmentModal();
+                        else if (modalId === 'updateInvestmentValueModal') closeUpdateInvestmentValueModal();
+                        else if (modalId === 'updateAccountBalanceModal') closeUpdateAccountBalanceModal();
+                        else if (modalId === 'updateAssetValueModal') {
+                            const updateAssetModal = document.getElementById('updateAssetValueModal');
+                            if (updateAssetModal) updateAssetModal.style.display = 'none';
+                        }
+                        else if (modalId === 'userProfileModal') closeUserProfile();
+                        else if (modalId === 'chartModal') closeChartModal();
+                        else modal.style.display = 'none';
                     }
                 });
             }
@@ -9354,19 +9381,19 @@ function showSummaryDetails(type) {
         title = 'Detalles de Cuentas Bancarias';
         const totalAccountsBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
         content = `
-            <div style="display: grid; gap: 16px;">
-                <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--success);">
-                    <h3 style="margin: 0 0 12px 0; color: var(--text-primary);">Saldo Total: ${formatCurrency(totalAccountsBalance)}</h3>
+            <div style="display: grid; gap: 14px;">
+                <div style="background: var(--bg-secondary); padding: 14px; border-radius: var(--radius); border-left: 4px solid var(--success);">
+                    <h3 style="margin: 0 0 10px 0; color: var(--text-primary); font-size: 16px; font-weight: 700;">Saldo Total: ${formatCurrency(totalAccountsBalance)}</h3>
                 </div>
-                ${accounts.length === 0 ? '<p style="text-align: center; color: var(--text-tertiary); padding: 20px;">No hay cuentas registradas</p>' : ''}
+                ${accounts.length === 0 ? '<p style="text-align: center; color: var(--text-tertiary); padding: 16px; font-size: 14px;">No hay cuentas registradas</p>' : ''}
                 ${accounts.map(acc => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-primary); border-radius: var(--radius); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;" onclick="closeSummaryDetails(); switchToTab('accounts', true);" onmouseover="this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-primary)'; this.style.borderColor='var(--border-color)';">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-primary); border-radius: var(--radius); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; font-size: 13px;" onclick="closeSummaryDetails(); switchToTab('accounts', true);" onmouseover="this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-primary)'; this.style.borderColor='var(--border-color)';">
                         <div>
-                            <strong style="color: var(--text-primary);">${acc.name}</strong>
-                            <br><small style="color: var(--text-secondary);">${acc.type || 'Cuenta bancaria'}</small>
+                            <strong style="color: var(--text-primary); font-size: 14px;">${acc.name}</strong>
+                            <br><small style="color: var(--text-secondary); font-size: 12px;">${acc.type || 'Cuenta bancaria'}</small>
                         </div>
                         <div style="text-align: right;">
-                            <strong style="color: ${acc.balance >= 0 ? 'var(--success)' : 'var(--danger)'}">${formatCurrency(acc.balance)}</strong>
+                            <strong style="color: ${acc.balance >= 0 ? 'var(--success)' : 'var(--danger)'}; font-size: 14px;">${formatCurrency(acc.balance)}</strong>
                         </div>
                     </div>
                 `).join('')}
