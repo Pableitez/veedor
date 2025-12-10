@@ -3257,26 +3257,26 @@ function updateLoans() {
             ${loan.description ? `<div style="margin: 10px 0; font-size: 12px; color: var(--text-tertiary); font-style: italic;">${loan.description}</div>` : ''}
             
             <!-- Cuadro de amortización - Próximas cuotas -->
-            <div style="margin: 16px 0; padding: 12px; background: var(--gray-50); border-radius: 6px;">
-                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--gray-900);">📅 Próximas Cuotas</h4>
+            <div style="margin: 16px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-color);">
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">📅 Próximas Cuotas</h4>
                 <div style="max-height: 200px; overflow-y: auto;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
                         <thead>
-                            <tr style="background: var(--gray-100); border-bottom: 1px solid var(--gray-300);">
-                                <th style="padding: 6px; text-align: left; font-weight: 600;">Mes</th>
-                                <th style="padding: 6px; text-align: right; font-weight: 600;">Fecha</th>
-                                <th style="padding: 6px; text-align: right; font-weight: 600;">Cuota</th>
-                                <th style="padding: 6px; text-align: right; font-weight: 600;">Capital</th>
-                                <th style="padding: 6px; text-align: right; font-weight: 600;">Interés</th>
-                                <th style="padding: 6px; text-align: right; font-weight: 600;">Restante</th>
+                            <tr style="background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color);">
+                                <th style="padding: 6px; text-align: left; font-weight: 600; color: var(--text-primary);">Mes</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Fecha</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Cuota</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Capital</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Interés</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Restante</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${amortization.table.slice(0, 12).map((row, idx) => `
-                                <tr style="border-bottom: 1px solid var(--border-color); ${idx % 2 === 0 ? '' : 'background: var(--bg-tertiary);'}">
-                                    <td style="padding: 6px; font-weight: 600;">${row.month}</td>
-                                    <td style="padding: 6px; text-align: right; color: var(--gray-700);">${formatDate(row.date)}</td>
-                                    <td style="padding: 6px; text-align: right; font-weight: 600;">${formatCurrency(row.payment)}</td>
+                                <tr style="border-bottom: 1px solid var(--border-color); background: ${idx % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-tertiary)'};">
+                                    <td style="padding: 6px; font-weight: 600; color: var(--text-primary);">${row.month}</td>
+                                    <td style="padding: 6px; text-align: right; color: var(--text-secondary);">${formatDate(row.date)}</td>
+                                    <td style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">${formatCurrency(row.payment)}</td>
                                     <td style="padding: 6px; text-align: right; color: var(--success);">${formatCurrency(row.principal)}</td>
                                     <td style="padding: 6px; text-align: right; color: var(--danger);">${formatCurrency(row.interest)}</td>
                                     <td style="padding: 6px; text-align: right; font-weight: 600; color: ${row.balance > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(row.balance)}</td>
@@ -3284,7 +3284,7 @@ function updateLoans() {
                             `).join('')}
                             ${amortization.table.length > 12 ? `
                                 <tr>
-                                    <td colspan="6" style="padding: 8px; text-align: center; color: var(--gray-600); font-size: 11px; font-style: italic;">
+                                    <td colspan="6" style="padding: 8px; text-align: center; color: var(--text-tertiary); font-size: 11px; font-style: italic;">
                                         ... y ${amortization.table.length - 12} cuota(s) más
                                     </td>
                                 </tr>
