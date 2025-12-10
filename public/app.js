@@ -9669,7 +9669,7 @@ function showFinancialHealthDetail(metric, index) {
     
     // Generar gráfico según la métrica
     if (index === 0 || index === 1) { // Deuda vs Activos
-        chartHTML = '<div style="margin: 20px 0;"><canvas id="metricChart" style="max-height: 300px;"></canvas></div>';
+        chartHTML = '<div style="margin: 16px 0; display: flex; justify-content: center;"><canvas id="metricChart" style="max-height: 200px; max-width: 250px;"></canvas></div>';
         chartData = {
             type: 'doughnut',
             data: {
@@ -9681,7 +9681,7 @@ function showFinancialHealthDetail(metric, index) {
             }
         };
     } else if (index === 4) { // Ratio de Ahorro - Ingresos vs Gastos
-        chartHTML = '<div style="margin: 20px 0;"><canvas id="metricChart" style="max-height: 300px;"></canvas></div>';
+        chartHTML = '<div style="margin: 16px 0; display: flex; justify-content: center;"><canvas id="metricChart" style="max-height: 200px; max-width: 300px;"></canvas></div>';
         chartData = {
             type: 'bar',
             data: {
@@ -9710,7 +9710,7 @@ function showFinancialHealthDetail(metric, index) {
             runningBalance += monthTransactions.reduce((sum, t) => sum + t.amount, 0);
             balances.push(runningBalance);
         }
-        chartHTML = '<div style="margin: 20px 0;"><canvas id="metricChart" style="max-height: 300px;"></canvas></div>';
+        chartHTML = '<div style="margin: 16px 0; display: flex; justify-content: center;"><canvas id="metricChart" style="max-height: 200px; max-width: 400px;"></canvas></div>';
         chartData = {
             type: 'line',
             data: {
@@ -9726,7 +9726,7 @@ function showFinancialHealthDetail(metric, index) {
             }
         };
     } else if (index === 6) { // Ratio de Inversión
-        chartHTML = '<div style="margin: 20px 0;"><canvas id="metricChart" style="max-height: 300px;"></canvas></div>';
+        chartHTML = '<div style="margin: 16px 0; display: flex; justify-content: center;"><canvas id="metricChart" style="max-height: 200px; max-width: 250px;"></canvas></div>';
         chartData = {
             type: 'doughnut',
             data: {
@@ -9740,20 +9740,20 @@ function showFinancialHealthDetail(metric, index) {
     }
     
     let detailContent = `
-        <div style="display: flex; flex-direction: column; gap: 20px;">
-            <div style="background: var(--bg-secondary); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
-                <h3 style="margin: 0 0 12px 0; font-size: 18px; color: var(--text-primary);">Valor Actual</h3>
-                <div style="font-size: 32px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: var(--bg-secondary); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                <h3 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: var(--text-primary);">Valor Actual</h3>
+                <div style="font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">
                     ${metric.value}
                 </div>
-                <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">${metric.description}</p>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.5;">${metric.description}</p>
             </div>
             
             ${chartHTML}
             
             <div>
-                <h3 style="margin: 0 0 12px 0; font-size: 16px; color: var(--text-primary);">Detalles del Cálculo</h3>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
+                <h3 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: var(--text-primary);">Detalles del Cálculo</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
     `;
     
     // Agregar detalles específicos según la métrica
