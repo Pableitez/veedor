@@ -259,14 +259,17 @@ window.hideLoader = hideLoader;
 // ==================== MODO OSCURO ====================
 function toggleDarkMode() {
     const body = document.body;
+    const html = document.documentElement;
     const isDark = body.classList.contains('dark-mode');
     
     if (isDark) {
+        html.classList.remove('dark-mode');
         body.classList.remove('dark-mode');
         localStorage.setItem('veedor_darkMode', 'false');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = '🌙 Modo Oscuro';
     } else {
+        html.classList.add('dark-mode');
         body.classList.add('dark-mode');
         localStorage.setItem('veedor_darkMode', 'true');
         const toggleText = document.getElementById('darkModeToggleText');
@@ -278,12 +281,16 @@ function initDarkMode() {
     const savedMode = localStorage.getItem('veedor_darkMode');
     // Por defecto, activar modo oscuro si no hay preferencia guardada
     if (savedMode === null || savedMode === 'true') {
+        document.documentElement.classList.add('dark-mode');
         document.body.classList.add('dark-mode');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = '☀️ Modo Claro';
         if (savedMode === null) {
             localStorage.setItem('veedor_darkMode', 'true');
         }
+    } else {
+        document.documentElement.classList.remove('dark-mode');
+        document.body.classList.remove('dark-mode');
     }
 }
 
