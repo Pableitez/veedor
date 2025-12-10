@@ -6,8 +6,42 @@ if (window.VEEDOR_LOADED) {
     window.VEEDOR_LOADED = true;
     
     // Exponer funciones globales inmediatamente (stubs) para evitar errores de referencia
-    window.showUserProfile = function() { console.warn('showUserProfile aún no está disponible'); };
-    window.closeUserProfile = function() { console.warn('closeUserProfile aún no está disponible'); };
+    window.showUserProfile = function() { 
+        const modal = document.getElementById('userProfileModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        } else {
+            console.warn('Modal de perfil de usuario no encontrado');
+        }
+    };
+    window.closeUserProfile = function() { 
+        const modal = document.getElementById('userProfileModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.showPrivacyModal = function() { 
+        const modal = document.getElementById('privacyModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        } else {
+            console.warn('Modal de privacidad no encontrado');
+        }
+    };
+    window.showCookiesModal = function() { 
+        const modal = document.getElementById('cookiesModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        } else {
+            console.warn('Modal de cookies no encontrado');
+        }
+    };
+    window.showTermsModal = function() { 
+        const modal = document.getElementById('termsModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        } else {
+            console.warn('Modal de términos no encontrado');
+        }
+    };
     window.showSummaryDetails = function() { console.warn('showSummaryDetails aún no está disponible'); };
     window.closeSummaryDetails = function() { 
         const modal = document.getElementById('summaryDetailsModal');
