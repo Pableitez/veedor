@@ -3129,22 +3129,101 @@ function updateBudgets() {
     });
 }
 
-// Editar presupuesto
+// Editar presupuesto - Abre modal con formulario pre-rellenado
 async function editBudget(id) {
     const budget = budgets.find(b => (b._id || b.id) === id);
     if (!budget) return;
     
-    const newAmount = prompt('Monto del presupuesto (€):', budget.amount);
-    if (!newAmount) return;
-    const amountValue = parseFloat(newAmount);
-    if (isNaN(amountValue) || amountValue <= 0) {
-        showToast('Por favor ingresa un monto válido', 'error');
+    currentEditingBudgetId = id;
+    
+    // Crear o obtener modal
+    let modal = document.getElementById('editBudgetModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editBudgetModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 600px;">
+                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Presupuesto</h2>
+                        <button onclick="closeEditBudgetModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editBudgetForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px;">
+                    <div class="form-group">
+                        <label for="editBudgetAmount">Monto del Presupuesto (€)</label>
+                        <input type="number" id="editBudgetAmount" step="0.01" min="0" required>
+                        <small>Monto del presupuesto para esta categoría</small>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditBudgetModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Presupuesto</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditBudgetModal();
+            }
+        });
+        
+        const form = document.getElementById('editBudgetForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateBudgetFromModal();
+            });
+        }
+    }
+    
+    // Pre-llenar formulario
+    const amountEl = document.getElementById('editBudgetAmount');
+    if (!amountEl) {
+        showToast('Error: No se encontró el campo del formulario', 'error');
         return;
     }
     
+    amountEl.value = budget.amount || 0;
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de presupuesto
+function closeEditBudgetModal() {
+    const modal = document.getElementById('editBudgetModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingBudgetId = null;
+    }
+}
+
+// Actualizar presupuesto desde modal
+async function updateBudgetFromModal() {
+    if (!currentEditingBudgetId) return;
+    
     try {
+        const budget = budgets.find(b => (b._id || b.id) === currentEditingBudgetId);
+        if (!budget) return;
+        
+        const amountEl = document.getElementById('editBudgetAmount');
+        if (!amountEl) {
+            showToast('Error: No se encontró el campo del formulario', 'error');
+            return;
+        }
+        
+        const amountValue = parseFloat(amountEl.value);
+        if (isNaN(amountValue) || amountValue <= 0) {
+            showToast('Por favor ingresa un monto válido', 'warning');
+            return;
+        }
+        
         showLoader('Actualizando presupuesto...');
-        await apiRequest(`/budgets/${id}`, {
+        await apiRequest(`/budgets/${currentEditingBudgetId}`, {
             method: 'PUT',
             body: JSON.stringify({
                 amount: amountValue,
@@ -3157,12 +3236,15 @@ async function editBudget(id) {
         await loadUserData();
         updateDisplay();
         hideLoader();
+        closeEditBudgetModal();
         showToast('Presupuesto actualizado exitosamente', 'success');
     } catch (error) {
         hideLoader();
         showToast('Error al actualizar presupuesto: ' + error.message, 'error');
     }
 }
+
+window.closeEditBudgetModal = closeEditBudgetModal;
 
 // Eliminar presupuesto
 async function deleteBudget(id) {
@@ -4777,39 +4859,149 @@ async function processUpdateInvestmentValue() {
     }
 }
 
-// Editar inversión
+// Editar inversión - Abre modal con formulario pre-rellenado
 async function editInvestment(id) {
     const investment = investments.find(inv => (inv._id || inv.id) === id);
     if (!investment) return;
     
-    const newName = prompt('Nombre de la inversión:', investment.name);
-    if (!newName || newName.trim() === '') return;
+    currentEditingInvestmentId = id;
     
-    const newType = prompt('Tipo (stocks/bonds/crypto/funds/real_estate/other):', investment.type);
-    if (!newType) return;
+    // Crear o obtener modal
+    let modal = document.getElementById('editInvestmentModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editInvestmentModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px;">
+                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Inversión</h2>
+                        <button onclick="closeEditInvestmentModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editInvestmentForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; max-height: calc(90vh - 100px); overflow-y: auto;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editInvestmentName">Nombre de la Inversión</label>
+                            <input type="text" id="editInvestmentName" placeholder="Ej: Acciones Apple, Plan de Pensiones" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editInvestmentType">Tipo</label>
+                            <select id="editInvestmentType" required>
+                                <option value="stocks">Acciones</option>
+                                <option value="bonds">Bonos</option>
+                                <option value="crypto">Criptomonedas</option>
+                                <option value="funds">Fondos</option>
+                                <option value="real_estate">Inmuebles</option>
+                                <option value="other">Otros</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="editInvestmentDescription">Descripción (Opcional)</label>
+                            <input type="text" id="editInvestmentDescription" placeholder="Ej: Inversión a largo plazo">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditInvestmentModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Inversión</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditInvestmentModal();
+            }
+        });
+        
+        const form = document.getElementById('editInvestmentForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateInvestmentFromModal();
+            });
+        }
+    }
     
-    const newDescription = prompt('Descripción (opcional):', investment.description || '');
+    // Pre-llenar formulario
+    const nameEl = document.getElementById('editInvestmentName');
+    const typeEl = document.getElementById('editInvestmentType');
+    const descriptionEl = document.getElementById('editInvestmentDescription');
+    
+    if (!nameEl || !typeEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
+        return;
+    }
+    
+    nameEl.value = investment.name;
+    typeEl.value = investment.type;
+    if (descriptionEl) {
+        descriptionEl.value = investment.description || '';
+    }
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de inversión
+function closeEditInvestmentModal() {
+    const modal = document.getElementById('editInvestmentModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingInvestmentId = null;
+    }
+}
+
+// Actualizar inversión desde modal
+async function updateInvestmentFromModal() {
+    if (!currentEditingInvestmentId) return;
     
     try {
+        const nameEl = document.getElementById('editInvestmentName');
+        const typeEl = document.getElementById('editInvestmentType');
+        const descriptionEl = document.getElementById('editInvestmentDescription');
+        
+        if (!nameEl || !typeEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const type = typeEl.value;
+        const description = descriptionEl ? descriptionEl.value.trim() : '';
+        
+        if (!name || !type) {
+            showToast('Por favor completa todos los campos requeridos', 'warning');
+            return;
+        }
+        
         showLoader('Actualizando inversión...');
-        await apiRequest(`/investments/${id}`, {
+        await apiRequest(`/investments/${currentEditingInvestmentId}`, {
             method: 'PUT',
             body: JSON.stringify({
-                name: newName.trim(),
-                type: newType,
-                description: newDescription.trim() || null
+                name,
+                type,
+                description: description || null
             })
         });
         
         await loadUserData();
         updateDisplay();
         hideLoader();
+        closeEditInvestmentModal();
         showToast('Inversión actualizada exitosamente', 'success');
     } catch (error) {
         hideLoader();
         showToast('Error al actualizar inversión: ' + error.message, 'error');
     }
 }
+
+window.closeEditInvestmentModal = closeEditInvestmentModal;
 
 // Eliminar inversión
 async function deleteInvestment(id) {
@@ -4949,41 +5141,155 @@ function updateProperties() {
     });
 }
 
-// Editar propiedad
+// Editar propiedad - Abre modal con formulario pre-rellenado
 async function editProperty(id) {
     const property = properties.find(p => (p._id || p.id) === id);
     if (!property) return;
     
-    const newName = prompt('Nombre de la propiedad:', property.name);
-    if (!newName || newName.trim() === '') return;
+    currentEditingPropertyId = id;
     
-    const newType = prompt('Tipo (apartment/house/commercial/land/other):', property.type);
-    if (!newType) return;
+    // Crear o obtener modal
+    let modal = document.getElementById('editPropertyModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editPropertyModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px;">
+                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Propiedad</h2>
+                        <button onclick="closeEditPropertyModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editPropertyForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; max-height: calc(90vh - 100px); overflow-y: auto;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editPropertyName">Nombre de la Propiedad</label>
+                            <input type="text" id="editPropertyName" placeholder="Ej: Piso Calle Mayor 5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPropertyType">Tipo</label>
+                            <select id="editPropertyType" required>
+                                <option value="apartment">Piso/Apartamento</option>
+                                <option value="house">Casa</option>
+                                <option value="office">Oficina</option>
+                                <option value="commercial">Local Comercial</option>
+                                <option value="other">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label for="editPropertyAddress">Dirección (Opcional)</label>
+                            <input type="text" id="editPropertyAddress" placeholder="Ej: Calle Mayor 5, 3ºB, Madrid">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="editPropertyDescription">Descripción (Opcional)</label>
+                            <input type="text" id="editPropertyDescription" placeholder="Ej: Piso principal, alquiler">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditPropertyModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Propiedad</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditPropertyModal();
+            }
+        });
+        
+        const form = document.getElementById('editPropertyForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updatePropertyFromModal();
+            });
+        }
+    }
     
-    const newAddress = prompt('Dirección (opcional):', property.address || '');
-    const newDescription = prompt('Descripción (opcional):', property.description || '');
+    // Pre-llenar formulario
+    const nameEl = document.getElementById('editPropertyName');
+    const typeEl = document.getElementById('editPropertyType');
+    const addressEl = document.getElementById('editPropertyAddress');
+    const descriptionEl = document.getElementById('editPropertyDescription');
+    
+    if (!nameEl || !typeEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
+        return;
+    }
+    
+    nameEl.value = property.name;
+    typeEl.value = property.type;
+    if (addressEl) addressEl.value = property.address || '';
+    if (descriptionEl) descriptionEl.value = property.description || '';
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de propiedad
+function closeEditPropertyModal() {
+    const modal = document.getElementById('editPropertyModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingPropertyId = null;
+    }
+}
+
+// Actualizar propiedad desde modal
+async function updatePropertyFromModal() {
+    if (!currentEditingPropertyId) return;
     
     try {
+        const nameEl = document.getElementById('editPropertyName');
+        const typeEl = document.getElementById('editPropertyType');
+        const addressEl = document.getElementById('editPropertyAddress');
+        const descriptionEl = document.getElementById('editPropertyDescription');
+        
+        if (!nameEl || !typeEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const type = typeEl.value;
+        const address = addressEl ? addressEl.value.trim() : '';
+        const description = descriptionEl ? descriptionEl.value.trim() : '';
+        
+        if (!name || !type) {
+            showToast('Por favor completa todos los campos requeridos', 'warning');
+            return;
+        }
+        
         showLoader('Actualizando propiedad...');
-        await apiRequest(`/properties/${id}`, {
+        await apiRequest(`/properties/${currentEditingPropertyId}`, {
             method: 'PUT',
             body: JSON.stringify({
-                name: newName.trim(),
-                type: newType,
-                address: newAddress.trim() || null,
-                description: newDescription.trim() || null
+                name,
+                type,
+                address: address || null,
+                description: description || null
             })
         });
         
         await loadUserData();
         updateDisplay();
         hideLoader();
+        closeEditPropertyModal();
         showToast('Propiedad actualizada exitosamente', 'success');
     } catch (error) {
         hideLoader();
         showToast('Error al actualizar propiedad: ' + error.message, 'error');
     }
 }
+
+window.closeEditPropertyModal = closeEditPropertyModal;
 
 // Eliminar propiedad
 async function deleteProperty(id) {
@@ -5189,52 +5495,175 @@ async function processUpdateAccountBalance() {
     }
 }
 
-// Editar cuenta (completo)
+// Editar cuenta - Abre modal con formulario pre-rellenado
 async function editAccount(id) {
     const account = accounts.find(a => (a._id || a.id) === id);
     if (!account) return;
     
-    const newName = prompt('Nombre de la cuenta:', account.name);
-    if (!newName || newName.trim() === '') return;
+    currentEditingAccountId = id;
     
-    const newType = prompt('Tipo (checking/savings/credit/investment/other):', account.type);
-    if (!newType) return;
+    // Crear o obtener modal
+    let modal = document.getElementById('editAccountModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editAccountModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px;">
+                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Cuenta</h2>
+                        <button onclick="closeEditAccountModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editAccountForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; max-height: calc(90vh - 100px); overflow-y: auto;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editAccountName">Nombre de la Cuenta</label>
+                            <input type="text" id="editAccountName" placeholder="Ej: Cuenta Nómina BBVA" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editAccountType">Tipo de Cuenta</label>
+                            <select id="editAccountType" required>
+                                <option value="checking">Cuenta Corriente</option>
+                                <option value="savings">Cuenta de Ahorros</option>
+                                <option value="credit">Tarjeta de Crédito</option>
+                                <option value="investment">Cuenta de Inversión</option>
+                                <option value="other">Otra</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editAccountBank">Banco (Opcional)</label>
+                            <input type="text" id="editAccountBank" placeholder="Ej: BBVA, Santander, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label for="editAccountNumber">Número de Cuenta (Opcional)</label>
+                            <input type="text" id="editAccountNumber" placeholder="Últimos 4 dígitos o referencia">
+                        </div>
+                        <div class="form-group">
+                            <label for="editAccountBalance">Saldo Actual (€)</label>
+                            <input type="number" id="editAccountBalance" step="0.01" required placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="editAccountDescription">Descripción (Opcional)</label>
+                            <input type="text" id="editAccountDescription" placeholder="Ej: Cuenta principal para gastos diarios">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditAccountModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Cuenta</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditAccountModal();
+            }
+        });
+        
+        const form = document.getElementById('editAccountForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateAccountFromModal();
+            });
+        }
+    }
     
-    const newBalance = prompt('Saldo actual (€):', account.balance || 0);
-    if (newBalance === null) return;
-    const balanceValue = parseFloat(newBalance);
-    if (isNaN(balanceValue)) {
-        showToast('Por favor ingresa un saldo válido', 'error');
+    // Pre-llenar formulario
+    const nameEl = document.getElementById('editAccountName');
+    const typeEl = document.getElementById('editAccountType');
+    const bankEl = document.getElementById('editAccountBank');
+    const accountNumberEl = document.getElementById('editAccountNumber');
+    const balanceEl = document.getElementById('editAccountBalance');
+    const descriptionEl = document.getElementById('editAccountDescription');
+    
+    if (!nameEl || !typeEl || !balanceEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
         return;
     }
     
-    const newBank = prompt('Banco (opcional):', account.bank || '');
-    const newAccountNumber = prompt('Número de cuenta (opcional):', account.account_number || '');
-    const newDescription = prompt('Descripción (opcional):', account.description || '');
+    nameEl.value = account.name;
+    typeEl.value = account.type;
+    if (bankEl) bankEl.value = account.bank || '';
+    if (accountNumberEl) accountNumberEl.value = account.account_number || '';
+    balanceEl.value = account.balance || 0;
+    if (descriptionEl) descriptionEl.value = account.description || '';
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de cuenta
+function closeEditAccountModal() {
+    const modal = document.getElementById('editAccountModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingAccountId = null;
+    }
+}
+
+// Actualizar cuenta desde modal
+async function updateAccountFromModal() {
+    if (!currentEditingAccountId) return;
     
     try {
+        const nameEl = document.getElementById('editAccountName');
+        const typeEl = document.getElementById('editAccountType');
+        const bankEl = document.getElementById('editAccountBank');
+        const accountNumberEl = document.getElementById('editAccountNumber');
+        const balanceEl = document.getElementById('editAccountBalance');
+        const descriptionEl = document.getElementById('editAccountDescription');
+        
+        if (!nameEl || !typeEl || !balanceEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const type = typeEl.value;
+        const bank = bankEl ? bankEl.value.trim() : '';
+        const accountNumber = accountNumberEl ? accountNumberEl.value.trim() : '';
+        const balance = parseFloat(balanceEl.value);
+        const description = descriptionEl ? descriptionEl.value.trim() : '';
+        
+        if (!name || !type || isNaN(balance)) {
+            showToast('Por favor completa todos los campos requeridos correctamente', 'warning');
+            return;
+        }
+        
         showLoader('Actualizando cuenta...');
-        await apiRequest(`/accounts/${id}`, {
+        await apiRequest(`/accounts/${currentEditingAccountId}`, {
             method: 'PUT',
             body: JSON.stringify({
-                name: newName.trim(),
-                type: newType,
-                balance: balanceValue,
-                bank: newBank.trim() || null,
-                account_number: newAccountNumber.trim() || null,
-                description: newDescription.trim() || null
+                name,
+                type,
+                balance,
+                bank: bank || null,
+                account_number: accountNumber || null,
+                description: description || null
             })
         });
         
         await loadUserData();
         updateDisplay();
         hideLoader();
+        closeEditAccountModal();
         showToast('Cuenta actualizada exitosamente', 'success');
     } catch (error) {
         hideLoader();
         showToast('Error al actualizar cuenta: ' + error.message, 'error');
     }
 }
+
+window.closeEditAccountModal = closeEditAccountModal;
 
 // Eliminar cuenta
 async function deleteAccount(id) {
@@ -5541,73 +5970,235 @@ async function deleteAsset(id) {
 window.editAsset = editAsset;
 window.deleteAsset = deleteAsset;
 
-// Editar préstamo
+// Editar préstamo - Abre modal con formulario pre-rellenado
 async function editLoan(id) {
     const loan = loans.find(l => (l._id || l.id) === id);
     if (!loan) return;
     
-    const newName = prompt('Nombre del préstamo:', loan.name);
-    if (!newName || newName.trim() === '') return;
+    currentEditingLoanId = id;
     
-    const newType = prompt('Tipo (debt/credit):', loan.type);
-    if (!newType) return;
+    // Crear o obtener modal
+    let modal = document.getElementById('editLoanModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editLoanModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 800px;">
+                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Préstamo</h2>
+                        <button onclick="closeEditLoanModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editLoanForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; max-height: calc(90vh - 100px); overflow-y: auto;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLoanName">Nombre del Préstamo</label>
+                            <input type="text" id="editLoanName" placeholder="Ej: Hipoteca vivienda" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanType">Tipo</label>
+                            <select id="editLoanType" required>
+                                <option value="debt">Deuda (Debo)</option>
+                                <option value="credit">Crédito (Me deben)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLoanPrincipal">Monto Principal (€)</label>
+                            <input type="number" id="editLoanPrincipal" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanInterestRate">TIN - Tipo de Interés Nominal (%)</label>
+                            <input type="number" id="editLoanInterestRate" step="0.01" min="0" max="100" required>
+                            <small style="color: var(--text-tertiary);">Interés puro sin comisiones</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanTAE">TAE - Tasa Anual Equivalente (%)</label>
+                            <input type="number" id="editLoanTAE" step="0.01" min="0" max="100" placeholder="Opcional">
+                            <small style="color: var(--text-tertiary); font-weight: 600;">⚠️ IMPORTANTE: Incluye comisiones y gastos. Es el costo REAL del préstamo.</small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLoanStartDate">Fecha de Inicio</label>
+                            <input type="date" id="editLoanStartDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanEndDate">Fecha de Fin</label>
+                            <input type="date" id="editLoanEndDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanMonthlyPayment">Pago Mensual (€)</label>
+                            <input type="number" id="editLoanMonthlyPayment" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLoanOpeningCommission">Comisión de Apertura (€)</label>
+                            <input type="number" id="editLoanOpeningCommission" step="0.01" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanEarlyPaymentCommission">Comisión por Amortización Anticipada (%)</label>
+                            <input type="number" id="editLoanEarlyPaymentCommission" step="0.01" min="0" max="100" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanPaymentDay">Día de Pago (1-31)</label>
+                            <input type="number" id="editLoanPaymentDay" min="1" max="31" value="1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="editLoanDescription">Descripción (Opcional)</label>
+                            <input type="text" id="editLoanDescription" placeholder="Ej: Hipoteca principal">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditLoanModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Préstamo</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditLoanModal();
+            }
+        });
+        
+        const form = document.getElementById('editLoanForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateLoanFromModal();
+            });
+        }
+    }
     
-    const newPrincipal = prompt('Principal (€):', loan.principal);
-    if (!newPrincipal) return;
-    const principalValue = parseFloat(newPrincipal);
-    if (isNaN(principalValue) || principalValue <= 0) {
-        showToast('Por favor ingresa un principal válido', 'error');
+    // Pre-llenar formulario
+    const nameEl = document.getElementById('editLoanName');
+    const typeEl = document.getElementById('editLoanType');
+    const principalEl = document.getElementById('editLoanPrincipal');
+    const interestRateEl = document.getElementById('editLoanInterestRate');
+    const taeEl = document.getElementById('editLoanTAE');
+    const startDateEl = document.getElementById('editLoanStartDate');
+    const endDateEl = document.getElementById('editLoanEndDate');
+    const monthlyPaymentEl = document.getElementById('editLoanMonthlyPayment');
+    const openingCommissionEl = document.getElementById('editLoanOpeningCommission');
+    const earlyPaymentCommissionEl = document.getElementById('editLoanEarlyPaymentCommission');
+    const paymentDayEl = document.getElementById('editLoanPaymentDay');
+    const descriptionEl = document.getElementById('editLoanDescription');
+    
+    if (!nameEl || !typeEl || !principalEl || !interestRateEl || !startDateEl || !endDateEl || !monthlyPaymentEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
         return;
     }
     
-    const newInterestRate = prompt('Tasa de interés anual (%):', loan.interest_rate);
-    if (!newInterestRate) return;
-    const interestValue = parseFloat(newInterestRate);
-    if (isNaN(interestValue) || interestValue < 0) {
-        showToast('Por favor ingresa una tasa de interés válida', 'error');
-        return;
+    nameEl.value = loan.name;
+    typeEl.value = loan.type;
+    principalEl.value = loan.principal;
+    interestRateEl.value = loan.interest_rate;
+    if (taeEl) taeEl.value = loan.tae || '';
+    startDateEl.value = loan.start_date;
+    endDateEl.value = loan.end_date;
+    monthlyPaymentEl.value = loan.monthly_payment;
+    if (openingCommissionEl) openingCommissionEl.value = loan.opening_commission || 0;
+    if (earlyPaymentCommissionEl) earlyPaymentCommissionEl.value = loan.early_payment_commission || 0;
+    if (paymentDayEl) paymentDayEl.value = loan.payment_day || 1;
+    if (descriptionEl) descriptionEl.value = loan.description || '';
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de préstamo
+function closeEditLoanModal() {
+    const modal = document.getElementById('editLoanModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingLoanId = null;
     }
-    
-    const newMonthlyPayment = prompt('Pago mensual (€):', loan.monthly_payment);
-    if (!newMonthlyPayment) return;
-    const monthlyValue = parseFloat(newMonthlyPayment);
-    if (isNaN(monthlyValue) || monthlyValue <= 0) {
-        showToast('Por favor ingresa un pago mensual válido', 'error');
-        return;
-    }
-    
-    const newStartDate = prompt('Fecha de inicio (YYYY-MM-DD):', loan.start_date);
-    if (!newStartDate) return;
-    
-    const newDescription = prompt('Descripción (opcional):', loan.description || '');
+}
+
+// Actualizar préstamo desde modal
+async function updateLoanFromModal() {
+    if (!currentEditingLoanId) return;
     
     try {
+        const loan = loans.find(l => (l._id || l.id) === currentEditingLoanId);
+        if (!loan) return;
+        
+        const nameEl = document.getElementById('editLoanName');
+        const typeEl = document.getElementById('editLoanType');
+        const principalEl = document.getElementById('editLoanPrincipal');
+        const interestRateEl = document.getElementById('editLoanInterestRate');
+        const taeEl = document.getElementById('editLoanTAE');
+        const startDateEl = document.getElementById('editLoanStartDate');
+        const endDateEl = document.getElementById('editLoanEndDate');
+        const monthlyPaymentEl = document.getElementById('editLoanMonthlyPayment');
+        const openingCommissionEl = document.getElementById('editLoanOpeningCommission');
+        const earlyPaymentCommissionEl = document.getElementById('editLoanEarlyPaymentCommission');
+        const paymentDayEl = document.getElementById('editLoanPaymentDay');
+        const descriptionEl = document.getElementById('editLoanDescription');
+        
+        if (!nameEl || !typeEl || !principalEl || !interestRateEl || !startDateEl || !endDateEl || !monthlyPaymentEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const type = typeEl.value;
+        const principal = parseFloat(principalEl.value);
+        const interestRate = parseFloat(interestRateEl.value);
+        const tae = taeEl && taeEl.value ? parseFloat(taeEl.value) : null;
+        const startDate = startDateEl.value;
+        const endDate = endDateEl.value;
+        const monthlyPayment = parseFloat(monthlyPaymentEl.value);
+        const openingCommission = openingCommissionEl ? parseFloat(openingCommissionEl.value) || 0 : 0;
+        const earlyPaymentCommission = earlyPaymentCommissionEl ? parseFloat(earlyPaymentCommissionEl.value) || 0 : 0;
+        const paymentDay = paymentDayEl ? parseInt(paymentDayEl.value) || 1 : 1;
+        const description = descriptionEl ? descriptionEl.value.trim() : '';
+        
+        if (!name || !type || !principal || principal <= 0 || !interestRate || interestRate < 0 || !startDate || !endDate || !monthlyPayment || monthlyPayment <= 0) {
+            showToast('Por favor completa todos los campos requeridos correctamente', 'warning');
+            return;
+        }
+        
         showLoader('Actualizando préstamo...');
-        await apiRequest(`/loans/${id}`, {
+        await apiRequest(`/loans/${currentEditingLoanId}`, {
             method: 'PUT',
             body: JSON.stringify({
-                name: newName.trim(),
-                type: newType,
-                principal: principalValue,
-                interest_rate: interestValue,
-                monthly_payment: monthlyValue,
-                start_date: newStartDate,
-                description: newDescription.trim() || null,
-                opening_commission: loan.opening_commission || 0,
-                early_payment_commission: loan.early_payment_commission || 0,
-                payment_day: loan.payment_day || 1
+                name,
+                type,
+                principal,
+                interest_rate: interestRate,
+                tae: tae,
+                start_date: startDate,
+                end_date: endDate,
+                monthly_payment: monthlyPayment,
+                opening_commission: openingCommission,
+                early_payment_commission: earlyPaymentCommission,
+                payment_day: paymentDay,
+                description: description || null
             })
         });
         
         await loadUserData();
         updateDisplay();
         hideLoader();
+        closeEditLoanModal();
         showToast('Préstamo actualizado exitosamente', 'success');
     } catch (error) {
         hideLoader();
         showToast('Error al actualizar préstamo: ' + error.message, 'error');
     }
 }
+
+window.closeEditLoanModal = closeEditLoanModal;
 
 // Eliminar préstamo
 async function deleteLoan(id) {
