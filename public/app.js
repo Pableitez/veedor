@@ -3167,7 +3167,7 @@ function updateLoans() {
         
         const card = document.createElement('div');
         card.className = 'envelope-card';
-        card.style.border = loan.type === 'debt' ? '2px solid #ef4444' : '2px solid #10b981';
+        card.style.border = loan.type === 'debt' ? '2px solid var(--danger)' : '2px solid var(--success)';
         card.style.position = 'relative';
         card.innerHTML = `
             <h3>${loan.name} <span style="font-size: 12px; color: ${loan.type === 'debt' ? '#ef4444' : '#10b981'}">(${loan.type === 'debt' ? 'Debo' : 'Me deben'})</span></h3>
@@ -4332,6 +4332,8 @@ window.updateInvestmentValue = updateInvestmentValue;
 window.deleteInvestment = deleteInvestment;
 window.editAccount = editAccount;
 window.deleteAccount = deleteAccount;
+window.showUpdateAccountBalanceModal = showUpdateAccountBalanceModal;
+window.closeUpdateAccountBalanceModal = closeUpdateAccountBalanceModal;
 
 // ==================== PATRIMONIO ====================
 
