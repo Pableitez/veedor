@@ -1490,6 +1490,98 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
     }
 });
 
+// Actualizar transacción
+app.put('/api/transactions/:id', authenticateToken, async (req, res) => {
+    try {
+        // 1. Validar conexión a MongoDB
+        if (mongoose.connection.readyState !== 1) {
+            console.error('❌ MongoDB no está conectado. Estado:', mongoose.connection.readyState);
+            return res.status(503).json({ error: 'Base de datos no disponible. Intenta de nuevo en unos momentos.' });
+        }
+        
+        // 2. Validar que req.user existe
+        if (!req.user || !req.user.userId) {
+            console.error('❌ req.user o req.user.userId no existe');
+            return res.status(401).json({ error: 'Usuario no autenticado' });
+        }
+        
+        console.log('📥 PUT /api/transactions/:id - Recibido');
+        console.log('📥 Transaction ID:', req.params.id);
+        console.log('📥 req.user.userId:', req.user.userId);
+        console.log('📥 req.body completo:', JSON.stringify(req.body, null, 2));
+        
+        // 3. Buscar la transacción
+        const transaction = await Transaction.findOne({
+            _id: req.params.id,
+            user_id: req.user.userId
+        });
+        
+        if (!transaction) {
+            return res.status(404).json({ error: 'Transacción no encontrada' });
+        }
+        
+        // 4. Extraer datos del body
+        const { type, date, amount, categoryGeneral, categorySpecific, envelope, account_id, investment_id, property_id, description } = req.body;
+        
+        // 5. Validar campos requeridos
+        if (!type || !date || amount === undefined || amount === null || !categoryGeneral || !categorySpecific) {
+            console.log('❌ Validación fallida - campos requeridos faltantes');
+            return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes' });
+        }
+        
+        // 6. Validar tipo
+        if (type !== 'income' && type !== 'expense') {
+            console.log('❌ Validación fallida - tipo inválido:', type);
+            return res.status(400).json({ error: 'El tipo debe ser income o expense' });
+        }
+        
+        // 7. Validar y convertir monto
+        const amountNum = parseFloat(amount);
+        if (isNaN(amountNum) || amountNum <= 0) {
+            console.log('❌ Validación fallida - monto inválido:', amount);
+            return res.status(400).json({ error: 'El monto debe ser un número mayor a 0' });
+        }
+        
+        // 8. Normalizar campos opcionales
+        const normalizedEnvelope = (envelope && typeof envelope === 'string' && envelope.trim() !== '') ? envelope.trim() : null;
+        const normalizedAccountId = (account_id && typeof account_id === 'string' && account_id.trim() !== '') ? account_id.trim() : null;
+        const normalizedInvestmentId = (investment_id && typeof investment_id === 'string' && investment_id.trim() !== '') ? investment_id.trim() : null;
+        const normalizedPropertyId = (property_id && typeof property_id === 'string' && property_id.trim() !== '') ? property_id.trim() : null;
+        const normalizedDescription = (description && typeof description === 'string' && description.trim() !== '') ? description.trim() : null;
+        
+        // 9. Calcular monto final
+        const finalAmount = type === 'expense' ? -Math.abs(amountNum) : Math.abs(amountNum);
+        
+        // 10. Actualizar la transacción
+        transaction.type = type;
+        transaction.date = date;
+        transaction.amount = finalAmount;
+        transaction.category_general = categoryGeneral;
+        transaction.category_specific = categorySpecific;
+        transaction.envelope = normalizedEnvelope;
+        transaction.account_id = normalizedAccountId;
+        transaction.investment_id = normalizedInvestmentId;
+        transaction.property_id = normalizedPropertyId;
+        transaction.description = normalizedDescription;
+        
+        await transaction.save();
+        
+        console.log('✅ Transacción actualizada exitosamente. ID:', transaction._id);
+        res.json(transaction);
+    } catch (error) {
+        console.error('❌ ERROR actualizando transacción:');
+        console.error('❌ Error name:', error.name);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error stack:', error.stack);
+        
+        if (error.name === 'CastError') {
+            return res.status(400).json({ error: 'ID de transacción inválido' });
+        }
+        
+        res.status(500).json({ error: 'Error al actualizar transacción', details: error.message });
+    }
+});
+
 // Eliminar transacción
 app.delete('/api/transactions/:id', authenticateToken, async (req, res) => {
     try {
