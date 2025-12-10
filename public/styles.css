@@ -3201,6 +3201,26 @@ tbody tr:last-child td {
 }
 
 /* ============================================
+   BÚSQUEDA GLOBAL - MEJORAR VISIBILIDAD
+   ============================================ */
+#globalSearch {
+    color: white !important;
+    font-weight: 500 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+}
+
+#globalSearch::placeholder {
+    color: rgba(255,255,255,0.85) !important;
+    font-weight: 400 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15) !important;
+    opacity: 1 !important;
+}
+
+#globalSearch:focus::placeholder {
+    color: rgba(255,255,255,0.7) !important;
+}
+
+/* ============================================
    UTILIDADES
    ============================================ */
 

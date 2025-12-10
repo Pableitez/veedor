@@ -9111,7 +9111,7 @@ function closeTermsModal() {
 // Cerrar modales al hacer clic fuera
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
-        ['privacyModal', 'cookiesModal', 'termsModal'].forEach(modalId => {
+        ['privacyModal', 'cookiesModal', 'termsModal', 'summaryDetailsModal'].forEach(modalId => {
             const modal = document.getElementById(modalId);
             if (modal) {
                 modal.addEventListener('click', (e) => {
@@ -9119,6 +9119,7 @@ if (typeof document !== 'undefined') {
                         if (modalId === 'privacyModal') closePrivacyModal();
                         if (modalId === 'cookiesModal') closeCookiesModal();
                         if (modalId === 'termsModal') closeTermsModal();
+                        if (modalId === 'summaryDetailsModal') closeSummaryDetails();
                     }
                 });
             }
