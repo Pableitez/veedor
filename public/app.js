@@ -2734,7 +2734,10 @@ function updateTransactionsTable() {
             <td>${propertyName}</td>
             <td>${transaction.envelope || '-'}</td>
             <td style="font-weight: 600; color: ${transaction.amount >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(transaction.amount)}</td>
-            <td><button class="btn-danger" onclick="deleteTransaction('${transaction._id || transaction.id}')">Eliminar</button></td>
+            <td style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-secondary" onclick="editTransaction('${transaction._id || transaction.id}')" style="flex: 1; min-width: 80px;">Editar</button>
+                <button class="btn-danger" onclick="deleteTransaction('${transaction._id || transaction.id}')" style="flex: 1; min-width: 80px;">Eliminar</button>
+            </td>
         `;
         tbody.appendChild(row);
     });
@@ -3197,8 +3200,46 @@ async function deleteEnvelope(id) {
     }
 }
 
+// Editar sobre
+async function editEnvelope(id) {
+    const envelope = envelopes.find(e => (e._id || e.id) === id);
+    if (!envelope) return;
+    
+    const newName = prompt('Nombre del sobre:', envelope.name);
+    if (!newName || newName.trim() === '') return;
+    
+    const newBudget = prompt('Presupuesto (€):', envelope.budget || 0);
+    if (newBudget === null) return;
+    
+    const budgetValue = parseFloat(newBudget);
+    if (isNaN(budgetValue) || budgetValue < 0) {
+        showToast('Por favor ingresa un presupuesto válido', 'error');
+        return;
+    }
+    
+    try {
+        showLoader('Actualizando sobre...');
+        await apiRequest(`/envelopes/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: newName.trim(),
+                budget: budgetValue
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Sobre actualizado exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar sobre: ' + error.message, 'error');
+    }
+}
+
 // Exponer funciones al scope global para onclick handlers
 window.deleteEnvelope = deleteEnvelope;
+window.editEnvelope = editEnvelope;
 
 // Agregar préstamo
 // Calcular cuota mensual usando fórmula de amortización francesa
@@ -3496,9 +3537,13 @@ function updateLoans() {
                         </tbody>
                     </table>
                 </div>
-                <button onclick="showLoanDetails('${loan._id || loan.id}')" class="btn-secondary" style="width: 100%; margin-top: 12px; font-size: 13px; padding: 8px;">
-                    Ver Cuadro de Amortización Completo
-                </button>
+                <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+                    <button class="btn-secondary" onclick="editLoan('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Editar</button>
+                    <button onclick="showLoanDetails('${loan._id || loan.id}')" class="btn-secondary" style="flex: 1; min-width: 100px; font-size: 13px; padding: 8px;">
+                        Ver Cuadro
+                    </button>
+                    <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Eliminar</button>
+                </div>
             </div>
             
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 10px;">
@@ -3962,10 +4007,11 @@ function updateInvestments() {
                 </div>
             ` : ''}
             
-            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
-                <button class="btn-primary" onclick="addMoneyToInvestment('${investment._id || investment.id}')" style="flex: 1;">Añadir Dinero</button>
-                <button class="btn-secondary" onclick="updateInvestmentValue('${investment._id || investment.id}')" style="flex: 1;">Actualizar Valor</button>
-                <button class="btn-danger" onclick="deleteInvestment('${investment._id || investment.id}')" style="flex: 1;">Eliminar</button>
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+                <button class="btn-secondary" onclick="editInvestment('${investment._id || investment.id}')" style="flex: 1; min-width: 120px;">Editar</button>
+                <button class="btn-primary" onclick="addMoneyToInvestment('${investment._id || investment.id}')" style="flex: 1; min-width: 120px;">Añadir Dinero</button>
+                <button class="btn-secondary" onclick="updateInvestmentValue('${investment._id || investment.id}')" style="flex: 1; min-width: 120px;">Actualizar Valor</button>
+                <button class="btn-danger" onclick="deleteInvestment('${investment._id || investment.id}')" style="flex: 1; min-width: 120px;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -4280,25 +4326,31 @@ async function editProperty(id) {
     const newName = prompt('Nombre de la propiedad:', property.name);
     if (!newName || newName.trim() === '') return;
     
+    const newType = prompt('Tipo (apartment/house/commercial/land/other):', property.type);
+    if (!newType) return;
+    
     const newAddress = prompt('Dirección (opcional):', property.address || '');
     const newDescription = prompt('Descripción (opcional):', property.description || '');
     
     try {
+        showLoader('Actualizando propiedad...');
         await apiRequest(`/properties/${id}`, {
             method: 'PUT',
             body: JSON.stringify({
                 name: newName.trim(),
+                type: newType,
                 address: newAddress.trim() || null,
-                description: newDescription.trim() || null,
-                type: property.type
+                description: newDescription.trim() || null
             })
         });
         
         await loadUserData();
         updateDisplay();
-        alert('✅ Propiedad actualizada exitosamente');
+        hideLoader();
+        showToast('Propiedad actualizada exitosamente', 'success');
     } catch (error) {
-        alert('Error al actualizar propiedad: ' + error.message);
+        hideLoader();
+        showToast('Error al actualizar propiedad: ' + error.message, 'error');
     }
 }
 
