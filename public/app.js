@@ -3170,7 +3170,7 @@ function updateLoans() {
         card.style.border = loan.type === 'debt' ? '2px solid var(--danger)' : '2px solid var(--success)';
         card.style.position = 'relative';
         card.innerHTML = `
-            <h3>${loan.name} <span style="font-size: 12px; color: ${loan.type === 'debt' ? '#ef4444' : '#10b981'}">(${loan.type === 'debt' ? 'Debo' : 'Me deben'})</span></h3>
+            <h3 style="color: var(--text-primary);">${loan.name} <span style="font-size: 12px; color: ${loan.type === 'debt' ? 'var(--danger)' : 'var(--success)'}">(${loan.type === 'debt' ? 'Debo' : 'Me deben'})</span></h3>
             
             <div style="margin: 10px 0; padding: 12px; background: ${loan.type === 'debt' ? '#fef2f2' : '#f0fdf4'}; border-radius: 6px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; margin-bottom: 12px;">
