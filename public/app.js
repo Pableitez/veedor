@@ -2487,19 +2487,40 @@ async function updateSummary() {
     
     // Actualizar meta de ahorro
     const savingsGoalEl = document.getElementById('savingsGoal');
+    const savingsGoalProgress = document.getElementById('savingsGoalProgress');
+    const savingsGoalProgressBar = document.getElementById('savingsGoalProgressBar');
+    const savingsGoalProgressText = document.getElementById('savingsGoalProgressText');
+    
     if (savingsGoalEl) {
-        if (savingsGoal) {
-            const progress = (totalBalance / savingsGoal) * 100;
-            savingsGoalEl.textContent = `${formatCurrency(totalBalance)} / ${formatCurrency(savingsGoal)}`;
-            savingsGoalEl.style.fontSize = '14px';
-            if (progress >= 100) {
-                savingsGoalEl.style.color = '#10b981';
-                savingsGoalEl.textContent += ' ✅ ¡Meta alcanzada!';
-            } else {
-                savingsGoalEl.style.color = '#fbbf24';
+        if (savingsGoal && savingsGoal > 0) {
+            savingsGoalEl.textContent = formatCurrency(savingsGoal);
+            
+            // Calcular progreso basado en el ahorro del período
+            const progress = Math.min((periodSavings / savingsGoal) * 100, 100);
+            const isAchieved = periodSavings >= savingsGoal;
+            
+            if (savingsGoalProgress) {
+                savingsGoalProgress.style.display = 'block';
+                if (savingsGoalProgressBar) {
+                    savingsGoalProgressBar.style.width = `${Math.max(0, progress)}%`;
+                    savingsGoalProgressBar.style.background = isAchieved ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)';
+                }
+                if (savingsGoalProgressText) {
+                    if (isAchieved) {
+                        savingsGoalProgressText.textContent = `¡Meta alcanzada! 🎉`;
+                        savingsGoalProgressText.style.color = 'rgba(255,255,255,1)';
+                    } else {
+                        const remaining = savingsGoal - periodSavings;
+                        savingsGoalProgressText.textContent = `${progress.toFixed(1)}% - Faltan ${formatCurrency(remaining)}`;
+                        savingsGoalProgressText.style.color = 'rgba(255,255,255,0.9)';
+                    }
+                }
             }
         } else {
             savingsGoalEl.textContent = 'Sin meta';
+            if (savingsGoalProgress) {
+                savingsGoalProgress.style.display = 'none';
+            }
         }
     }
 }
