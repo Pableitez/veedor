@@ -1166,6 +1166,29 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 }
 
 @media (max-width: 768px) {
+    /* Contenedor de checkbox de aportes periódicos en formulario */
+    .periodic-contribution-checkbox-container {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: visible !important;
+    }
+    
+    .periodic-contribution-checkbox-container input[type="checkbox"] {
+        flex-shrink: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    .periodic-contribution-checkbox-container label {
+        flex: 1 1 100% !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+        font-size: 14px !important;
+    }
+    
     /* Contenedor de aportaciones periódicas */
     .periodic-contribution-container {
         overflow: visible !important;
