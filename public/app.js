@@ -3209,10 +3209,10 @@ function updateLoans() {
                         <strong>Comisiones Totales:</strong>
                         <span>${formatCurrency(totalCommissions)}</span>
                     </div>
-                    <div style="margin-top: 8px; padding: 8px; background: ${loan.type === 'debt' ? '#fee2e2' : '#dcfce7'}; border-radius: 4px; border-left: 3px solid ${loan.type === 'debt' ? '#ef4444' : '#10b981'};">
+                    <div style="margin-top: 8px; padding: 8px; background: ${loan.type === 'debt' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)'}; border-radius: 4px; border-left: 3px solid ${loan.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; border: 1px solid var(--border-color);">
                         <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 4px;">
-                            <span>💰 Costo Real del Préstamo:</span>
-                            <span style="color: ${loan.type === 'debt' ? '#ef4444' : '#10b981'}; font-size: 16px;">${formatCurrency(realCost)}</span>
+                            <span style="color: var(--text-primary);">💰 Costo Real del Préstamo:</span>
+                            <span style="color: ${loan.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; font-size: 16px;">${formatCurrency(realCost)}</span>
                         </div>
                         <div style="font-size: 11px; color: var(--text-tertiary);">
                             Intereses (${formatCurrency(totalInterestProjected)}) + Comisiones (${formatCurrency(totalCommissions)})
