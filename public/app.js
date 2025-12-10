@@ -3194,8 +3194,8 @@ function updateLoans() {
             <div style="margin: 10px 0; padding: 12px; background: #f3f4f6; border-radius: 6px;">
                 <div style="font-size: 13px; line-height: 1.8;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <strong>Capital Restante:</strong>
-                        <span style="color: ${remainingPrincipal > 0 ? '#ef4444' : '#10b981'}; font-size: 18px; font-weight: bold;">${formatCurrency(remainingPrincipal)}</span>
+                        <strong style="color: var(--text-primary);">Capital Restante:</strong>
+                        <span style="color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'}; font-size: 18px; font-weight: bold;">${formatCurrency(remainingPrincipal)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
                         <strong>Total Pagado:</strong>
