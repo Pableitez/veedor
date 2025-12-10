@@ -7856,8 +7856,19 @@ function updateModalChart() {
             return false;
         }
         
-        if (!chartToRender.data || !chartToRender.data.labels || chartToRender.data.labels.length === 0) {
-            console.warn('Gráfico sin datos o sin labels:', currentChartType);
+        // Verificar que el gráfico tenga datos válidos
+        if (!chartToRender.data) {
+            console.warn('Gráfico sin data:', currentChartType);
+            return false;
+        }
+        
+        // Para algunos tipos de gráficos, verificar datasets en lugar de labels
+        const hasValidData = (chartToRender.data.labels && chartToRender.data.labels.length > 0) ||
+                             (chartToRender.data.datasets && chartToRender.data.datasets.length > 0 && 
+                              chartToRender.data.datasets.some(ds => ds.data && ds.data.length > 0));
+        
+        if (!hasValidData) {
+            console.warn('Gráfico sin datos válidos:', currentChartType, chartToRender.data);
             return false;
         }
         
@@ -7867,38 +7878,50 @@ function updateModalChart() {
             chartModalChart = null;
         }
         
-        // Asegurar que el canvas tenga dimensiones
+        // Asegurar que el canvas tenga dimensiones correctas
         const container = modalCanvas.parentElement;
         if (container) {
-            container.style.height = '400px';
+            container.style.height = '500px';
             container.style.width = '100%';
+            container.style.position = 'relative';
         }
         
-        // Clonar datos del gráfico original
+        // Limpiar el canvas
+        const ctx = modalCanvas.getContext('2d');
+        if (ctx) {
+            ctx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
+        }
+        
+        // Clonar datos del gráfico original de forma profunda
         const clonedData = JSON.parse(JSON.stringify(chartToRender.data));
         
-        // Crear nuevo gráfico en el modal
+        // Clonar opciones del gráfico original
+        const clonedOptions = JSON.parse(JSON.stringify(chartToRender.options || {}));
+        
+        // Crear nuevo gráfico en el modal con las mismas opciones pero adaptadas para el modal
         try {
             chartModalChart = new Chart(modalCanvas, {
                 type: chartToRender.config.type,
                 data: clonedData,
                 options: {
-                    ...chartToRender.options,
+                    ...clonedOptions,
                     responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 2,
+                    maintainAspectRatio: false,
                     plugins: {
-                        ...chartToRender.options.plugins,
+                        ...clonedOptions.plugins,
                         legend: {
+                            ...(clonedOptions.plugins?.legend || {}),
                             display: true,
                             position: 'top'
                         }
-                    }
+                    },
+                    scales: clonedOptions.scales || {}
                 }
             });
+            console.log('Gráfico renderizado exitosamente en modal:', currentChartType);
             return true;
         } catch (error) {
-            console.error('Error al crear gráfico en modal:', error);
+            console.error('Error al crear gráfico en modal:', error, error.stack);
             return false;
         }
     };
@@ -7906,23 +7929,24 @@ function updateModalChart() {
     // Actualizar el gráfico original con el nuevo período y filtros primero
     updateSingleChart(currentChartType);
     
-    // Intentar renderizar inmediatamente
-    if (renderChartInModal()) {
-        return; // Éxito, salir
-    }
-    
-    // Si no se pudo renderizar, esperar y reintentar
-    let attempts = 0;
-    const maxAttempts = 10;
-    const checkInterval = setInterval(() => {
-        attempts++;
-        if (renderChartInModal() || attempts >= maxAttempts) {
-            clearInterval(checkInterval);
-            if (attempts >= maxAttempts) {
-                console.warn('No se pudo renderizar el gráfico después de', maxAttempts, 'intentos');
-            }
+    // Esperar un momento para que el gráfico se actualice completamente
+    setTimeout(() => {
+        // Intentar renderizar
+        if (!renderChartInModal()) {
+            // Si no se pudo renderizar, esperar y reintentar
+            let attempts = 0;
+            const maxAttempts = 15;
+            const checkInterval = setInterval(() => {
+                attempts++;
+                if (renderChartInModal() || attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    if (attempts >= maxAttempts) {
+                        console.warn('No se pudo renderizar el gráfico después de', maxAttempts, 'intentos');
+                    }
+                }
+            }, 300);
         }
-    }, 200);
+    }, 500);
 }
 
 // Exponer funciones globalmente
