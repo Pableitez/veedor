@@ -3329,42 +3329,42 @@ function updateLoans() {
         card.innerHTML = `
             <h3 style="color: var(--text-primary);">${loan.name} <span style="font-size: 12px; color: ${loan.type === 'debt' ? 'var(--danger)' : 'var(--success)'}">(${loan.type === 'debt' ? 'Debo' : 'Me deben'})</span></h3>
             
-            <div style="margin: 10px 0; padding: 12px; background: ${loan.type === 'debt' ? '#fef2f2' : '#f0fdf4'}; border-radius: 6px;">
+            <div style="margin: 10px 0; padding: 12px; background: ${loan.type === 'debt' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)'}; border-radius: 6px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; margin-bottom: 12px;">
-                    <div><strong>Principal:</strong></div>
-                    <div style="font-weight: 600;">${formatCurrency(loan.principal)}</div>
-                    <div><strong>TIN (Interés Nominal):</strong></div>
-                    <div>${loan.interest_rate}%</div>
+                    <div style="color: var(--text-secondary);"><strong>Principal:</strong></div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${formatCurrency(loan.principal)}</div>
+                    <div style="color: var(--text-secondary);"><strong>TIN (Interés Nominal):</strong></div>
+                    <div style="color: var(--text-primary);">${loan.interest_rate}%</div>
                     ${loan.tae ? `
-                        <div><strong>TAE (Costo Real):</strong></div>
-                        <div style="color: ${loan.tae > loan.interest_rate ? '#ef4444' : '#10b981'}; font-weight: 700;">${loan.tae}%</div>
+                        <div style="color: var(--text-secondary);"><strong>TAE (Costo Real):</strong></div>
+                        <div style="color: ${loan.tae > loan.interest_rate ? 'var(--danger)' : 'var(--success)'}; font-weight: 700;">${loan.tae}%</div>
                         <div style="grid-column: 1/-1; font-size: 11px; color: var(--text-tertiary); margin-top: 4px; padding: 6px; background: var(--bg-tertiary); border-radius: 4px; border: 1px solid var(--border-color);">
-                            ⚠️ Diferencia: ${(loan.tae - loan.interest_rate).toFixed(2)}% adicional por comisiones y gastos
+                            Diferencia: ${(loan.tae - loan.interest_rate).toFixed(2)}% adicional por comisiones y gastos
                         </div>
                     ` : ''}
-                    <div><strong>Cuota Mensual:</strong></div>
-                    <div style="font-weight: 600;">${formatCurrency(loan.monthly_payment)}</div>
-                    ${loan.opening_commission > 0 ? `<div><strong>Com. Apertura:</strong></div><div>${formatCurrency(loan.opening_commission)}</div>` : ''}
+                    <div style="color: var(--text-secondary);"><strong>Cuota Mensual:</strong></div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${formatCurrency(loan.monthly_payment)}</div>
+                    ${loan.opening_commission > 0 ? `<div style="color: var(--text-secondary);"><strong>Com. Apertura:</strong></div><div style="color: var(--text-primary);">${formatCurrency(loan.opening_commission)}</div>` : ''}
                 </div>
             </div>
             
-            <div style="margin: 10px 0; padding: 12px; background: #f3f4f6; border-radius: 6px;">
+            <div style="margin: 10px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px;">
                 <div style="font-size: 13px; line-height: 1.8;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <strong style="color: var(--text-primary);">Capital Restante:</strong>
                         <span style="color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'}; font-size: 18px; font-weight: bold;">${formatCurrency(remainingPrincipal)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <strong>Total Pagado:</strong>
-                        <span>${formatCurrency(totalPaid)}</span>
+                        <strong style="color: var(--text-secondary);">Total Pagado:</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(totalPaid)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <strong>Intereses Totales:</strong>
-                        <span>${formatCurrency(totalInterestProjected)}</span>
+                        <strong style="color: var(--text-secondary);">Intereses Totales:</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(totalInterestProjected)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <strong>Comisiones Totales:</strong>
-                        <span>${formatCurrency(totalCommissions)}</span>
+                        <strong style="color: var(--text-secondary);">Comisiones Totales:</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(totalCommissions)}</span>
                     </div>
                     <div style="margin-top: 8px; padding: 8px; background: ${loan.type === 'debt' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)'}; border-radius: 4px; border-left: 3px solid ${loan.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; border: 1px solid var(--border-color);">
                         <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 4px;">
@@ -3867,20 +3867,20 @@ function updateInvestments() {
             `}
             
             ${investment.periodic_contribution && investment.periodic_contribution.enabled ? `
-                <div style="margin: 12px 0; padding: 12px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius); border-left: 3px solid var(--primary);">
-                    <div style="font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 8px;">💡 Aporte Periódico Activo</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;" class="periodic-contribution-grid">
-                        <div><strong>Frecuencia:</strong></div>
-                        <div style="text-align: right;">${investment.periodic_contribution.frequency === 'weekly' ? 'Semanal' : investment.periodic_contribution.frequency === 'monthly' ? 'Mensual' : 'Anual'}</div>
-                        <div><strong>Monto:</strong></div>
-                        <div style="text-align: right; font-weight: 600;">${formatCurrency(investment.periodic_contribution.amount)}</div>
-                        <div><strong>Inicio:</strong></div>
-                        <div style="text-align: right;">${formatDate(new Date(investment.periodic_contribution.start_date))}</div>
+                <div style="margin: 12px 0; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border-left: 3px solid var(--primary);">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 8px;">Aporte Periódico Activo</div>
+                    <div class="periodic-contribution-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                        <div style="color: var(--text-secondary);"><strong>Frecuencia:</strong></div>
+                        <div style="text-align: right; color: var(--text-primary);">${investment.periodic_contribution.frequency === 'weekly' ? 'Semanal' : investment.periodic_contribution.frequency === 'monthly' ? 'Mensual' : 'Anual'}</div>
+                        <div style="color: var(--text-secondary);"><strong>Monto:</strong></div>
+                        <div style="text-align: right; font-weight: 600; color: var(--text-primary);">${formatCurrency(investment.periodic_contribution.amount)}</div>
+                        <div style="color: var(--text-secondary);"><strong>Inicio:</strong></div>
+                        <div style="text-align: right; color: var(--text-primary);">${formatDate(new Date(investment.periodic_contribution.start_date))}</div>
                         ${investment.periodic_contribution.end_date ? `
-                            <div><strong>Fin:</strong></div>
-                            <div style="text-align: right;">${formatDate(new Date(investment.periodic_contribution.end_date))}</div>
+                            <div style="color: var(--text-secondary);"><strong>Fin:</strong></div>
+                            <div style="text-align: right; color: var(--text-primary);">${formatDate(new Date(investment.periodic_contribution.end_date))}</div>
                         ` : `
-                            <div><strong>Fin:</strong></div>
+                            <div style="color: var(--text-secondary);"><strong>Fin:</strong></div>
                             <div style="text-align: right; color: var(--text-tertiary);">Indefinido</div>
                         `}
                     </div>
