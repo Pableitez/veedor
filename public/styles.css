@@ -472,9 +472,17 @@ header h1 {
 
 
 .card:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.12), 0 4px 16px -2px rgba(99, 102, 241, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-color: var(--primary);
+}
+
+@media (max-width: 768px) {
+    .card:hover,
+    .envelope-card:hover {
+        transform: none;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
 }
 
 .card:hover::before {
@@ -1087,8 +1095,8 @@ tbody tr:last-child td {
 
 .envelope-card:hover {
     border-color: var(--primary);
-    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.12), 0 4px 16px -2px rgba(99, 102, 241, 0.1);
-    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 .envelope-card h3 {

@@ -4236,6 +4236,68 @@ function updateAccounts() {
     grid.appendChild(summaryCard);
 }
 
+// Variable global para el ID de cuenta actual
+let currentAccountId = null;
+
+// Mostrar modal para actualizar saldo de cuenta
+function showUpdateAccountBalanceModal(id) {
+    currentAccountId = id;
+    const modal = document.getElementById('updateAccountBalanceModal');
+    const titleEl = document.getElementById('updateAccountBalanceTitle');
+    
+    if (!modal || !titleEl) return;
+    
+    // Buscar la cuenta
+    const account = accounts.find(acc => (acc._id || acc.id) === id);
+    if (account) {
+        titleEl.textContent = `Actualizar Saldo - ${account.name}`;
+        const input = document.getElementById('updateAccountBalanceInput');
+        if (input) {
+            input.value = account.balance || 0;
+        }
+    }
+    
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de actualizar saldo
+function closeUpdateAccountBalanceModal() {
+    const modal = document.getElementById('updateAccountBalanceModal');
+    if (modal) modal.style.display = 'none';
+    currentAccountId = null;
+}
+
+// Procesar actualización de saldo de cuenta
+async function processUpdateAccountBalance() {
+    if (!currentAccountId) return;
+    
+    const input = document.getElementById('updateAccountBalanceInput');
+    if (!input) return;
+    
+    const newBalance = parseFloat(input.value);
+    if (isNaN(newBalance)) {
+        showToast('Por favor ingresa un saldo válido', 'error');
+        return;
+    }
+    
+    try {
+        showLoader('Actualizando saldo...');
+        await apiRequest(`/accounts/${currentAccountId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ balance: newBalance })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        closeUpdateAccountBalanceModal();
+        showToast('Saldo actualizado exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar saldo: ' + error.message, 'error');
+    }
+}
+
 // Editar cuenta (actualizar saldo)
 async function editAccount(id) {
     showUpdateAccountBalanceModal(id);
