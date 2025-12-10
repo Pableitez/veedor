@@ -7818,91 +7818,119 @@ function updateModalChart() {
         }
     }
     
-    // Actualizar el gráfico original con el nuevo período y filtros
-    updateSingleChart(currentChartType);
+    // Obtener el gráfico original directamente (sin actualizar primero)
+    let originalChart = null;
+    switch(currentChartType) {
+        case 'savings':
+            originalChart = charts.savings;
+            break;
+        case 'expenses':
+            originalChart = charts.expenses;
+            break;
+        case 'incomeExpense':
+            originalChart = charts.incomeExpense;
+            break;
+        case 'distribution':
+            originalChart = charts.distribution;
+            break;
+        case 'incomeEvolution':
+            originalChart = charts.incomeEvolution;
+            break;
+        case 'expensesEvolution':
+            originalChart = charts.expensesEvolution;
+            break;
+        case 'loansPending':
+            originalChart = charts.loansPending;
+            break;
+        case 'assetsEvolution':
+            originalChart = charts.assetsEvolution;
+            break;
+        case 'accountsBalance':
+            originalChart = charts.accountsBalance;
+            break;
+    }
     
-    // Esperar un momento para que el gráfico se actualice
-    setTimeout(() => {
-        // Obtener el gráfico original actualizado
-        let originalChart = null;
-        switch(currentChartType) {
-            case 'savings':
-                originalChart = charts.savings;
-                break;
-            case 'expenses':
-                originalChart = charts.expenses;
-                break;
-            case 'incomeExpense':
-                originalChart = charts.incomeExpense;
-                break;
-            case 'distribution':
-                originalChart = charts.distribution;
-                break;
-            case 'incomeEvolution':
-                originalChart = charts.incomeEvolution;
-                break;
-            case 'expensesEvolution':
-                originalChart = charts.expensesEvolution;
-                break;
-            case 'loansPending':
-                originalChart = charts.loansPending;
-                break;
-            case 'assetsEvolution':
-                originalChart = charts.assetsEvolution;
-                break;
-            case 'accountsBalance':
-                originalChart = charts.accountsBalance;
-                break;
-        }
+    // Si el gráfico existe, renderizarlo inmediatamente
+    if (originalChart && originalChart.data) {
+        // Actualizar el gráfico original con el nuevo período y filtros primero
+        updateSingleChart(currentChartType);
         
-        if (originalChart && originalChart.data && originalChart.data.labels && originalChart.data.labels.length > 0) {
-            // Destruir gráfico anterior del modal
-            if (chartModalChart) {
-                chartModalChart.destroy();
-                chartModalChart = null;
+        // Esperar a que se actualice y luego renderizar en el modal
+        setTimeout(() => {
+            // Obtener el gráfico actualizado
+            let updatedChart = null;
+            switch(currentChartType) {
+                case 'savings':
+                    updatedChart = charts.savings;
+                    break;
+                case 'expenses':
+                    updatedChart = charts.expenses;
+                    break;
+                case 'incomeExpense':
+                    updatedChart = charts.incomeExpense;
+                    break;
+                case 'distribution':
+                    updatedChart = charts.distribution;
+                    break;
+                case 'incomeEvolution':
+                    updatedChart = charts.incomeEvolution;
+                    break;
+                case 'expensesEvolution':
+                    updatedChart = charts.expensesEvolution;
+                    break;
+                case 'loansPending':
+                    updatedChart = charts.loansPending;
+                    break;
+                case 'assetsEvolution':
+                    updatedChart = charts.assetsEvolution;
+                    break;
+                case 'accountsBalance':
+                    updatedChart = charts.accountsBalance;
+                    break;
             }
             
-            // Clonar datos del gráfico original
-            const clonedData = JSON.parse(JSON.stringify(originalChart.data));
-            
-            // Asegurar que el canvas tenga dimensiones
-            const container = modalCanvas.parentElement;
-            if (container) {
-                container.style.height = '400px';
-                container.style.width = '100%';
-            }
-            
-            // Crear nuevo gráfico en el modal
-            chartModalChart = new Chart(modalCanvas, {
-                type: originalChart.config.type,
-                data: clonedData,
-                options: {
-                    ...originalChart.options,
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 2,
-                    plugins: {
-                        ...originalChart.options.plugins,
-                        legend: {
-                            display: true,
-                            position: 'top'
+            if (updatedChart && updatedChart.data) {
+                // Destruir gráfico anterior del modal
+                if (chartModalChart) {
+                    chartModalChart.destroy();
+                    chartModalChart = null;
+                }
+                
+                // Asegurar que el canvas tenga dimensiones
+                const container = modalCanvas.parentElement;
+                if (container) {
+                    container.style.height = '400px';
+                    container.style.width = '100%';
+                }
+                
+                // Clonar datos del gráfico original
+                const clonedData = JSON.parse(JSON.stringify(updatedChart.data));
+                
+                // Crear nuevo gráfico en el modal
+                chartModalChart = new Chart(modalCanvas, {
+                    type: updatedChart.config.type,
+                    data: clonedData,
+                    options: {
+                        ...updatedChart.options,
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        aspectRatio: 2,
+                        plugins: {
+                            ...updatedChart.options.plugins,
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
                         }
                     }
-                }
-            });
-        } else {
-            console.warn('Gráfico original no encontrado, sin datos o sin labels:', currentChartType, originalChart);
-            // Mostrar mensaje en el canvas si no hay datos
-            const ctx = modalCanvas.getContext('2d');
-            if (ctx) {
-                ctx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
-                ctx.fillStyle = 'var(--text-secondary)';
-                ctx.font = '14px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('No hay datos para mostrar', modalCanvas.width / 2, modalCanvas.height / 2);
+                });
+            } else {
+                console.warn('Gráfico actualizado no encontrado o sin datos:', currentChartType);
             }
-        }
-    }, 100);
+        }, 300);
+    } else {
+        console.warn('Gráfico original no encontrado:', currentChartType);
+    }
 }
 
 // Exponer funciones globalmente
