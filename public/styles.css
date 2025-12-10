@@ -1032,11 +1032,23 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     }
     
     /* Grid de inversiones en móvil */
-    #investmentsGrid {
+    #investmentsGrid,
+    .investments-grid {
         display: grid !important;
         grid-template-columns: 1fr !important;
         gap: 16px !important;
         width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Asegurar que las tarjetas de inversión no corten contenido */
+    #investmentsGrid .envelope-card,
+    .investments-grid .envelope-card {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        width: 100% !important;
+        max-width: 100% !important;
         box-sizing: border-box !important;
     }
 }
