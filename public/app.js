@@ -3936,25 +3936,25 @@ function updateInvestments() {
                         `}
                     </div>
                     ${investment.periodic_contribution.completed_contributions && investment.periodic_contribution.completed_contributions.length > 0 ? `
-                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
-                            <div style="font-size: 11px; font-weight: 600; color: var(--primary); margin-bottom: 6px;">Aportes Realizados (${investment.periodic_contribution.completed_contributions.length})</div>
-                            <div style="max-height: 100px; overflow-y: auto; font-size: 12px;">
+                        <div class="periodic-contribution-completed">
+                            <div class="periodic-contribution-completed-title">Aportes Realizados (${investment.periodic_contribution.completed_contributions.length})</div>
+                            <div class="periodic-contribution-completed-list">
                                 ${investment.periodic_contribution.completed_contributions.slice(-5).map(c => `
-                                    <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border-color);">
-                                        <span style="color: var(--text-secondary);">${formatDate(new Date(c.date))}</span>
-                                        <span style="font-weight: 600; color: var(--text-primary);">${formatCurrency(c.amount)}</span>
+                                    <div class="periodic-contribution-completed-item">
+                                        <span class="periodic-contribution-completed-date">${formatDate(new Date(c.date))}</span>
+                                        <span class="periodic-contribution-completed-amount">${formatCurrency(c.amount)}</span>
                                     </div>
                                 `).join('')}
                                 ${investment.periodic_contribution.completed_contributions.length > 5 ? `
-                                    <div style="text-align: center; padding-top: 4px; color: var(--text-tertiary); font-size: 11px;">
+                                    <div class="periodic-contribution-completed-more">
                                         +${investment.periodic_contribution.completed_contributions.length - 5} más
                                     </div>
                                 ` : ''}
                             </div>
                         </div>
                     ` : `
-                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
-                            <div style="font-size: 11px; color: var(--text-tertiary); text-align: center;">
+                        <div class="periodic-contribution-empty">
+                            <div class="periodic-contribution-empty-text">
                                 Asocia un gasto a esta inversión para registrar el aporte
                             </div>
                         </div>
