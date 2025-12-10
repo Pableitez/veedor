@@ -6462,7 +6462,7 @@ function updateMonthDashboard() {
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-top: 4px;">
                                 <small style="font-size: 11px; color: var(--text-tertiary);">Diferencia: ${formatCurrency(data.amount - budgetAmount)}</small>
-                                ${percentage < 100 ? `<small style="font-size: 11px; color: var(--warning); font-weight: 600;">⚠️ Por debajo del presupuesto</small>` : ''}
+                                ${percentage < 100 ? `<small style="font-size: 11px; color: var(--warning); font-weight: 600; background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--warning);">⚠️ Por debajo del presupuesto</small>` : ''}
                             </div>
                         </div>
                     ` : '<small style="color: var(--text-tertiary);">Sin presupuesto establecido</small>'}
@@ -6579,7 +6579,7 @@ function updateMonthDashboard() {
                         <small style="font-size: 11px; color: var(--gray-500);">${categoryIncome.length} transacciones</small>
                         <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
                     </div>
-                    ${isUnderBudget ? '<div style="margin-top: 8px; padding: 6px; background: #FEF3C7; border-radius: var(--radius); color: var(--warning-dark); font-size: 11px; font-weight: 600;">⚠️ Por debajo del presupuesto</div>' : ''}
+                    ${isUnderBudget ? '<div style="margin-top: 8px; padding: 6px; background: var(--bg-secondary); border: 1px solid var(--warning); border-radius: var(--radius); color: var(--warning); font-size: 11px; font-weight: 600;">⚠️ Por debajo del presupuesto</div>' : ''}
                 `;
                 budgetsStatusContainer.appendChild(card);
             });
@@ -7657,7 +7657,28 @@ function showSummaryDetails(type) {
         
         content = `
             <div style="display: grid; gap: 16px;">
-                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--text-primary);">Balance Total: ${formatCurrency(totalBalance)}</h3>
+                    <div style="display: grid; gap: 8px; margin-top: 12px;">
+                        <div style="display: flex; justify-content: space-between; padding: 8px; background: var(--bg-primary); border-radius: 4px; cursor: pointer;" onclick="closeSummaryDetails(); switchToTab('transactions', true);">
+                            <span style="color: var(--text-secondary);">Transacciones:</span>
+                            <strong style="color: var(--text-primary);">${formatCurrency(transactionsBalance)}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px; background: var(--bg-primary); border-radius: 4px; cursor: pointer;" onclick="closeSummaryDetails(); switchToTab('investments', true);">
+                            <span style="color: var(--text-secondary);">Inversiones:</span>
+                            <strong style="color: var(--success);">${formatCurrency(investmentsValue)}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px; background: var(--bg-primary); border-radius: 4px; cursor: pointer;" onclick="closeSummaryDetails(); switchToTab('loans', true);">
+                            <span style="color: var(--text-secondary);">Préstamos (Créditos - Deudas):</span>
+                            <strong style="color: ${loansCredit - loansDebt >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(loansCredit - loansDebt)}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px; background: var(--bg-primary); border-radius: 4px; cursor: pointer;" onclick="closeSummaryDetails(); switchToTab('assets', true);">
+                            <span style="color: var(--text-secondary);">Patrimonio:</span>
+                            <strong style="color: var(--text-primary);">${formatCurrency(assetsValue)}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--primary);">
                     <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Balance Total: ${formatCurrency(totalBalance)}</h3>
                 </div>
                 <div style="display: grid; gap: 12px;">
@@ -7725,22 +7746,23 @@ function showSummaryDetails(type) {
         const totalIncome = periodTransactions.reduce((sum, t) => sum + t.amount, 0);
         content = `
             <div style="display: grid; gap: 16px;">
-                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid #10b981;">
-                    <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Total Ingresos: ${formatCurrency(totalIncome)}</h3>
+                <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--success);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--text-primary);">Total Ingresos: ${formatCurrency(totalIncome)}</h3>
+                    <button class="btn-primary" onclick="closeSummaryDetails(); switchToTab('transactions', true);" style="margin-top: 8px; padding: 8px 16px; font-size: 13px;">Ver todas las transacciones</button>
                 </div>
-                ${periodTransactions.length === 0 ? '<p style="text-align: center; color: var(--gray-500); padding: 20px;">No hay ingresos registrados</p>' : ''}
+                ${periodTransactions.length === 0 ? '<p style="text-align: center; color: var(--text-tertiary); padding: 20px;">No hay ingresos registrados</p>' : ''}
                 ${periodTransactions.slice(0, 20).map(t => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-50); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-primary); border-radius: var(--radius); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;" onclick="closeSummaryDetails(); switchToTab('transactions', true);" onmouseover="this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-primary)'; this.style.borderColor='var(--border-color)';">
                         <div>
-                            <strong>${t.category_specific || t.category_general}</strong>
-                            <br><small style="color: var(--gray-600);">${new Date(t.date).toLocaleDateString('es-ES')}</small>
+                            <strong style="color: var(--text-primary);">${t.category_specific || t.category_general}</strong>
+                            <br><small style="color: var(--text-secondary);">${new Date(t.date).toLocaleDateString('es-ES')}</small>
                         </div>
                         <div style="text-align: right;">
-                            <strong style="color: #10b981">${formatCurrency(t.amount)}</strong>
+                            <strong style="color: var(--success)">${formatCurrency(t.amount)}</strong>
                         </div>
                     </div>
                 `).join('')}
-                ${periodTransactions.length > 20 ? `<p style="text-align: center; color: var(--gray-500);">Y ${periodTransactions.length - 20} ingresos más...</p>` : ''}
+                ${periodTransactions.length > 20 ? `<p style="text-align: center; color: var(--text-tertiary);">Y ${periodTransactions.length - 20} ingresos más...</p>` : ''}
             </div>
         `;
     } else if (type === 'expenses') {
@@ -7762,22 +7784,23 @@ function showSummaryDetails(type) {
         const totalExpenses = Math.abs(periodTransactions.reduce((sum, t) => sum + t.amount, 0));
         content = `
             <div style="display: grid; gap: 16px;">
-                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid #ef4444;">
-                    <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Total Gastos: ${formatCurrency(totalExpenses)}</h3>
+                <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--danger);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--text-primary);">Total Gastos: ${formatCurrency(totalExpenses)}</h3>
+                    <button class="btn-primary" onclick="closeSummaryDetails(); switchToTab('transactions', true);" style="margin-top: 8px; padding: 8px 16px; font-size: 13px;">Ver todas las transacciones</button>
                 </div>
-                ${periodTransactions.length === 0 ? '<p style="text-align: center; color: var(--gray-500); padding: 20px;">No hay gastos registrados</p>' : ''}
+                ${periodTransactions.length === 0 ? '<p style="text-align: center; color: var(--text-tertiary); padding: 20px;">No hay gastos registrados</p>' : ''}
                 ${periodTransactions.slice(0, 20).map(t => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-50); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-primary); border-radius: var(--radius); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;" onclick="closeSummaryDetails(); switchToTab('transactions', true);" onmouseover="this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-primary)'; this.style.borderColor='var(--border-color)';">
                         <div>
-                            <strong>${t.category_specific || t.category_general}</strong>
-                            <br><small style="color: var(--gray-600);">${new Date(t.date).toLocaleDateString('es-ES')}</small>
+                            <strong style="color: var(--text-primary);">${t.category_specific || t.category_general}</strong>
+                            <br><small style="color: var(--text-secondary);">${new Date(t.date).toLocaleDateString('es-ES')}</small>
                         </div>
                         <div style="text-align: right;">
-                            <strong style="color: #ef4444">${formatCurrency(Math.abs(t.amount))}</strong>
+                            <strong style="color: var(--danger)">${formatCurrency(Math.abs(t.amount))}</strong>
                         </div>
                     </div>
                 `).join('')}
-                ${periodTransactions.length > 20 ? `<p style="text-align: center; color: var(--gray-500);">Y ${periodTransactions.length - 20} gastos más...</p>` : ''}
+                ${periodTransactions.length > 20 ? `<p style="text-align: center; color: var(--text-tertiary);">Y ${periodTransactions.length - 20} gastos más...</p>` : ''}
             </div>
         `;
     } else if (type === 'savings') {

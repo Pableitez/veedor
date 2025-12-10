@@ -294,10 +294,10 @@
                         <p class="amount" id="totalAccountsBalance" style="color: white;">0,00 €</p>
                         <small style="color: rgba(255,255,255,0.9);">Total en todas las cuentas</small>
                     </div>
-                    <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none;">
+                    <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; cursor: pointer;" onclick="showSummaryDetails('savings')" title="Haz clic para ver detalles">
                         <h3 style="color: white;">Meta de Ahorro</h3>
                         <p class="amount" id="savingsGoal" style="color: white;">Sin meta</p>
-                        <button id="setSavingsGoalBtn" class="btn-secondary" style="margin-top: 12px; font-size: 13px; padding: 8px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">Establecer Meta</button>
+                        <button id="setSavingsGoalBtn" class="btn-secondary" style="margin-top: 12px; font-size: 13px; padding: 8px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;" onclick="event.stopPropagation(); showSavingsGoalModal();">Establecer Meta</button>
                     </div>
                 </div>
                 <div class="summary-cards">
