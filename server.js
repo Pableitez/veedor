@@ -1537,7 +1537,8 @@ app.put('/api/transactions/:id', authenticateToken, async (req, res) => {
         
         // 7. Validar y convertir monto
         const amountNum = parseFloat(amount);
-        if (isNaN(amountNum) || amountNum <= 0) {
+        // Validar que el valor absoluto del monto sea mayor a 0 (acepta negativos para gastos)
+        if (isNaN(amountNum) || Math.abs(amountNum) <= 0) {
             console.log('❌ Validación fallida - monto inválido:', amount);
             return res.status(400).json({ error: 'El monto debe ser un número mayor a 0' });
         }
@@ -1549,8 +1550,15 @@ app.put('/api/transactions/:id', authenticateToken, async (req, res) => {
         const normalizedPropertyId = (property_id && typeof property_id === 'string' && property_id.trim() !== '') ? property_id.trim() : null;
         const normalizedDescription = (description && typeof description === 'string' && description.trim() !== '') ? description.trim() : null;
         
-        // 9. Calcular monto final
-        const finalAmount = type === 'expense' ? -Math.abs(amountNum) : Math.abs(amountNum);
+        // 9. Calcular monto final - si ya viene con signo correcto, usarlo; si no, calcularlo
+        let finalAmount;
+        if ((type === 'expense' && amountNum < 0) || (type === 'income' && amountNum > 0)) {
+            // Ya viene con el signo correcto
+            finalAmount = amountNum;
+        } else {
+            // Calcular el signo según el tipo
+            finalAmount = type === 'expense' ? -Math.abs(amountNum) : Math.abs(amountNum);
+        }
         
         // 10. Actualizar la transacción
         transaction.type = type;
