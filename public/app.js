@@ -8562,6 +8562,7 @@ function closeCategoryDetailsModal() {
 
 // Exponer funciones globales
 window.showCategoryDetails = showCategoryDetails;
+window.showEnvelopeDetails = showEnvelopeDetails;
 window.closeCategoryDetailsModal = closeCategoryDetailsModal;
 
 // Exportar datos
