@@ -8470,6 +8470,109 @@ function updateMonthDashboard() {
     }
 }
 
+// ==================== MODAL DE DETALLES DE SOBRE ====================
+function showEnvelopeDetails(envelopeName, transactions, month, budgetAmount) {
+    const modal = document.getElementById('categoryDetailsModal');
+    const modalTitle = document.getElementById('categoryDetailsModalTitle');
+    const modalContent = document.getElementById('categoryDetailsContent');
+    
+    if (!modal || !modalTitle || !modalContent) {
+        console.error('Modal elements not found');
+        return;
+    }
+    
+    const [year, monthNum] = month.split('-');
+    const monthName = new Date(year, parseInt(monthNum) - 1, 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+    
+    modalTitle.textContent = `${envelopeName} - ${monthName}`;
+    
+    const total = transactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const remaining = budgetAmount - total;
+    const percentage = budgetAmount > 0 ? (total / budgetAmount) * 100 : 0;
+    
+    let progressColor = '#10b981';
+    if (percentage > 80 && percentage <= 100) {
+        progressColor = '#fbbf24';
+    } else if (percentage > 100) {
+        progressColor = '#ef4444';
+    }
+    
+    let content = `
+        <div style="margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                <div style="background: var(--danger); padding: 16px; border-radius: 10px; color: white;">
+                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Total Gastado</div>
+                    <div style="font-size: 22px; font-weight: 700;">${formatCurrency(total)}</div>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">Transacciones</div>
+                    <div style="font-size: 22px; font-weight: 700; color: var(--text-primary);">${transactions.length}</div>
+                </div>
+                <div style="background: var(--primary-light); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 12px; color: var(--primary); margin-bottom: 6px;">Presupuesto</div>
+                    <div style="font-size: 22px; font-weight: 700; color: var(--primary-dark);">${formatCurrency(budgetAmount)}</div>
+                </div>
+                <div style="background: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}; padding: 16px; border-radius: 10px; color: white;">
+                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Restante</div>
+                    <div style="font-size: 22px; font-weight: 700;">${formatCurrency(remaining)}</div>
+                </div>
+            </div>
+            ${budgetAmount > 0 ? `
+                <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 8px;">
+                    <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary);">
+                    <span>Progreso del presupuesto</span>
+                    <span style="font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</span>
+                </div>
+            ` : ''}
+        </div>
+        
+        <div>
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">Transacciones</h3>
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: var(--bg-tertiary); border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Fecha</th>
+                            <th style="padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Descripción</th>
+                            <th style="padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Categoría</th>
+                            <th style="padding: 10px 12px; text-align: right; font-weight: 600; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    
+    const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (sortedTransactions.length === 0) {
+        content += '<tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--text-tertiary); font-size: 14px;">No hay transacciones</td></tr>';
+    } else {
+        sortedTransactions.forEach(t => {
+            const date = new Date(t.date);
+            const amount = Math.abs(t.amount);
+            content += `
+                <tr style="border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 10px 12px; color: var(--text-secondary); font-size: 13px;">${formatDate(date)}</td>
+                    <td style="padding: 10px 12px; color: var(--text-secondary); font-size: 13px;">${t.description || '-'}</td>
+                    <td style="padding: 10px 12px; color: var(--text-secondary); font-size: 13px;">${t.categorySpecific || t.categoryGeneral || '-'}</td>
+                    <td style="padding: 10px 12px; text-align: right; font-weight: 600; font-size: 13px; color: var(--danger);">${formatCurrency(amount)}</td>
+                </tr>
+            `;
+        });
+    }
+    
+    content += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    modalContent.innerHTML = content;
+    modal.style.display = 'flex';
+}
+
 // ==================== MODAL DE DETALLES DE CATEGORÍA ====================
 function showCategoryDetails(categoryName, transactions, type, month, categoryId, budgetAmount) {
     const modal = document.getElementById('categoryDetailsModal');
