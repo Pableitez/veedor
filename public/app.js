@@ -298,14 +298,11 @@ function initDarkMode() {
 window.toggleDarkMode = toggleDarkMode;
 
 // Inicialización - Ejecutar inmediatamente
-console.log('🚀 app.js ejecutándose...');
-console.log('Estado del DOM:', document.readyState);
 
 // Establecer español como idioma por defecto al iniciar
 if (!localStorage.getItem('veedor_language')) {
     localStorage.setItem('veedor_language', 'es');
     document.documentElement.lang = 'es';
-    console.log('🌐 Idioma por defecto establecido: Español');
 }
 
 function initializeApp() {
