@@ -1165,6 +1165,19 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     font-size: 13px;
 }
 
+.periodic-contribution-checkbox-container {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    overflow: visible !important;
+}
+
+.periodic-contribution-checkbox-container label {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    min-width: 0 !important;
+}
+
 @media (max-width: 768px) {
     /* Contenedor de checkbox de aportes periódicos en formulario */
     .periodic-contribution-checkbox-container {
