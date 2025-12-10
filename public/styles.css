@@ -61,7 +61,8 @@
     --border-color: #E5E7EB;
 }
 
-/* Modo oscuro */
+/* Modo oscuro - Aplicar también a html para evitar flash */
+html.dark-mode,
 body.dark-mode {
     --bg-primary: #1F2937;
     --bg-secondary: #111827;
@@ -83,6 +84,15 @@ body.dark-mode {
     --gray-900: #F9FAFB;
     
     --primary-light: #1E3A5F;
+}
+
+html.dark-mode {
+    background: #111827;
+}
+
+html.dark-mode body {
+    background: #111827;
+    color: #F9FAFB;
 }
 
 body {
