@@ -7889,7 +7889,8 @@ function updateModalChart() {
 }
 
 // Exponer funciones globalmente
-window.openChartModal = openChartModal;
+window._openChartModalReal = openChartModal; // Guardar función real para el stub
+window.openChartModal = openChartModal; // Reemplazar stub con función real
 window.closeChartModal = closeChartModal;
 
 // Mostrar modal para agregar categoría personalizada
