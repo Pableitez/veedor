@@ -312,6 +312,68 @@ body.dark-mode .auth-screen {
     position: relative;
 }
 
+/* Ajustar dinámicamente según altura de viewport */
+@media (max-height: 800px) {
+    .auth-container {
+        padding: 24px 32px !important;
+        max-height: calc(100vh - 20px) !important;
+    }
+    
+    .auth-header {
+        margin-bottom: 16px !important;
+    }
+    
+    .auth-header h1 {
+        font-size: 28px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .auth-header p {
+        font-size: 14px !important;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 20px !important;
+    }
+    
+    .auth-form .form-group {
+        margin-bottom: 14px !important;
+    }
+}
+
+@media (max-height: 700px) {
+    .auth-container {
+        padding: 20px 28px !important;
+        max-height: calc(100vh - 10px) !important;
+    }
+    
+    .auth-header {
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-header h1 {
+        font-size: 24px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .auth-header p {
+        font-size: 13px !important;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 16px !important;
+    }
+    
+    .auth-form .form-group {
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-form .form-group input {
+        padding: 10px 14px !important;
+        font-size: 14px !important;
+    }
+}
+
 .auth-header {
     text-align: center;
     margin-bottom: 20px;
