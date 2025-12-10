@@ -2784,8 +2784,9 @@ function updateEnvelopes() {
             <div class="envelope-progress">
                 <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%"></div>
             </div>
-            <div class="envelope-actions">
-                <button class="btn-danger" onclick="deleteEnvelope('${envelope._id || envelope.id}')">Eliminar</button>
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deleteEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -3109,8 +3110,9 @@ function updateBudgets() {
             <div style="margin-top: 8px; padding: 6px; background: ${isIncome ? 'var(--success-light)' : 'var(--gray-50)'}; border-radius: var(--radius); font-size: 11px; color: var(--gray-700);">
                 ${isIncome ? 'Ingreso' : 'Gasto'}
             </div>
-            <div class="envelope-actions" style="margin-top: 12px;">
-                <button class="btn-danger" onclick="deleteBudget('${budget._id || budget.id}')" style="width: 100%;">Eliminar</button>
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editBudget('${budget._id || budget.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deleteBudget('${budget._id || budget.id}')" style="flex: 1;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -3546,10 +3548,11 @@ function updateLoans() {
                 </div>
             </div>
             
-            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 10px;">
-                <button class="btn-secondary" onclick="showLoanDetails('${loan._id || loan.id}')" style="flex: 1;">Detalles</button>
-                <button class="btn-secondary" onclick="showEarlyPaymentModal('${loan._id || loan.id}')" style="flex: 1;">Amortizar</button>
-                <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')" style="flex: 1;">Eliminar</button>
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+                <button class="btn-secondary" onclick="editLoan('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Editar</button>
+                <button class="btn-secondary" onclick="showLoanDetails('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Detalles</button>
+                <button class="btn-secondary" onclick="showEarlyPaymentModal('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Amortizar</button>
+                <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -4558,9 +4561,51 @@ async function processUpdateAccountBalance() {
     }
 }
 
-// Editar cuenta (actualizar saldo)
+// Editar cuenta (completo)
 async function editAccount(id) {
-    showUpdateAccountBalanceModal(id);
+    const account = accounts.find(a => (a._id || a.id) === id);
+    if (!account) return;
+    
+    const newName = prompt('Nombre de la cuenta:', account.name);
+    if (!newName || newName.trim() === '') return;
+    
+    const newType = prompt('Tipo (checking/savings/credit/investment/other):', account.type);
+    if (!newType) return;
+    
+    const newBalance = prompt('Saldo actual (€):', account.balance || 0);
+    if (newBalance === null) return;
+    const balanceValue = parseFloat(newBalance);
+    if (isNaN(balanceValue)) {
+        showToast('Por favor ingresa un saldo válido', 'error');
+        return;
+    }
+    
+    const newBank = prompt('Banco (opcional):', account.bank || '');
+    const newAccountNumber = prompt('Número de cuenta (opcional):', account.account_number || '');
+    const newDescription = prompt('Descripción (opcional):', account.description || '');
+    
+    try {
+        showLoader('Actualizando cuenta...');
+        await apiRequest(`/accounts/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: newName.trim(),
+                type: newType,
+                balance: balanceValue,
+                bank: newBank.trim() || null,
+                account_number: newAccountNumber.trim() || null,
+                description: newDescription.trim() || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Cuenta actualizada exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar cuenta: ' + error.message, 'error');
+    }
 }
 
 // Eliminar cuenta
@@ -4753,9 +4798,58 @@ function updateAssets() {
     grid.appendChild(summaryCard);
 }
 
-// Editar bien (actualizar valor)
+// Editar bien (completo)
 async function editAsset(id) {
-    showUpdateAssetValueModal(id);
+    const asset = assets.find(a => (a._id || a.id) === id);
+    if (!asset) return;
+    
+    const newName = prompt('Nombre del bien:', asset.name);
+    if (!newName || newName.trim() === '') return;
+    
+    const newType = prompt('Tipo (vehicle/jewelry/electronics/art/other):', asset.type);
+    if (!newType) return;
+    
+    const newPurchasePrice = prompt('Precio de compra (€):', asset.purchase_price || 0);
+    if (newPurchasePrice === null) return;
+    const purchaseValue = parseFloat(newPurchasePrice);
+    if (isNaN(purchaseValue) || purchaseValue < 0) {
+        showToast('Por favor ingresa un precio de compra válido', 'error');
+        return;
+    }
+    
+    const newCurrentValue = prompt('Valor actual (€):', asset.current_value || 0);
+    if (newCurrentValue === null) return;
+    const currentValue = parseFloat(newCurrentValue);
+    if (isNaN(currentValue) || currentValue < 0) {
+        showToast('Por favor ingresa un valor actual válido', 'error');
+        return;
+    }
+    
+    const newLocation = prompt('Ubicación (opcional):', asset.location || '');
+    const newDescription = prompt('Descripción (opcional):', asset.description || '');
+    
+    try {
+        showLoader('Actualizando bien...');
+        await apiRequest(`/assets/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: newName.trim(),
+                type: newType,
+                purchase_price: purchaseValue,
+                current_value: currentValue,
+                location: newLocation.trim() || null,
+                description: newDescription.trim() || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Bien actualizado exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar bien: ' + error.message, 'error');
+    }
 }
 
 // Procesar actualización de valor de bien desde el modal
