@@ -10907,6 +10907,16 @@ function exportAccounts() {
 window.exportTransactions = exportTransactions;
 window.exportAccounts = exportAccounts;
 
+// Asegurar que openChartModal esté expuesta ANTES de cerrar el bloque
+// Esto es crítico porque el stub puede ejecutarse antes de que el script termine
+if (typeof openChartModal === 'function') {
+    window._openChartModalReal = openChartModal;
+    window.openChartModal = openChartModal;
+    console.log('✅ openChartModal expuesta correctamente al final del script');
+} else {
+    console.error('❌ openChartModal no está definida al final del script');
+}
+
 // Cerrar el bloque de protección contra carga múltiple
 }
 
