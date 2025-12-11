@@ -110,8 +110,7 @@ const translations = {
             noTransactions: "No hay transacciones registradas",
             searchTransactions: "Buscar transacciones...",
             filterByCategory: "Filtrar por categoría",
-            filterByMonth: "Filtrar por mes",
-            addCustomCategory: "Agregar categoría personalizada"
+            filterByMonth: "Filtrar por mes"
         },
         // Cuentas
         accounts: {

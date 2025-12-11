@@ -1229,8 +1229,6 @@ async function loadUserData() {
         updateAccountSelect();
         updatePropertySelect();
         
-        // Cargar categorías personalizadas
-        
         // Guardar en cache
         const cacheKey = `veedor_data_cache_${currentUser}`;
         const cacheData = {
@@ -2901,7 +2899,7 @@ function updateTransactionsTable() {
         const row = document.createElement('tr');
         const date = new Date(transaction.date);
         
-        // Buscar nombre de categoría (predefinida o personalizada)
+        // Buscar nombre de categoría
         let categoryName = transaction.categoryGeneral;
         if (transaction.type === 'expense') {
             const expenseCat = categories.expense.find(c => c.id === transaction.categoryGeneral);
@@ -10152,7 +10150,6 @@ function initializeTranslationsOnLoad() {
 // Inicializar traducciones
 initializeTranslationsOnLoad();
 
-
 // ==================== LAZY LOADING DE GRÁFICOS ====================
 let chartsInitialized = false;
 
@@ -10218,100 +10215,20 @@ function showSkeletonLoader(containerId, count = 3) {
     `).join('');
 }
 
-<<<<<<< HEAD
-=======
-// ==================== EXPORTAR DATOS ====================
-function exportToCSV(data, filename) {
-    if (!data || data.length === 0) {
-        showToast('No hay datos para exportar', 'warning');
-        return;
-    }
-    
-    const headers = Object.keys(data[0]);
-    const csvContent = [
-        headers.join(','),
-        ...data.map(row => headers.map(header => {
-            const value = row[header];
-            if (value === null || value === undefined) return '';
-            return `"${String(value).replace(/"/g, '""')}"`;
-        }).join(','))
-    ].join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast('Datos exportados correctamente', 'success');
-}
-
-function exportTransactions() {
-    try {
-        if (!transactions || transactions.length === 0) {
-            showToast('No hay transacciones para exportar', 'warning');
-            return;
-        }
-        
-        const data = transactions.map(t => ({
-            Fecha: t.date || '',
-            Tipo: t.type === 'income' ? 'Ingreso' : 'Gasto',
-            Categoría: `${t.categoryGeneral || ''} - ${t.categorySpecific || ''}`,
-            Descripción: t.description || '',
-            Monto: t.amount || 0,
-            Cuenta: accounts.find(a => (a._id || a.id) === t.account_id)?.name || '',
-            Propiedad: properties.find(p => (p._id || p.id) === t.property_id)?.name || '',
-            Sobre: t.envelope || ''
-        }));
-        
-        if (data.length === 0) {
-            showToast('No hay datos válidos para exportar', 'warning');
-            return;
-        }
-        
-        exportToCSV(data, 'transacciones');
-    } catch (error) {
-        console.error('Error al exportar transacciones:', error);
-        showToast('Error al exportar transacciones: ' + error.message, 'error');
-    }
-}
-
-function exportAccounts() {
-    const data = accounts.map(a => ({
-        Nombre: a.name,
-        Tipo: a.type,
-        Banco: a.bank || '',
-        Saldo: a.balance,
-        Descripción: a.description || ''
-    }));
-    exportToCSV(data, 'cuentas');
-}
-
-// Exponer funciones globales
-window.exportTransactions = exportTransactions;
-window.exportAccounts = exportAccounts;
->>>>>>> 02e8ad429c2c44d60f6ecf0341e49ec27ee4d9db
-
 // Asegurar que openChartModal esté expuesta ANTES de cerrar el bloque
 // Esto es crítico porque el stub puede ejecutarse antes de que el script termine
 try {
     if (typeof openChartModal === 'function') {
         window._openChartModalReal = openChartModal;
         window.openChartModal = openChartModal;
-        console.log('✅ openChartModal expuesta correctamente al final del script (línea 10913)');
+        console.log('✅ openChartModal expuesta correctamente al final del script');
     } else {
-        console.error('❌ openChartModal no está definida al final del script (línea 10913)');
+        console.error('❌ openChartModal no está definida al final del script');
         console.log('Tipo de openChartModal:', typeof openChartModal);
         console.log('openChartModal disponible en window:', typeof window.openChartModal);
         console.log('_openChartModalReal disponible en window:', typeof window._openChartModalReal);
     }
 } catch (error) {
     console.error('❌ Error al exponer openChartModal al final:', error);
-}
-
-// Cerrar el bloque de protección contra carga múltiple
 }
 
