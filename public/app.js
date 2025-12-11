@@ -191,7 +191,6 @@ let authToken = null;
 let summaryPeriod = 'month'; // 'month', 'year', 'all'
 
 // Variables para debounce y cache
-let globalSearchTimeout = null;
 let filterDebounceTimeouts = {};
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
@@ -459,15 +458,22 @@ function initializeApp() {
 if (!window.VEEDOR_INITIALIZED) {
     window.VEEDOR_INITIALIZED = true;
     
+    // Función para inicializar cuando el DOM esté listo
+    const initWhenReady = () => {
+        // Verificar que los elementos críticos existan
+        if (!document.getElementById('authScreen') && !document.getElementById('mainApp')) {
+            // Si no hay elementos críticos, esperar un poco más
+            setTimeout(initWhenReady, 50);
+            return;
+        }
+        initializeApp();
+    };
+    
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeApp();
-        });
+        document.addEventListener('DOMContentLoaded', initWhenReady);
     } else {
-        // Pequeño delay para asegurar que todo esté listo
-        setTimeout(() => {
-            initializeApp();
-        }, 100);
+        // Si el DOM ya está cargado, usar un pequeño delay para asegurar que todo esté listo
+        setTimeout(initWhenReady, 100);
     }
 }
 
@@ -529,10 +535,24 @@ async function checkAuth() {
 function initializeAuth() {
     console.log('Inicializando autenticación...');
     
+    // Verificar que los elementos necesarios existan
+    if (!document.getElementById('authScreen')) {
+        console.warn('⚠️ authScreen no encontrado, esperando a que el DOM esté listo...');
+        setTimeout(initializeAuth, 100);
+        return;
+    }
+    
     // Tabs de autenticación
     const authTabs = document.querySelectorAll('.auth-tab-btn');
     console.log('Tabs encontrados:', authTabs.length);
+    
+    if (authTabs.length === 0) {
+        console.warn('⚠️ No se encontraron tabs de autenticación');
+        return;
+    }
+    
     authTabs.forEach(btn => {
+        if (!btn) return;
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -729,6 +749,8 @@ function initializeAuth() {
                 loginForm.classList.add('active');
             }
         });
+    } else {
+        console.warn('⚠️ backToLoginLink no encontrado');
     }
     
     // Formulario de solicitud de token
@@ -738,6 +760,8 @@ function initializeAuth() {
             e.preventDefault();
             await requestPasswordReset();
         });
+    } else {
+        console.warn('⚠️ forgotPasswordFormElement no encontrado');
     }
     
     // Formulario de reset de contraseña
@@ -747,6 +771,8 @@ function initializeAuth() {
             e.preventDefault();
             await resetPassword();
         });
+    } else {
+        console.warn('⚠️ resetPasswordFormElement no encontrado');
     }
     
     console.log('Autenticación inicializada');
@@ -6048,7 +6074,29 @@ function updateAssets() {
     grid.appendChild(summaryCard);
 }
 
-// Editar bien ya está implementado arriba con modal
+// Editar bien - Abre modal con formulario pre-rellenado
+async function editAsset(id) {
+    const asset = assets.find(a => (a._id || a.id) === id);
+    if (!asset) {
+        showToast('Bien no encontrado', 'error');
+        return;
+    }
+    
+    currentAssetId = id;
+    
+    // Abrir modal de actualización de valor (que ya existe)
+    const modal = document.getElementById('updateAssetValueModal');
+    if (modal) {
+        // Pre-llenar el valor actual
+        const input = document.getElementById('updateAssetValueInput');
+        if (input) {
+            input.value = asset.current_value || asset.purchase_price || 0;
+        }
+        modal.style.display = 'flex';
+    } else {
+        showToast('Modal de edición no encontrado', 'error');
+    }
+}
 
 // Procesar actualización de valor de bien desde el modal
 async function processUpdateAssetValue() {
@@ -10178,147 +10226,6 @@ function initializeTranslationsOnLoad() {
 // Inicializar traducciones
 initializeTranslationsOnLoad();
 
-// ==================== BÚSQUEDA GLOBAL ====================
-function handleGlobalSearch(query) {
-    if (globalSearchTimeout) {
-        clearTimeout(globalSearchTimeout);
-    }
-    
-    globalSearchTimeout = setTimeout(() => {
-        performGlobalSearch(query);
-    }, 300); // Debounce de 300ms
-}
-
-function performGlobalSearch(query) {
-    const resultsContainer = document.getElementById('globalSearchResults');
-    if (!resultsContainer) return;
-    
-    if (!query || query.trim().length < 2) {
-        resultsContainer.style.display = 'none';
-        return;
-    }
-    
-    const searchTerm = query.toLowerCase().trim();
-    const results = [];
-    
-    // Buscar en transacciones
-    transactions.forEach(t => {
-        const match = 
-            (t.description || '').toLowerCase().includes(searchTerm) ||
-            (t.categoryGeneral || '').toLowerCase().includes(searchTerm) ||
-            (t.categorySpecific || '').toLowerCase().includes(searchTerm) ||
-            t.amount.toString().includes(searchTerm);
-        if (match) {
-            results.push({
-                type: 'transaction',
-                title: t.description || 'Sin descripción',
-                subtitle: `${t.categoryGeneral} - ${t.categorySpecific} | ${formatCurrency(t.amount)}`,
-                date: t.date,
-                action: () => {
-                    switchToTab('transactions', true);
-                    setTimeout(() => {
-                        document.getElementById('globalSearch').value = '';
-                        resultsContainer.style.display = 'none';
-                    }, 100);
-                }
-            });
-        }
-    });
-    
-    // Buscar en cuentas
-    accounts.forEach(acc => {
-        const match = 
-            (acc.name || '').toLowerCase().includes(searchTerm) ||
-            (acc.bank || '').toLowerCase().includes(searchTerm) ||
-            acc.balance.toString().includes(searchTerm);
-        if (match) {
-            results.push({
-                type: 'account',
-                title: acc.name,
-                subtitle: `${acc.type} | ${formatCurrency(acc.balance)}`,
-                action: () => {
-                    switchToTab('accounts', true);
-                    setTimeout(() => {
-                        document.getElementById('globalSearch').value = '';
-                        resultsContainer.style.display = 'none';
-                    }, 100);
-                }
-            });
-        }
-    });
-    
-    // Buscar en préstamos
-    loans.forEach(loan => {
-        const match = 
-            (loan.name || '').toLowerCase().includes(searchTerm) ||
-            loan.principal.toString().includes(searchTerm);
-        if (match) {
-            results.push({
-                type: 'loan',
-                title: loan.name,
-                subtitle: `${loan.type === 'debt' ? 'Debo' : 'Me deben'} | ${formatCurrency(loan.principal)}`,
-                action: () => {
-                    switchToTab('loans', true);
-                    setTimeout(() => {
-                        document.getElementById('globalSearch').value = '';
-                        resultsContainer.style.display = 'none';
-                    }, 100);
-                }
-            });
-        }
-    });
-    
-    // Buscar en inversiones
-    investments.forEach(inv => {
-        const match = 
-            (inv.name || '').toLowerCase().includes(searchTerm) ||
-            inv.current_value.toString().includes(searchTerm);
-        if (match) {
-            results.push({
-                type: 'investment',
-                title: inv.name,
-                subtitle: `${inv.type} | ${formatCurrency(inv.current_value)}`,
-                action: () => {
-                    switchToTab('investments', true);
-                    setTimeout(() => {
-                        document.getElementById('globalSearch').value = '';
-                        resultsContainer.style.display = 'none';
-                    }, 100);
-                }
-            });
-        }
-    });
-    
-    // Mostrar resultados
-    if (results.length === 0) {
-        resultsContainer.innerHTML = `
-            <div style="padding: 20px; text-align: center; color: var(--text-tertiary);">
-                No se encontraron resultados
-            </div>
-        `;
-    } else {
-        resultsContainer.innerHTML = results.slice(0, 10).map(r => `
-            <div onclick="(${r.action.toString()})()" style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='var(--bg-secondary)'" onmouseout="this.style.background='transparent'">
-                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">${r.title}</div>
-                <div style="font-size: 12px; color: var(--text-secondary);">${r.subtitle}</div>
-            </div>
-        `).join('');
-    }
-    
-    resultsContainer.style.display = 'block';
-}
-
-// Cerrar búsqueda al hacer clic fuera
-document.addEventListener('click', (e) => {
-    const searchInput = document.getElementById('globalSearch');
-    const resultsContainer = document.getElementById('globalSearchResults');
-    if (searchInput && resultsContainer && !searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
-        resultsContainer.style.display = 'none';
-    }
-});
-
-// Exponer función global
-window.handleGlobalSearch = handleGlobalSearch;
 
 // ==================== LAZY LOADING DE GRÁFICOS ====================
 let chartsInitialized = false;
@@ -10385,63 +10292,6 @@ function showSkeletonLoader(containerId, count = 3) {
     `).join('');
 }
 
-// ==================== EXPORTAR DATOS ====================
-function exportToCSV(data, filename) {
-    if (!data || data.length === 0) {
-        showToast('No hay datos para exportar', 'warning');
-        return;
-    }
-    
-    const headers = Object.keys(data[0]);
-    const csvContent = [
-        headers.join(','),
-        ...data.map(row => headers.map(header => {
-            const value = row[header];
-            if (value === null || value === undefined) return '';
-            return `"${String(value).replace(/"/g, '""')}"`;
-        }).join(','))
-    ].join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast('Datos exportados correctamente', 'success');
-}
-
-function exportTransactions() {
-    const data = transactions.map(t => ({
-        Fecha: t.date,
-        Tipo: t.type === 'income' ? 'Ingreso' : 'Gasto',
-        Categoría: `${t.categoryGeneral} - ${t.categorySpecific}`,
-        Descripción: t.description || '',
-        Monto: t.amount,
-        Cuenta: accounts.find(a => (a._id || a.id) === t.account_id)?.name || '',
-        Propiedad: properties.find(p => (p._id || p.id) === t.property_id)?.name || '',
-        Sobre: t.envelope || ''
-    }));
-    exportToCSV(data, 'transacciones');
-}
-
-function exportAccounts() {
-    const data = accounts.map(a => ({
-        Nombre: a.name,
-        Tipo: a.type,
-        Banco: a.bank || '',
-        Saldo: a.balance,
-        Descripción: a.description || ''
-    }));
-    exportToCSV(data, 'cuentas');
-}
-
-// Exponer funciones globales
-window.exportTransactions = exportTransactions;
-window.exportAccounts = exportAccounts;
 
 // Asegurar que openChartModal esté expuesta ANTES de cerrar el bloque
 // Esto es crítico porque el stub puede ejecutarse antes de que el script termine

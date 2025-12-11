@@ -6,14 +6,24 @@
     <title>Veedor - Control de Finanzas Personales</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/translations.js"></script>
+    <script src="translations.js"></script>
     <script>
         // Inicializar modo oscuro ANTES de que se renderice el body para evitar flash
         (function() {
             const savedMode = localStorage.getItem('veedor_darkMode');
             if (savedMode === null || savedMode === 'true') {
                 document.documentElement.classList.add('dark-mode');
-                document.body.classList.add('dark-mode');
+                // Verificar que body existe antes de acceder a classList
+                if (document.body) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    // Si body no existe aún, esperar a que se cargue
+                    document.addEventListener('DOMContentLoaded', () => {
+                        if (document.body) {
+                            document.body.classList.add('dark-mode');
+                        }
+                    });
+                }
             }
         })();
     </script>
@@ -176,17 +186,6 @@
                         <path d="M10 10 L13 13 M30 10 L27 13 M10 30 L13 27 M30 30 L27 27" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
                     </svg>
                     <h1 style="color: white; margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; white-space: nowrap;">Veedor</h1>
-                </div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0; flex: 1; max-width: 600px; margin: 0 auto;">
-                <!-- Búsqueda Global -->
-                <div style="position: relative; flex: 1; max-width: 400px;">
-                    <input type="text" id="globalSearch" placeholder="Buscar en todas las secciones..." style="width: 100%; padding: 8px 36px 8px 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; background: rgba(255,255,255,0.2); color: white; font-size: 14px; font-weight: 500; transition: all 0.2s; text-shadow: 0 1px 2px rgba(0,0,0,0.1);" onfocus="this.style.background='rgba(255,255,255,0.25)'; this.style.borderColor='rgba(255,255,255,0.4)'; this.style.boxShadow='0 0 0 3px rgba(255,255,255,0.1)'" onblur="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'; this.style.boxShadow='none'" oninput="handleGlobalSearch(this.value)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: 0.7;">
-                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
-                        <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    <div id="globalSearchResults" style="display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; background: var(--bg-primary); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); max-height: 400px; overflow-y: auto; z-index: 1001; border: 1px solid var(--border-color);"></div>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
@@ -500,14 +499,6 @@
                         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                             <label style="font-size: 13px; font-weight: 500; color: var(--text-secondary); white-space: nowrap;">Desde:</label>
                             <input type="date" id="filterStartDate" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); min-width: 150px;">
-                        <button onclick="exportTransactions()" class="btn-secondary" style="white-space: nowrap; padding: 8px 16px; font-size: 13px; display: flex; align-items: center; gap: 6px;" title="Exportar transacciones a CSV">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                            Exportar CSV
-                        </button>
                             <label style="font-size: 13px; font-weight: 500; color: var(--text-secondary); white-space: nowrap;">Hasta:</label>
                             <input type="date" id="filterEndDate" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); min-width: 150px;">
                         </div>
@@ -651,16 +642,6 @@
                         </div>
                         <button type="submit" class="btn-primary">Agregar Cuenta</button>
                     </form>
-                </div>
-                <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                    <button onclick="exportAccounts()" class="btn-secondary" style="white-space: nowrap; padding: 8px 16px; font-size: 13px; display: flex; align-items: center; gap: 6px;" title="Exportar cuentas a CSV">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        Exportar CSV
-                    </button>
                 </div>
                 <div class="accounts-grid" id="accountsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-top: 30px;">
                 </div>
@@ -1695,7 +1676,7 @@
     </div>
 
     <!-- Cargar aplicación JavaScript directamente -->
-    <script src="/app.js?v=2.25.0"></script>
+    <script src="app.js?v=2.25.0"></script>
     
     <!-- Footer (solo visible en la app principal, no en welcome page) -->
     <footer id="mainFooter" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: rgba(255,255,255,0.9); padding: 16px 20px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); display: none;">
