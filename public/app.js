@@ -10391,17 +10391,14 @@ try {
     if (typeof openChartModal === 'function') {
         window._openChartModalReal = openChartModal;
         window.openChartModal = openChartModal;
-        console.log('✅ openChartModal expuesta correctamente al final del script (línea 10913)');
+        console.log('✅ openChartModal expuesta correctamente al final del script');
     } else {
-        console.error('❌ openChartModal no está definida al final del script (línea 10913)');
+        console.error('❌ openChartModal no está definida al final del script');
         console.log('Tipo de openChartModal:', typeof openChartModal);
         console.log('openChartModal disponible en window:', typeof window.openChartModal);
         console.log('_openChartModalReal disponible en window:', typeof window._openChartModalReal);
     }
 } catch (error) {
     console.error('❌ Error al exponer openChartModal al final:', error);
-}
-
-// Cerrar el bloque de protección contra carga múltiple
 }
 
