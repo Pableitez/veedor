@@ -506,7 +506,6 @@ async function checkAuth() {
             // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
             await loadUserData();
             initializeDate();
-            initializeCategories();
             initializeTabs();
             initializeForms();
             updateDisplay();
@@ -1038,7 +1037,6 @@ async function register() {
         showMainApp();
         await loadUserData();
         initializeDate();
-        initializeCategories();
         initializeTabs();
         initializeForms();
         updateDisplay();
@@ -1103,7 +1101,6 @@ async function login() {
         // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
         await loadUserData();
         initializeDate();
-        initializeCategories();
         initializeTabs();
         initializeForms();
         updateDisplay();
@@ -1447,28 +1444,6 @@ function initializeCategories() {
     
     if (!generalSelect || !specificSelect) return;
     
-    // Función para actualizar categorías específicas cuando cambia la general
-    function updateSpecificCategories() {
-        const selectedGeneral = generalSelect.value;
-        specificSelect.innerHTML = '<option value="">Seleccionar...</option>';
-        
-        if (!selectedGeneral) return;
-        
-        const type = transactionType ? transactionType.value : 'expense';
-        const categoryList = type === 'income' ? categories.income : categories.expense;
-        const category = categoryList.find(c => c.id === selectedGeneral);
-        
-        if (category && category.subcategories && category.subcategories.length > 0) {
-            category.subcategories.forEach(sub => {
-                const option = document.createElement('option');
-                option.value = sub;
-                option.textContent = sub;
-                specificSelect.appendChild(option);
-            });
-        }
-    }
-    
-    // Función para actualizar categorías generales cuando cambia el tipo
     function updateGeneralCategories() {
         const type = transactionType ? transactionType.value : 'expense';
         const categoryList = type === 'income' ? categories.income : categories.expense;
@@ -1494,13 +1469,32 @@ function initializeCategories() {
         }
     }
     
-    // Event listeners
-    generalSelect.addEventListener('change', updateSpecificCategories);
-    if (transactionType) {
-        transactionType.addEventListener('change', updateGeneralCategories);
+    function updateSpecificCategories() {
+        const selectedGeneral = generalSelect.value;
+        specificSelect.innerHTML = '<option value="">Seleccionar...</option>';
+        
+        if (!selectedGeneral) return;
+        
+        const type = transactionType ? transactionType.value : 'expense';
+        const categoryList = type === 'income' ? categories.income : categories.expense;
+        const category = categoryList.find(c => c.id === selectedGeneral);
+        
+        if (category && category.subcategories && category.subcategories.length > 0) {
+            category.subcategories.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.textContent = sub;
+                specificSelect.appendChild(option);
+            });
+        }
     }
     
-    // Inicializar
+    if (transactionType) {
+        transactionType.onchange = updateGeneralCategories;
+    }
+    
+    generalSelect.onchange = updateSpecificCategories;
+    
     updateGeneralCategories();
 }
 
@@ -1666,6 +1660,9 @@ function initializeForms() {
         const newForm = transactionForm.cloneNode(true);
         transactionForm.parentNode.replaceChild(newForm, transactionForm);
         const cleanForm = document.getElementById('transactionForm');
+        
+        // Inicializar categorías DESPUÉS de clonar el formulario
+        initializeCategories();
         
         console.log('✅ Formulario encontrado, agregando event listener...');
         cleanForm.addEventListener('submit', async (e) => {
