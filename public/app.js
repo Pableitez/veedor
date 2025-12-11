@@ -2357,6 +2357,7 @@ async function addTransaction() {
         const envelopeEl = document.getElementById('envelope');
         const accountIdEl = document.getElementById('transactionAccount');
         const investmentIdEl = document.getElementById('transactionInvestment');
+        const loanIdEl = document.getElementById('transactionLoan');
         const propertyIdEl = document.getElementById('transactionProperty');
         const descriptionEl = document.getElementById('transactionDescription');
         
@@ -2369,6 +2370,7 @@ async function addTransaction() {
             envelopeEl: !!envelopeEl,
             accountIdEl: !!accountIdEl,
             investmentIdEl: !!investmentIdEl,
+            loanIdEl: !!loanIdEl,
             propertyIdEl: !!propertyIdEl,
             descriptionEl: !!descriptionEl
         });
@@ -2387,12 +2389,13 @@ async function addTransaction() {
         const envelope = envelopeEl ? envelopeEl.value : '';
         const accountId = accountIdEl ? accountIdEl.value : '';
         const investmentId = investmentIdEl ? investmentIdEl.value : '';
+        const loanId = loanIdEl ? loanIdEl.value : '';
         const propertyId = propertyIdEl ? propertyIdEl.value : '';
         const description = descriptionEl ? descriptionEl.value : '';
         
         console.log('📋 Datos del formulario:', {
             type, date, amountInput, categoryGeneral, categorySpecific,
-            envelope, accountId, investmentId, propertyId, description
+            envelope, accountId, investmentId, loanId, propertyId, description
         });
     
         // Validaciones básicas
@@ -2419,6 +2422,7 @@ async function addTransaction() {
         const normalizedEnvelope = (envelope && envelope.trim() !== '') ? envelope.trim() : null;
         const normalizedAccountId = (accountId && accountId.trim() !== '') ? accountId.trim() : null;
         const normalizedInvestmentId = (investmentId && investmentId.trim() !== '') ? investmentId.trim() : null;
+        const normalizedLoanId = (loanId && loanId.trim() !== '') ? loanId.trim() : null;
         const normalizedPropertyId = (propertyId && propertyId.trim() !== '') ? propertyId.trim() : null;
         const normalizedDescription = (description && description.trim() !== '') ? description.trim() : null;
         
@@ -2453,21 +2457,41 @@ async function addTransaction() {
         console.log('✅', transaction);
         console.log('✅ ========================================');
         
-        // Si está asociada a una inversión, recargar datos
+        // Si está asociada a una inversión o préstamo, recargar datos
         console.log('✅ Actualizando interfaz...');
-        if (normalizedInvestmentId && type === 'expense') {
-            console.log('✅ Recargando datos completos (transacción asociada a inversión)...');
+        if ((normalizedInvestmentId && type === 'expense') || (normalizedLoanId && type === 'expense')) {
+            console.log('✅ Recargando datos completos (transacción asociada a inversión o préstamo)...');
+            
+            // Si hay un préstamo asociado, descontar el importe
+            if (normalizedLoanId && type === 'expense') {
+                try {
+                    console.log('✅ Descontando importe del préstamo...');
+                    await apiRequest(`/loans/${normalizedLoanId}/payment`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            amount: Math.abs(amount),
+                            date: date,
+                            is_early_payment: false
+                        })
+                    });
+                    console.log('✅ Importe descontado del préstamo exitosamente');
+                } catch (error) {
+                    console.error('❌ Error al descontar del préstamo:', error);
+                    // No fallar la transacción si falla el descuento del préstamo
+                }
+            }
+            
             await loadUserData();
         } else {
             console.log('✅ Agregando transacción a lista local...');
-        // Agregar a la lista local
-        transactions.push({
-            ...transaction,
-            categoryGeneral: transaction.category_general,
-            categorySpecific: transaction.category_specific
-        });
-        transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-        updateDisplay();
+            // Agregar a la lista local
+            transactions.push({
+                ...transaction,
+                categoryGeneral: transaction.category_general,
+                categorySpecific: transaction.category_specific
+            });
+            transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            updateDisplay();
         }
         
         // Limpiar formulario
@@ -2534,6 +2558,7 @@ function updateDisplay() {
         updateAccountSelect(); // Actualizar selector de cuentas
         updateInvestmentSelect(); // Actualizar selector de inversiones
         updatePropertySelect(); // Actualizar selector de propiedades
+        updateLoanSelect(); // Actualizar selector de préstamos
         updateLoans();
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
@@ -2696,9 +2721,9 @@ async function updateSummary() {
         if (savingsGoal && savingsGoal > 0) {
             savingsGoalEl.textContent = formatCurrency(savingsGoal);
             
-            // Calcular progreso basado en el ahorro del período
-            const progress = Math.min((periodSavings / savingsGoal) * 100, 100);
-            const isAchieved = periodSavings >= savingsGoal;
+            // Calcular progreso basado en el saldo de cuentas
+            const progress = Math.min((totalAccountsBalance / savingsGoal) * 100, 100);
+            const isAchieved = totalAccountsBalance >= savingsGoal;
             
             if (savingsGoalProgress) {
                 savingsGoalProgress.style.display = 'block';
@@ -2711,7 +2736,7 @@ async function updateSummary() {
                         savingsGoalProgressText.textContent = `¡Meta alcanzada! 🎉`;
                         savingsGoalProgressText.style.color = 'rgba(255,255,255,1)';
             } else {
-                        const remaining = savingsGoal - periodSavings;
+                        const remaining = savingsGoal - totalAccountsBalance;
                         savingsGoalProgressText.textContent = `${progress.toFixed(1)}% - Faltan ${formatCurrency(remaining)}`;
                         savingsGoalProgressText.style.color = 'rgba(255,255,255,0.9)';
                     }
@@ -3032,6 +3057,20 @@ function updatePropertySelect(selectId = 'transactionProperty') {
         const option = document.createElement('option');
         option.value = property._id || property.id;
         option.textContent = property.name;
+        select.appendChild(option);
+    });
+}
+
+// Actualizar selector de préstamos
+function updateLoanSelect(selectId = 'transactionLoan') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Ninguno</option>';
+    loans.filter(loan => loan.type === 'debt').forEach(loan => {
+        const option = document.createElement('option');
+        option.value = loan._id || loan.id;
+        option.textContent = `${loan.name} (${formatCurrency(loan.principal)})`;
         select.appendChild(option);
     });
 }
@@ -4138,8 +4177,8 @@ function calculateAmortizationTable(principal, annualRate, monthlyPayment, start
         const epDate = new Date(ep.date);
         epDate.setHours(0, 0, 0, 0);
         if (epDate <= today) {
-            balance -= ep.amount;
-            totalInterest += ep.commission || 0;
+        balance -= ep.amount;
+        totalInterest += ep.commission || 0;
         }
     });
     
