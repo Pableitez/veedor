@@ -131,49 +131,52 @@ if (window.VEEDOR_LOADED) {
 // Categorías de gastos e ingresos
 const categories = {
     expense: [
-        { id: 'food', name: 'Alimentación', subcategories: ['Supermercado', 'Restaurantes', 'Delivery', 'Café'] },
-        { id: 'transport', name: 'Transporte', subcategories: ['Gasolina', 'Transporte público', 'Taxi/Uber', 'Mantenimiento'] },
-        { id: 'housing', name: 'Vivienda', subcategories: ['Alquiler/Hipoteca', 'Servicios', 'Mantenimiento', 'Decoración'] },
-        { id: 'health', name: 'Salud', subcategories: ['Médico', 'Farmacia', 'Gimnasio', 'Seguro médico'] },
-        { id: 'entertainment', name: 'Entretenimiento', subcategories: ['Cine', 'Streaming', 'Eventos', 'Hobbies'] },
-        { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros'] },
-        { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula'] },
-        { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios'] },
-        { id: 'insurance', name: 'Seguros', subcategories: ['Seguro de coche', 'Seguro de hogar', 'Seguro de vida', 'Seguro de salud', 'Otros seguros'] },
-        { id: 'fines', name: 'Multas y Sanciones', subcategories: ['Multa de tráfico', 'Multa administrativa', 'Sanció', 'Otros'] },
-        { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros'] },
-        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos'] }
+        { id: 'food', name: 'Alimentación', subcategories: ['Supermercado', 'Restaurantes', 'Delivery', 'Café', 'Bebidas', 'Comida rápida', 'Mercado local', 'Tienda de conveniencia', 'Catering', 'Almuerzo de trabajo'] },
+        { id: 'transport', name: 'Transporte', subcategories: ['Gasolina', 'Transporte público', 'Taxi/Uber', 'Mantenimiento', 'Parking', 'Peaje', 'Seguro de coche', 'Reparaciones', 'Bicicleta', 'Scooter', 'Vuelos', 'Tren', 'Autobús'] },
+        { id: 'housing', name: 'Vivienda', subcategories: ['Alquiler/Hipoteca', 'Servicios', 'Mantenimiento', 'Decoración', 'Limpieza', 'Jardinería', 'Reparaciones', 'Mejoras', 'Muebles', 'Electrodomésticos', 'Seguro del hogar', 'Comunidad', 'IBI/Impuestos'] },
+        { id: 'health', name: 'Salud', subcategories: ['Médico', 'Farmacia', 'Gimnasio', 'Seguro médico', 'Dentista', 'Óptica', 'Fisioterapia', 'Psicólogo', 'Nutricionista', 'Medicinas', 'Análisis', 'Especialistas', 'Urgencias'] },
+        { id: 'entertainment', name: 'Entretenimiento', subcategories: ['Cine', 'Streaming', 'Eventos', 'Hobbies', 'Conciertos', 'Teatro', 'Museos', 'Videojuegos', 'Libros', 'Revistas', 'Juegos de mesa', 'Deportes', 'Viajes', 'Vacaciones'] },
+        { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros', 'Zapatos', 'Accesorios', 'Joyería', 'Cosméticos', 'Herramientas', 'Bricolaje', 'Jardín', 'Mascotas', 'Regalos'] },
+        { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula', 'Universidad', 'Máster', 'Idiomas', 'Formación online', 'Seminarios', 'Conferencias', 'Material escolar', 'Uniforme'] },
+        { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios', 'Gas', 'Calefacción', 'Basura', 'TV/Cable', 'Streaming servicios', 'Suscripciones', 'Banco', 'Seguros'] },
+        { id: 'insurance', name: 'Seguros', subcategories: ['Seguro de coche', 'Seguro de hogar', 'Seguro de vida', 'Seguro de salud', 'Otros seguros', 'Seguro de viaje', 'Seguro de mascota', 'Seguro de responsabilidad civil'] },
+        { id: 'fines', name: 'Multas y Sanciones', subcategories: ['Multa de tráfico', 'Multa administrativa', 'Sanción', 'Otros', 'Aparcamiento', 'Velocidad', 'ITV', 'Impuestos atrasados'] },
+        { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros', 'Peluquería', 'Estética', 'Spa', 'Masajes', 'Cosméticos', 'Perfumes', 'Cumpleaños', 'Aniversarios', 'Bodas'] },
+        { id: 'subscriptions', name: 'Suscripciones', subcategories: ['Netflix', 'Spotify', 'Amazon Prime', 'Disney+', 'HBO', 'Gimnasio', 'Revistas', 'Software', 'Cloud storage', 'Apps', 'Newsletters', 'Clubes'] },
+        { id: 'charity', name: 'Donaciones y Caridad', subcategories: ['ONG', 'Caridad', 'Donaciones', 'Ayuda humanitaria', 'Fundaciones', 'Crowdfunding', 'Voluntariado'] },
+        { id: 'taxes', name: 'Impuestos', subcategories: ['IRPF', 'IVA', 'IBI', 'Impuesto de circulación', 'Impuesto de sucesiones', 'Otros impuestos'] },
+        { id: 'debt', name: 'Deudas y Préstamos', subcategories: ['Pago de préstamo', 'Tarjeta de crédito', 'Hipoteca', 'Intereses', 'Comisiones bancarias', 'Refinanciación'] },
+        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Gastos no categorizados', 'Transferencias', 'Comisiones', 'Pérdidas'] }
     ],
     income: [
-        { id: 'salary', name: 'Salario', subcategories: ['Nómina', 'Pago mensual', 'Pago quincenal', 'Pago semanal'] },
-        { id: 'freelance', name: 'Freelance', subcategories: ['Proyecto', 'Hora', 'Servicio', 'Otros'] },
-        { id: 'investment', name: 'Inversiones', subcategories: ['Dividendos', 'Intereses', 'Renta', 'Ganancias'] },
-        { id: 'business', name: 'Negocio', subcategories: ['Ventas', 'Servicios', 'Comisiones', 'Otros'] },
-        { id: 'gift', name: 'Regalos', subcategories: ['Cumpleaños', 'Navidad', 'Ocasión especial', 'Otros'] },
-        { id: 'refund', name: 'Reembolsos', subcategories: ['Compra', 'Impuesto', 'Seguro', 'Otros'] },
-        { id: 'rental', name: 'Alquiler', subcategories: ['Propiedad', 'Habitación', 'Garaje', 'Otros'] },
-        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos'] }
+        { id: 'salary', name: 'Salario', subcategories: ['Nómina', 'Pago mensual', 'Pago quincenal', 'Pago semanal', 'Pago diario', 'Horas extras', 'Bonus', 'Comisiones', 'Incentivos', 'Vacaciones pagadas'] },
+        { id: 'freelance', name: 'Freelance', subcategories: ['Proyecto', 'Hora', 'Servicio', 'Otros', 'Consultoría', 'Diseño', 'Desarrollo', 'Escritura', 'Traducción', 'Marketing', 'Asesoría'] },
+        { id: 'investment', name: 'Inversiones', subcategories: ['Dividendos', 'Intereses', 'Renta', 'Ganancias', 'Acciones', 'Bonos', 'Fondos', 'Criptomonedas', 'Forex', 'Opciones', 'Futuros', 'Rentabilidad'] },
+        { id: 'business', name: 'Negocio', subcategories: ['Ventas', 'Servicios', 'Comisiones', 'Otros', 'Ingresos por productos', 'Ingresos por servicios', 'Licencias', 'Franquicias', 'Royalties'] },
+        { id: 'gift', name: 'Regalos', subcategories: ['Cumpleaños', 'Navidad', 'Ocasión especial', 'Otros', 'Bodas', 'Aniversarios', 'Graduación', 'Bautizo', 'Comunión'] },
+        { id: 'refund', name: 'Reembolsos', subcategories: ['Compra', 'Impuesto', 'Seguro', 'Otros', 'Devolución de producto', 'Reembolso de viaje', 'Reembolso médico', 'Reembolso de gastos'] },
+        { id: 'rental', name: 'Alquiler', subcategories: ['Propiedad', 'Habitación', 'Garaje', 'Otros', 'Alquiler de piso', 'Alquiler de casa', 'Alquiler de local', 'Alquiler de terreno', 'Alquiler de vehículo'] },
+        { id: 'pension', name: 'Pensión', subcategories: ['Jubilación', 'Invalidez', 'Viudedad', 'Orfandad', 'Pensión alimenticia', 'Pensión no contributiva'] },
+        { id: 'benefits', name: 'Prestaciones', subcategories: ['Desempleo', 'Baja médica', 'Maternidad', 'Paternidad', 'Ayudas sociales', 'Subsidios', 'Becas'] },
+        { id: 'lottery', name: 'Lotería y Apuestas', subcategories: ['Lotería', 'Apuestas', 'Casino', 'Premios', 'Sorteos', 'Bingo'] },
+        { id: 'sale', name: 'Ventas', subcategories: ['Venta de objetos', 'Venta de vehículo', 'Venta de propiedad', 'Venta de acciones', 'Venta de artículos usados', 'Venta online'] },
+        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Ingresos no categorizados', 'Transferencias recibidas', 'Herencia', 'Indemnización'] }
     ],
     // Mantener compatibilidad con código antiguo
     general: [
-        { id: 'food', name: 'Alimentación', subcategories: ['Supermercado', 'Restaurantes', 'Delivery', 'Café'] },
-        { id: 'transport', name: 'Transporte', subcategories: ['Gasolina', 'Transporte público', 'Taxi/Uber', 'Mantenimiento'] },
-        { id: 'housing', name: 'Vivienda', subcategories: ['Alquiler/Hipoteca', 'Servicios', 'Mantenimiento', 'Decoración'] },
-        { id: 'health', name: 'Salud', subcategories: ['Médico', 'Farmacia', 'Gimnasio', 'Seguro médico'] },
-        { id: 'entertainment', name: 'Entretenimiento', subcategories: ['Cine', 'Streaming', 'Eventos', 'Hobbies'] },
-        { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros'] },
-        { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula'] },
-        { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios'] },
-        { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros'] },
-        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos'] }
+        { id: 'food', name: 'Alimentación', subcategories: ['Supermercado', 'Restaurantes', 'Delivery', 'Café', 'Bebidas', 'Comida rápida', 'Mercado local', 'Tienda de conveniencia', 'Catering', 'Almuerzo de trabajo'] },
+        { id: 'transport', name: 'Transporte', subcategories: ['Gasolina', 'Transporte público', 'Taxi/Uber', 'Mantenimiento', 'Parking', 'Peaje', 'Seguro de coche', 'Reparaciones', 'Bicicleta', 'Scooter', 'Vuelos', 'Tren', 'Autobús'] },
+        { id: 'housing', name: 'Vivienda', subcategories: ['Alquiler/Hipoteca', 'Servicios', 'Mantenimiento', 'Decoración', 'Limpieza', 'Jardinería', 'Reparaciones', 'Mejoras', 'Muebles', 'Electrodomésticos', 'Seguro del hogar', 'Comunidad', 'IBI/Impuestos'] },
+        { id: 'health', name: 'Salud', subcategories: ['Médico', 'Farmacia', 'Gimnasio', 'Seguro médico', 'Dentista', 'Óptica', 'Fisioterapia', 'Psicólogo', 'Nutricionista', 'Medicinas', 'Análisis', 'Especialistas', 'Urgencias'] },
+        { id: 'entertainment', name: 'Entretenimiento', subcategories: ['Cine', 'Streaming', 'Eventos', 'Hobbies', 'Conciertos', 'Teatro', 'Museos', 'Videojuegos', 'Libros', 'Revistas', 'Juegos de mesa', 'Deportes', 'Viajes', 'Vacaciones'] },
+        { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros', 'Zapatos', 'Accesorios', 'Joyería', 'Cosméticos', 'Herramientas', 'Bricolaje', 'Jardín', 'Mascotas', 'Regalos'] },
+        { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula', 'Universidad', 'Máster', 'Idiomas', 'Formación online', 'Seminarios', 'Conferencias', 'Material escolar', 'Uniforme'] },
+        { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios', 'Gas', 'Calefacción', 'Basura', 'TV/Cable', 'Streaming servicios', 'Suscripciones', 'Banco', 'Seguros'] },
+        { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros', 'Peluquería', 'Estética', 'Spa', 'Masajes', 'Cosméticos', 'Perfumes', 'Cumpleaños', 'Aniversarios', 'Bodas'] },
+        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Gastos no categorizados', 'Transferencias', 'Comisiones', 'Pérdidas'] }
     ]
 };
 
-// Categorías personalizadas del usuario (guardadas en la base de datos)
-let customCategories = {
-    expense: [],
-    income: []
-};
 
 // Estado de la aplicación
 let transactions = [];
@@ -1201,7 +1204,6 @@ async function loadUserData() {
         updatePropertySelect();
         
         // Cargar categorías personalizadas
-        loadCustomCategories();
         
         // Guardar en cache
         const cacheKey = `veedor_data_cache_${currentUser}`;
@@ -1436,7 +1438,6 @@ function initializeCategories() {
     const updateCategoriesByType = () => {
         const type = transactionType ? transactionType.value : 'expense';
         const categoryList = type === 'income' ? categories.income : categories.expense;
-        const customList = type === 'income' ? customCategories.income : customCategories.expense;
         
         // Limpiar selects
         generalSelect.innerHTML = '<option value="">Seleccionar...</option>';
@@ -1450,17 +1451,9 @@ function initializeCategories() {
             generalSelect.appendChild(option);
         });
         
-        // Agregar categorías personalizadas
-        customList.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = `custom_${cat.id}`;
-            option.textContent = `${cat.name} (Personalizada)`;
-            generalSelect.appendChild(option);
-        });
-        
         // Actualizar filtro de categorías
         filterCategory.innerHTML = '<option value="">Todas las categorías</option>';
-        [...categoryList, ...customList].forEach(cat => {
+        categoryList.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.id;
             option.textContent = cat.name;
@@ -1485,18 +1478,13 @@ function initializeCategories() {
         if (selectedGeneral) {
             const type = transactionType ? transactionType.value : 'expense';
             const categoryList = type === 'income' ? categories.income : categories.expense;
-            const customList = type === 'income' ? customCategories.income : customCategories.expense;
             
             // Buscar en categorías predefinidas
             let category = categoryList.find(c => c.id === selectedGeneral);
             
-            // Si no está, buscar en personalizadas
-            if (!category && selectedGeneral.startsWith('custom_')) {
-                const customId = selectedGeneral.replace('custom_', '');
-                const customCat = customList.find(c => c.id === customId);
-                if (customCat) {
-                    // Si la categoría personalizada tiene subcategorías, usarlas
-                    if (customCat.subcategories && customCat.subcategories.length > 0) {
+            if (category) {
+                // Si la categoría tiene subcategorías, usarlas
+                if (category.subcategories && category.subcategories.length > 0) {
                         customCat.subcategories.forEach(sub => {
                             const option = document.createElement('option');
                             option.value = sub;
@@ -1939,47 +1927,6 @@ function initializeForms() {
     // Poblar filtros cuando se cargan los datos
     updateChartFilters();
     
-    // Botón para agregar categoría personalizada
-    const addCustomCategoryBtn = document.getElementById('addCustomCategoryBtn');
-    if (addCustomCategoryBtn) {
-        addCustomCategoryBtn.addEventListener('click', showAddCustomCategoryModal);
-    }
-    
-    // Modal de categoría personalizada
-    const customCategoryModal = document.getElementById('customCategoryModal');
-    const closeCustomCategoryModalBtn = document.getElementById('closeCustomCategoryModal');
-    const cancelCustomCategoryBtn = document.getElementById('cancelCustomCategoryBtn');
-    const customCategoryForm = document.getElementById('customCategoryForm');
-    
-    if (closeCustomCategoryModalBtn) {
-        closeCustomCategoryModalBtn.addEventListener('click', closeCustomCategoryModal);
-    }
-    
-    if (cancelCustomCategoryBtn) {
-        cancelCustomCategoryBtn.addEventListener('click', closeCustomCategoryModal);
-    }
-    
-    if (customCategoryForm) {
-        // Remover listeners anteriores para evitar duplicados
-        const newForm = customCategoryForm.cloneNode(true);
-        customCategoryForm.parentNode.replaceChild(newForm, customCategoryForm);
-        const cleanForm = document.getElementById('customCategoryForm');
-        
-        cleanForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            await addCustomCategory();
-        });
-    }
-    
-    // Cerrar modal al hacer clic fuera
-    if (customCategoryModal) {
-        customCategoryModal.addEventListener('click', (e) => {
-            if (e.target === customCategoryModal) {
-                closeCustomCategoryModal();
-            }
-        });
-    }
     
     // Modal de amortización
     const amortizationModal = document.getElementById('amortizationModal');
@@ -2336,9 +2283,8 @@ function initializeForms() {
             
             const type = budgetType.value;
             const categoryList = type === 'income' ? categories.income : categories.expense;
-            const customList = type === 'income' ? customCategories.income : customCategories.expense;
             
-            [...categoryList, ...customList].forEach(cat => {
+            categoryList.forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat.id;
                 option.textContent = cat.name;
@@ -2936,16 +2882,14 @@ function updateTransactionsTable() {
             if (expenseCat) {
                 categoryName = expenseCat.name;
             } else {
-                const customCat = customCategories.expense.find(c => c.id === transaction.categoryGeneral);
-                categoryName = customCat ? customCat.name : transaction.categoryGeneral;
+                categoryName = transaction.categoryGeneral;
             }
         } else {
             const incomeCat = categories.income.find(c => c.id === transaction.categoryGeneral);
             if (incomeCat) {
                 categoryName = incomeCat.name;
             } else {
-                const customCat = customCategories.income.find(c => c.id === transaction.categoryGeneral);
-                categoryName = customCat ? customCat.name : transaction.categoryGeneral;
+                categoryName = transaction.categoryGeneral;
             }
         }
         
@@ -3308,13 +3252,11 @@ function updateBudgets() {
     
     activeBudgets.forEach(budget => {
         // Determinar si es presupuesto de ingreso o gasto buscando en ambas categorías
-        let category = categories.expense.find(c => c.id === budget.category_id) || 
-                      customCategories.expense.find(c => c.id === budget.category_id);
+        let category = categories.expense.find(c => c.id === budget.category_id);
         let isIncome = false;
         
         if (!category) {
-            category = categories.income.find(c => c.id === budget.category_id) || 
-                      customCategories.income.find(c => c.id === budget.category_id);
+            category = categories.income.find(c => c.id === budget.category_id);
             isIncome = true;
         }
         
@@ -6743,7 +6685,7 @@ function updateChartFilters() {
     if (incomeFilter) {
         const currentValue = incomeFilter.value;
         incomeFilter.innerHTML = '<option value="all">Todas las categorías</option>';
-        const incomeCats = [...categories.income, ...customCategories.income];
+        const incomeCats = [...categories.income];
         incomeCats.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.id;
@@ -6758,7 +6700,7 @@ function updateChartFilters() {
     if (expenseFilter) {
         const currentValue = expenseFilter.value;
         expenseFilter.innerHTML = '<option value="all">Todas las categorías</option>';
-        const expenseCats = [...categories.expense, ...customCategories.expense];
+        const expenseCats = [...categories.expense];
         expenseCats.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.id;
@@ -6949,9 +6891,7 @@ function updateExpensesChart() {
         if (expenseCat) {
             catName = expenseCat.name;
         } else {
-            // Buscar en personalizadas
-            const customCat = customCategories.expense.find(c => c.id === t.categoryGeneral);
-            catName = customCat ? customCat.name : t.categoryGeneral;
+            catName = t.categoryGeneral;
         }
         categoryTotals[catName] = (categoryTotals[catName] || 0) + Math.abs(t.amount);
     });
@@ -7074,8 +7014,7 @@ function updateDistributionChart() {
         if (expenseCat) {
             catName = expenseCat.name;
         } else {
-            const customCat = customCategories.expense.find(c => c.id === t.categoryGeneral);
-            catName = customCat ? customCat.name : t.categoryGeneral;
+            catName = t.categoryGeneral;
         }
         categoryTotals[catName] = (categoryTotals[catName] || 0) + Math.abs(t.amount);
     });
@@ -7127,8 +7066,7 @@ function updateIncomeEvolutionChart() {
         if (incomeCat) {
             catName = incomeCat.name;
         } else {
-            const customCat = customCategories.income.find(c => c.id === t.categoryGeneral);
-            catName = customCat ? customCat.name : t.categoryGeneral;
+            catName = t.categoryGeneral;
         }
         if (!incomeCategories[catName]) {
             incomeCategories[catName] = [];
@@ -7163,8 +7101,7 @@ function updateIncomeEvolutionChart() {
                         if (incomeCat) {
                             tCatName = incomeCat.name;
                         } else {
-                            const customCat = customCategories.income.find(c => c.id === t.categoryGeneral);
-                            tCatName = customCat ? customCat.name : t.categoryGeneral;
+                            tCatName = t.categoryGeneral;
                         }
                         return tCatName === catName;
                     })
@@ -7198,8 +7135,7 @@ function updateIncomeEvolutionChart() {
                         if (incomeCat) {
                             tCatName = incomeCat.name;
                         } else {
-                            const customCat = customCategories.income.find(c => c.id === t.categoryGeneral);
-                            tCatName = customCat ? customCat.name : t.categoryGeneral;
+                            tCatName = t.categoryGeneral;
                         }
                         return tCatName === catName;
                     })
@@ -7276,8 +7212,7 @@ function updateExpensesEvolutionChart() {
         if (expenseCat) {
             catName = expenseCat.name;
         } else {
-            const customCat = customCategories.expense.find(c => c.id === t.categoryGeneral);
-            catName = customCat ? customCat.name : t.categoryGeneral;
+            catName = t.categoryGeneral;
         }
         if (!expenseCategories[catName]) {
             expenseCategories[catName] = [];
@@ -7312,8 +7247,7 @@ function updateExpensesEvolutionChart() {
                         if (expenseCat) {
                             tCatName = expenseCat.name;
                         } else {
-                            const customCat = customCategories.expense.find(c => c.id === t.categoryGeneral);
-                            tCatName = customCat ? customCat.name : t.categoryGeneral;
+                            tCatName = t.categoryGeneral;
                         }
                         return tCatName === catName;
                     })
@@ -7347,8 +7281,7 @@ function updateExpensesEvolutionChart() {
                         if (expenseCat) {
                             tCatName = expenseCat.name;
                         } else {
-                            const customCat = customCategories.expense.find(c => c.id === t.categoryGeneral);
-                            tCatName = customCat ? customCat.name : t.categoryGeneral;
+                            tCatName = t.categoryGeneral;
                         }
                         return tCatName === catName;
                     })
@@ -7702,244 +7635,6 @@ function closeChartModal() {
     }
 })();
 
-// Mostrar modal para agregar categoría personalizada
-function showAddCustomCategoryModal() {
-    const modal = document.getElementById('customCategoryModal');
-    if (!modal) return;
-    
-    // Resetear formulario
-    const form = document.getElementById('customCategoryForm');
-    if (form) {
-        form.reset();
-    }
-    
-    // Actualizar selector de categorías padre con categorías personalizadas
-    updateCustomCategoryParentSelect();
-    
-    // Actualizar lista de categorías personalizadas
-    updateCustomCategoriesList();
-    
-    // Mostrar modal
-    modal.style.display = 'flex';
-}
-
-// Actualizar lista de categorías personalizadas en el modal
-function updateCustomCategoriesList() {
-    const listContainer = document.getElementById('customCategoriesList');
-    if (!listContainer) return;
-    
-    listContainer.innerHTML = '';
-    
-    const allCustomCategories = [...customCategories.expense, ...customCategories.income];
-    
-    if (allCustomCategories.length === 0) {
-        listContainer.innerHTML = '<p style="color: var(--text-secondary); font-size: 13px; text-align: center; padding: 20px;">No hay categorías personalizadas</p>';
-        return;
-    }
-    
-    allCustomCategories.forEach(cat => {
-        const type = customCategories.expense.find(c => c.id === cat.id) ? 'expense' : 'income';
-        const typeLabel = type === 'expense' ? 'Gasto' : 'Ingreso';
-        
-        const item = document.createElement('div');
-        item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: white; border: 1px solid var(--border-color); border-radius: 6px;';
-        item.innerHTML = `
-            <div>
-                <div style="font-weight: 600; color: var(--text-primary); font-size: 14px;">${cat.name}</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">${typeLabel} • ${cat.subcategories?.length || 0} subcategoría(s)</div>
-            </div>
-            <button onclick="deleteCustomCategory('${type}', '${cat.id}')" class="btn-danger" style="padding: 6px 12px; font-size: 12px; min-width: auto;">Eliminar</button>
-        `;
-        listContainer.appendChild(item);
-    });
-}
-
-// Actualizar selector de categorías padre
-function updateCustomCategoryParentSelect() {
-    const parentSelect = document.getElementById('customCategoryParent');
-    const typeSelect = document.getElementById('customCategoryType');
-    if (!parentSelect || !typeSelect) return;
-    
-    parentSelect.innerHTML = '<option value="">Crear nueva categoría</option>';
-    
-    const type = typeSelect.value;
-    if (type) {
-        const customList = customCategories[type] || [];
-        customList.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = `${type}_${cat.id}`;
-            option.textContent = cat.name;
-            parentSelect.appendChild(option);
-        });
-    }
-    
-    // Actualizar cuando cambia el tipo
-    typeSelect.onchange = () => {
-        updateCustomCategoryParentSelect();
-        const subcategoryGroup = document.getElementById('subcategoryGroup');
-        const newCategoryGroup = document.getElementById('newCategoryGroup');
-        const parentSelect = document.getElementById('customCategoryParent');
-        
-        if (subcategoryGroup) subcategoryGroup.style.display = 'none';
-        if (newCategoryGroup) newCategoryGroup.style.display = 'block';
-        if (parentSelect) parentSelect.value = '';
-    };
-    
-    // Mostrar/ocultar campos según si se selecciona padre
-    parentSelect.onchange = () => {
-        const subcategoryGroup = document.getElementById('subcategoryGroup');
-        const newCategoryGroup = document.getElementById('newCategoryGroup');
-        
-        if (parentSelect.value) {
-            // Agregar subcategorías a categoría existente
-            if (subcategoryGroup) subcategoryGroup.style.display = 'block';
-            if (newCategoryGroup) newCategoryGroup.style.display = 'none';
-        } else {
-            // Crear nueva categoría
-            if (subcategoryGroup) subcategoryGroup.style.display = 'none';
-            if (newCategoryGroup) newCategoryGroup.style.display = 'block';
-        }
-    };
-}
-
-// Borrar categoría personalizada
-function deleteCustomCategory(type, categoryId) {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta categoría? Esta acción no se puede deshacer.')) {
-        return;
-    }
-    
-    const categoryIndex = customCategories[type].findIndex(c => c.id === categoryId);
-    if (categoryIndex === -1) {
-        alert('Error: Categoría no encontrada.');
-        return;
-    }
-    
-    customCategories[type].splice(categoryIndex, 1);
-    localStorage.setItem('veedor_customCategories', JSON.stringify(customCategories));
-    
-    initializeCategories();
-    updateCustomCategoryParentSelect();
-    updateCustomCategoriesList();
-    
-    alert('✅ Categoría eliminada exitosamente');
-}
-
-// Exponer función globalmente
-window.deleteCustomCategory = deleteCustomCategory;
-
-// Cerrar modal de categoría personalizada
-function closeCustomCategoryModal() {
-    const modal = document.getElementById('customCategoryModal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-// Agregar categoría personalizada desde el formulario
-async function addCustomCategory() {
-    const type = document.getElementById('customCategoryType')?.value;
-    const parentValue = document.getElementById('customCategoryParent')?.value;
-    const name = document.getElementById('customCategoryName')?.value?.trim();
-    const subcategoriesInput = document.getElementById('customCategorySubcategories')?.value?.trim();
-    
-    if (!type) {
-        alert('Por favor, selecciona el tipo de categoría (Ingreso o Gasto).');
-        return;
-    }
-    
-    const categoryType = type;
-    
-    // Si se seleccionó una categoría padre, agregar subcategorías
-    if (parentValue) {
-        const [parentType, parentId] = parentValue.split('_');
-        const parentCategory = customCategories[parentType].find(c => c.id === parentId);
-        
-        if (!parentCategory) {
-            alert('Error: Categoría padre no encontrada.');
-            return;
-        }
-        
-        if (!subcategoriesInput || !subcategoriesInput.trim()) {
-            alert('Por favor, ingresa al menos una subcategoría.');
-            return;
-        }
-        
-        const newSubcategories = subcategoriesInput.split(',').map(s => s.trim()).filter(s => s);
-        
-        // Agregar subcategorías a la categoría existente
-        if (!parentCategory.subcategories) {
-            parentCategory.subcategories = [];
-        }
-        
-        // Agregar solo las subcategorías que no existan
-        newSubcategories.forEach(sub => {
-            if (!parentCategory.subcategories.includes(sub)) {
-                parentCategory.subcategories.push(sub);
-            }
-        });
-        
-        // Guardar en localStorage
-        localStorage.setItem('veedor_customCategories', JSON.stringify(customCategories));
-        
-        // Recargar categorías
-        initializeCategories();
-        updateCustomCategoryParentSelect();
-        updateCustomCategoriesList();
-        
-        // Cerrar modal
-        closeCustomCategoryModal();
-        
-        alert(`✅ ${newSubcategories.length} subcategoría(s) agregada(s) a "${parentCategory.name}"`);
-    } else {
-        // Crear nueva categoría
-        if (!name) {
-            alert('Por favor, ingresa un nombre para la categoría.');
-            return;
-        }
-        
-        const subcategories = subcategoriesInput ? subcategoriesInput.split(',').map(s => s.trim()).filter(s => s) : [];
-        
-        // Verificar si la categoría ya existe para evitar duplicados
-        const existingCategory = customCategories[categoryType].find(c => c.name.toLowerCase() === name.toLowerCase());
-        if (existingCategory) {
-            alert('Esta categoría ya existe. Por favor, usa un nombre diferente.');
-            return;
-        }
-        
-        const newCategory = {
-            id: Date.now().toString(),
-            name: name,
-            subcategories: subcategories.length > 0 ? subcategories : ['General']
-        };
-        
-        customCategories[categoryType].push(newCategory);
-        
-        // Guardar en localStorage
-        localStorage.setItem('veedor_customCategories', JSON.stringify(customCategories));
-        
-        // Recargar categorías
-        initializeCategories();
-        updateCustomCategoryParentSelect();
-        updateCustomCategoriesList();
-        
-        // Cerrar modal
-        closeCustomCategoryModal();
-        
-        alert(`✅ Categoría "${name}" agregada exitosamente`);
-    }
-}
-
-// Cargar categorías personalizadas
-function loadCustomCategories() {
-    const saved = localStorage.getItem('veedor_customCategories');
-    if (saved) {
-        try {
-            customCategories = JSON.parse(saved);
-        } catch (e) {
-            console.error('Error cargando categorías personalizadas:', e);
-        }
-    }
-}
 
 // Actualizar análisis del mes seleccionado
 function updateMonthDashboard() {
@@ -7994,8 +7689,7 @@ function updateMonthDashboard() {
             expensesContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos registrados para este mes</div>';
         } else {
             Object.entries(expensesByCategory).forEach(([catId, data]) => {
-                const category = categories.expense.find(c => c.id === catId) || 
-                               customCategories.expense.find(c => c.id === catId);
+                const category = categories.expense.find(c => c.id === catId);
                 const categoryName = category ? category.name : catId;
                 
                 // Buscar presupuesto para esta categoría en este mes
@@ -8071,8 +7765,7 @@ function updateMonthDashboard() {
             incomeContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay ingresos registrados para este mes</div>';
         } else {
             Object.entries(incomeByCategory).forEach(([catId, data]) => {
-                const category = categories.income.find(c => c.id === catId) || 
-                               customCategories.income.find(c => c.id === catId);
+                const category = categories.income.find(c => c.id === catId);
                 const categoryName = category ? category.name : catId;
                 
                 // Buscar presupuesto para esta categoría en este mes
@@ -8144,13 +7837,11 @@ function updateMonthDashboard() {
             
             monthBudgets.forEach(budget => {
                 // Determinar si es ingreso o gasto
-                let category = categories.expense.find(c => c.id === budget.category_id) || 
-                              customCategories.expense.find(c => c.id === budget.category_id);
+                let category = categories.expense.find(c => c.id === budget.category_id);
                 if (category) {
                     expenseBudgets.push({ budget, category, isIncome: false });
                 } else {
-                    category = categories.income.find(c => c.id === budget.category_id) || 
-                              customCategories.income.find(c => c.id === budget.category_id);
+                    category = categories.income.find(c => c.id === budget.category_id);
                     if (category) {
                         incomeBudgets.push({ budget, category, isIncome: true });
                     }
@@ -8625,8 +8316,7 @@ function exportData() {
         const spent = expensesByCategory[budget.category] || 0;
         const remaining = budget.amount - spent;
         const percentage = budget.amount > 0 ? ((spent / budget.amount) * 100) : 0;
-        const category = categories.expense.find(c => c.id === budget.category) || 
-                        customCategories.expense.find(c => c.id === budget.category);
+        const category = categories.expense.find(c => c.id === budget.category);
         const categoryName = category ? category.name : budget.category;
         csv += `"${budget.month}","${categoryName}","${budget.amount}","${spent}","${remaining}","${percentage.toFixed(2)}"\n`;
     });
@@ -9042,8 +8732,7 @@ function updateAnalysisTables() {
         } else {
             topExpenses.forEach(t => {
                 const row = document.createElement('tr');
-                const category = categories.expense.find(c => c.id === t.categoryGeneral) || 
-                               customCategories.expense.find(c => c.id === t.categoryGeneral);
+                const category = categories.expense.find(c => c.id === t.categoryGeneral);
                 const categoryName = category ? category.name : t.categoryGeneral;
                 row.innerHTML = `
                     <td>${formatDate(new Date(t.date))}</td>
@@ -9074,8 +8763,7 @@ function updateAnalysisTables() {
         recurringExpensesBody.innerHTML = '';
         const recurring = Object.entries(categoryTotals)
             .map(([catId, total]) => {
-                const category = categories.expense.find(c => c.id === catId) || 
-                               customCategories.expense.find(c => c.id === catId);
+                const category = categories.expense.find(c => c.id === catId);
                 const categoryName = category ? category.name : catId;
                 const count = categoryCounts[catId];
                 const months = getMonthsInPeriod();
@@ -9164,8 +8852,7 @@ function updateAnalysisTables() {
         categoryAnalysisBody.innerHTML = '';
         const sorted = Object.entries(categoryAnalysis)
             .map(([catId, data]) => {
-                const category = categories.expense.find(c => c.id === catId) || 
-                               customCategories.expense.find(c => c.id === catId);
+                const category = categories.expense.find(c => c.id === catId);
                 const categoryName = category ? category.name : catId;
                 const percent = totalExpenses > 0 ? (data.total / totalExpenses) * 100 : 0;
                 const avgMonthly = months > 0 ? data.total / months : data.total;
