@@ -7421,6 +7421,24 @@ let currentChartType = null;
 
 function openChartModal(chartType, title) {
     console.log('📊 openChartModal llamado:', { chartType, title });
+    
+    // Asegurar que los gráficos estén inicializados
+    if (!charts[chartType]) {
+        console.warn('⚠️ Gráfico no inicializado, inicializando...', chartType);
+        initializeCharts();
+        // Esperar un momento para que se inicialice
+        setTimeout(() => {
+            if (!charts[chartType]) {
+                console.error('❌ No se pudo inicializar el gráfico:', chartType);
+                alert('El gráfico no está disponible. Por favor, recarga la página.');
+                return;
+            }
+            // Reintentar abrir el modal
+            openChartModal(chartType, title);
+        }, 300);
+        return;
+    }
+    
     currentChartType = chartType;
     const modal = document.getElementById('chartModal');
     const modalTitle = document.getElementById('chartModalTitle');
@@ -7436,18 +7454,22 @@ function openChartModal(chartType, title) {
     
     if (!modal) {
         console.error('❌ Modal no encontrado');
+        alert('Error: No se encontró el modal de gráficos. Por favor, recarga la página.');
         return;
     }
     if (!modalTitle) {
         console.error('❌ modalTitle no encontrado');
+        alert('Error: No se encontró el título del modal. Por favor, recarga la página.');
         return;
     }
     if (!modalControls) {
         console.error('❌ modalControls no encontrado');
+        alert('Error: No se encontraron los controles del modal. Por favor, recarga la página.');
         return;
     }
     if (!modalCanvas) {
         console.error('❌ modalCanvas no encontrado');
+        alert('Error: No se encontró el canvas del modal. Por favor, recarga la página.');
         return;
     }
     
