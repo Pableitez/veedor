@@ -1485,24 +1485,13 @@ function initializeCategories() {
             if (category) {
                 // Si la categoría tiene subcategorías, usarlas
                 if (category.subcategories && category.subcategories.length > 0) {
-                        customCat.subcategories.forEach(sub => {
-                            const option = document.createElement('option');
-                            option.value = sub;
-                            option.textContent = sub;
-                            specificSelect.appendChild(option);
-                        });
-                        return;
-                    }
+                    category.subcategories.forEach(sub => {
+                        const option = document.createElement('option');
+                        option.value = sub;
+                        option.textContent = sub;
+                        specificSelect.appendChild(option);
+                    });
                 }
-            }
-            
-            if (category) {
-                category.subcategories.forEach(sub => {
-                    const option = document.createElement('option');
-                    option.value = sub;
-                    option.textContent = sub;
-                    specificSelect.appendChild(option);
-                });
             }
         }
     };
@@ -10402,3 +10391,5 @@ try {
     console.error('❌ Error al exponer openChartModal al final:', error);
 }
 
+// Cerrar el bloque de protección contra carga múltiple (else que comenzó en línea 5)
+}
