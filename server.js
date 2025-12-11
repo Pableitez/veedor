@@ -1319,7 +1319,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
         console.log('📥 req.body completo:', JSON.stringify(req.body, null, 2));
         
         // 3. Extraer datos del body
-        const { type, date, amount, categoryGeneral, categorySpecific, envelope, account_id, investment_id, property_id, description } = req.body;
+        const { type, date, amount, categoryGeneral, categorySpecific, envelope, account_id, investment_id, property_id, loan_id, description } = req.body;
         
         // 4. Validar campos requeridos
         if (!type || !date || amount === undefined || amount === null || !categoryGeneral || !categorySpecific) {
@@ -1346,6 +1346,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
         const normalizedAccountId = (account_id && typeof account_id === 'string' && account_id.trim() !== '') ? account_id.trim() : null;
         const normalizedInvestmentId = (investment_id && typeof investment_id === 'string' && investment_id.trim() !== '') ? investment_id.trim() : null;
         const normalizedPropertyId = (property_id && typeof property_id === 'string' && property_id.trim() !== '') ? property_id.trim() : null;
+        const normalizedLoanId = (loan_id && typeof loan_id === 'string' && loan_id.trim() !== '') ? loan_id.trim() : null;
         const normalizedDescription = (description && typeof description === 'string' && description.trim() !== '') ? description.trim() : null;
         
         // 8. Calcular monto final
@@ -1362,6 +1363,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             account_id: normalizedAccountId,
             investment_id: normalizedInvestmentId,
             property_id: normalizedPropertyId,
+            loan_id: normalizedLoanId,
             description: normalizedDescription
         });
         
@@ -1377,6 +1379,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             account_id: normalizedAccountId,
             investment_id: normalizedInvestmentId,
             property_id: normalizedPropertyId,
+            loan_id: normalizedLoanId,
             description: normalizedDescription
         };
         
@@ -1400,7 +1403,24 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             throw saveError;
         }
         
-        // 11. Si está asociada a una inversión, actualizar el historial
+        // 11. Si está asociada a un préstamo, actualizar el saldo pendiente
+        if (normalizedLoanId && type === 'expense') {
+            try {
+                const loan = await Loan.findOne({ _id: normalizedLoanId, user_id: req.user.userId });
+                if (loan) {
+                    // Actualizar el total pagado y el saldo pendiente
+                    loan.total_paid = (loan.total_paid || 0) + Math.abs(amountNum);
+                    loan.last_payment_date = date;
+                    await loan.save();
+                    console.log('✅ Préstamo actualizado con el pago');
+                }
+            } catch (loanError) {
+                console.error('⚠️ Error al actualizar préstamo (no crítico):', loanError);
+                // No fallar la transacción si hay error al actualizar el préstamo
+            }
+        }
+        
+        // 12. Si está asociada a una inversión, actualizar el historial
         if (normalizedInvestmentId && type === 'expense') {
             try {
                 const investment = await Investment.findOne({ _id: normalizedInvestmentId, user_id: req.user.userId });

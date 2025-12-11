@@ -43,3 +43,7 @@ Tu aplicación será accesible desde otros dispositivos usando:
 
 ¡Asegúrate de que todos los dispositivos estén en la misma WiFi!
 
+
+
+
+
