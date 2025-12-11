@@ -332,14 +332,14 @@ function setupEmailTransporter() {
         try {
             // Configuración optimizada para Gmail
             const transporterConfig = {
-                host: process.env.EMAIL_HOST,
-                port: emailPort,
+            host: process.env.EMAIL_HOST,
+            port: emailPort,
                 secure: emailSecure,
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS
-                },
-                tls: {
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            },
+            tls: {
                     rejectUnauthorized: false
                 },
                 // Timeouts aumentados para evitar ETIMEDOUT
@@ -409,12 +409,12 @@ function setupEmailTransporter() {
             });
             
             console.log('✅ Transporter de email configurado exitosamente');
-            console.log('📧 Email configurado para:', process.env.EMAIL_USER);
-            console.log('📧 Host:', process.env.EMAIL_HOST);
-            console.log('📧 Puerto:', emailPort);
-            console.log('📧 Secure (SSL):', emailSecure);
+        console.log('📧 Email configurado para:', process.env.EMAIL_USER);
+        console.log('📧 Host:', process.env.EMAIL_HOST);
+        console.log('📧 Puerto:', emailPort);
+        console.log('📧 Secure (SSL):', emailSecure);
             console.log('📧 Es Gmail:', isGmail);
-            console.log('📧 APP_URL:', process.env.APP_URL || 'No configurado');
+        console.log('📧 APP_URL:', process.env.APP_URL || 'No configurado');
             
             if (isGmail) {
                 console.log('💡 NOTA: Si tienes problemas, asegúrate de usar una "Contraseña de aplicación"');
@@ -1010,7 +1010,7 @@ app.post('/api/reset-password', async (req, res) => {
                 }
             );
             console.log('✅ Contraseña actualizada exitosamente para:', user.email);
-            res.json({ message: 'Contraseña actualizada exitosamente' });
+        res.json({ message: 'Contraseña actualizada exitosamente' });
         } catch (saveError) {
             console.error('❌ Error guardando nueva contraseña:', saveError);
             console.error('❌ Detalles:', saveError.message);
@@ -1388,7 +1388,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
         
         // 10. Guardar la transacción
         try {
-            await transaction.save();
+        await transaction.save();
             console.log('✅ Transacción guardada exitosamente. ID:', transaction._id);
         } catch (saveError) {
             console.error('❌ Error al guardar transacción:', saveError);
@@ -1404,62 +1404,62 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
         if (normalizedInvestmentId && type === 'expense') {
             try {
                 const investment = await Investment.findOne({ _id: normalizedInvestmentId, user_id: req.user.userId });
-                if (investment) {
+            if (investment) {
                     // Si la transacción no tiene cuenta pero la inversión tiene cuenta configurada en aportes periódicos, usarla
                     if (!normalizedAccountId && investment.periodic_contribution?.account_id) {
                         transaction.account_id = investment.periodic_contribution.account_id;
                         await transaction.save();
                     }
                     
-                    if (!investment.contributions) {
-                        investment.contributions = [];
-                    }
-                    investment.contributions.push({
-                        date: date,
+                if (!investment.contributions) {
+                    investment.contributions = [];
+                }
+                investment.contributions.push({
+                    date: date,
                         amount: Math.abs(amountNum),
-                        transaction_id: transaction._id.toString()
+                    transaction_id: transaction._id.toString()
+                });
+                
+                if (investment.periodic_contribution && investment.periodic_contribution.enabled) {
+                    const contributionDate = new Date(date);
+                    let periodKey = '';
+                    if (investment.periodic_contribution.frequency === 'weekly') {
+                        const weekStart = new Date(contributionDate);
+                        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                        periodKey = weekStart.toISOString().split('T')[0];
+                    } else if (investment.periodic_contribution.frequency === 'monthly') {
+                        periodKey = `${contributionDate.getFullYear()}-${String(contributionDate.getMonth() + 1).padStart(2, '0')}`;
+                    } else if (investment.periodic_contribution.frequency === 'yearly') {
+                        periodKey = `${contributionDate.getFullYear()}`;
+                    }
+                    
+                    const existingContribution = investment.periodic_contribution.completed_contributions?.find(c => {
+                        const cDate = new Date(c.date);
+                        if (investment.periodic_contribution.frequency === 'weekly') {
+                            const cWeekStart = new Date(cDate);
+                            cWeekStart.setDate(cWeekStart.getDate() - cWeekStart.getDay());
+                            return cWeekStart.toISOString().split('T')[0] === periodKey;
+                        } else if (investment.periodic_contribution.frequency === 'monthly') {
+                            return `${cDate.getFullYear()}-${String(cDate.getMonth() + 1).padStart(2, '0')}` === periodKey;
+                        } else if (investment.periodic_contribution.frequency === 'yearly') {
+                            return `${cDate.getFullYear()}` === periodKey;
+                        }
+                        return false;
                     });
                     
-                    if (investment.periodic_contribution && investment.periodic_contribution.enabled) {
-                        const contributionDate = new Date(date);
-                        let periodKey = '';
-                        if (investment.periodic_contribution.frequency === 'weekly') {
-                            const weekStart = new Date(contributionDate);
-                            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-                            periodKey = weekStart.toISOString().split('T')[0];
-                        } else if (investment.periodic_contribution.frequency === 'monthly') {
-                            periodKey = `${contributionDate.getFullYear()}-${String(contributionDate.getMonth() + 1).padStart(2, '0')}`;
-                        } else if (investment.periodic_contribution.frequency === 'yearly') {
-                            periodKey = `${contributionDate.getFullYear()}`;
+                    if (!existingContribution) {
+                        if (!investment.periodic_contribution.completed_contributions) {
+                            investment.periodic_contribution.completed_contributions = [];
                         }
-                        
-                        const existingContribution = investment.periodic_contribution.completed_contributions?.find(c => {
-                            const cDate = new Date(c.date);
-                            if (investment.periodic_contribution.frequency === 'weekly') {
-                                const cWeekStart = new Date(cDate);
-                                cWeekStart.setDate(cWeekStart.getDate() - cWeekStart.getDay());
-                                return cWeekStart.toISOString().split('T')[0] === periodKey;
-                            } else if (investment.periodic_contribution.frequency === 'monthly') {
-                                return `${cDate.getFullYear()}-${String(cDate.getMonth() + 1).padStart(2, '0')}` === periodKey;
-                            } else if (investment.periodic_contribution.frequency === 'yearly') {
-                                return `${cDate.getFullYear()}` === periodKey;
-                            }
-                            return false;
-                        });
-                        
-                        if (!existingContribution) {
-                            if (!investment.periodic_contribution.completed_contributions) {
-                                investment.periodic_contribution.completed_contributions = [];
-                            }
-                            investment.periodic_contribution.completed_contributions.push({
-                                date: date,
+                        investment.periodic_contribution.completed_contributions.push({
+                            date: date,
                                 amount: Math.abs(amountNum),
-                                transaction_id: transaction._id.toString()
-                            });
-                        }
+                            transaction_id: transaction._id.toString()
+                        });
                     }
-                    
-                    await investment.save();
+                }
+                
+                await investment.save();
                     console.log('✅ Inversión actualizada con el aporte');
                 }
             } catch (invError) {

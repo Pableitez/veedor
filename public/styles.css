@@ -1483,6 +1483,12 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     scrollbar-color: var(--border-color) var(--bg-primary);
 }
 
+#transactionsTableContainer {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
 /* Scrollbars globales mejorados */
 * {
     scrollbar-width: thin;

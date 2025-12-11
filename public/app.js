@@ -1793,27 +1793,50 @@ function initializeForms() {
     // Búsqueda y filtros
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.addEventListener('input', updateDisplay);
+        searchInput.addEventListener('input', () => {
+            currentPage = 1;
+            updateDisplay();
+        });
     }
     
     const filterCategory = document.getElementById('filterCategory');
     if (filterCategory) {
-        filterCategory.addEventListener('change', updateDisplay);
+        filterCategory.addEventListener('change', () => {
+            currentPage = 1;
+            updateDisplay();
+        });
     }
     
     const filterMonth = document.getElementById('filterMonth');
     if (filterMonth) {
-        filterMonth.addEventListener('change', updateDisplay);
+        filterMonth.addEventListener('change', () => {
+            currentPage = 1;
+            updateDisplay();
+        });
     }
     
     const filterStartDate = document.getElementById('filterStartDate');
     if (filterStartDate) {
-        filterStartDate.addEventListener('change', updateDisplay);
+        filterStartDate.addEventListener('change', () => {
+            currentPage = 1;
+            updateDisplay();
+        });
     }
     
-    const filterEndDate = document.getElementById('filterEndDate');
-    if (filterEndDate) {
-        filterEndDate.addEventListener('change', updateDisplay);
+    const filterEndDateEl = document.getElementById('filterEndDate');
+    if (filterEndDateEl) {
+        filterEndDateEl.addEventListener('change', () => {
+            currentPage = 1;
+            updateDisplay();
+        });
+    }
+    
+    const rowsPerPageSelect = document.getElementById('rowsPerPage');
+    if (rowsPerPageSelect) {
+        rowsPerPageSelect.addEventListener('change', () => {
+            currentPage = 1;
+            updateTransactionsTable();
+        });
     }
     
     // Selector de período para gráficas (global - mantener para compatibilidad)
@@ -2718,6 +2741,9 @@ let currentEditingAccountId = null;
 let currentEditingAssetId = null;
 let currentEditingBudgetId = null;
 
+let currentPage = 1;
+let rowsPerPage = 25;
+
 function updateTransactionsTable() {
     const tbody = document.getElementById('transactionsBody');
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -2725,6 +2751,10 @@ function updateTransactionsTable() {
     const filterMonth = document.getElementById('filterMonth')?.value || '';
     const filterStartDate = document.getElementById('filterStartDate')?.value || '';
     const filterEndDate = document.getElementById('filterEndDate')?.value || '';
+    const rowsPerPageSelect = document.getElementById('rowsPerPage');
+    if (rowsPerPageSelect) {
+        rowsPerPage = parseInt(rowsPerPageSelect.value) || 25;
+    }
     
     let filtered = transactions;
     
@@ -2823,7 +2853,15 @@ function updateTransactionsTable() {
         return;
     }
     
-    filtered.forEach(transaction => {
+    // Aplicar paginación si rowsPerPage > 0
+    let transactionsToShow = filtered;
+    if (rowsPerPage > 0) {
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+        transactionsToShow = filtered.slice(startIndex, endIndex);
+    }
+    
+    transactionsToShow.forEach(transaction => {
         const row = document.createElement('tr');
         const date = new Date(transaction.date);
         
@@ -2877,6 +2915,19 @@ function updateTransactionsTable() {
         `;
         tbody.appendChild(row);
     });
+    
+    // Mostrar información de paginación si hay más filas que las mostradas
+    if (rowsPerPage > 0 && filtered.length > rowsPerPage) {
+        const totalPages = Math.ceil(filtered.length / rowsPerPage);
+        const infoRow = document.createElement('tr');
+        infoRow.innerHTML = `
+            <td colspan="9" style="text-align: center; padding: 16px; background: var(--bg-secondary); color: var(--text-secondary); font-size: 13px;">
+                Mostrando ${(currentPage - 1) * rowsPerPage + 1} - ${Math.min(currentPage * rowsPerPage, filtered.length)} de ${filtered.length} transacciones
+                ${totalPages > 1 ? ` | Página ${currentPage} de ${totalPages}` : ''}
+            </td>
+        `;
+        tbody.appendChild(infoRow);
+    }
 }
 
 // Actualizar sobres
