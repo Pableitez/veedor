@@ -8035,23 +8035,23 @@ function updateModalChart() {
 
 // Exponer funciones globalmente INMEDIATAMENTE después de definir openChartModal
 // Esto es crítico para que el stub pueda encontrar la función real
-try {
-    if (typeof openChartModal === 'function') {
-        window._openChartModalReal = openChartModal; // Guardar función real para el stub
-        console.log('✅ Función real openChartModal expuesta a window._openChartModalReal (línea 8038)');
-        // Reemplazar el stub con la función real
-        window.openChartModal = openChartModal;
-        console.log('✅ Stub reemplazado con función real openChartModal (línea 8042)');
-    } else {
-        console.error('❌ openChartModal no está definida como función en línea 8038');
-        console.log('Tipo de openChartModal:', typeof openChartModal);
+// Usar IIFE para ejecutar inmediatamente
+(function() {
+    try {
+        if (typeof openChartModal === 'function') {
+            window._openChartModalReal = openChartModal;
+            window.openChartModal = openChartModal;
+            console.log('✅ openChartModal expuesta INMEDIATAMENTE después de su definición');
+        } else {
+            console.error('❌ openChartModal no está definida como función');
+        }
+        if (typeof closeChartModal === 'function') {
+            window.closeChartModal = closeChartModal;
+        }
+    } catch (error) {
+        console.error('❌ Error al exponer openChartModal:', error);
     }
-    if (typeof closeChartModal === 'function') {
-        window.closeChartModal = closeChartModal;
-    }
-} catch (error) {
-    console.error('❌ Error al exponer openChartModal:', error);
-}
+})();
 
 // Mostrar modal para agregar categoría personalizada
 function showAddCustomCategoryModal() {
