@@ -8033,19 +8033,24 @@ function updateModalChart() {
     }, 500);
 }
 
-// Exponer funciones globalmente
-// IMPORTANTE: Exponer la función real ANTES de reemplazar el stub
-if (typeof openChartModal === 'function') {
-    window._openChartModalReal = openChartModal; // Guardar función real para el stub
-    console.log('✅ Función real openChartModal expuesta a window._openChartModalReal');
-    // Reemplazar el stub con la función real
-    window.openChartModal = openChartModal;
-    console.log('✅ Stub reemplazado con función real openChartModal');
-} else {
-    console.error('❌ openChartModal no está definida como función');
-}
-if (typeof closeChartModal === 'function') {
-    window.closeChartModal = closeChartModal;
+// Exponer funciones globalmente INMEDIATAMENTE después de definir openChartModal
+// Esto es crítico para que el stub pueda encontrar la función real
+try {
+    if (typeof openChartModal === 'function') {
+        window._openChartModalReal = openChartModal; // Guardar función real para el stub
+        console.log('✅ Función real openChartModal expuesta a window._openChartModalReal (línea 8038)');
+        // Reemplazar el stub con la función real
+        window.openChartModal = openChartModal;
+        console.log('✅ Stub reemplazado con función real openChartModal (línea 8042)');
+    } else {
+        console.error('❌ openChartModal no está definida como función en línea 8038');
+        console.log('Tipo de openChartModal:', typeof openChartModal);
+    }
+    if (typeof closeChartModal === 'function') {
+        window.closeChartModal = closeChartModal;
+    }
+} catch (error) {
+    console.error('❌ Error al exponer openChartModal:', error);
 }
 
 // Mostrar modal para agregar categoría personalizada
@@ -10909,12 +10914,19 @@ window.exportAccounts = exportAccounts;
 
 // Asegurar que openChartModal esté expuesta ANTES de cerrar el bloque
 // Esto es crítico porque el stub puede ejecutarse antes de que el script termine
-if (typeof openChartModal === 'function') {
-    window._openChartModalReal = openChartModal;
-    window.openChartModal = openChartModal;
-    console.log('✅ openChartModal expuesta correctamente al final del script');
-} else {
-    console.error('❌ openChartModal no está definida al final del script');
+try {
+    if (typeof openChartModal === 'function') {
+        window._openChartModalReal = openChartModal;
+        window.openChartModal = openChartModal;
+        console.log('✅ openChartModal expuesta correctamente al final del script (línea 10913)');
+    } else {
+        console.error('❌ openChartModal no está definida al final del script (línea 10913)');
+        console.log('Tipo de openChartModal:', typeof openChartModal);
+        console.log('openChartModal disponible en window:', typeof window.openChartModal);
+        console.log('_openChartModalReal disponible en window:', typeof window._openChartModalReal);
+    }
+} catch (error) {
+    console.error('❌ Error al exponer openChartModal al final:', error);
 }
 
 // Cerrar el bloque de protección contra carga múltiple
