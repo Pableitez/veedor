@@ -82,3 +82,7 @@ O ejecuta `verificar_servidor.bat`
 3. ✅ Crea una cuenta o inicia sesión
 4. ✅ ¡Empieza a usar Veedor desde cualquier dispositivo!
 
+
+
+
+

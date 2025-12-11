@@ -76,3 +76,7 @@ sudo ufw allow 3000
 
 La IP local puede cambiar cada vez que te conectas a una red diferente. Si cambias de red WiFi, verifica la nueva IP en la consola del servidor.
 
+
+
+
+
