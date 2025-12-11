@@ -7426,42 +7426,50 @@ function updateAccountsBalanceChart() {
 let chartModalChart = null;
 
 function openChartModal(chartType, title) {
-    // 1. Obtener elementos del modal
+    // Replicar la lógica exacta de showFinancialHealthDetail
     const modal = document.getElementById('chartModal');
     const modalTitle = document.getElementById('chartModalTitle');
-    const modalCanvas = document.getElementById('chartModalCanvas');
+    const modalContent = document.getElementById('chartModalControls');
+    const modalCanvasContainer = document.querySelector('.chart-modal-canvas-container');
     
-    if (!modal || !modalTitle || !modalCanvas) {
-        console.error('Elementos del modal no encontrados');
-        return;
-    }
+    if (!modal || !modalTitle) return;
     
-    // 2. Obtener el gráfico original
+    // Obtener el gráfico original
     const originalChart = charts[chartType];
     if (!originalChart || !originalChart.data) {
-        console.error('Gráfico no encontrado o sin datos:', chartType);
+        console.error('Gráfico no encontrado:', chartType);
         return;
     }
     
-    // 3. Abrir modal
+    // Establecer título y abrir modal
     currentChartType = chartType;
     modalTitle.textContent = title;
     modal.style.display = 'flex';
     
-    // 4. Limpiar gráfico anterior
+    // Limpiar gráfico anterior
     if (chartModalChart) {
         chartModalChart.destroy();
         chartModalChart = null;
     }
     
-    // 5. Asegurar dimensiones del canvas (más grande)
-    const container = modalCanvas.parentElement;
-    if (container) {
-        container.style.height = '600px';
-        container.style.width = '100%';
+    // Limpiar controles (opcional, pueden quedarse)
+    if (modalContent) {
+        modalContent.innerHTML = '';
     }
     
-    // 6. Crear nuevo gráfico copiando datos del original
+    // Asegurar que el contenedor del canvas exista y tenga dimensiones
+    if (modalCanvasContainer) {
+        modalCanvasContainer.style.height = '600px';
+        modalCanvasContainer.style.width = '100%';
+    }
+    
+    const modalCanvas = document.getElementById('chartModalCanvas');
+    if (!modalCanvas) {
+        console.error('Canvas no encontrado');
+        return;
+    }
+    
+    // Crear gráfico directamente igual que showFinancialHealthDetail
     setTimeout(() => {
         try {
             const clonedData = JSON.parse(JSON.stringify(originalChart.data));
@@ -7478,7 +7486,11 @@ function openChartModal(chartType, title) {
                         ...clonedOptions.plugins,
                         legend: {
                             display: true,
-                            position: 'top'
+                            position: 'top',
+                            labels: {
+                                font: { size: 14 },
+                                padding: 15
+                            }
                         }
                     }
                 }
