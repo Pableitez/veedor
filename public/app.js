@@ -84,25 +84,32 @@ if (window.VEEDOR_LOADED) {
         console.log('🔧 Stub openChartModal llamado:', { chartType, title, hasRealFunction: typeof window._openChartModalReal === 'function' });
         // Si la función real ya está disponible, usarla
         if (typeof window._openChartModalReal === 'function') {
-            console.log('✅ Usando función real');
+            console.log('✅ Usando función real desde stub');
             return window._openChartModalReal(chartType, title);
         }
         // Si no, intentar abrir el modal básico y esperar a que la función real esté lista
-        console.log('⚠️ Función real no disponible aún, usando stub');
+        console.log('⚠️ Función real no disponible aún, usando stub. Reintentando en 200ms...');
         const modal = document.getElementById('chartModal');
         const modalTitle = document.getElementById('chartModalTitle');
         if (modal && modalTitle) {
             if (title) modalTitle.textContent = title;
             modal.style.display = 'flex';
-            // Intentar llamar a la función real después de un breve delay
-            setTimeout(() => {
+            // Intentar llamar a la función real después de delays progresivos
+            let attempts = 0;
+            const maxAttempts = 10;
+            const checkFunction = () => {
+                attempts++;
                 if (typeof window._openChartModalReal === 'function') {
                     console.log('✅ Función real disponible ahora, llamándola...');
                     window._openChartModalReal(chartType, title);
+                } else if (attempts < maxAttempts) {
+                    setTimeout(checkFunction, 200);
                 } else {
-                    console.error('❌ Función real aún no disponible después del delay');
+                    console.error('❌ Función real aún no disponible después de', maxAttempts, 'intentos');
+                    alert('Error: No se pudo cargar la función de gráficos. Por favor, recarga la página.');
                 }
-            }, 100);
+            };
+            setTimeout(checkFunction, 200);
         } else {
             console.error('❌ Modal o modalTitle no encontrado en stub');
         }
@@ -8027,8 +8034,12 @@ function updateModalChart() {
 }
 
 // Exponer funciones globalmente
+// IMPORTANTE: Exponer la función real ANTES de reemplazar el stub
 window._openChartModalReal = openChartModal; // Guardar función real para el stub
-window.openChartModal = openChartModal; // Reemplazar stub con función real
+console.log('✅ Función real openChartModal expuesta a window._openChartModalReal');
+// Reemplazar el stub con la función real
+window.openChartModal = openChartModal;
+console.log('✅ Stub reemplazado con función real openChartModal');
 window.closeChartModal = closeChartModal;
 
 // Mostrar modal para agregar categoría personalizada
