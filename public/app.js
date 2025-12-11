@@ -81,11 +81,14 @@ if (window.VEEDOR_LOADED) {
         if (modal) modal.style.display = 'none';
     };
     window.openChartModal = function(chartType, title) {
+        console.log('🔧 Stub openChartModal llamado:', { chartType, title, hasRealFunction: typeof window._openChartModalReal === 'function' });
         // Si la función real ya está disponible, usarla
         if (typeof window._openChartModalReal === 'function') {
+            console.log('✅ Usando función real');
             return window._openChartModalReal(chartType, title);
         }
         // Si no, intentar abrir el modal básico y esperar a que la función real esté lista
+        console.log('⚠️ Función real no disponible aún, usando stub');
         const modal = document.getElementById('chartModal');
         const modalTitle = document.getElementById('chartModalTitle');
         if (modal && modalTitle) {
@@ -94,9 +97,14 @@ if (window.VEEDOR_LOADED) {
             // Intentar llamar a la función real después de un breve delay
             setTimeout(() => {
                 if (typeof window._openChartModalReal === 'function') {
+                    console.log('✅ Función real disponible ahora, llamándola...');
                     window._openChartModalReal(chartType, title);
+                } else {
+                    console.error('❌ Función real aún no disponible después del delay');
                 }
             }, 100);
+        } else {
+            console.error('❌ Modal o modalTitle no encontrado en stub');
         }
     };
     window.closeChartModal = function() { 
@@ -1509,23 +1517,23 @@ function switchToTab(targetTab, doScroll = false) {
         targetTabContent.classList.add('active');
         // Solo hacer scroll si se solicita explícitamente (doScroll = true)
         if (doScroll) {
-            // Scroll suave a la sección - esperar a que el DOM se actualice y el tab esté visible
-            setTimeout(() => {
+        // Scroll suave a la sección - esperar a que el DOM se actualice y el tab esté visible
+        setTimeout(() => {
                 if (targetTabContent) {
-                    // Obtener altura del header sticky
-                    const header = document.querySelector('header');
-                    const headerHeight = header ? header.offsetHeight : 80;
-                    
+                // Obtener altura del header sticky
+                const header = document.querySelector('header');
+                const headerHeight = header ? header.offsetHeight : 80;
+                
                     // Obtener posición del tab content
                     const tabRect = targetTabContent.getBoundingClientRect();
                     const scrollPosition = tabRect.top + window.pageYOffset - headerHeight - 20; // 20px de margen adicional
-                    
+                
                     // Hacer scroll suave
-                    window.scrollTo({ 
-                        top: Math.max(0, scrollPosition), 
-                        behavior: 'smooth' 
-                    });
-                }
+                window.scrollTo({ 
+                    top: Math.max(0, scrollPosition), 
+                    behavior: 'smooth' 
+                });
+            }
             }, 100);
         }
     }
@@ -2422,14 +2430,14 @@ async function addTransaction() {
             await loadUserData();
         } else {
             console.log('✅ Agregando transacción a lista local...');
-            // Agregar a la lista local
-            transactions.push({
-                ...transaction,
-                categoryGeneral: transaction.category_general,
-                categorySpecific: transaction.category_specific
-            });
-            transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-            updateDisplay();
+        // Agregar a la lista local
+        transactions.push({
+            ...transaction,
+            categoryGeneral: transaction.category_general,
+            categorySpecific: transaction.category_specific
+        });
+        transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+        updateDisplay();
         }
         
         // Limpiar formulario
@@ -7412,16 +7420,40 @@ let chartModalChart = null;
 let currentChartType = null;
 
 function openChartModal(chartType, title) {
+    console.log('📊 openChartModal llamado:', { chartType, title });
     currentChartType = chartType;
     const modal = document.getElementById('chartModal');
     const modalTitle = document.getElementById('chartModalTitle');
     const modalControls = document.getElementById('chartModalControls');
     const modalCanvas = document.getElementById('chartModalCanvas');
     
-    if (!modal || !modalTitle || !modalControls || !modalCanvas) return;
+    console.log('📊 Elementos del modal:', {
+        modal: !!modal,
+        modalTitle: !!modalTitle,
+        modalControls: !!modalControls,
+        modalCanvas: !!modalCanvas
+    });
+    
+    if (!modal) {
+        console.error('❌ Modal no encontrado');
+        return;
+    }
+    if (!modalTitle) {
+        console.error('❌ modalTitle no encontrado');
+        return;
+    }
+    if (!modalControls) {
+        console.error('❌ modalControls no encontrado');
+        return;
+    }
+    if (!modalCanvas) {
+        console.error('❌ modalCanvas no encontrado');
+        return;
+    }
     
     modalTitle.textContent = title;
     modal.style.display = 'flex';
+    console.log('✅ Modal abierto');
     
     // Limpiar canvas anterior
     if (chartModalChart) {
@@ -7820,6 +7852,7 @@ function updateModalChart() {
     
     // Función auxiliar para renderizar el gráfico en el modal
     const renderChartInModal = () => {
+        console.log('🎨 renderChartInModal llamado para:', currentChartType);
         let chartToRender = null;
         switch(currentChartType) {
             case 'savings':
@@ -7851,14 +7884,23 @@ function updateModalChart() {
                 break;
         }
         
+        console.log('🎨 Gráfico encontrado:', {
+            chartType: currentChartType,
+            exists: !!chartToRender,
+            hasData: !!chartToRender?.data,
+            labels: chartToRender?.data?.labels?.length || 0,
+            datasets: chartToRender?.data?.datasets?.length || 0
+        });
+        
         if (!chartToRender) {
-            console.warn('Gráfico no encontrado:', currentChartType);
+            console.error('❌ Gráfico no encontrado:', currentChartType);
+            console.log('📊 Gráficos disponibles:', Object.keys(charts));
             return false;
         }
         
         // Verificar que el gráfico tenga datos válidos
         if (!chartToRender.data) {
-            console.warn('Gráfico sin data:', currentChartType);
+            console.error('❌ Gráfico sin data:', currentChartType);
             return false;
         }
         
@@ -7868,7 +7910,7 @@ function updateModalChart() {
                               chartToRender.data.datasets.some(ds => ds.data && ds.data.length > 0));
         
         if (!hasValidData) {
-            console.warn('Gráfico sin datos válidos:', currentChartType, chartToRender.data);
+            console.error('❌ Gráfico sin datos válidos:', currentChartType, chartToRender.data);
             return false;
         }
         
@@ -7900,6 +7942,11 @@ function updateModalChart() {
         
         // Crear nuevo gráfico en el modal con las mismas opciones pero adaptadas para el modal
         try {
+            console.log('🎨 Creando gráfico en modal...', {
+                type: chartToRender.config.type,
+                dataLabels: clonedData.labels?.length || 0,
+                dataDatasets: clonedData.datasets?.length || 0
+            });
             chartModalChart = new Chart(modalCanvas, {
                 type: chartToRender.config.type,
                 data: clonedData,
@@ -7918,33 +7965,41 @@ function updateModalChart() {
                     scales: clonedOptions.scales || {}
                 }
             });
-            console.log('Gráfico renderizado exitosamente en modal:', currentChartType);
+            console.log('✅ Gráfico renderizado exitosamente en modal:', currentChartType);
             return true;
         } catch (error) {
-            console.error('Error al crear gráfico en modal:', error, error.stack);
+            console.error('❌ Error al crear gráfico en modal:', error, error.stack);
             return false;
         }
     };
     
     // Actualizar el gráfico original con el nuevo período y filtros primero
+    console.log('🔄 Actualizando gráfico original:', currentChartType);
     updateSingleChart(currentChartType);
     
     // Esperar un momento para que el gráfico se actualice completamente
     setTimeout(() => {
+        console.log('⏰ Intentando renderizar después de actualizar...');
         // Intentar renderizar
         if (!renderChartInModal()) {
+            console.log('⚠️ No se pudo renderizar inmediatamente, reintentando...');
             // Si no se pudo renderizar, esperar y reintentar
             let attempts = 0;
             const maxAttempts = 15;
             const checkInterval = setInterval(() => {
                 attempts++;
+                console.log(`🔄 Intento ${attempts}/${maxAttempts} de renderizar gráfico...`);
                 if (renderChartInModal() || attempts >= maxAttempts) {
                     clearInterval(checkInterval);
                     if (attempts >= maxAttempts) {
-                        console.warn('No se pudo renderizar el gráfico después de', maxAttempts, 'intentos');
+                        console.error('❌ No se pudo renderizar el gráfico después de', maxAttempts, 'intentos');
+                    } else {
+                        console.log('✅ Gráfico renderizado después de', attempts, 'intentos');
                     }
                 }
             }, 300);
+        } else {
+            console.log('✅ Gráfico renderizado exitosamente en el primer intento');
         }
     }, 500);
 }
