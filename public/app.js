@@ -8035,12 +8035,18 @@ function updateModalChart() {
 
 // Exponer funciones globalmente
 // IMPORTANTE: Exponer la función real ANTES de reemplazar el stub
-window._openChartModalReal = openChartModal; // Guardar función real para el stub
-console.log('✅ Función real openChartModal expuesta a window._openChartModalReal');
-// Reemplazar el stub con la función real
-window.openChartModal = openChartModal;
-console.log('✅ Stub reemplazado con función real openChartModal');
-window.closeChartModal = closeChartModal;
+if (typeof openChartModal === 'function') {
+    window._openChartModalReal = openChartModal; // Guardar función real para el stub
+    console.log('✅ Función real openChartModal expuesta a window._openChartModalReal');
+    // Reemplazar el stub con la función real
+    window.openChartModal = openChartModal;
+    console.log('✅ Stub reemplazado con función real openChartModal');
+} else {
+    console.error('❌ openChartModal no está definida como función');
+}
+if (typeof closeChartModal === 'function') {
+    window.closeChartModal = closeChartModal;
+}
 
 // Mostrar modal para agregar categoría personalizada
 function showAddCustomCategoryModal() {
