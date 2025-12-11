@@ -1147,7 +1147,7 @@
                 <div>
                     <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--text-primary);">📈 Gráficas</h2>
                 <div class="charts-container">
-                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('savings', 'Evolución de Ahorro')">
+                    <div class="chart-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Evolución de Ahorro</h3>
                             <select class="chart-period-select" data-chart="savings" onclick="event.stopPropagation();">
@@ -1166,7 +1166,7 @@
                         </div>
                         <canvas id="savingsChart"></canvas>
                     </div>
-                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('expenses', 'Gastos por Categoría')">
+                    <div class="chart-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Gastos por Categoría</h3>
                             <select class="chart-period-select" data-chart="expenses" onclick="event.stopPropagation();">
@@ -1185,7 +1185,7 @@
                         </div>
                         <canvas id="expensesChart"></canvas>
                     </div>
-                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('incomeExpense', 'Ingresos vs Gastos')">
+                    <div class="chart-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Ingresos vs Gastos</h3>
                             <select class="chart-period-select" data-chart="incomeExpense" onclick="event.stopPropagation();">
@@ -1204,7 +1204,7 @@
                         </div>
                         <canvas id="incomeExpenseChart"></canvas>
                     </div>
-                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('distribution', 'Distribución de Gastos')">
+                    <div class="chart-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Distribución de Gastos</h3>
                             <select class="chart-period-select" data-chart="distribution" onclick="event.stopPropagation();">
@@ -1223,7 +1223,7 @@
                         </div>
                         <canvas id="distributionChart"></canvas>
                     </div>
-                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('incomeEvolution', 'Evolución de Ingresos')">
+                    <div class="chart-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Evolución de Ingresos</h3>
                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -1247,7 +1247,7 @@
                         </div>
                         <canvas id="incomeEvolutionChart"></canvas>
                     </div>
-                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('expensesEvolution', 'Evolución de Gastos')">
+                    <div class="chart-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Evolución de Gastos</h3>
                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -1271,7 +1271,7 @@
                         </div>
                         <canvas id="expensesEvolutionChart"></canvas>
                     </div>
-                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('loansPending', 'Préstamos Pendientes')">
+                    <div class="chart-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Préstamos Pendientes</h3>
                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -1295,7 +1295,7 @@
                         </div>
                         <canvas id="loansPendingChart"></canvas>
                     </div>
-                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('assetsEvolution', 'Evolución del Patrimonio')">
+                    <div class="chart-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Evolución del Patrimonio</h3>
                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -1319,7 +1319,7 @@
                         </div>
                         <canvas id="assetsEvolutionChart"></canvas>
                     </div>
-                    <div class="chart-card" style="cursor: pointer;" onclick="openChartModal('accountsBalance', 'Evolución de Saldo en Cuentas')">
+                    <div class="chart-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h3>Evolución de Saldo en Cuentas</h3>
                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
