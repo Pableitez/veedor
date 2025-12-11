@@ -4119,26 +4119,36 @@ function calculateMonthlyPayment(principal, annualRate, months) {
 window.calculateMonthlyPayment = calculateMonthlyPayment;
 
 // Calcular tabla de amortización
-function calculateAmortizationTable(principal, annualRate, monthlyPayment, startDate, totalPaid = 0, earlyPayments = []) {
+function calculateAmortizationTable(principal, annualRate, monthlyPayment, startDate, totalPaid = 0, earlyPayments = [], currentDateOverride = null) {
     const monthlyRate = annualRate / 100 / 12;
     let balance = principal;
     let totalInterest = 0;
     const table = [];
     const start = new Date(startDate);
-    let currentDate = new Date(start);
+    start.setHours(0, 0, 0, 0);
+    const today = currentDateOverride ? new Date(currentDateOverride) : new Date();
+    today.setHours(0, 0, 0, 0);
     
-    // Aplicar pagos anticipados
-    earlyPayments.forEach(ep => {
-        balance -= ep.amount;
-        totalInterest += ep.commission || 0;
+    // Calcular cuántos meses han pasado desde el inicio hasta hoy
+    const monthsElapsed = Math.max(0, Math.floor((today - start) / (1000 * 60 * 60 * 24 * 30.44)));
+    
+    // Aplicar pagos anticipados (ordenados por fecha)
+    const sortedEarlyPayments = [...earlyPayments].sort((a, b) => new Date(a.date) - new Date(b.date));
+    sortedEarlyPayments.forEach(ep => {
+        const epDate = new Date(ep.date);
+        epDate.setHours(0, 0, 0, 0);
+        if (epDate <= today) {
+            balance -= ep.amount;
+            totalInterest += ep.commission || 0;
+        }
     });
     
-    // Restar lo ya pagado
-    balance -= totalPaid;
+    // Calcular pagos mensuales realizados hasta hoy
+    let currentDate = new Date(start);
+    currentDate.setHours(0, 0, 0, 0);
     
-    let month = 0;
-    while (balance > 0.01 && month < 600) { // Máximo 50 años
-        month++;
+    // Aplicar pagos mensuales hasta la fecha actual
+    for (let month = 0; month < monthsElapsed && balance > 0.01; month++) {
         currentDate.setMonth(currentDate.getMonth() + 1);
         
         const interest = balance * monthlyRate;
@@ -4147,7 +4157,7 @@ function calculateAmortizationTable(principal, annualRate, monthlyPayment, start
         totalInterest += interest;
         
         table.push({
-            month,
+            month: month + 1,
             date: new Date(currentDate),
             payment: monthlyPayment,
             principal: principalPayment,
@@ -4156,7 +4166,37 @@ function calculateAmortizationTable(principal, annualRate, monthlyPayment, start
         });
     }
     
-    return { table, totalInterest, finalBalance: balance };
+    // Restar el total pagado adicional (si hay diferencia)
+    if (totalPaid > 0) {
+        const monthlyPaymentsTotal = monthsElapsed * monthlyPayment;
+        const additionalPaid = totalPaid - monthlyPaymentsTotal;
+        if (additionalPaid > 0) {
+            balance -= additionalPaid;
+        }
+    }
+    
+    // Calcular pagos futuros
+    let futureMonth = monthsElapsed;
+    while (balance > 0.01 && futureMonth < 600) { // Máximo 50 años
+        futureMonth++;
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        
+        const interest = balance * monthlyRate;
+        const principalPayment = Math.min(monthlyPayment - interest, balance);
+        balance -= principalPayment;
+        totalInterest += interest;
+        
+        table.push({
+            month: futureMonth,
+            date: new Date(currentDate),
+            payment: monthlyPayment,
+            principal: principalPayment,
+            interest,
+            balance: Math.max(0, balance)
+        });
+    }
+    
+    return { table, totalInterest, finalBalance: Math.max(0, balance) };
 }
 
 async function addLoan() {
@@ -10415,17 +10455,33 @@ function exportToCSV(data, filename) {
 }
 
 function exportTransactions() {
-    const data = transactions.map(t => ({
-        Fecha: t.date,
-        Tipo: t.type === 'income' ? 'Ingreso' : 'Gasto',
-        Categoría: `${t.categoryGeneral} - ${t.categorySpecific}`,
-        Descripción: t.description || '',
-        Monto: t.amount,
-        Cuenta: accounts.find(a => (a._id || a.id) === t.account_id)?.name || '',
-        Propiedad: properties.find(p => (p._id || p.id) === t.property_id)?.name || '',
-        Sobre: t.envelope || ''
-    }));
-    exportToCSV(data, 'transacciones');
+    try {
+        if (!transactions || transactions.length === 0) {
+            showToast('No hay transacciones para exportar', 'warning');
+            return;
+        }
+        
+        const data = transactions.map(t => ({
+            Fecha: t.date || '',
+            Tipo: t.type === 'income' ? 'Ingreso' : 'Gasto',
+            Categoría: `${t.categoryGeneral || ''} - ${t.categorySpecific || ''}`,
+            Descripción: t.description || '',
+            Monto: t.amount || 0,
+            Cuenta: accounts.find(a => (a._id || a.id) === t.account_id)?.name || '',
+            Propiedad: properties.find(p => (p._id || p.id) === t.property_id)?.name || '',
+            Sobre: t.envelope || ''
+        }));
+        
+        if (data.length === 0) {
+            showToast('No hay datos válidos para exportar', 'warning');
+            return;
+        }
+        
+        exportToCSV(data, 'transacciones');
+    } catch (error) {
+        console.error('Error al exportar transacciones:', error);
+        showToast('Error al exportar transacciones: ' + error.message, 'error');
+    }
 }
 
 function exportAccounts() {
