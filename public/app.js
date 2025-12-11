@@ -1485,13 +1485,24 @@ function initializeCategories() {
             if (category) {
                 // Si la categoría tiene subcategorías, usarlas
                 if (category.subcategories && category.subcategories.length > 0) {
-                    category.subcategories.forEach(sub => {
-                        const option = document.createElement('option');
-                        option.value = sub;
-                        option.textContent = sub;
-                        specificSelect.appendChild(option);
-                    });
+                        customCat.subcategories.forEach(sub => {
+                            const option = document.createElement('option');
+                            option.value = sub;
+                            option.textContent = sub;
+                            specificSelect.appendChild(option);
+                        });
+                        return;
+                    }
                 }
+            }
+            
+            if (category) {
+                category.subcategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    specificSelect.appendChild(option);
+                });
             }
         }
     };
@@ -10380,9 +10391,9 @@ try {
     if (typeof openChartModal === 'function') {
         window._openChartModalReal = openChartModal;
         window.openChartModal = openChartModal;
-        console.log('✅ openChartModal expuesta correctamente al final del script');
+        console.log('✅ openChartModal expuesta correctamente al final del script (línea 10913)');
     } else {
-        console.error('❌ openChartModal no está definida al final del script');
+        console.error('❌ openChartModal no está definida al final del script (línea 10913)');
         console.log('Tipo de openChartModal:', typeof openChartModal);
         console.log('openChartModal disponible en window:', typeof window.openChartModal);
         console.log('_openChartModalReal disponible en window:', typeof window._openChartModalReal);
@@ -10391,5 +10402,6 @@ try {
     console.error('❌ Error al exponer openChartModal al final:', error);
 }
 
-// Cerrar el bloque de protección contra carga múltiple (else que comenzó en línea 5)
+// Cerrar el bloque de protección contra carga múltiple
 }
+
