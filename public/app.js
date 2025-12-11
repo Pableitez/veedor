@@ -7426,68 +7426,67 @@ function updateAccountsBalanceChart() {
 let chartModalChart = null;
 
 function openChartModal(chartType, title) {
-    console.log('📊 openChartModal llamado:', { chartType, title });
-    
-    // Asegurar que los gráficos estén inicializados
-    if (!charts[chartType]) {
-        console.warn('⚠️ Gráfico no inicializado, inicializando...', chartType);
-        initializeCharts();
-        // Esperar un momento para que se inicialice
-        setTimeout(() => {
-            if (!charts[chartType]) {
-                console.error('❌ No se pudo inicializar el gráfico:', chartType);
-                alert('El gráfico no está disponible. Por favor, recarga la página.');
-                return;
-            }
-            // Reintentar abrir el modal
-            openChartModal(chartType, title);
-        }, 300);
-        return;
-    }
-    
-    currentChartType = chartType;
+    // 1. Obtener elementos del modal
     const modal = document.getElementById('chartModal');
     const modalTitle = document.getElementById('chartModalTitle');
-    const modalControls = document.getElementById('chartModalControls');
     const modalCanvas = document.getElementById('chartModalCanvas');
     
-    console.log('📊 Elementos del modal:', {
-        modal: !!modal,
-        modalTitle: !!modalTitle,
-        modalControls: !!modalControls,
-        modalCanvas: !!modalCanvas
-    });
-    
-    if (!modal) {
-        console.error('❌ Modal no encontrado');
-        alert('Error: No se encontró el modal de gráficos. Por favor, recarga la página.');
-        return;
-    }
-    if (!modalTitle) {
-        console.error('❌ modalTitle no encontrado');
-        alert('Error: No se encontró el título del modal. Por favor, recarga la página.');
-        return;
-    }
-    if (!modalControls) {
-        console.error('❌ modalControls no encontrado');
-        alert('Error: No se encontraron los controles del modal. Por favor, recarga la página.');
-        return;
-    }
-    if (!modalCanvas) {
-        console.error('❌ modalCanvas no encontrado');
-        alert('Error: No se encontró el canvas del modal. Por favor, recarga la página.');
+    if (!modal || !modalTitle || !modalCanvas) {
+        console.error('Elementos del modal no encontrados');
         return;
     }
     
+    // 2. Obtener el gráfico original
+    const originalChart = charts[chartType];
+    if (!originalChart || !originalChart.data) {
+        console.error('Gráfico no encontrado o sin datos:', chartType);
+        return;
+    }
+    
+    // 3. Abrir modal
+    currentChartType = chartType;
     modalTitle.textContent = title;
     modal.style.display = 'flex';
-    console.log('✅ Modal abierto');
     
-    // Limpiar canvas anterior
+    // 4. Limpiar gráfico anterior
     if (chartModalChart) {
         chartModalChart.destroy();
         chartModalChart = null;
     }
+    
+    // 5. Asegurar dimensiones del canvas (más grande)
+    const container = modalCanvas.parentElement;
+    if (container) {
+        container.style.height = '600px';
+        container.style.width = '100%';
+    }
+    
+    // 6. Crear nuevo gráfico copiando datos del original
+    setTimeout(() => {
+        try {
+            const clonedData = JSON.parse(JSON.stringify(originalChart.data));
+            const clonedOptions = JSON.parse(JSON.stringify(originalChart.options || {}));
+            
+            chartModalChart = new Chart(modalCanvas, {
+                type: originalChart.config.type,
+                data: clonedData,
+                options: {
+                    ...clonedOptions,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        ...clonedOptions.plugins,
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error al crear gráfico:', error);
+        }
+    }, 100);
 }
 
 function closeChartModal() {
