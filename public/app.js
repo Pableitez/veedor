@@ -131,49 +131,51 @@ if (window.VEEDOR_LOADED) {
 // Categorías de gastos e ingresos
 const categories = {
     expense: [
-        { id: 'food', name: 'Alimentación', subcategories: ['Supermercado', 'Restaurantes', 'Delivery', 'Café', 'Bebidas', 'Comida rápida', 'Mercado local', 'Tienda de conveniencia', 'Catering', 'Almuerzo de trabajo'] },
-        { id: 'transport', name: 'Transporte', subcategories: ['Gasolina', 'Transporte público', 'Taxi/Uber', 'Mantenimiento', 'Parking', 'Peaje', 'Seguro de coche', 'Reparaciones', 'Bicicleta', 'Scooter', 'Vuelos', 'Tren', 'Autobús'] },
-        { id: 'housing', name: 'Vivienda', subcategories: ['Alquiler/Hipoteca', 'Servicios', 'Mantenimiento', 'Decoración', 'Limpieza', 'Jardinería', 'Reparaciones', 'Mejoras', 'Muebles', 'Electrodomésticos', 'Seguro del hogar', 'Comunidad', 'IBI/Impuestos'] },
-        { id: 'health', name: 'Salud', subcategories: ['Médico', 'Farmacia', 'Gimnasio', 'Seguro médico', 'Dentista', 'Óptica', 'Fisioterapia', 'Psicólogo', 'Nutricionista', 'Medicinas', 'Análisis', 'Especialistas', 'Urgencias'] },
-        { id: 'entertainment', name: 'Entretenimiento', subcategories: ['Cine', 'Streaming', 'Eventos', 'Hobbies', 'Conciertos', 'Teatro', 'Museos', 'Videojuegos', 'Libros', 'Revistas', 'Juegos de mesa', 'Deportes', 'Viajes', 'Vacaciones'] },
-        { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros', 'Zapatos', 'Accesorios', 'Joyería', 'Cosméticos', 'Herramientas', 'Bricolaje', 'Jardín', 'Mascotas', 'Regalos'] },
-        { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula', 'Universidad', 'Máster', 'Idiomas', 'Formación online', 'Seminarios', 'Conferencias', 'Material escolar', 'Uniforme'] },
-        { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios', 'Gas', 'Calefacción', 'Basura', 'TV/Cable', 'Streaming servicios', 'Suscripciones', 'Banco', 'Seguros'] },
-        { id: 'insurance', name: 'Seguros', subcategories: ['Seguro de coche', 'Seguro de hogar', 'Seguro de vida', 'Seguro de salud', 'Otros seguros', 'Seguro de viaje', 'Seguro de mascota', 'Seguro de responsabilidad civil'] },
-        { id: 'fines', name: 'Multas y Sanciones', subcategories: ['Multa de tráfico', 'Multa administrativa', 'Sanción', 'Otros', 'Aparcamiento', 'Velocidad', 'ITV', 'Impuestos atrasados'] },
-        { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros', 'Peluquería', 'Estética', 'Spa', 'Masajes', 'Cosméticos', 'Perfumes', 'Cumpleaños', 'Aniversarios', 'Bodas'] },
-        { id: 'subscriptions', name: 'Suscripciones', subcategories: ['Netflix', 'Spotify', 'Amazon Prime', 'Disney+', 'HBO', 'Gimnasio', 'Revistas', 'Software', 'Cloud storage', 'Apps', 'Newsletters', 'Clubes'] },
-        { id: 'charity', name: 'Donaciones y Caridad', subcategories: ['ONG', 'Caridad', 'Donaciones', 'Ayuda humanitaria', 'Fundaciones', 'Crowdfunding', 'Voluntariado'] },
-        { id: 'taxes', name: 'Impuestos', subcategories: ['IRPF', 'IVA', 'IBI', 'Impuesto de circulación', 'Impuesto de sucesiones', 'Otros impuestos'] },
-        { id: 'debt', name: 'Deudas y Préstamos', subcategories: ['Pago de préstamo', 'Tarjeta de crédito', 'Hipoteca', 'Intereses', 'Comisiones bancarias', 'Refinanciación'] },
-        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Gastos no categorizados', 'Transferencias', 'Comisiones', 'Pérdidas'] }
+        { id: 'food', name: 'Alimentación', subcategories: ['Supermercado', 'Restaurantes', 'Delivery', 'Café', 'Bebidas', 'Comida rápida', 'Mercado local', 'Tienda de conveniencia', 'Catering', 'Almuerzo de trabajo', 'Desayuno', 'Merienda', 'Cena', 'Snacks', 'Bebidas alcohólicas', 'Agua', 'Zumos'] },
+        { id: 'transport', name: 'Transporte', subcategories: ['Gasolina', 'Transporte público', 'Taxi/Uber', 'Mantenimiento', 'Parking', 'Peaje', 'Seguro de coche', 'Reparaciones', 'Bicicleta', 'Scooter', 'Vuelos', 'Tren', 'Autobús', 'Metro', 'Tranvía', 'Barco', 'Ferry', 'Alquiler de coche', 'ITV', 'Impuesto de circulación'] },
+        { id: 'housing', name: 'Vivienda', subcategories: ['Alquiler/Hipoteca', 'Servicios', 'Mantenimiento', 'Decoración', 'Limpieza', 'Jardinería', 'Reparaciones', 'Mejoras', 'Muebles', 'Electrodomésticos', 'Seguro del hogar', 'Comunidad', 'IBI/Impuestos', 'Luz', 'Agua', 'Gas', 'Calefacción', 'Aire acondicionado', 'Internet', 'Teléfono fijo', 'Basura', 'Reciclaje'] },
+        { id: 'health', name: 'Salud', subcategories: ['Médico', 'Farmacia', 'Gimnasio', 'Seguro médico', 'Dentista', 'Óptica', 'Fisioterapia', 'Psicólogo', 'Nutricionista', 'Medicinas', 'Análisis', 'Especialistas', 'Urgencias', 'Hospital', 'Ambulancia', 'Prótesis', 'Ortodoncia', 'Cirugía', 'Rehabilitación', 'Terapias alternativas'] },
+        { id: 'entertainment', name: 'Entretenimiento', subcategories: ['Cine', 'Streaming', 'Eventos', 'Hobbies', 'Conciertos', 'Teatro', 'Museos', 'Videojuegos', 'Libros', 'Revistas', 'Juegos de mesa', 'Deportes', 'Viajes', 'Vacaciones', 'Parques temáticos', 'Zoo', 'Acuario', 'Excursiones', 'Camping', 'Deportes acuáticos', 'Ski', 'Golf'] },
+        { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros', 'Zapatos', 'Accesorios', 'Joyería', 'Cosméticos', 'Herramientas', 'Bricolaje', 'Jardín', 'Mascotas', 'Regalos', 'Libros', 'Música', 'Películas', 'Juguetes', 'Deportes', 'Fotografía', 'Arte', 'Antigüedades'] },
+        { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula', 'Universidad', 'Máster', 'Idiomas', 'Formación online', 'Seminarios', 'Conferencias', 'Material escolar', 'Uniforme', 'Becas', 'Tutorías', 'Clases particulares', 'Certificaciones', 'Exámenes', 'Biblioteca', 'Software educativo'] },
+        { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios', 'Gas', 'Calefacción', 'Basura', 'TV/Cable', 'Streaming servicios', 'Suscripciones', 'Banco', 'Seguros', 'Teléfono móvil', 'Datos móviles', 'Servicios de nube', 'Hosting', 'Dominio', 'Software', 'Licencias'] },
+        { id: 'insurance', name: 'Seguros', subcategories: ['Seguro de coche', 'Seguro de hogar', 'Seguro de vida', 'Seguro de salud', 'Otros seguros', 'Seguro de viaje', 'Seguro de mascota', 'Seguro de responsabilidad civil', 'Seguro de accidentes', 'Seguro de invalidez', 'Seguro de desempleo', 'Seguro de negocio'] },
+        { id: 'fines', name: 'Multas y Sanciones', subcategories: ['Multa de tráfico', 'Multa administrativa', 'Sanción', 'Otros', 'Aparcamiento', 'Velocidad', 'ITV', 'Impuestos atrasados', 'Multa de estacionamiento', 'Multa de tránsito', 'Multa municipal', 'Sanciones de tráfico'] },
+        { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros', 'Peluquería', 'Estética', 'Spa', 'Masajes', 'Cosméticos', 'Perfumes', 'Cumpleaños', 'Aniversarios', 'Bodas', 'Manicura', 'Pedicura', 'Depilación', 'Tatuajes', 'Piercings', 'Gafas', 'Lentes de contacto'] },
+        { id: 'subscriptions', name: 'Suscripciones', subcategories: ['Netflix', 'Spotify', 'Amazon Prime', 'Disney+', 'HBO', 'Gimnasio', 'Revistas', 'Software', 'Cloud storage', 'Apps', 'Newsletters', 'Clubes', 'Apple Music', 'YouTube Premium', 'Adobe Creative', 'Microsoft 365', 'Dropbox', 'iCloud', 'Google Drive', 'Clubes deportivos', 'Bibliotecas digitales'] },
+        { id: 'charity', name: 'Donaciones y Caridad', subcategories: ['ONG', 'Caridad', 'Donaciones', 'Ayuda humanitaria', 'Fundaciones', 'Crowdfunding', 'Voluntariado', 'Ayuda a refugiados', 'Protección animal', 'Medio ambiente', 'Educación', 'Salud', 'Investigación'] },
+        { id: 'taxes', name: 'Impuestos', subcategories: ['IRPF', 'IVA', 'IBI', 'Impuesto de circulación', 'Impuesto de sucesiones', 'Otros impuestos', 'Impuesto de sociedades', 'Impuesto de actividades económicas', 'Impuesto sobre vehículos', 'Tasas municipales', 'Multas fiscales'] },
+        { id: 'debt', name: 'Deudas y Préstamos', subcategories: ['Pago de préstamo', 'Tarjeta de crédito', 'Hipoteca', 'Intereses', 'Comisiones bancarias', 'Refinanciación', 'Préstamo personal', 'Préstamo de coche', 'Préstamo estudiantil', 'Microcréditos', 'Préstamos rápidos'] },
+        { id: 'pets', name: 'Mascotas', subcategories: ['Veterinario', 'Comida', 'Juguetes', 'Accesorios', 'Peluquería', 'Seguro de mascota', 'Medicinas', 'Vacunas', 'Guardería', 'Adiestramiento', 'Pensión', 'Cuidados especiales'] },
+        { id: 'children', name: 'Niños', subcategories: ['Guardería', 'Colegio', 'Actividades extraescolares', 'Juguetes', 'Ropa', 'Material escolar', 'Cumpleaños', 'Regalos', 'Cuidados', 'Medicinas', 'Vacunas', 'Deportes', 'Música', 'Arte'] },
+        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Gastos no categorizados', 'Transferencias', 'Comisiones', 'Pérdidas', 'Gastos varios', 'Emergencias', 'Reparaciones varias'] }
     ],
     income: [
-        { id: 'salary', name: 'Salario', subcategories: ['Nómina', 'Pago mensual', 'Pago quincenal', 'Pago semanal', 'Pago diario', 'Horas extras', 'Bonus', 'Comisiones', 'Incentivos', 'Vacaciones pagadas'] },
-        { id: 'freelance', name: 'Freelance', subcategories: ['Proyecto', 'Hora', 'Servicio', 'Otros', 'Consultoría', 'Diseño', 'Desarrollo', 'Escritura', 'Traducción', 'Marketing', 'Asesoría'] },
-        { id: 'investment', name: 'Inversiones', subcategories: ['Dividendos', 'Intereses', 'Renta', 'Ganancias', 'Acciones', 'Bonos', 'Fondos', 'Criptomonedas', 'Forex', 'Opciones', 'Futuros', 'Rentabilidad'] },
-        { id: 'business', name: 'Negocio', subcategories: ['Ventas', 'Servicios', 'Comisiones', 'Otros', 'Ingresos por productos', 'Ingresos por servicios', 'Licencias', 'Franquicias', 'Royalties'] },
-        { id: 'gift', name: 'Regalos', subcategories: ['Cumpleaños', 'Navidad', 'Ocasión especial', 'Otros', 'Bodas', 'Aniversarios', 'Graduación', 'Bautizo', 'Comunión'] },
-        { id: 'refund', name: 'Reembolsos', subcategories: ['Compra', 'Impuesto', 'Seguro', 'Otros', 'Devolución de producto', 'Reembolso de viaje', 'Reembolso médico', 'Reembolso de gastos'] },
-        { id: 'rental', name: 'Alquiler', subcategories: ['Propiedad', 'Habitación', 'Garaje', 'Otros', 'Alquiler de piso', 'Alquiler de casa', 'Alquiler de local', 'Alquiler de terreno', 'Alquiler de vehículo'] },
-        { id: 'pension', name: 'Pensión', subcategories: ['Jubilación', 'Invalidez', 'Viudedad', 'Orfandad', 'Pensión alimenticia', 'Pensión no contributiva'] },
-        { id: 'benefits', name: 'Prestaciones', subcategories: ['Desempleo', 'Baja médica', 'Maternidad', 'Paternidad', 'Ayudas sociales', 'Subsidios', 'Becas'] },
-        { id: 'lottery', name: 'Lotería y Apuestas', subcategories: ['Lotería', 'Apuestas', 'Casino', 'Premios', 'Sorteos', 'Bingo'] },
-        { id: 'sale', name: 'Ventas', subcategories: ['Venta de objetos', 'Venta de vehículo', 'Venta de propiedad', 'Venta de acciones', 'Venta de artículos usados', 'Venta online'] },
-        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Ingresos no categorizados', 'Transferencias recibidas', 'Herencia', 'Indemnización'] }
+        { id: 'salary', name: 'Salario', subcategories: ['Nómina', 'Pago mensual', 'Pago quincenal', 'Pago semanal', 'Pago diario', 'Horas extras', 'Bonus', 'Comisiones', 'Incentivos', 'Vacaciones pagadas', 'Plus de productividad', 'Plus de antigüedad', 'Dietas', 'Kilometraje'] },
+        { id: 'freelance', name: 'Freelance', subcategories: ['Proyecto', 'Hora', 'Servicio', 'Otros', 'Consultoría', 'Diseño', 'Desarrollo', 'Escritura', 'Traducción', 'Marketing', 'Asesoría', 'Fotografía', 'Videografía', 'Diseño gráfico', 'Programación', 'Redacción', 'Edición', 'Community management'] },
+        { id: 'investment', name: 'Inversiones', subcategories: ['Dividendos', 'Intereses', 'Renta', 'Ganancias', 'Acciones', 'Bonos', 'Fondos', 'Criptomonedas', 'Forex', 'Opciones', 'Futuros', 'Rentabilidad', 'Plusvalías', 'Rendimientos', 'Rentas de capital', 'Rentas inmobiliarias'] },
+        { id: 'business', name: 'Negocio', subcategories: ['Ventas', 'Servicios', 'Comisiones', 'Otros', 'Ingresos por productos', 'Ingresos por servicios', 'Licencias', 'Franquicias', 'Royalties', 'Alquiler de maquinaria', 'Consultoría empresarial', 'Formación', 'Publicidad', 'Patrocinios'] },
+        { id: 'gift', name: 'Regalos', subcategories: ['Cumpleaños', 'Navidad', 'Ocasión especial', 'Otros', 'Bodas', 'Aniversarios', 'Graduación', 'Bautizo', 'Comunión', 'Confirmación', 'Regalo de empresa', 'Regalo de amigos', 'Regalo familiar'] },
+        { id: 'refund', name: 'Reembolsos', subcategories: ['Compra', 'Impuesto', 'Seguro', 'Otros', 'Devolución de producto', 'Reembolso de viaje', 'Reembolso médico', 'Reembolso de gastos', 'Reembolso de impuestos', 'Reembolso de seguro', 'Garantía', 'Devolución de garantía'] },
+        { id: 'rental', name: 'Alquiler', subcategories: ['Propiedad', 'Habitación', 'Garaje', 'Otros', 'Alquiler de piso', 'Alquiler de casa', 'Alquiler de local', 'Alquiler de terreno', 'Alquiler de vehículo', 'Alquiler de maquinaria', 'Alquiler de equipos', 'Alquiler de espacios', 'Parking', 'Trastero'] },
+        { id: 'pension', name: 'Pensión', subcategories: ['Jubilación', 'Invalidez', 'Viudedad', 'Orfandad', 'Pensión alimenticia', 'Pensión no contributiva', 'Pensión de viudedad', 'Pensión de orfandad', 'Pensión de invalidez permanente', 'Pensión de jubilación anticipada'] },
+        { id: 'benefits', name: 'Prestaciones', subcategories: ['Desempleo', 'Baja médica', 'Maternidad', 'Paternidad', 'Ayudas sociales', 'Subsidios', 'Becas', 'Ayuda familiar', 'Renta mínima', 'Ayuda al alquiler', 'Subsidio de desempleo', 'Prestación por incapacidad', 'Ayuda por dependencia'] },
+        { id: 'lottery', name: 'Lotería y Apuestas', subcategories: ['Lotería', 'Apuestas', 'Casino', 'Premios', 'Sorteos', 'Bingo', 'Rascas', 'Lotería de Navidad', 'Euromillones', 'Primitiva', 'Bonoloto', 'Ganancias de casino'] },
+        { id: 'sale', name: 'Ventas', subcategories: ['Venta de objetos', 'Venta de vehículo', 'Venta de propiedad', 'Venta de acciones', 'Venta de artículos usados', 'Venta online', 'Venta de muebles', 'Venta de electrónica', 'Venta de ropa', 'Venta de libros', 'Venta de coleccionables', 'Venta de arte'] },
+        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Ingresos no categorizados', 'Transferencias recibidas', 'Herencia', 'Indemnización', 'Compensación', 'Subvención', 'Ayuda económica', 'Préstamo recibido', 'Ingresos varios'] }
     ],
     // Mantener compatibilidad con código antiguo
     general: [
-        { id: 'food', name: 'Alimentación', subcategories: ['Supermercado', 'Restaurantes', 'Delivery', 'Café', 'Bebidas', 'Comida rápida', 'Mercado local', 'Tienda de conveniencia', 'Catering', 'Almuerzo de trabajo'] },
-        { id: 'transport', name: 'Transporte', subcategories: ['Gasolina', 'Transporte público', 'Taxi/Uber', 'Mantenimiento', 'Parking', 'Peaje', 'Seguro de coche', 'Reparaciones', 'Bicicleta', 'Scooter', 'Vuelos', 'Tren', 'Autobús'] },
-        { id: 'housing', name: 'Vivienda', subcategories: ['Alquiler/Hipoteca', 'Servicios', 'Mantenimiento', 'Decoración', 'Limpieza', 'Jardinería', 'Reparaciones', 'Mejoras', 'Muebles', 'Electrodomésticos', 'Seguro del hogar', 'Comunidad', 'IBI/Impuestos'] },
-        { id: 'health', name: 'Salud', subcategories: ['Médico', 'Farmacia', 'Gimnasio', 'Seguro médico', 'Dentista', 'Óptica', 'Fisioterapia', 'Psicólogo', 'Nutricionista', 'Medicinas', 'Análisis', 'Especialistas', 'Urgencias'] },
-        { id: 'entertainment', name: 'Entretenimiento', subcategories: ['Cine', 'Streaming', 'Eventos', 'Hobbies', 'Conciertos', 'Teatro', 'Museos', 'Videojuegos', 'Libros', 'Revistas', 'Juegos de mesa', 'Deportes', 'Viajes', 'Vacaciones'] },
-        { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros', 'Zapatos', 'Accesorios', 'Joyería', 'Cosméticos', 'Herramientas', 'Bricolaje', 'Jardín', 'Mascotas', 'Regalos'] },
-        { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula', 'Universidad', 'Máster', 'Idiomas', 'Formación online', 'Seminarios', 'Conferencias', 'Material escolar', 'Uniforme'] },
-        { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios', 'Gas', 'Calefacción', 'Basura', 'TV/Cable', 'Streaming servicios', 'Suscripciones', 'Banco', 'Seguros'] },
-        { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros', 'Peluquería', 'Estética', 'Spa', 'Masajes', 'Cosméticos', 'Perfumes', 'Cumpleaños', 'Aniversarios', 'Bodas'] },
-        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Gastos no categorizados', 'Transferencias', 'Comisiones', 'Pérdidas'] }
+        { id: 'food', name: 'Alimentación', subcategories: ['Supermercado', 'Restaurantes', 'Delivery', 'Café', 'Bebidas', 'Comida rápida', 'Mercado local', 'Tienda de conveniencia', 'Catering', 'Almuerzo de trabajo', 'Desayuno', 'Merienda', 'Cena', 'Snacks', 'Bebidas alcohólicas', 'Agua', 'Zumos'] },
+        { id: 'transport', name: 'Transporte', subcategories: ['Gasolina', 'Transporte público', 'Taxi/Uber', 'Mantenimiento', 'Parking', 'Peaje', 'Seguro de coche', 'Reparaciones', 'Bicicleta', 'Scooter', 'Vuelos', 'Tren', 'Autobús', 'Metro', 'Tranvía', 'Barco', 'Ferry', 'Alquiler de coche', 'ITV', 'Impuesto de circulación'] },
+        { id: 'housing', name: 'Vivienda', subcategories: ['Alquiler/Hipoteca', 'Servicios', 'Mantenimiento', 'Decoración', 'Limpieza', 'Jardinería', 'Reparaciones', 'Mejoras', 'Muebles', 'Electrodomésticos', 'Seguro del hogar', 'Comunidad', 'IBI/Impuestos', 'Luz', 'Agua', 'Gas', 'Calefacción', 'Aire acondicionado', 'Internet', 'Teléfono fijo', 'Basura', 'Reciclaje'] },
+        { id: 'health', name: 'Salud', subcategories: ['Médico', 'Farmacia', 'Gimnasio', 'Seguro médico', 'Dentista', 'Óptica', 'Fisioterapia', 'Psicólogo', 'Nutricionista', 'Medicinas', 'Análisis', 'Especialistas', 'Urgencias', 'Hospital', 'Ambulancia', 'Prótesis', 'Ortodoncia', 'Cirugía', 'Rehabilitación', 'Terapias alternativas'] },
+        { id: 'entertainment', name: 'Entretenimiento', subcategories: ['Cine', 'Streaming', 'Eventos', 'Hobbies', 'Conciertos', 'Teatro', 'Museos', 'Videojuegos', 'Libros', 'Revistas', 'Juegos de mesa', 'Deportes', 'Viajes', 'Vacaciones', 'Parques temáticos', 'Zoo', 'Acuario', 'Excursiones', 'Camping', 'Deportes acuáticos', 'Ski', 'Golf'] },
+        { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros', 'Zapatos', 'Accesorios', 'Joyería', 'Cosméticos', 'Herramientas', 'Bricolaje', 'Jardín', 'Mascotas', 'Regalos', 'Libros', 'Música', 'Películas', 'Juguetes', 'Deportes', 'Fotografía', 'Arte', 'Antigüedades'] },
+        { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula', 'Universidad', 'Máster', 'Idiomas', 'Formación online', 'Seminarios', 'Conferencias', 'Material escolar', 'Uniforme', 'Becas', 'Tutorías', 'Clases particulares', 'Certificaciones', 'Exámenes', 'Biblioteca', 'Software educativo'] },
+        { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios', 'Gas', 'Calefacción', 'Basura', 'TV/Cable', 'Streaming servicios', 'Suscripciones', 'Banco', 'Seguros', 'Teléfono móvil', 'Datos móviles', 'Servicios de nube', 'Hosting', 'Dominio', 'Software', 'Licencias'] },
+        { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros', 'Peluquería', 'Estética', 'Spa', 'Masajes', 'Cosméticos', 'Perfumes', 'Cumpleaños', 'Aniversarios', 'Bodas', 'Manicura', 'Pedicura', 'Depilación', 'Tatuajes', 'Piercings', 'Gafas', 'Lentes de contacto'] },
+        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Gastos no categorizados', 'Transferencias', 'Comisiones', 'Pérdidas', 'Gastos varios', 'Emergencias', 'Reparaciones varias'] }
     ]
 };
 
@@ -1437,37 +1439,43 @@ window.scrollToDashboard = scrollToDashboard;
 window.switchToTab = switchToTab;
 
 // Inicializar categorías
-// Variable para almacenar la función de actualización y evitar duplicados
-let currentUpdateCategoriesByType = null;
-let currentCategoryChangeHandler = null;
-let currentTransactionTypeHandler = null;
-
 function initializeCategories() {
     const generalSelect = document.getElementById('categoryGeneral');
     const specificSelect = document.getElementById('categorySpecific');
     const filterCategory = document.getElementById('filterCategory');
     const transactionType = document.getElementById('transactionType');
     
-    if (!generalSelect || !specificSelect || !filterCategory) return;
+    if (!generalSelect || !specificSelect) return;
     
-    // Remover listeners anteriores si existen
-    if (currentTransactionTypeHandler && transactionType) {
-        transactionType.removeEventListener('change', currentTransactionTypeHandler);
-    }
-    if (currentCategoryChangeHandler && generalSelect) {
-        generalSelect.removeEventListener('change', currentCategoryChangeHandler);
+    // Función para actualizar categorías específicas cuando cambia la general
+    function updateSpecificCategories() {
+        const selectedGeneral = generalSelect.value;
+        specificSelect.innerHTML = '<option value="">Seleccionar...</option>';
+        
+        if (!selectedGeneral) return;
+        
+        const type = transactionType ? transactionType.value : 'expense';
+        const categoryList = type === 'income' ? categories.income : categories.expense;
+        const category = categoryList.find(c => c.id === selectedGeneral);
+        
+        if (category && category.subcategories && category.subcategories.length > 0) {
+            category.subcategories.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.textContent = sub;
+                specificSelect.appendChild(option);
+            });
+        }
     }
     
-    // Función para actualizar categorías según el tipo
-    const updateCategoriesByType = () => {
+    // Función para actualizar categorías generales cuando cambia el tipo
+    function updateGeneralCategories() {
         const type = transactionType ? transactionType.value : 'expense';
         const categoryList = type === 'income' ? categories.income : categories.expense;
         
-        // Limpiar selects
         generalSelect.innerHTML = '<option value="">Seleccionar...</option>';
         specificSelect.innerHTML = '<option value="">Seleccionar...</option>';
         
-        // Agregar categorías predefinidas
         categoryList.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.id;
@@ -1475,54 +1483,25 @@ function initializeCategories() {
             generalSelect.appendChild(option);
         });
         
-        // Actualizar filtro de categorías
-        filterCategory.innerHTML = '<option value="">Todas las categorías</option>';
-        categoryList.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat.id;
-            option.textContent = cat.name;
-            filterCategory.appendChild(option);
-        });
-    };
-    
-    // Guardar referencia a la función para poder removerla después
-    currentUpdateCategoriesByType = updateCategoriesByType;
-    
-    // Actualizar cuando cambia el tipo de transacción
-    if (transactionType) {
-        currentTransactionTypeHandler = updateCategoriesByType;
-        transactionType.addEventListener('change', updateCategoriesByType);
+        if (filterCategory) {
+            filterCategory.innerHTML = '<option value="">Todas las categorías</option>';
+            categoryList.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                filterCategory.appendChild(option);
+            });
+        }
     }
     
-    // Actualizar categorías específicas cuando cambia la general
-    const categoryChangeHandler = () => {
-        const selectedGeneral = generalSelect.value;
-        specificSelect.innerHTML = '<option value="">Seleccionar...</option>';
-        
-        if (selectedGeneral) {
-            const type = transactionType ? transactionType.value : 'expense';
-            const categoryList = type === 'income' ? categories.income : categories.expense;
-            
-            // Buscar en categorías predefinidas
-            let category = categoryList.find(c => c.id === selectedGeneral);
-            
-            if (category && category.subcategories && category.subcategories.length > 0) {
-                category.subcategories.forEach(sub => {
-                    const option = document.createElement('option');
-                    option.value = sub;
-                    option.textContent = sub;
-                    specificSelect.appendChild(option);
-                });
-            }
-        }
-    };
+    // Event listeners
+    generalSelect.addEventListener('change', updateSpecificCategories);
+    if (transactionType) {
+        transactionType.addEventListener('change', updateGeneralCategories);
+    }
     
-    // Guardar referencia al handler para poder removerlo después
-    currentCategoryChangeHandler = categoryChangeHandler;
-    generalSelect.addEventListener('change', categoryChangeHandler);
-    
-    // Inicializar con categorías de gastos por defecto
-    updateCategoriesByType();
+    // Inicializar
+    updateGeneralCategories();
 }
 
 // Función para cambiar de tab (reutilizable)
