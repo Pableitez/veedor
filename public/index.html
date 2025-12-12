@@ -63,15 +63,15 @@
                     </div>
                 </div>
                 -->
-                <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto; filter: drop-shadow(0 8px 16px rgba(147, 51, 234, 0.3)); transition: all 0.3s ease;">
+                <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto; filter: drop-shadow(0 8px 16px rgba(30, 58, 138, 0.3)); transition: all 0.3s ease;">
                     <defs>
                         <linearGradient id="logoGradient" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#9333EA"/>
-                            <stop offset="100%" stop-color="#7E22CE"/>
+                            <stop offset="0%" stop-color="#1E3A8A"/>
+                            <stop offset="100%" stop-color="#3B82F6"/>
                         </linearGradient>
                         <linearGradient id="logoGradientInner" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#A855F7"/>
-                            <stop offset="100%" stop-color="#9333EA"/>
+                            <stop offset="0%" stop-color="#3B82F6"/>
+                            <stop offset="100%" stop-color="#6366F1"/>
                         </linearGradient>
                     </defs>
                     <!-- Círculo exterior con gradiente -->
@@ -84,7 +84,7 @@
                     <path d="M40 8 L40 16 M40 64 L40 72 M8 40 L16 40 M64 40 L72 40" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
                     <path d="M20 20 L26 26 M60 20 L54 26 M20 60 L26 54 M60 60 L54 54" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
                 </svg>
-                <h1 style="font-size: clamp(22px, 4vw, 36px); font-weight: 800; letter-spacing: -1px; margin: 0 0 clamp(6px, 1vh, 8px) 0; background: linear-gradient(135deg, #9333EA 0%, #7E22CE 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; transition: all 0.3s ease;">Veedor</h1>
+                <h1 style="font-size: clamp(22px, 4vw, 36px); font-weight: 800; letter-spacing: -1px; margin: 0 0 clamp(6px, 1vh, 8px) 0; background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; transition: all 0.3s ease;">Veedor</h1>
                 <p style="font-size: clamp(12px, 1.8vw, 16px); color: var(--text-secondary); margin: 0; font-weight: 500; transition: all 0.3s ease;" data-translate="auth.subtitle">Tu dinero, tu control. Toma decisiones inteligentes.</p>
             </div>
             
@@ -175,14 +175,14 @@
 
     <!-- Contenido Principal (oculto hasta login) -->
     <div id="mainApp" style="display: none; width: 100%; margin: 0; padding: 0; min-height: 100vh;">
-        <header style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: none; border-bottom: none; width: 100%; box-sizing: border-box; margin: 0; left: 0; right: 0;">
+        <header style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: none; border-bottom: none; width: 100%; box-sizing: border-box; margin: 0; left: 0; right: 0;">
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
                 <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
                     <svg width="36" height="36" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
                         <defs>
                             <linearGradient id="headerLogoGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#A855F7"/>
-                                <stop offset="100%" stop-color="#9333EA"/>
+                                <stop offset="0%" stop-color="#3B82F6"/>
+                                <stop offset="100%" stop-color="#1E3A8A"/>
                             </linearGradient>
                         </defs>
                         <circle cx="20" cy="20" r="18" fill="url(#headerLogoGradient)"/>
@@ -863,7 +863,7 @@
                     <!-- Modal para tabla de amortización -->
                     <div id="amortizationModal" class="modal" style="display: none;">
                         <div class="modal-content" style="max-width: 90%; width: 1000px; max-height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
-                            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                            <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <h2 id="amortizationModalTitle" style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Tabla de Amortización</h2>
                                     <button onclick="closeAmortizationModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 8px; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -877,7 +877,7 @@
                     <!-- Modal para amortización anticipada -->
                     <div id="earlyPaymentModal" class="modal" style="display: none;">
                         <div class="modal-content" style="max-width: 600px; max-height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
-                            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                            <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Amortización Anticipada</h2>
                                     <button onclick="closeEarlyPaymentModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 8px; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -1457,7 +1457,7 @@
     <!-- Modal de Detalles de Categoría -->
     <div id="categoryDetailsModal" class="modal" style="display: none; z-index: 10002;">
         <div class="modal-content" style="max-width: 800px; max-height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
-            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+            <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 24px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 id="categoryDetailsModalTitle" style="margin: 0; font-size: 24px; font-weight: 700; color: white;">Detalles de Categoría</h2>
                     <button onclick="closeCategoryDetailsModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 300; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -1472,7 +1472,7 @@
     <!-- Modal de Gráfico Detallado -->
     <div id="chartModal" class="modal" style="display: none;">
         <div class="modal-content chart-modal-content" style="max-width: 90vw; max-height: 90vh; width: 1200px; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
-            <div class="chart-modal-header" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+            <div class="chart-modal-header" style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 24px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 id="chartModalTitle" class="chart-modal-title" style="margin: 0; font-size: 24px; font-weight: 700; color: white;">Gráfico</h2>
                     <button onclick="closeChartModal()" class="chart-modal-close" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 300; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -1492,7 +1492,7 @@
     <!-- Modal de Perfil de Usuario -->
     <div id="userProfileModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 700px;">
-            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+            <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">👤 Mi Perfil</h2>
                     <button id="closeUserProfileModal" onclick="closeUserProfile()" style="background: rgba(255,255,255,0.2);  border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -1574,7 +1574,7 @@
     <!-- Modal de Detalles de Resumen -->
     <div id="summaryDetailsModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 900px; width: 90vw;">
-            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+            <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 id="summaryDetailsTitle" style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;"></h2>
                     <button onclick="closeSummaryDetails()" style="background: rgba(255,255,255,0.2);  border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -1710,7 +1710,7 @@
     <!-- Modales de Políticas -->
     <div id="privacyModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 700px; max-height: 85vh;">
-            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 20px 24px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+            <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 20px 24px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 class="modal-policy-title" style="margin: 0; font-size: 20px; font-weight: 700; color: white; letter-spacing: -0.5px;">🔒 Política de Privacidad</h2>
                     <button onclick="closePrivacyModal()" style="background: rgba(255,255,255,0.2);  border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -1722,7 +1722,7 @@
 
     <div id="cookiesModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 700px; max-height: 85vh;">
-            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 20px 24px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+            <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 20px 24px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 class="modal-policy-title" style="margin: 0; font-size: 20px; font-weight: 700; color: white; letter-spacing: -0.5px;">🍪 Política de Cookies</h2>
                     <button onclick="closeCookiesModal()" style="background: rgba(255,255,255,0.2);  border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -1734,7 +1734,7 @@
 
     <div id="termsModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 700px; max-height: 85vh;">
-            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 20px 24px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+            <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 20px 24px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 class="modal-policy-title" style="margin: 0; font-size: 20px; font-weight: 700; color: white; letter-spacing: -0.5px;">Términos y Condiciones</h2>
                     <button onclick="closeTermsModal()" style="background: rgba(255,255,255,0.2);  border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -1748,7 +1748,7 @@
     <script src="app.js?v=2.25.0"></script>
     
     <!-- Footer (solo visible en la app principal, no en welcome page) -->
-    <footer id="mainFooter" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: rgba(255,255,255,0.9); padding: 16px 20px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); display: none;">
+    <footer id="mainFooter" style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); color: rgba(255,255,255,0.9); padding: 16px 20px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); display: none;">
         <div style="max-width: 1200px; margin: 0 auto;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 12px;">
                 <div>
@@ -1756,8 +1756,8 @@
                         <svg width="18" height="18" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
                             <defs>
                                 <linearGradient id="footerLogoGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0%" stop-color="#A855F7"/>
-                                    <stop offset="100%" stop-color="#9333EA"/>
+                                    <stop offset="0%" stop-color="#3B82F6"/>
+                                    <stop offset="100%" stop-color="#1E3A8A"/>
                                 </linearGradient>
                             </defs>
                             <circle cx="20" cy="20" r="18" fill="url(#footerLogoGradient)"/>
@@ -1797,7 +1797,7 @@
     <!-- Modal de Confirmación -->
     <div id="confirmModal" class="modal" style="display: none; z-index: 10001;">
         <div class="modal-content" style="max-width: 500px; padding: 0;">
-            <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px 32px; color: white; border-radius: 12px 12px 0 0;">
+            <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 24px 32px; color: white; border-radius: 12px 12px 0 0;">
                 <h2 id="confirmModalTitle" style="margin: 0; font-size: 20px; font-weight: 700; color: white;">Confirmar acción</h2>
             </div>
             <div style="padding: 24px 32px; background: var(--bg-primary); color: var(--text-primary);">
