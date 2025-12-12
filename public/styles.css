@@ -584,7 +584,7 @@ body.dark-mode .auth-screen::before {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow-flow 4s ease-in-out infinite;
+    animation: rainbow-flow 10s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
@@ -997,7 +997,7 @@ body.dark-mode .footer-copyright strong {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 700;
-    animation: rainbow-flow 4s ease-in-out infinite;
+    animation: rainbow-flow 10s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
@@ -1007,7 +1007,7 @@ body:not(.dark-mode) .footer-veedor-text {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow-flow 4s ease-in-out infinite;
+    animation: rainbow-flow 10s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
@@ -1017,7 +1017,7 @@ body.dark-mode .footer-veedor-text {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow-flow 4s ease-in-out infinite;
+    animation: rainbow-flow 10s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
@@ -1041,7 +1041,7 @@ header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow-flow 4s ease-in-out infinite;
+    animation: rainbow-flow 10s ease-in-out infinite;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -1070,7 +1070,7 @@ body:not(.dark-mode) header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow-flow 4s ease-in-out infinite;
+    animation: rainbow-flow 10s ease-in-out infinite;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -1128,7 +1128,7 @@ body:not(.dark-mode) header h1 {
 
 .revolut-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    min-height: 180px;
+    min-height: 140px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1183,12 +1183,12 @@ body.dark-mode .revolut-card:hover {
 
 @media (max-width: 640px) {
     .revolut-card {
-        min-height: 160px;
-        padding: 20px !important;
+        min-height: 130px;
+        padding: 16px !important;
     }
     
     .revolut-card .amount {
-        font-size: 28px !important;
+        font-size: 24px !important;
     }
     
     .summary-cards {
@@ -1501,9 +1501,9 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
     color: white;
     border: none;
-    padding: 14px 28px;
+    padding: 10px 16px;
     border-radius: 8px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1518,6 +1518,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     box-sizing: border-box;
     max-width: 100%;
     overflow: hidden;
+    min-height: 40px;
 }
 
 .btn-primary:hover {
@@ -1534,8 +1535,8 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     background: var(--bg-primary);
     color: var(--text-secondary);
     border: 1.5px solid var(--border-color);
-    padding: 8px 24px;
-    border-radius: 10px;
+    padding: 10px 16px;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
@@ -1547,6 +1548,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     text-align: center;
     line-height: 1.5;
+    min-height: 40px;
 }
 
 .btn-secondary:hover {
@@ -1561,9 +1563,9 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     background: var(--danger);
     color: white;
     border: none;
-    padding: 8px 16px;
-    border-radius: var(--radius);
-    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
@@ -1573,6 +1575,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     gap: 6px;
     text-align: center;
     line-height: 1.5;
+    min-height: 40px;
 }
 
 .btn-danger:hover {
@@ -3415,12 +3418,12 @@ tbody tr:last-child td {
     }
     
     .revolut-card {
-        min-height: 160px !important;
-        padding: 20px !important;
+        min-height: 130px !important;
+        padding: 16px !important;
     }
     
     .revolut-card .amount {
-        font-size: 28px !important;
+        font-size: 24px !important;
     }
     
     .summary-cards {
@@ -3823,22 +3826,23 @@ tbody tr:last-child td {
     }
     
     /* Contenedor del selector de período en móvil */
+    .dashboard > div > div:first-child {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+    }
+    
+    .dashboard > div > div:first-child > h3 {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+    
     .dashboard > div > div:first-child > div:last-child {
         width: 100% !important;
         max-width: 100% !important;
         min-width: 100% !important;
-    }
-    
-    /* Asegurar que el contenedor del selector de período ocupe todo el ancho en móvil */
-    .dashboard > div > div:first-child {
-        flex-direction: column !important;
-        align-items: stretch !important;
-    }
-    
-    .dashboard > div > div:first-child > div:last-child {
         flex: 1 1 100% !important;
-        max-width: 100% !important;
-        min-width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     .dashboard > div > div:first-child > div:last-child > select,
@@ -3846,6 +3850,17 @@ tbody tr:last-child td {
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
+    }
+    
+    /* Selector de período en móvil */
+    #summaryPeriod {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important;
+        min-height: 44px !important;
+        padding: 12px 14px !important;
     }
     
     /* Centrar selectores en formularios de transacciones y otros */

@@ -5194,11 +5194,11 @@ function updateInvestments() {
                 </div>
             ` : ''}
             
-            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
-                <button class="btn-secondary" onclick="editInvestment('${investment._id || investment.id}')" style="flex: 1; min-width: 120px;">Editar</button>
-                <button class="btn-primary" onclick="addMoneyToInvestment('${investment._id || investment.id}')" style="flex: 1; min-width: 120px;">Añadir Dinero</button>
-                <button class="btn-secondary" onclick="updateInvestmentValue('${investment._id || investment.id}')" style="flex: 1; min-width: 120px;">Actualizar Valor</button>
-                <button class="btn-danger" onclick="deleteInvestment('${investment._id || investment.id}')" style="flex: 1; min-width: 120px;">Eliminar</button>
+            <div class="envelope-actions" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editInvestment('${investment._id || investment.id}')" style="width: 100%; padding: 10px 16px; font-size: 14px; min-height: 40px; border-radius: 8px;">Editar</button>
+                <button class="btn-primary" onclick="addMoneyToInvestment('${investment._id || investment.id}')" style="width: 100%; padding: 10px 16px; font-size: 14px; min-height: 40px; border-radius: 8px;">Añadir Dinero</button>
+                <button class="btn-secondary" onclick="updateInvestmentValue('${investment._id || investment.id}')" style="width: 100%; padding: 10px 16px; font-size: 14px; min-height: 40px; border-radius: 8px;">Actualizar Valor</button>
+                <button class="btn-danger" onclick="deleteInvestment('${investment._id || investment.id}')" style="width: 100%; padding: 10px 16px; font-size: 14px; min-height: 40px; border-radius: 8px;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -9761,7 +9761,11 @@ function updateFinancialHealthMetrics() {
         return endDate >= today; // Préstamo aún activo
     });
     
-    const loansDebt = activeDebtLoans.reduce((sum, loan) => {
+    // Calcular deuda total, pero considerar el valor de propiedades asociadas
+    let loansDebt = 0;
+    let propertyValueOffset = 0; // Valor de propiedades que compensan la deuda
+    
+    activeDebtLoans.forEach(loan => {
         const amortization = calculateAmortizationTable(
             loan.principal,
             loan.interest_rate,
@@ -9770,8 +9774,29 @@ function updateFinancialHealthMetrics() {
             loan.total_paid || 0,
             loan.early_payments || []
         );
-        return sum + amortization.finalBalance;
-    }, 0);
+        const loanDebt = amortization.finalBalance;
+        loansDebt += loanDebt;
+        
+        // Buscar si hay transacciones asociadas a este préstamo que también estén asociadas a una propiedad
+        const loanTransactions = transactions.filter(t => t.loan_id === (loan._id || loan.id));
+        const propertyTransactions = loanTransactions.filter(t => t.property_id);
+        
+        if (propertyTransactions.length > 0) {
+            // Obtener la propiedad asociada (puede haber múltiples, tomar la primera única)
+            const propertyIds = [...new Set(propertyTransactions.map(t => t.property_id))];
+            propertyIds.forEach(propertyId => {
+                const property = properties.find(p => (p._id || p.id) === propertyId);
+                if (property && property.current_value) {
+                    // Sumar el valor de la propiedad como compensación (solo una vez por propiedad)
+                    propertyValueOffset += property.current_value;
+                }
+            });
+        }
+    });
+    
+    // Ajustar la deuda neta restando el valor de las propiedades asociadas
+    // La deuda neta es la deuda menos el valor de las propiedades que la respaldan
+    const netDebt = Math.max(0, loansDebt - propertyValueOffset);
     
     // También verificar si hay préstamos activos aunque el capital restante sea bajo
     const hasActiveDebts = activeDebtLoans.length > 0;
@@ -9786,21 +9811,21 @@ function updateFinancialHealthMetrics() {
     const annualExpenses = monthsInPeriod > 0 ? (periodExpenses / monthsInPeriod) * 12 : 0;
     const annualSavings = annualIncome - annualExpenses;
     
-    // 1. Porcentaje de Deuda Pendiente
-    const debtPercentage = totalAssets > 0 ? (loansDebt / totalAssets) * 100 : (loansDebt > 0 ? 100 : 0);
+    // 1. Porcentaje de Deuda Pendiente (usando deuda neta después de considerar propiedades)
+    const debtPercentage = totalAssets > 0 ? (netDebt / totalAssets) * 100 : (netDebt > 0 ? 100 : 0);
     const debtStatus = debtPercentage < 30 ? 'excellent' : debtPercentage < 50 ? 'good' : debtPercentage < 70 ? 'warning' : 'danger';
     
-    // 2. Ratio de Endeudamiento (Deuda / Activos)
-    const debtToAssetsRatio = totalAssets > 0 ? (loansDebt / totalAssets) : (loansDebt > 0 ? 1 : 0);
+    // 2. Ratio de Endeudamiento (Deuda neta / Activos)
+    const debtToAssetsRatio = totalAssets > 0 ? (netDebt / totalAssets) : (netDebt > 0 ? 1 : 0);
     const debtRatioStatus = debtToAssetsRatio < 0.3 ? 'excellent' : debtToAssetsRatio < 0.5 ? 'good' : debtToAssetsRatio < 0.7 ? 'warning' : 'danger';
     
-    // 3. Ratio de Salud Financiera (Activos / Deudas)
-    const healthRatio = loansDebt > 0 ? (totalAssets / loansDebt) : (totalAssets > 0 ? 999 : (totalAssets < 0 ? -999 : 0));
+    // 3. Ratio de Salud Financiera (Activos / Deudas netas)
+    const healthRatio = netDebt > 0 ? (totalAssets / netDebt) : (totalAssets > 0 ? 999 : (totalAssets < 0 ? -999 : 0));
     // Si no hay deudas activas y hay activos positivos = excelente, si activos negativos = peligro
     const healthStatus = !hasActiveDebts ? (totalAssets > 0 ? 'excellent' : (totalAssets < 0 ? 'danger' : 'warning')) : (healthRatio > 3 ? 'excellent' : healthRatio > 2 ? 'good' : healthRatio > 1 ? 'warning' : 'danger');
     
-    // 4. Ratio de Cobertura de Deuda (Ingresos anuales / Deuda)
-    const debtCoverageRatio = loansDebt > 0 ? (annualIncome / loansDebt) : (annualIncome > 0 ? 999 : 0);
+    // 4. Ratio de Cobertura de Deuda (Ingresos anuales / Deuda neta)
+    const debtCoverageRatio = netDebt > 0 ? (annualIncome / netDebt) : (annualIncome > 0 ? 999 : 0);
     // Si no hay deudas = excelente, si hay deudas pero no ingresos = peligro
     const coverageStatus = loansDebt === 0 ? 'excellent' : (debtCoverageRatio > 2 ? 'excellent' : debtCoverageRatio > 1 ? 'good' : debtCoverageRatio > 0.5 ? 'warning' : 'danger');
     
@@ -9832,18 +9857,18 @@ function updateFinancialHealthMetrics() {
         {
             title: 'Deuda Pendiente',
             value: debtPercentage.toFixed(1) + '%',
-            description: `Deuda sobre activos totales`,
+            description: `Deuda neta sobre activos totales${propertyValueOffset > 0 ? ' (considerando propiedades asociadas)' : ''}`,
             status: debtStatus,
             icon: '',
-            detail: formatCurrency(loansDebt) + ' de ' + formatCurrency(totalAssets)
+            detail: formatCurrency(netDebt) + ' de ' + formatCurrency(totalAssets) + (propertyValueOffset > 0 ? ` (Deuda bruta: ${formatCurrency(loansDebt)}, Valor propiedades: ${formatCurrency(propertyValueOffset)})` : '')
         },
         {
             title: 'Ratio de Endeudamiento',
             value: (debtToAssetsRatio * 100).toFixed(1) + '%',
-            description: `Deuda / Activos totales`,
+            description: `Deuda neta / Activos totales${propertyValueOffset > 0 ? ' (considerando propiedades asociadas)' : ''}`,
             status: debtRatioStatus,
             icon: '',
-            detail: debtToAssetsRatio < 0.3 ? 'Excelente' : debtToAssetsRatio < 0.5 ? 'Bueno' : debtToAssetsRatio < 0.7 ? 'Moderado' : 'Alto'
+            detail: debtToAssetsRatio < 0.3 ? 'Excelente' : debtToAssetsRatio < 0.5 ? 'Bueno' : debtToAssetsRatio < 0.7 ? 'Moderado' : 'Alto' + (propertyValueOffset > 0 ? ` | Valor propiedades: ${formatCurrency(propertyValueOffset)}` : '')
         },
         {
             title: 'Salud Financiera',
