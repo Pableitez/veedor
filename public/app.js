@@ -1924,6 +1924,16 @@ function initializeForms() {
         });
     }
     
+    // Modal de amortización anticipada - añadir listener para cerrar al hacer clic fuera
+    const earlyPaymentModal = document.getElementById('earlyPaymentModal');
+    if (earlyPaymentModal) {
+        earlyPaymentModal.addEventListener('click', (e) => {
+            if (e.target === earlyPaymentModal) {
+                closeEarlyPaymentModal();
+            }
+        });
+    }
+    
     // Botón para establecer meta de ahorro
     const setSavingsGoalBtn = document.getElementById('setSavingsGoalBtn');
     if (setSavingsGoalBtn) {
@@ -4703,21 +4713,29 @@ async function saveRemainingPrincipal(loanId) {
 // Exponer función globalmente
 window.saveRemainingPrincipal = saveRemainingPrincipal;
 
-// Mostrar modal de amortización anticipada
+// Cerrar modal de amortización anticipada
+function closeEarlyPaymentModal() {
+    const modal = document.getElementById('earlyPaymentModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Mostrar modal de amortización anticipada - NUEVA VERSIÓN
 function showEarlyPaymentModal(loanId) {
     const loan = loans.find(l => (l._id || l.id) === loanId);
-    if (!loan) return;
+    if (!loan) {
+        showToast('Préstamo no encontrado', 'error');
+        return;
+    }
     
     const modal = document.getElementById('earlyPaymentModal');
-    const loanInfo = document.getElementById('earlyPaymentLoanInfo');
-    const form = document.getElementById('earlyPaymentForm');
-    const amountInput = document.getElementById('earlyPaymentAmount');
-    const commissionInfo = document.getElementById('earlyPaymentCommissionInfo');
-    const commissionAmount = document.getElementById('earlyPaymentCommissionAmount');
+    if (!modal) {
+        showToast('Modal no encontrado', 'error');
+        return;
+    }
     
-    if (!modal || !loanInfo || !form || !amountInput) return;
-    
-    // Calcular capital restante
+    // Calcular capital restante actual
     const amortization = calculateAmortizationTable(
         loan.principal,
         loan.interest_rate,
@@ -4728,27 +4746,41 @@ function showEarlyPaymentModal(loanId) {
     );
     const remainingCapital = amortization.finalBalance;
     
-    // Mostrar información del préstamo
-    loanInfo.innerHTML = `
-        <div style="margin-bottom: 8px;">
-            <strong style="color: var(--gray-700);">Préstamo:</strong> 
-            <span style="font-weight: 700; color: var(--gray-900);">${loan.name}</span>
-        </div>
-        <div>
-            <strong style="color: var(--gray-700);">Capital Restante:</strong> 
-            <span style="font-weight: 700; color: ${remainingCapital > 0 ? 'var(--danger)' : 'var(--success)'}; font-size: 18px;">${formatCurrency(remainingCapital)}</span>
-        </div>
-    `;
+    // Actualizar información del préstamo
+    const loanInfo = document.getElementById('earlyPaymentLoanInfo');
+    if (loanInfo) {
+        loanInfo.innerHTML = `
+            <div style="margin-bottom: 8px;">
+                <strong style="color: var(--gray-700);">Préstamo:</strong> 
+                <span style="font-weight: 700; color: var(--gray-900);">${loan.name}</span>
+            </div>
+            <div>
+                <strong style="color: var(--gray-700);">Capital Restante:</strong> 
+                <span style="font-weight: 700; color: ${remainingCapital > 0 ? 'var(--danger)' : 'var(--success)'}; font-size: 18px;">${formatCurrency(remainingCapital)}</span>
+            </div>
+        `;
+    }
+    
+    // Obtener elementos del formulario
+    const form = document.getElementById('earlyPaymentForm');
+    const amountInput = document.getElementById('earlyPaymentAmount');
+    const commissionInfo = document.getElementById('earlyPaymentCommissionInfo');
+    const commissionAmount = document.getElementById('earlyPaymentCommissionAmount');
+    
+    if (!form || !amountInput) {
+        showToast('Formulario no encontrado', 'error');
+        return;
+    }
     
     // Resetear formulario
     form.reset();
     if (commissionInfo) commissionInfo.style.display = 'none';
     
-    // Remover listeners anteriores
+    // Remover listeners anteriores clonando el formulario
     const newForm = form.cloneNode(true);
     form.parentNode.replaceChild(newForm, form);
     
-    // Obtener referencias nuevas después del clonado
+    // Obtener referencias nuevas
     const updatedForm = document.getElementById('earlyPaymentForm');
     const updatedAmountInput = document.getElementById('earlyPaymentAmount');
     const updatedCommissionInfo = document.getElementById('earlyPaymentCommissionInfo');
@@ -4756,11 +4788,11 @@ function showEarlyPaymentModal(loanId) {
     
     if (!updatedForm || !updatedAmountInput) return;
     
-    // Calcular comisión cuando cambia el monto
+    // Calcular y mostrar comisión cuando cambia el monto
     updatedAmountInput.addEventListener('input', () => {
         const amount = parseFloat(updatedAmountInput.value) || 0;
         if (amount > 0 && loan.early_payment_commission > 0 && updatedCommissionInfo && updatedCommissionAmount) {
-            const commission = amount * loan.early_payment_commission / 100;
+            const commission = amount * (loan.early_payment_commission / 100);
             updatedCommissionAmount.textContent = formatCurrency(commission);
             updatedCommissionInfo.style.display = 'block';
         } else if (updatedCommissionInfo) {
@@ -4771,50 +4803,66 @@ function showEarlyPaymentModal(loanId) {
     // Manejar envío del formulario
     updatedForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        e.stopPropagation();
+        
         const amount = parseFloat(updatedAmountInput.value);
         
         if (!amount || amount <= 0) {
-            alert('Por favor ingresa un monto válido');
+            showToast('Por favor ingresa un monto válido', 'warning');
             return;
         }
         
         if (amount > remainingCapital) {
-            alert(`El monto no puede ser mayor al capital restante (${formatCurrency(remainingCapital)})`);
+            showToast(`El monto no puede ser mayor al capital restante (${formatCurrency(remainingCapital)})`, 'warning');
             return;
         }
         
-        await registerLoanPayment(loanId, amount, true);
-        modal.style.display = 'none';
+        try {
+            showLoader();
+            
+            // Registrar el pago en el servidor
+            await apiRequest(`/loans/${loanId}/payment`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    amount,
+                    date: new Date().toISOString().split('T')[0],
+                    is_early_payment: true
+                })
+            });
+            
+            // Recargar datos
+            await loadUserData();
+            updateDisplay();
+            
+            showToast('✅ Amortización anticipada registrada exitosamente', 'success');
+            closeEarlyPaymentModal();
+        } catch (error) {
+            console.error('Error al registrar amortización:', error);
+            showToast('Error al registrar la amortización: ' + (error.message || 'Error desconocido'), 'error');
+        } finally {
+            hideLoader();
+        }
     });
+    
+    // Prevenir que el contenido del modal cierre el modal al hacer clic
+    const modalContentDiv = modal.querySelector('.modal-content');
+    if (modalContentDiv) {
+        modalContentDiv.onclick = (e) => {
+            e.stopPropagation();
+        };
+    }
     
     // Mostrar modal
     modal.style.display = 'flex';
-    updatedAmountInput.focus();
-}
-
-// Registrar pago de préstamo
-async function registerLoanPayment(loanId, amount, isEarlyPayment = false) {
-    try {
-        const loan = await apiRequest(`/loans/${loanId}/payment`, {
-            method: 'POST',
-            body: JSON.stringify({
-                amount,
-                date: new Date().toISOString().split('T')[0],
-                is_early_payment: isEarlyPayment
-            })
-        });
-        
-        await loadUserData();
-        updateDisplay();
-        alert('✅ Pago registrado exitosamente');
-    } catch (error) {
-        alert('Error al registrar pago: ' + error.message);
-    }
+    setTimeout(() => {
+        if (updatedAmountInput) updatedAmountInput.focus();
+    }, 100);
 }
 
 // Exponer funciones globales
 window.showLoanDetails = showLoanDetails;
 window.showEarlyPaymentModal = showEarlyPaymentModal;
+window.closeEarlyPaymentModal = closeEarlyPaymentModal;
 
 // ==================== INVERSIONES ====================
 
@@ -9141,7 +9189,8 @@ if (typeof document !== 'undefined') {
             'updateAssetValueModal',
             'userProfileModal',
             'chartModal',
-            'amortizationModal'
+            'amortizationModal',
+            'earlyPaymentModal'
         ];
         
         modalsToClose.forEach(modalId => {
@@ -9165,6 +9214,7 @@ if (typeof document !== 'undefined') {
                         else if (modalId === 'userProfileModal') closeUserProfile();
                         else if (modalId === 'chartModal') closeChartModal();
                         else if (modalId === 'amortizationModal') closeAmortizationModal();
+                        else if (modalId === 'earlyPaymentModal') closeEarlyPaymentModal();
                         else modal.style.display = 'none';
                     }
                 });
