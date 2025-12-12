@@ -4619,6 +4619,13 @@ function showLoanDetails(loanId) {
     // Prevenir que el contenido del modal cierre el modal al hacer clic
     const modalContentDiv = modal.querySelector('.modal-content');
     if (modalContentDiv) {
+        // Asegurar que el modal tenga la estructura correcta
+        modalContentDiv.style.display = 'flex';
+        modalContentDiv.style.flexDirection = 'column';
+        modalContentDiv.style.maxHeight = '90vh';
+        modalContentDiv.style.padding = '0';
+        modalContentDiv.style.overflow = 'hidden';
+        
         modalContentDiv.onclick = (e) => {
             e.stopPropagation();
         };
@@ -7471,17 +7478,25 @@ function updateLoansOutstandingChart() {
         filteredLoans.forEach(loan => {
             const loanDate = new Date(loan.start_date);
             if (loanDate <= date) {
-                // Calcular amortización hasta esa fecha
+                // Calcular amortización hasta esa fecha específica
+                // Para cada mes histórico, calcular cuánto se había pagado hasta ese momento
                 const amortization = calculateAmortizationTable(
                     loan.principal,
                     loan.interest_rate,
                     loan.monthly_payment,
                     loan.start_date,
-                    loan.total_paid || 0,
-                    loan.early_payments || [],
+                    0, // Empezar desde 0 pagos para calcular históricamente
+                    loan.early_payments ? loan.early_payments.filter(ep => {
+                        const epDate = new Date(ep.date);
+                        return epDate <= date;
+                    }) : [], // Solo pagos anticipados hasta esa fecha
                     date // currentDateOverride: calcular hasta esta fecha
                 );
+                // El finalBalance es el capital pendiente en esa fecha
                 totalOutstanding += Math.max(0, amortization.finalBalance);
+            } else {
+                // Si el préstamo aún no había comenzado, el pendiente es el principal completo
+                totalOutstanding += loan.principal;
             }
         });
         
@@ -7700,7 +7715,7 @@ function openChartModal(chartType, title) {
     
     // Asegurar que el contenedor del canvas exista y tenga dimensiones
     if (modalCanvasContainer) {
-        modalCanvasContainer.style.height = '600px';
+        // Usar la altura del contenedor que ya está definida en CSS (70vh)
         modalCanvasContainer.style.width = '100%';
     }
     
@@ -7722,7 +7737,8 @@ function openChartModal(chartType, title) {
                 options: {
                     ...clonedOptions,
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true, // Cambiar a true para que se adapte mejor
+                    aspectRatio: 2, // Proporción más ancha
                     plugins: {
                         ...clonedOptions.plugins,
                         legend: {
@@ -7733,7 +7749,22 @@ function openChartModal(chartType, title) {
                                 padding: 15
                             }
                         }
-                    }
+                    },
+                    scales: clonedOptions.scales ? {
+                        ...clonedOptions.scales,
+                        // Asegurar que los ejes se adapten bien
+                        x: clonedOptions.scales.x ? {
+                            ...clonedOptions.scales.x,
+                            ticks: {
+                                ...clonedOptions.scales.x.ticks,
+                                maxRotation: 45,
+                                minRotation: 0
+                            }
+                        } : undefined,
+                        y: clonedOptions.scales.y ? {
+                            ...clonedOptions.scales.y
+                        } : undefined
+                    } : undefined
                 }
             });
         } catch (error) {
