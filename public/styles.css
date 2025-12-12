@@ -820,32 +820,44 @@ header {
 }
 
 /* Ajustar colores del header en modo claro */
-body:not(.dark-mode) header {
-    color: rgba(17, 24, 39, 0.9);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+body:not(.dark-mode) header,
+body:not(.dark-mode) .main-header {
+    color: rgba(17, 24, 39, 0.95);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
-body:not(.dark-mode) header h1 {
+body:not(.dark-mode) header h1,
+body:not(.dark-mode) .main-header h1 {
     /* El arcoíris ya está aplicado, no necesita color adicional */
 }
 
 body:not(.dark-mode) header button,
 body:not(.dark-mode) .main-header button {
-    color: rgba(17, 24, 39, 0.9) !important;
-    border-color: rgba(0, 0, 0, 0.15) !important;
-    background: rgba(255, 255, 255, 0.4) !important;
+    color: rgba(17, 24, 39, 0.95) !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
 }
 
 body:not(.dark-mode) header button:hover,
 body:not(.dark-mode) .main-header button:hover {
-    background: rgba(255, 255, 255, 0.6) !important;
-    border-color: rgba(0, 0, 0, 0.25) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border-color: rgba(0, 0, 0, 0.3) !important;
     color: rgba(17, 24, 39, 1) !important;
 }
 
 body:not(.dark-mode) header svg,
 body:not(.dark-mode) .main-header svg {
-    filter: brightness(0.3);
+    filter: brightness(0.2);
+}
+
+body:not(.dark-mode) header svg circle,
+body:not(.dark-mode) .main-header svg circle {
+    fill: rgba(17, 24, 39, 0.9);
+}
+
+body:not(.dark-mode) header svg path,
+body:not(.dark-mode) .main-header svg path {
+    stroke: rgba(17, 24, 39, 0.9);
 }
 
 header h1 {
@@ -855,26 +867,14 @@ header h1 {
     letter-spacing: -0.5px;
     margin: 0;
     background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%);
-    background-size: 200% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow 3s linear infinite;
-}
-
-@keyframes rainbow {
-    0% {
-        background-position: 0% 50%;
-    }
-    100% {
-        background-position: 200% 50%;
-    }
 }
 
 /* Ajustar arcoíris en modo claro */
 body:not(.dark-mode) header h1 {
     background: linear-gradient(90deg, #EF4444 0%, #10B981 20%, #3B82F6 40%, #8B5CF6 60%, #F59E0B 80%, #EF4444 100%);
-    background-size: 200% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -911,7 +911,7 @@ body:not(.dark-mode) header h1 {
     overflow-x: hidden;
     min-height: calc(100vh - 80px);
     border-radius: 20px;
-    margin-top: 24px;
+    margin-top: 32px;
     margin-bottom: 24px;
 }
 
@@ -1112,7 +1112,7 @@ body.dark-mode .revolut-card:hover {
     transition: background-color 0.3s;
     max-width: 1400px;
     margin: 0 auto;
-    margin-top: 24px;
+    margin-top: 32px;
     margin-bottom: 24px;
     width: 100%;
     box-sizing: border-box;
@@ -2182,6 +2182,12 @@ tbody tr:last-child td {
     cursor: pointer;
     transition: color 0.2s;
     line-height: 1;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-close:hover,
@@ -2525,7 +2531,7 @@ tbody tr:last-child td {
         box-sizing: border-box !important;
         overflow-x: hidden !important;
         border-radius: 16px !important;
-        margin-top: 16px !important;
+        margin-top: 24px !important;
         margin-bottom: 16px !important;
     }
     
@@ -2572,7 +2578,7 @@ tbody tr:last-child td {
         max-width: 100% !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
-        margin: 16px auto !important;
+        margin: 24px auto 16px auto !important;
         border-radius: 16px !important;
     }
     
@@ -3522,7 +3528,7 @@ tbody tr:last-child td {
         max-width: 100% !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
-        margin: 12px auto !important;
+        margin: 20px auto 12px auto !important;
         border-radius: 12px !important;
     }
     
