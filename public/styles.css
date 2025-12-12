@@ -90,12 +90,12 @@ html {
     width: 100%;
     overflow-x: hidden;
     box-sizing: border-box;
-    background: linear-gradient(180deg, #FFFFFF 0%, #F0F9FF 15%, #E0F2FE 30%, #BAE6FD 50%, #7DD3FC 70%, #38BDF8 85%, #0EA5E9 100%);
+    background: #F9FAFB;
     background-attachment: fixed;
 }
 
 html.dark-mode {
-    background: linear-gradient(180deg, #030712 0%, #0F172A 15%, #1E293B 30%, #1E3A8A 50%, #1E40AF 70%, #1E3A8A 85%, #0F172A 100%);
+    background: linear-gradient(180deg, #0F172A 0%, #1E293B 30%, #1E3A8A 60%, #2563EB 100%);
     background-attachment: fixed;
 }
 
@@ -308,7 +308,7 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background: linear-gradient(180deg, #FFFFFF 0%, #F0F9FF 15%, #E0F2FE 30%, #BAE6FD 50%, #7DD3FC 70%, #38BDF8 85%, #0EA5E9 100%);
+    background: #F9FAFB;
     background-attachment: fixed;
     position: relative;
     overflow: hidden;
@@ -319,7 +319,7 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
 }
 
 body.dark-mode .auth-screen {
-    background: linear-gradient(180deg, #030712 0%, #0F172A 15%, #1E293B 30%, #1E3A8A 50%, #1E40AF 70%, #1E3A8A 85%, #0F172A 100%);
+    background: linear-gradient(180deg, #0F172A 0%, #1E293B 30%, #1E3A8A 60%, #2563EB 100%);
     background-attachment: fixed;
 }
 
@@ -798,13 +798,12 @@ body.dark-mode .auth-screen::before {
    ============================================ */
 
 header {
-    background: linear-gradient(180deg, rgba(30, 58, 138, 0.75) 0%, rgba(59, 130, 246, 0.75) 50%, rgba(99, 102, 241, 0.75) 100%);
+    background: linear-gradient(180deg, rgba(30, 58, 138, 0.85) 0%, rgba(59, 130, 246, 0.85) 50%, rgba(99, 102, 241, 0.85) 100%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     color: rgba(255, 255, 255, 0.9);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     padding: 18px 32px;
-    margin-top: 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -815,9 +814,9 @@ header {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
     box-sizing: border-box;
+    margin: 0;
     left: 0;
     right: 0;
-    border-radius: 0 0 20px 20px;
 }
 
 header h1 {
@@ -849,10 +848,10 @@ header h1 {
 
 .dashboard {
     padding: 32px 48px;
+    padding-top: 32px;
     background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
     transition: background-color 0.3s;
     max-width: 1400px;
-    margin-top: 0;
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
@@ -1052,7 +1051,7 @@ body.dark-mode .revolut-card:hover {
 
 .main-content {
     padding: 40px;
-    padding-top: 24px;
+    padding-top: 40px;
     background: var(--bg-primary);
     transition: background-color 0.3s;
     max-width: 1400px;
