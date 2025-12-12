@@ -849,13 +849,14 @@ body:not(.dark-mode) .main-header svg {
     opacity: 1;
 }
 
-/* Logo del header - círculos y paths visibles en modo claro */
+/* Logo del header - círculos y paths visibles en modo claro (igual que modo oscuro) */
 body:not(.dark-mode) #headerLogo .logo-outer-circle {
-    fill: rgba(30, 58, 138, 1) !important;
+    fill: url(#headerLogoGradient) !important;
 }
 
 body:not(.dark-mode) #headerLogo .logo-middle-circle {
-    fill: rgba(59, 130, 246, 0.9) !important;
+    fill: url(#headerLogoGradientInner) !important;
+    opacity: 0.9 !important;
 }
 
 body:not(.dark-mode) #headerLogo .logo-inner-circle {
@@ -863,12 +864,12 @@ body:not(.dark-mode) #headerLogo .logo-inner-circle {
 }
 
 body:not(.dark-mode) #headerLogo .logo-center {
-    fill: rgba(30, 58, 138, 1) !important;
+    fill: url(#headerLogoGradient) !important;
 }
 
 body:not(.dark-mode) #headerLogo .logo-path {
-    stroke: rgba(30, 58, 138, 1) !important;
-    opacity: 0.9 !important;
+    stroke: rgba(255, 255, 255, 1) !important;
+    opacity: 0.8 !important;
 }
 
 /* SVG dentro de botones - asegurar visibilidad */
@@ -951,10 +952,10 @@ body.dark-mode #settingsDropdownBtn svg path {
 /* Footer en modo claro con color azul */
 body:not(.dark-mode) footer,
 body:not(.dark-mode) .main-footer {
-    background: linear-gradient(180deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%);
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.95) 0%, rgba(37, 99, 235, 0.95) 100%) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba(255, 255, 255, 1) !important;
     border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
@@ -962,19 +963,19 @@ body:not(.dark-mode) footer h3,
 body:not(.dark-mode) footer h4,
 body:not(.dark-mode) .main-footer h3,
 body:not(.dark-mode) .main-footer h4 {
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba(255, 255, 255, 1) !important;
 }
 
 body:not(.dark-mode) footer p,
 body:not(.dark-mode) footer a,
 body:not(.dark-mode) .main-footer p,
 body:not(.dark-mode) .main-footer a {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.95) !important;
 }
 
 body:not(.dark-mode) footer a:hover,
 body:not(.dark-mode) .main-footer a:hover {
-    color: rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, 1) !important;
 }
 
 header h1 {
@@ -998,7 +999,7 @@ header svg#headerLogo,
     height: 52px;
 }
 
-/* Ajustar arcoíris en modo claro */
+/* Ajustar arcoíris en modo claro - más visible */
 body:not(.dark-mode) header h1 {
     background: linear-gradient(90deg, #EF4444 0%, #10B981 20%, #3B82F6 40%, #8B5CF6 60%, #F59E0B 80%, #EF4444 100%);
     -webkit-background-clip: text;
@@ -1007,6 +1008,8 @@ body:not(.dark-mode) header h1 {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-text-stroke: 0.8px rgba(30, 58, 138, 0.3);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .header-actions {

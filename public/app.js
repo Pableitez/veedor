@@ -7339,8 +7339,8 @@ function updateDashboardSavingsChart() {
     charts.dashboardSavings.data.datasets = [{
         label: 'Ahorro Acumulado',
         data: savings,
-        borderColor: '#9333EA',
-        backgroundColor: 'rgba(147, 51, 234, 0.1)',
+        borderColor: '#94a3b8',
+        backgroundColor: 'rgba(148, 163, 184, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -7435,12 +7435,12 @@ function updateDashboardIncomeExpenseChart() {
         {
             label: 'Ingresos',
             data: incomeData,
-            backgroundColor: '#10b981'
+            backgroundColor: '#cbd5e1'
         },
         {
             label: 'Gastos',
             data: expenseData,
-            backgroundColor: '#ef4444'
+            backgroundColor: '#94a3b8'
         }
     ];
     charts.dashboardIncomeExpense.update();
@@ -7475,7 +7475,7 @@ function updateDashboardExpensesChart() {
     charts.dashboardExpenses.data.labels = labels;
     charts.dashboardExpenses.data.datasets = [{
         data: data,
-        backgroundColor: '#9333EA'
+        backgroundColor: '#64748b'
     }];
     charts.dashboardExpenses.update();
 }
@@ -7506,9 +7506,9 @@ function updateDashboardDistributionChart() {
     charts.dashboardDistribution.data.datasets = [{
         data: data,
         backgroundColor: [
-            '#667eea', '#764ba2', '#f093fb', '#4facfe',
-            '#00f2fe', '#43e97b', '#fa709a', '#fee140',
-            '#30cfd0', '#a8edea', '#fad961', '#f5576c'
+            '#cbd5e1', '#94a3b8', '#64748b', '#475569',
+            '#334155', '#e2e8f0', '#f1f5f9', '#f8fafc',
+            '#cbd5e1', '#94a3b8', '#64748b', '#475569'
         ]
     }];
     charts.dashboardDistribution.update();
@@ -7597,8 +7597,8 @@ function updateDashboardIncomeEvolutionChart() {
     charts.dashboardIncomeEvolution.data.datasets = [{
         label: 'Ingresos',
         data: incomeData,
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderColor: '#cbd5e1',
+        backgroundColor: 'rgba(203, 213, 225, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -7688,8 +7688,8 @@ function updateDashboardExpensesEvolutionChart() {
     charts.dashboardExpensesEvolution.data.datasets = [{
         label: 'Gastos',
         data: expensesData,
-        borderColor: '#ef4444',
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        borderColor: '#94a3b8',
+        backgroundColor: 'rgba(148, 163, 184, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -7775,8 +7775,8 @@ function updateSavingsChart() {
     charts.savings.data.datasets = [{
         label: 'Ahorro Acumulado',
         data: savings,
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderColor: '#64748b',
+        backgroundColor: 'rgba(100, 116, 139, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -7811,9 +7811,9 @@ function updateExpensesChart() {
         label: 'Gastos',
         data: data,
         backgroundColor: [
-            '#667eea', '#764ba2', '#f093fb', '#4facfe',
-            '#00f2fe', '#43e97b', '#fa709a', '#fee140',
-            '#30cfd0', '#a8edea', '#fad961', '#f5576c'
+            '#cbd5e1', '#94a3b8', '#64748b', '#475569',
+            '#334155', '#e2e8f0', '#f1f5f9', '#f8fafc',
+            '#cbd5e1', '#94a3b8', '#64748b', '#475569'
         ]
     }];
     charts.expenses.update();
@@ -7896,12 +7896,12 @@ function updateIncomeExpenseChart() {
         {
             label: 'Ingresos',
             data: incomes,
-            backgroundColor: '#10b981'
+            backgroundColor: '#cbd5e1'
         },
         {
             label: 'Gastos',
             data: expenses,
-            backgroundColor: '#ef4444'
+            backgroundColor: '#94a3b8'
         }
     ];
     charts.incomeExpense.update();
@@ -7933,9 +7933,9 @@ function updateDistributionChart() {
     charts.distribution.data.datasets = [{
         data: data,
         backgroundColor: [
-            '#667eea', '#764ba2', '#f093fb', '#4facfe',
-            '#00f2fe', '#43e97b', '#fa709a', '#fee140',
-            '#30cfd0', '#a8edea', '#fad961', '#f5576c'
+            '#cbd5e1', '#94a3b8', '#64748b', '#475569',
+            '#334155', '#e2e8f0', '#f1f5f9', '#f8fafc',
+            '#cbd5e1', '#94a3b8', '#64748b', '#475569'
         ]
     }];
     charts.distribution.update();
@@ -8052,10 +8052,10 @@ function updateIncomeEvolutionChart() {
         }
     }
     
-    // Colores para las categorías
+    // Colores metálicos para las categorías
     const colors = [
-        '#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444',
-        '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6366f1'
+        '#cbd5e1', '#94a3b8', '#64748b', '#475569', '#334155',
+        '#e2e8f0', '#f1f5f9', '#f8fafc', '#cbd5e1', '#94a3b8'
     ];
     
     // Crear datasets para cada categoría
@@ -8079,8 +8079,8 @@ function updateIncomeEvolutionChart() {
     charts.incomeEvolution.data.datasets = datasets.length > 0 ? datasets : [{
         label: 'Ingresos',
         data: new Array(months.length).fill(0),
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderColor: '#cbd5e1',
+        backgroundColor: 'rgba(203, 213, 225, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -8198,10 +8198,10 @@ function updateExpensesEvolutionChart() {
         }
     }
     
-    // Colores para las categorías
+    // Colores metálicos para las categorías
     const colors = [
-        '#ef4444', '#f59e0b', '#8b5cf6', '#3b82f6', '#10b981',
-        '#ec4899', '#6366f1', '#06b6d4', '#84cc16', '#f97316'
+        '#94a3b8', '#64748b', '#475569', '#334155', '#cbd5e1',
+        '#e2e8f0', '#f1f5f9', '#f8fafc', '#cbd5e1', '#94a3b8'
     ];
     
     // Crear datasets para cada categoría
@@ -8225,8 +8225,8 @@ function updateExpensesEvolutionChart() {
     charts.expensesEvolution.data.datasets = datasets.length > 0 ? datasets : [{
         label: 'Gastos',
         data: new Array(months.length).fill(0),
-        borderColor: '#ef4444',
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        borderColor: '#94a3b8',
+        backgroundColor: 'rgba(148, 163, 184, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -8299,8 +8299,8 @@ function updateLoansOutstandingChart() {
     charts.loansPending.data.datasets = [{
         label: 'Préstamos Pendientes',
         data: outstandingData,
-        borderColor: '#f59e0b',
-        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        borderColor: '#64748b',
+        backgroundColor: 'rgba(100, 116, 139, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -8392,8 +8392,8 @@ function updateAssetsEvolutionChart() {
     charts.assetsEvolution.data.datasets = [{
         label: 'Patrimonio Total',
         data: assetsData,
-        borderColor: '#8b5cf6',
-        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+        borderColor: '#475569',
+        backgroundColor: 'rgba(71, 85, 105, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -8810,14 +8810,14 @@ function generateEvolutionChartData(chartType, periodTransactions, period) {
     // Crear datasets
     const datasets = Object.keys(chartCategories).map((catName, index) => {
         const colors = [
-            'rgba(59, 130, 246, 0.8)',   // Azul
-            'rgba(16, 185, 129, 0.8)',   // Verde
-            'rgba(245, 101, 101, 0.8)',  // Rojo
-            'rgba(251, 191, 36, 0.8)',   // Amarillo
-            'rgba(139, 92, 246, 0.8)',   // Púrpura
-            'rgba(236, 72, 153, 0.8)',   // Rosa
-            'rgba(20, 184, 166, 0.8)',   // Cian
-            'rgba(249, 115, 22, 0.8)'    // Naranja
+            'rgba(203, 213, 225, 0.8)',   // Plata claro
+            'rgba(148, 163, 184, 0.8)',   // Plata medio
+            'rgba(100, 116, 139, 0.8)',   // Plata oscuro
+            'rgba(71, 85, 105, 0.8)',     // Acero
+            'rgba(51, 65, 85, 0.8)',      // Acero oscuro
+            'rgba(226, 232, 240, 0.8)',   // Gris metálico claro
+            'rgba(241, 245, 249, 0.8)',   // Gris metálico muy claro
+            'rgba(203, 213, 225, 0.8)'     // Plata claro
         ];
         
         return {
