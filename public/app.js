@@ -2175,6 +2175,7 @@ function initializeForms() {
             
             updateSummary();
             updateMonthDashboard();
+            updateDashboardCharts();
         });
         
         // Listener para cambio de mes
@@ -2183,6 +2184,7 @@ function initializeForms() {
                 if (summaryPeriod === 'month-select') {
                     updateSummary();
                     updateMonthDashboard();
+                    updateDashboardCharts();
                 }
             });
         }
@@ -2195,6 +2197,7 @@ function initializeForms() {
                     if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
                         updateSummary();
                         updateMonthDashboard();
+                        updateDashboardCharts();
                     }
                 }
             });
@@ -2205,6 +2208,7 @@ function initializeForms() {
                     if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
                         updateSummary();
                         updateMonthDashboard();
+                        updateDashboardCharts();
                     }
                 }
             });
@@ -2804,6 +2808,9 @@ async function updateSummary() {
             }
         }
     }
+    
+    // Actualizar gráficas del dashboard
+    updateDashboardCharts();
 }
 
 // Actualizar tabla de transacciones
@@ -6847,6 +6854,60 @@ function initializeCharts() {
             }
         });
     }
+    
+    // Gráficas del Dashboard
+    const dashboardSavingsChartEl = document.getElementById('dashboardSavingsChart');
+    if (dashboardSavingsChartEl && !charts.dashboardSavings) {
+        charts.dashboardSavings = new Chart(dashboardSavingsChartEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } }
+            }
+        });
+    }
+    
+    const dashboardIncomeExpenseChartEl = document.getElementById('dashboardIncomeExpenseChart');
+    if (dashboardIncomeExpenseChartEl && !charts.dashboardIncomeExpense) {
+        charts.dashboardIncomeExpense = new Chart(dashboardIncomeExpenseChartEl, {
+            type: 'bar',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const dashboardExpensesChartEl = document.getElementById('dashboardExpensesChart');
+    if (dashboardExpensesChartEl && !charts.dashboardExpenses) {
+        charts.dashboardExpenses = new Chart(dashboardExpensesChartEl, {
+            type: 'bar',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+    
+    const dashboardDistributionChartEl = document.getElementById('dashboardDistributionChart');
+    if (dashboardDistributionChartEl && !charts.dashboardDistribution) {
+        charts.dashboardDistribution = new Chart(dashboardDistributionChartEl, {
+            type: 'doughnut',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'right' } }
+            }
+        });
+    }
 }
 
 // Obtener período seleccionado (global o específico de gráfico)
@@ -7065,6 +7126,358 @@ function updateCharts() {
     }
     updateFinancialHealthMetrics();
     updateAnalysisTables();
+}
+
+// Obtener transacciones filtradas por summaryPeriod
+function getTransactionsBySummaryPeriod() {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    const summaryMonthInput = document.getElementById('summaryMonth');
+    const summaryYearInput = document.getElementById('summaryYear');
+    let selectedMonth = currentMonth;
+    let selectedYear = currentYear;
+    
+    if (summaryMonthInput && summaryPeriod === 'month-select') {
+        const monthValue = summaryMonthInput.value;
+        if (monthValue) {
+            const [year, month] = monthValue.split('-').map(Number);
+            selectedYear = year;
+            selectedMonth = month - 1;
+        }
+    }
+    
+    if (summaryYearInput && summaryPeriod === 'year-select') {
+        selectedYear = parseInt(summaryYearInput.value) || currentYear;
+    }
+    
+    if (summaryPeriod === 'month') {
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+        });
+    } else if (summaryPeriod === 'month-select') {
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === selectedMonth && tDate.getFullYear() === selectedYear;
+        });
+    } else if (summaryPeriod === 'year') {
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getFullYear() === currentYear;
+        });
+    } else if (summaryPeriod === 'year-select') {
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getFullYear() === selectedYear;
+        });
+    } else { // 'all'
+        return transactions;
+    }
+}
+
+// Actualizar gráficas del dashboard
+function updateDashboardCharts() {
+    updateDashboardSavingsChart();
+    updateDashboardIncomeExpenseChart();
+    updateDashboardExpensesChart();
+    updateDashboardDistributionChart();
+}
+
+// Gráfica de ahorro del dashboard
+function updateDashboardSavingsChart() {
+    if (!charts.dashboardSavings) return;
+    
+    const now = new Date();
+    const months = [];
+    const savings = [];
+    let runningTotal = 0;
+    
+    const periodTransactions = getTransactionsBySummaryPeriod();
+    
+    if (summaryPeriod === 'all') {
+        if (periodTransactions.length === 0) {
+            charts.dashboardSavings.data.labels = [];
+            charts.dashboardSavings.data.datasets = [];
+            charts.dashboardSavings.update();
+            return;
+        }
+        
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        const startMonth = firstDate.getMonth();
+        const startYear = firstDate.getFullYear();
+        const endMonth = now.getMonth();
+        const endYear = now.getFullYear();
+        
+        let currentMonth = startMonth;
+        let currentYear = startYear;
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            });
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            const monthSavings = monthIncome - monthExpenses;
+            
+            runningTotal += monthSavings;
+            savings.push(runningTotal);
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    } else {
+        // Para períodos específicos, mostrar meses del período
+        const summaryMonthInput = document.getElementById('summaryMonth');
+        const summaryYearInput = document.getElementById('summaryYear');
+        let startMonth, startYear, endMonth, endYear;
+        
+        if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
+            if (summaryPeriod === 'month-select' && summaryMonthInput && summaryMonthInput.value) {
+                const [year, month] = summaryMonthInput.value.split('-').map(Number);
+                startMonth = month - 1;
+                startYear = year;
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+            }
+            endMonth = startMonth;
+            endYear = startYear;
+        } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+            if (summaryPeriod === 'year-select' && summaryYearInput && summaryYearInput.value) {
+                startYear = parseInt(summaryYearInput.value);
+            } else {
+                startYear = now.getFullYear();
+            }
+            startMonth = 0;
+            endMonth = 11;
+            endYear = startYear;
+        } else {
+            startMonth = now.getMonth() - 5;
+            startYear = now.getFullYear();
+            if (startMonth < 0) {
+                startMonth += 12;
+                startYear--;
+            }
+            endMonth = now.getMonth();
+            endYear = now.getFullYear();
+        }
+        
+        let currentMonth = startMonth;
+        let currentYear = startYear;
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            });
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            const monthSavings = monthIncome - monthExpenses;
+            
+            runningTotal += monthSavings;
+            savings.push(runningTotal);
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    }
+    
+    charts.dashboardSavings.data.labels = months;
+    charts.dashboardSavings.data.datasets = [{
+        label: 'Ahorro Acumulado',
+        data: savings,
+        borderColor: '#9333EA',
+        backgroundColor: 'rgba(147, 51, 234, 0.1)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.dashboardSavings.update();
+}
+
+// Gráfica de ingresos vs gastos del dashboard
+function updateDashboardIncomeExpenseChart() {
+    if (!charts.dashboardIncomeExpense) return;
+    
+    const periodTransactions = getTransactionsBySummaryPeriod();
+    const now = new Date();
+    const months = [];
+    const incomeData = [];
+    const expenseData = [];
+    
+    let startMonth, startYear, endMonth, endYear;
+    const summaryMonthInput = document.getElementById('summaryMonth');
+    const summaryYearInput = document.getElementById('summaryYear');
+    
+    if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
+        if (summaryPeriod === 'month-select' && summaryMonthInput && summaryMonthInput.value) {
+            const [year, month] = summaryMonthInput.value.split('-').map(Number);
+            startMonth = month - 1;
+            startYear = year;
+        } else {
+            startMonth = now.getMonth();
+            startYear = now.getFullYear();
+        }
+        endMonth = startMonth;
+        endYear = startYear;
+    } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+        if (summaryPeriod === 'year-select' && summaryYearInput && summaryYearInput.value) {
+            startYear = parseInt(summaryYearInput.value);
+        } else {
+            startYear = now.getFullYear();
+        }
+        startMonth = 0;
+        endMonth = 11;
+        endYear = startYear;
+    } else if (summaryPeriod === 'all') {
+        if (periodTransactions.length === 0) {
+            charts.dashboardIncomeExpense.data.labels = [];
+            charts.dashboardIncomeExpense.data.datasets = [];
+            charts.dashboardIncomeExpense.update();
+            return;
+        }
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        startMonth = firstDate.getMonth();
+        startYear = firstDate.getFullYear();
+        endMonth = now.getMonth();
+        endYear = now.getFullYear();
+    } else {
+        startMonth = now.getMonth() - 5;
+        startYear = now.getFullYear();
+        if (startMonth < 0) {
+            startMonth += 12;
+            startYear--;
+        }
+        endMonth = now.getMonth();
+        endYear = now.getFullYear();
+    }
+    
+    let currentMonth = startMonth;
+    let currentYear = startYear;
+    
+    while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+        const date = new Date(currentYear, currentMonth, 1);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        const monthTransactions = periodTransactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+        });
+        
+        const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        
+        incomeData.push(monthIncome);
+        expenseData.push(monthExpenses);
+        
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+    }
+    
+    charts.dashboardIncomeExpense.data.labels = months;
+    charts.dashboardIncomeExpense.data.datasets = [
+        {
+            label: 'Ingresos',
+            data: incomeData,
+            backgroundColor: '#10b981'
+        },
+        {
+            label: 'Gastos',
+            data: expenseData,
+            backgroundColor: '#ef4444'
+        }
+    ];
+    charts.dashboardIncomeExpense.update();
+}
+
+// Gráfica de gastos por categoría del dashboard
+function updateDashboardExpensesChart() {
+    if (!charts.dashboardExpenses) return;
+    
+    const periodTransactions = getTransactionsBySummaryPeriod();
+    const expenses = periodTransactions.filter(t => t.type === 'expense');
+    
+    const categoryTotals = {};
+    expenses.forEach(t => {
+        let catName;
+        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+        if (expenseCat) {
+            catName = expenseCat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        categoryTotals[catName] = (categoryTotals[catName] || 0) + Math.abs(t.amount);
+    });
+    
+    const sortedCategories = Object.entries(categoryTotals)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+    
+    const labels = sortedCategories.map(([name]) => name);
+    const data = sortedCategories.map(([, value]) => value);
+    
+    charts.dashboardExpenses.data.labels = labels;
+    charts.dashboardExpenses.data.datasets = [{
+        data: data,
+        backgroundColor: '#9333EA'
+    }];
+    charts.dashboardExpenses.update();
+}
+
+// Gráfica de distribución del dashboard
+function updateDashboardDistributionChart() {
+    if (!charts.dashboardDistribution) return;
+    
+    const periodTransactions = getTransactionsBySummaryPeriod();
+    const expenses = periodTransactions.filter(t => t.type === 'expense');
+    
+    const categoryTotals = {};
+    expenses.forEach(t => {
+        let catName;
+        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+        if (expenseCat) {
+            catName = expenseCat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        categoryTotals[catName] = (categoryTotals[catName] || 0) + Math.abs(t.amount);
+    });
+    
+    const labels = Object.keys(categoryTotals);
+    const data = Object.values(categoryTotals);
+    
+    charts.dashboardDistribution.data.labels = labels;
+    charts.dashboardDistribution.data.datasets = [{
+        data: data,
+        backgroundColor: [
+            '#667eea', '#764ba2', '#f093fb', '#4facfe',
+            '#00f2fe', '#43e97b', '#fa709a', '#fee140',
+            '#30cfd0', '#a8edea', '#fad961', '#f5576c'
+        ]
+    }];
+    charts.dashboardDistribution.update();
 }
 
 // Gráfica de ahorro
