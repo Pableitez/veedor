@@ -473,7 +473,9 @@ function toggleForm(formId, buttonId) {
                 'accountForm': 'Nueva Cuenta',
                 'loanForm': 'Nuevo Préstamo',
                 'investmentForm': 'Nueva Inversión',
-                'assetForm': 'Nuevo Bien'
+                'assetForm': 'Nuevo Bien',
+                'budgetForm': 'Nuevo Presupuesto',
+                'envelopeForm': 'Nuevo Sobre'
             };
             text.textContent = formNames[formId] || 'Nuevo';
         }
@@ -3198,7 +3200,7 @@ async function addBudget() {
                 alert(`✅ Presupuesto establecido para ${budgetsCreated.length} mes(es) exitosamente`);
             }
             
-            // Resetear formulario
+            // Resetear formulario y ocultarlo
             const budgetForm = document.getElementById('budgetForm');
             if (budgetForm) {
                 budgetForm.reset();
@@ -3211,6 +3213,10 @@ async function addBudget() {
                 }
                 const budgetDuration = document.getElementById('budgetDuration');
                 if (budgetDuration) budgetDuration.value = '1';
+                // Ocultar formulario después de agregar exitosamente
+                if (budgetForm.style.display !== 'none') {
+                    toggleForm('budgetForm', 'toggleBudgetFormBtn');
+                }
             }
         } else {
             // Para otros tipos de período o duración 0 (indefinido), crear uno solo
@@ -3227,7 +3233,7 @@ async function addBudget() {
             await loadUserData();
             updateDisplay();
             
-            // Resetear formulario
+            // Resetear formulario y ocultarlo
             const budgetForm = document.getElementById('budgetForm');
             if (budgetForm) {
                 budgetForm.reset();
@@ -3237,6 +3243,10 @@ async function addBudget() {
                 if (budgetPeriodValue) {
                     const now = new Date();
                     budgetPeriodValue.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                }
+                // Ocultar formulario después de agregar exitosamente
+                if (budgetForm.style.display !== 'none') {
+                    toggleForm('budgetForm', 'toggleBudgetFormBtn');
                 }
             }
             
