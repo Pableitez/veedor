@@ -3908,11 +3908,22 @@ tbody tr:last-child td {
         text-align: center !important;
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 0 !important;
         margin: 0 auto !important;
         box-sizing: border-box !important;
         font-size: 16px !important;
         min-height: 44px !important;
         padding: 12px 14px !important;
+        overflow: visible !important;
+        position: relative !important;
+    }
+    
+    #monthAnalysisSelector > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
     }
     
     /* Campos de mes y año específicos en móvil */

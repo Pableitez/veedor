@@ -110,6 +110,8 @@ const loanSchema = new mongoose.Schema({
     monthly_payment: { type: Number, required: true },
     type: { type: String, enum: ['debt', 'credit'], required: true }, // Deuda que debo o crédito que me deben
     description: { type: String, default: null },
+    property_id: { type: String, default: null }, // ID de la propiedad asociada
+    asset_id: { type: String, default: null }, // ID del activo/vehículo asociado
     opening_commission: { type: Number, default: 0 }, // Comisión de apertura
     early_payment_commission: { type: Number, default: 0 }, // Comisión por amortización anticipada (%)
     payment_frequency: { type: String, enum: ['monthly', 'quarterly', 'yearly'], default: 'monthly' },
@@ -1711,7 +1713,8 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
     try {
         const { 
             name, principal, interest_rate, tae, start_date, end_date, monthly_payment, type, description,
-            opening_commission, early_payment_commission, payment_frequency, payment_day, account_id
+            opening_commission, early_payment_commission, payment_frequency, payment_day, account_id,
+            property_id, asset_id
         } = req.body;
 
         if (!name || principal === undefined || interest_rate === undefined || !start_date || !end_date || monthly_payment === undefined || !type) {
@@ -1729,6 +1732,8 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
             monthly_payment,
             type,
             description: description || null,
+            property_id: property_id || null,
+            asset_id: asset_id || null,
             opening_commission: opening_commission || 0,
             early_payment_commission: early_payment_commission || 0,
             payment_frequency: payment_frequency || 'monthly',

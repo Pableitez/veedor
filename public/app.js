@@ -1291,6 +1291,7 @@ async function loadUserData() {
         updatePropertySelect();
         updateLoanSelect();
         updateInvestmentSelect();
+        updateAssetSelect();
         
         // Guardar en cache
         const cacheKey = `veedor_data_cache_${currentUser}`;
@@ -1654,8 +1655,10 @@ function switchToTab(targetTab, doScroll = false) {
     if (targetTab === 'loans') {
         setTimeout(() => {
             updateLoans();
-            // Actualizar selector de cuentas en el formulario de préstamos
+            // Actualizar selectores en el formulario de préstamos
             updateAccountSelect('loanAccount');
+            updatePropertySelect('loanProperty');
+            updateAssetSelect('loanAsset');
         }, 100);
     }
     
@@ -3190,6 +3193,21 @@ function updateLoanSelect(selectId = 'transactionLoan') {
     });
 }
 
+// Actualizar selector de activos (vehículos y otros)
+function updateAssetSelect(selectId = 'loanAsset') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Ninguno</option>';
+    // Filtrar solo vehículos y otros activos relevantes
+    assets.filter(asset => asset.type === 'vehicle' || asset.type === 'other').forEach(asset => {
+        const option = document.createElement('option');
+        option.value = asset._id || asset.id;
+        option.textContent = `${asset.name} (${asset.type === 'vehicle' ? 'Vehículo' : 'Activo'})`;
+        select.appendChild(option);
+    });
+}
+
 // ==================== PRESUPUESTOS ====================
 
 // Agregar presupuesto
@@ -4408,6 +4426,8 @@ async function addLoan() {
     const monthlyPayment = parseFloat(document.getElementById('loanMonthlyPayment').value);
     const type = document.getElementById('loanType').value;
     const accountId = document.getElementById('loanAccount') ? document.getElementById('loanAccount').value : '';
+    const propertyId = document.getElementById('loanProperty') ? document.getElementById('loanProperty').value : '';
+    const assetId = document.getElementById('loanAsset') ? document.getElementById('loanAsset').value : '';
     const description = document.getElementById('loanDescription').value.trim();
     const openingCommission = parseFloat(document.getElementById('loanOpeningCommission').value) || 0;
     const earlyPaymentCommission = parseFloat(document.getElementById('loanEarlyPaymentCommission').value) || 0;
@@ -4431,6 +4451,8 @@ async function addLoan() {
                 monthly_payment: monthlyPayment,
                 type,
                 account_id: accountId || null,
+                property_id: propertyId || null,
+                asset_id: assetId || null,
                 description: description || null,
                 opening_commission: openingCommission,
                 early_payment_commission: earlyPaymentCommission,
@@ -5616,6 +5638,7 @@ async function addProperty() {
         properties.push(property);
         updateDisplay();
         updatePropertySelect();
+        updatePropertySelect('loanProperty');
         const propertyForm = document.getElementById('propertyForm');
         if (propertyForm) {
             propertyForm.reset();
@@ -6304,6 +6327,7 @@ async function addAsset() {
         
         assets.push(asset);
         updateDisplay();
+        updateAssetSelect('loanAsset');
         const assetForm = document.getElementById('assetForm');
         if (assetForm) {
             assetForm.reset();
@@ -6605,6 +6629,26 @@ async function editLoan(id) {
                         </div>
                     </div>
                     <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLoanAccount">Cuenta para Pagos (Opcional)</label>
+                            <select id="editLoanAccount">
+                                <option value="">Ninguna</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanProperty">Propiedad Asociada (Opcional)</label>
+                            <select id="editLoanProperty">
+                                <option value="">Ninguna</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanAsset">Vehículo/Activo Asociado (Opcional)</label>
+                            <select id="editLoanAsset">
+                                <option value="">Ninguno</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group full-width">
                             <label for="editLoanDescription">Descripción (Opcional)</label>
                             <input type="text" id="editLoanDescription" placeholder="Ej: Hipoteca principal">
@@ -6647,6 +6691,14 @@ async function editLoan(id) {
     const earlyPaymentCommissionEl = document.getElementById('editLoanEarlyPaymentCommission');
     const paymentDayEl = document.getElementById('editLoanPaymentDay');
     const descriptionEl = document.getElementById('editLoanDescription');
+    const accountEl = document.getElementById('editLoanAccount');
+    const propertyEl = document.getElementById('editLoanProperty');
+    const assetEl = document.getElementById('editLoanAsset');
+    
+    // Actualizar selectores
+    updateAccountSelect('editLoanAccount');
+    updatePropertySelect('editLoanProperty');
+    updateAssetSelect('editLoanAsset');
     
     if (!nameEl || !typeEl || !principalEl || !interestRateEl || !startDateEl || !endDateEl || !monthlyPaymentEl) {
         showToast('Error: No se encontraron todos los campos del formulario', 'error');
@@ -6665,6 +6717,9 @@ async function editLoan(id) {
     if (earlyPaymentCommissionEl) earlyPaymentCommissionEl.value = loan.early_payment_commission || 0;
     if (paymentDayEl) paymentDayEl.value = loan.payment_day || 1;
     if (descriptionEl) descriptionEl.value = loan.description || '';
+    if (accountEl) accountEl.value = loan.account_id || '';
+    if (propertyEl) propertyEl.value = loan.property_id || '';
+    if (assetEl) assetEl.value = loan.asset_id || '';
     
     // Mostrar modal
     modal.style.display = 'flex';
@@ -6717,6 +6772,9 @@ async function updateLoanFromModal() {
         const earlyPaymentCommission = earlyPaymentCommissionEl ? parseFloat(earlyPaymentCommissionEl.value) || 0 : 0;
         const paymentDay = paymentDayEl ? parseInt(paymentDayEl.value) || 1 : 1;
         const description = descriptionEl ? descriptionEl.value.trim() : '';
+        const accountId = document.getElementById('editLoanAccount') ? document.getElementById('editLoanAccount').value : '';
+        const propertyId = document.getElementById('editLoanProperty') ? document.getElementById('editLoanProperty').value : '';
+        const assetId = document.getElementById('editLoanAsset') ? document.getElementById('editLoanAsset').value : '';
         
         if (!name || !type || !principal || principal <= 0 || !interestRate || interestRate < 0 || !startDate || !endDate || !monthlyPayment || monthlyPayment <= 0) {
             showToast('Por favor completa todos los campos requeridos correctamente', 'warning');
@@ -6731,6 +6789,9 @@ async function updateLoanFromModal() {
                 type,
                 principal,
                 interest_rate: interestRate,
+                account_id: accountId || null,
+                property_id: propertyId || null,
+                asset_id: assetId || null,
                 tae: tae,
                 start_date: startDate,
                 end_date: endDate,
