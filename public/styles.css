@@ -90,7 +90,7 @@ html {
     width: 100%;
     overflow-x: hidden;
     box-sizing: border-box;
-    background: linear-gradient(180deg, #E5E7EB 0%, #D1D5DB 50%, #9CA3AF 100%);
+    background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
     background-attachment: fixed;
 }
 
@@ -298,7 +298,7 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background: linear-gradient(180deg, #E5E7EB 0%, #D1D5DB 50%, #9CA3AF 100%);
+    background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
     background-attachment: fixed;
     position: relative;
     overflow: hidden;
@@ -849,13 +849,26 @@ body:not(.dark-mode) .main-header svg {
     opacity: 1;
 }
 
-/* Logo del header - visible en modo claro */
+/* Logo del header - círculos y paths visibles en modo claro */
 body:not(.dark-mode) #headerLogo .logo-outer-circle {
     fill: rgba(30, 58, 138, 1) !important;
 }
 
-body:not(.dark-mode) #headerLogo .logo-v {
+body:not(.dark-mode) #headerLogo .logo-middle-circle {
+    fill: rgba(59, 130, 246, 0.9) !important;
+}
+
+body:not(.dark-mode) #headerLogo .logo-inner-circle {
     fill: rgba(255, 255, 255, 0.95) !important;
+}
+
+body:not(.dark-mode) #headerLogo .logo-center {
+    fill: rgba(30, 58, 138, 1) !important;
+}
+
+body:not(.dark-mode) #headerLogo .logo-path {
+    stroke: rgba(30, 58, 138, 1) !important;
+    opacity: 0.9 !important;
 }
 
 /* SVG dentro de botones - asegurar visibilidad */
@@ -974,8 +987,9 @@ header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    -webkit-text-stroke: 1.5px rgba(30, 58, 138, 0.9);
-    filter: drop-shadow(0 2px 4px rgba(30, 58, 138, 0.4));
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 header svg#headerLogo,
@@ -990,8 +1004,9 @@ body:not(.dark-mode) header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    -webkit-text-stroke: 1.5px rgba(30, 58, 138, 1);
-    filter: drop-shadow(0 2px 5px rgba(30, 58, 138, 0.5));
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .header-actions {
@@ -1447,7 +1462,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     background: var(--bg-primary);
     color: var(--text-secondary);
     border: 1.5px solid var(--border-color);
-    padding: 12px 24px;
+    padding: 8px 24px;
     border-radius: 10px;
     font-size: 14px;
     font-weight: 500;
@@ -3570,9 +3585,9 @@ tbody tr:last-child td {
     .btn-primary,
     .btn-secondary,
     .btn-danger {
-        padding: 12px 16px !important;
+        padding: 8px 16px !important;
         font-size: 14px !important;
-        min-height: 44px !important;
+        min-height: 36px !important;
     }
     
     /* Formularios */

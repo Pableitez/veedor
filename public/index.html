@@ -184,11 +184,19 @@
                                 <stop offset="0%" stop-color="#3B82F6"/>
                                 <stop offset="100%" stop-color="#1E3A8A"/>
                             </linearGradient>
+                            <linearGradient id="headerLogoGradientInner" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#3B82F6"/>
+                                <stop offset="100%" stop-color="#6366F1"/>
+                            </linearGradient>
                         </defs>
                         <circle cx="20" cy="20" r="18" fill="url(#headerLogoGradient)" class="logo-outer-circle"/>
-                        <path d="M20 8 L20 18 L12 18 L12 22 L20 22 L20 32 L28 32 L28 22 L28 18 L28 8 Z" fill="white" opacity="0.95" class="logo-v"/>
+                        <circle cx="20" cy="20" r="12" fill="url(#headerLogoGradientInner)" opacity="0.9" class="logo-middle-circle"/>
+                        <circle cx="20" cy="20" r="8" fill="white" opacity="0.95" class="logo-inner-circle"/>
+                        <circle cx="20" cy="20" r="5" fill="url(#headerLogoGradient)" class="logo-center"/>
+                        <path d="M20 4 L20 8 M20 32 L20 36 M4 20 L8 20 M32 20 L36 20" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.8" class="logo-path"/>
+                        <path d="M10 10 L13 13 M30 10 L27 13 M10 30 L13 27 M30 30 L27 27" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7" class="logo-path"/>
                     </svg>
-                    <h1 style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -1px; white-space: nowrap; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; -webkit-text-stroke: 1.5px rgba(30, 58, 138, 0.9); filter: drop-shadow(0 2px 4px rgba(30, 58, 138, 0.4));">Veedor</h1>
+                    <h1 style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -1px; white-space: nowrap; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">Veedor</h1>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
