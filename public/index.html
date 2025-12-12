@@ -295,16 +295,13 @@
                     <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;" data-translate="dashboard.summaryView">Vista de Resumen</label>
                     <select id="summaryPeriod" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; margin-bottom: 8px;">
                         <option value="month" data-translate="dashboard.thisMonth">Este Mes</option>
+                        <option value="month-select" data-translate="dashboard.specificMonth">Mes Específico</option>
                         <option value="year" data-translate="dashboard.thisYear">Este Año</option>
                         <option value="year-select" data-translate="dashboard.specificYear">Año Específico</option>
                         <option value="all" data-translate="dashboard.allTime">Historial Completo</option>
-                        <option value="custom" data-translate="dashboard.customRange">Rango Personalizado</option>
                     </select>
+                    <input type="month" id="summaryMonth" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: none; margin-top: 8px;" data-translate-placeholder="dashboard.selectMonth" placeholder="Selecciona el mes">
                     <input type="number" id="summaryYear" min="2000" max="2100" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: none; margin-top: 8px;" data-translate-placeholder="dashboard.selectYear" placeholder="Selecciona el año">
-                    <div id="summaryCustomDateRange" style="display: none; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
-                        <input type="date" id="summaryStartDate" style="flex: 1; min-width: 150px; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary);">
-                        <input type="date" id="summaryEndDate" style="flex: 1; min-width: 150px; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary);">
-                    </div>
                     <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--text-tertiary);" data-translate="dashboard.summaryPeriodHint">Período para las tarjetas de resumen</small>
                 </div>
                 
@@ -768,7 +765,7 @@
                             <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <h2 id="amortizationModalTitle" style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">📊 Tabla de Amortización</h2>
-                                    <button id="closeAmortizationModal" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                                    <button id="closeAmortizationModal" onclick="closeAmortizationModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                                 </div>
                             </div>
                             <div id="amortizationModalContent" style="padding: 32px; max-height: 70vh; overflow-y: auto;">

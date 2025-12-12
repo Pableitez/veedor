@@ -2075,9 +2075,14 @@ function initializeForms() {
     
     // Selector de período en dashboard
     const summaryPeriodSelect = document.getElementById('summaryPeriod');
+    const summaryMonthInput = document.getElementById('summaryMonth');
     const summaryYearInput = document.getElementById('summaryYear');
     if (summaryPeriodSelect) {
-        // Inicializar año actual
+        // Inicializar mes y año actual
+        if (summaryMonthInput) {
+            const now = new Date();
+            summaryMonthInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        }
         if (summaryYearInput) {
             summaryYearInput.value = new Date().getFullYear();
         }
@@ -2086,9 +2091,15 @@ function initializeForms() {
             const value = e.target.value;
             summaryPeriod = value;
             
-            const summaryCustomDateRange = document.getElementById('summaryCustomDateRange');
-            const summaryStartDate = document.getElementById('summaryStartDate');
-            const summaryEndDate = document.getElementById('summaryEndDate');
+            // Mostrar/ocultar selector de mes
+            if (summaryMonthInput) {
+                if (value === 'month-select') {
+                    summaryMonthInput.style.display = 'block';
+                    summaryMonthInput.focus();
+                } else {
+                    summaryMonthInput.style.display = 'none';
+                }
+            }
             
             // Mostrar/ocultar selector de año
             if (summaryYearInput) {
@@ -2100,40 +2111,16 @@ function initializeForms() {
                 }
             }
             
-            // Mostrar/ocultar selector de rango personalizado
-            if (summaryCustomDateRange) {
-                if (value === 'custom') {
-                    summaryCustomDateRange.style.display = 'flex';
-                    // Establecer fechas por defecto (últimos 6 meses)
-                    if (summaryStartDate && summaryEndDate) {
-                        const today = new Date();
-                        const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
-                        summaryStartDate.value = sixMonthsAgo.toISOString().split('T')[0];
-                        summaryEndDate.value = today.toISOString().split('T')[0];
-                    }
-                } else {
-                    summaryCustomDateRange.style.display = 'none';
-                }
-            }
-            
             updateSummary();
-            updateMonthDashboard(); // Actualizar también el análisis del mes seleccionado
+            updateMonthDashboard();
         });
         
-        // Listeners para fechas personalizadas
-        const summaryStartDate = document.getElementById('summaryStartDate');
-        const summaryEndDate = document.getElementById('summaryEndDate');
-        if (summaryStartDate) {
-            summaryStartDate.addEventListener('change', () => {
-                if (summaryPeriod === 'custom') {
+        // Listener para cambio de mes
+        if (summaryMonthInput) {
+            summaryMonthInput.addEventListener('change', () => {
+                if (summaryPeriod === 'month-select') {
                     updateSummary();
-                }
-            });
-        }
-        if (summaryEndDate) {
-            summaryEndDate.addEventListener('change', () => {
-                if (summaryPeriod === 'custom') {
-                    updateSummary();
+                    updateMonthDashboard();
                 }
             });
         }
@@ -2145,7 +2132,7 @@ function initializeForms() {
                     const yearValue = parseInt(summaryYearInput.value);
                     if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
                         updateSummary();
-                        updateMonthDashboard(); // Actualizar también el análisis del mes seleccionado
+                        updateMonthDashboard();
                     }
                 }
             });
@@ -2155,7 +2142,7 @@ function initializeForms() {
                     const yearValue = parseInt(summaryYearInput.value);
                     if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
                         updateSummary();
-                        updateMonthDashboard(); // Actualizar también el análisis del mes seleccionado
+                        updateMonthDashboard();
                     }
                 }
             });
@@ -2564,9 +2551,21 @@ async function updateSummary() {
         console.warn('No se pudo cargar la meta de ahorro:', error);
     }
     
-    // Obtener año seleccionado si aplica
+    // Obtener mes y año seleccionados si aplica
+    const summaryMonthInput = document.getElementById('summaryMonth');
     const summaryYearInput = document.getElementById('summaryYear');
+    let selectedMonth = currentMonth;
     let selectedYear = currentYear;
+    
+    if (summaryMonthInput && summaryPeriod === 'month-select') {
+        const monthValue = summaryMonthInput.value;
+        if (monthValue) {
+            const [year, month] = monthValue.split('-').map(Number);
+            selectedYear = year;
+            selectedMonth = month - 1; // Los meses en JS son 0-indexed
+        }
+    }
+    
     if (summaryYearInput && summaryPeriod === 'year-select') {
         selectedYear = parseInt(summaryYearInput.value) || currentYear;
     }
@@ -2574,6 +2573,12 @@ async function updateSummary() {
     const monthTransactions = transactions.filter(t => {
         const tDate = new Date(t.date);
         return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+    });
+    
+    // Transacciones del mes específico seleccionado
+    const selectedMonthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === selectedMonth && tDate.getFullYear() === selectedYear;
     });
     
     // Transacciones del año (actual o seleccionado)
@@ -2618,6 +2623,13 @@ async function updateSummary() {
         periodExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
         periodSavings = periodIncome - periodExpenses;
         periodLabel = 'Este mes';
+    } else if (summaryPeriod === 'month-select') {
+        // Usar mes seleccionado cuando se selecciona "Mes Específico"
+        periodIncome = selectedMonthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        periodExpenses = Math.abs(selectedMonthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        periodSavings = periodIncome - periodExpenses;
+        const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        periodLabel = `${monthNames[selectedMonth]} ${selectedYear}`;
     } else if (summaryPeriod === 'year') {
         // Usar año actual cuando se selecciona "Este Año"
         const yearForCalculation = currentYear;
@@ -2635,35 +2647,6 @@ async function updateSummary() {
         periodExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
         periodSavings = periodIncome - periodExpenses;
         periodLabel = `Año ${selectedYear}`;
-    } else if (summaryPeriod === 'custom') {
-        // Usar rango personalizado
-        const summaryStartDate = document.getElementById('summaryStartDate');
-        const summaryEndDate = document.getElementById('summaryEndDate');
-        
-        if (summaryStartDate && summaryEndDate && summaryStartDate.value && summaryEndDate.value) {
-            const startDate = new Date(summaryStartDate.value);
-            const endDate = new Date(summaryEndDate.value);
-            endDate.setHours(23, 59, 59, 999); // Incluir todo el día final
-            
-            const customTransactions = transactions.filter(t => {
-                const tDate = new Date(t.date);
-                return tDate >= startDate && tDate <= endDate;
-            });
-            
-            periodIncome = customTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-            periodExpenses = Math.abs(customTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
-            periodSavings = periodIncome - periodExpenses;
-            
-            const startFormatted = startDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            const endFormatted = endDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            periodLabel = `${startFormatted} - ${endFormatted}`;
-        } else {
-            // Si no hay fechas seleccionadas, usar todas las transacciones
-            periodIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-            periodExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
-            periodSavings = periodIncome - periodExpenses;
-            periodLabel = 'Rango personalizado';
-        }
     } else { // 'all'
         periodIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
         periodExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
@@ -4562,7 +4545,10 @@ function showLoanDetails(loanId) {
                 </div>
                 <div>
                     <strong style="color: var(--gray-600); font-size: 12px;">Capital Restante</strong>
-                    <div style="font-size: 18px; font-weight: 700; color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(remainingPrincipal)}</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="number" id="editRemainingPrincipal" value="${remainingPrincipal.toFixed(2)}" step="0.01" min="0" style="font-size: 18px; font-weight: 700; color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'}; border: 2px solid var(--border-color); border-radius: 6px; padding: 6px 12px; width: 150px; background: var(--bg-primary);">
+                        <button id="saveRemainingPrincipal" onclick="saveRemainingPrincipal('${loan._id || loan.id}')" style="background: var(--primary); color: white; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">Guardar</button>
+                    </div>
                 </div>
                 <div>
                     <strong style="color: var(--text-secondary); font-size: 12px;">Total Pagado</strong>
@@ -4638,22 +4624,96 @@ function showLoanDetails(loanId) {
     // Asegurar que los event listeners estén activos
     const closeBtn = document.getElementById('closeAmortizationModal');
     if (closeBtn) {
-        // Remover listeners anteriores para evitar duplicados
-        const newCloseBtn = closeBtn.cloneNode(true);
-        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
-        
-        newCloseBtn.addEventListener('click', () => {
+        closeBtn.onclick = () => {
             modal.style.display = 'none';
-        });
+        };
     }
     
     // Cerrar al hacer clic fuera del modal
+    const modalContentDiv = modal.querySelector('.modal-content');
+    if (modalContentDiv) {
+        modalContentDiv.onclick = (e) => {
+            e.stopPropagation();
+        };
+    }
+    
     modal.onclick = (e) => {
         if (e.target === modal) {
             modal.style.display = 'none';
         }
     };
 }
+
+// Cerrar modal de amortización
+function closeAmortizationModal() {
+    const modal = document.getElementById('amortizationModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Exponer función globalmente
+window.closeAmortizationModal = closeAmortizationModal;
+
+// Guardar capital pendiente modificado
+async function saveRemainingPrincipal(loanId) {
+    const loan = loans.find(l => (l._id || l.id) === loanId);
+    if (!loan) return;
+    
+    const input = document.getElementById('editRemainingPrincipal');
+    if (!input) return;
+    
+    const newRemainingPrincipal = parseFloat(input.value);
+    if (isNaN(newRemainingPrincipal) || newRemainingPrincipal < 0) {
+        showToast('Por favor ingresa un valor válido', 'warning');
+        return;
+    }
+    
+    // Calcular la diferencia para ajustar total_paid
+    const amortization = calculateAmortizationTable(
+        loan.principal,
+        loan.interest_rate,
+        loan.monthly_payment,
+        loan.start_date,
+        loan.total_paid || 0,
+        loan.early_payments || []
+    );
+    
+    const currentRemaining = amortization.finalBalance;
+    const difference = currentRemaining - newRemainingPrincipal;
+    
+    // Ajustar total_paid según la diferencia
+    const newTotalPaid = (loan.total_paid || 0) + difference;
+    
+    showLoader('Actualizando capital pendiente...');
+    
+    try {
+        const response = await apiRequest(`/loans/${loanId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                ...loan,
+                total_paid: Math.max(0, newTotalPaid)
+            })
+        });
+        
+        if (response.success) {
+            loan.total_paid = Math.max(0, newTotalPaid);
+            showToast('Capital pendiente actualizado correctamente', 'success');
+            updateLoans();
+            showLoanDetails(loanId);
+        } else {
+            showToast('Error al actualizar el capital pendiente', 'error');
+        }
+    } catch (error) {
+        console.error('Error actualizando capital pendiente:', error);
+        showToast('Error al actualizar el capital pendiente', 'error');
+    } finally {
+        hideLoader();
+    }
+}
+
+// Exponer función globalmente
+window.saveRemainingPrincipal = saveRemainingPrincipal;
 
 // Mostrar modal de amortización anticipada
 function showEarlyPaymentModal(loanId) {
