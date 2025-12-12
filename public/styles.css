@@ -840,9 +840,51 @@ header h1 {
     overflow: visible;
 }
 
+/* Sección tipo Revolut para Saldo y Fondo de Emergencia */
+.revolut-section {
+    margin-bottom: 32px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.revolut-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.revolut-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+.revolut-card:active {
+    transform: translateY(-2px);
+}
+
+/* Ajustes para modo claro */
+body:not(.dark-mode) .revolut-card {
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.25);
+}
+
+body:not(.dark-mode) .revolut-card:hover {
+    box-shadow: 0 12px 32px rgba(30, 58, 138, 0.35) !important;
+}
+
+/* Ajustes para modo oscuro */
+body.dark-mode .revolut-card {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .revolut-card:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
 .summary-cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     margin-bottom: 16px;
     width: 100%;
@@ -851,12 +893,25 @@ header h1 {
 }
 
 @media (max-width: 1024px) {
+    .revolut-section > div {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
     .summary-cards {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 640px) {
+    .revolut-card {
+        min-height: 160px;
+        padding: 20px !important;
+    }
+    
+    .revolut-card .amount {
+        font-size: 28px !important;
+    }
+    
     .summary-cards {
         grid-template-columns: 1fr;
     }
@@ -3017,6 +3072,24 @@ tbody tr:last-child td {
     }
     
     /* Cards más compactos */
+    .revolut-section {
+        margin-bottom: 24px !important;
+    }
+    
+    .revolut-section > div {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    .revolut-card {
+        min-height: 160px !important;
+        padding: 20px !important;
+    }
+    
+    .revolut-card .amount {
+        font-size: 28px !important;
+    }
+    
     .summary-cards {
         grid-template-columns: 1fr !important;
         gap: 10px !important;
