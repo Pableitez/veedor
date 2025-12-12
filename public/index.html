@@ -184,18 +184,13 @@
                                 <stop offset="0%" stop-color="#3B82F6"/>
                                 <stop offset="100%" stop-color="#1E3A8A"/>
                             </linearGradient>
-                            <linearGradient id="headerLogoGradientLight" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#1E3A8A"/>
-                                <stop offset="100%" stop-color="#3B82F6"/>
-                            </linearGradient>
                         </defs>
                         <circle cx="20" cy="20" r="18" fill="url(#headerLogoGradient)" class="logo-outer-circle"/>
-                        <circle cx="20" cy="20" r="12" fill="white" opacity="0.95" class="logo-middle-circle"/>
-                        <circle cx="20" cy="20" r="7" fill="url(#headerLogoGradient)" class="logo-inner-circle"/>
-                        <path d="M20 4 L20 8 M20 32 L20 36 M4 20 L8 20 M32 20 L36 20" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.8" class="logo-path"/>
-                        <path d="M10 10 L13 13 M30 10 L27 13 M10 30 L13 27 M30 30 L27 27" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7" class="logo-path"/>
+                        <circle cx="20" cy="20" r="14" fill="none" stroke="white" stroke-width="2" opacity="0.3" class="logo-ring"/>
+                        <circle cx="20" cy="20" r="10" fill="white" opacity="0.95" class="logo-middle-circle"/>
+                        <circle cx="20" cy="20" r="6" fill="url(#headerLogoGradient)" class="logo-inner-circle"/>
                     </svg>
-                    <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; -webkit-text-stroke: 0.5px rgba(30, 58, 138, 1);">Veedor</h1>
+                    <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; -webkit-text-stroke: 1px rgba(30, 58, 138, 0.8); filter: drop-shadow(0 1px 2px rgba(30, 58, 138, 0.3));">Veedor</h1>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
@@ -278,7 +273,7 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" fill="none"/>
                             </svg>
-                            <span id="darkModeToggleText">🌙 Modo Oscuro</span>
+                            <span id="darkModeToggleText">Modo Oscuro</span>
                         </a>
                         <div style="border-top: 1px solid var(--border-color); margin-top: 4px; padding-top: 4px;">
                             <a href="javascript:void(0);" onclick="logout(); toggleSettingsDropdown();" class="nav-dropdown-item" style="color: var(--danger); display: flex; align-items: center; gap: 8px;">
@@ -462,13 +457,13 @@
 
         <div class="main-content">
             <div class="tabs">
-                <button class="tab-btn active" data-tab="transactions"><span data-translate="nav.transactions">💳 Transacciones</span></button>
-                <button class="tab-btn" data-tab="accounts"><span data-translate="nav.accounts">🏦 Cuentas</span></button>
-                <button class="tab-btn" data-tab="envelopes"><span data-translate="nav.budgets">📦 Presupuestos</span></button>
-                <button class="tab-btn" data-tab="loans"><span data-translate="nav.loans">🏦 Préstamos</span></button>
-                <button class="tab-btn" data-tab="investments"><span data-translate="nav.investments">📈 Inversiones</span></button>
-                <button class="tab-btn" data-tab="assets"><span data-translate="nav.assets">🏠 Patrimonio</span></button>
-                <button class="tab-btn" data-tab="charts"><span data-translate="nav.analysis">📊 Análisis</span></button>
+                <button class="tab-btn active" data-tab="transactions"><span data-translate="nav.transactions">Transacciones</span></button>
+                <button class="tab-btn" data-tab="accounts"><span data-translate="nav.accounts">Cuentas</span></button>
+                <button class="tab-btn" data-tab="envelopes"><span data-translate="nav.budgets">Presupuestos</span></button>
+                <button class="tab-btn" data-tab="loans"><span data-translate="nav.loans">Préstamos</span></button>
+                <button class="tab-btn" data-tab="investments"><span data-translate="nav.investments">Inversiones</span></button>
+                <button class="tab-btn" data-tab="assets"><span data-translate="nav.assets">Patrimonio</span></button>
+                <button class="tab-btn" data-tab="charts"><span data-translate="nav.analysis">Análisis</span></button>
             </div>
 
             <!-- Tab: Transacciones -->
@@ -477,7 +472,6 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h2 data-translate="transactions.newTransaction" style="margin: 0;">Nueva Transacción</h2>
                         <button type="button" class="btn-primary" id="toggleTransactionFormBtn" onclick="toggleForm('transactionForm', 'toggleTransactionFormBtn')" style="display: flex; align-items: center; gap: 8px;">
-                            <span id="transactionFormIcon">➕</span>
                             <span id="transactionFormText">Nueva Transacción</span>
                         </button>
                     </div>
@@ -563,7 +557,7 @@
                 <div class="table-section">
                     <h2 data-translate="transactions.history">Historial de Transacciones</h2>
                     <div class="table-controls">
-                        <input type="text" id="searchInput" data-translate-placeholder="transactions.search" placeholder="🔍 Buscar...">
+                        <input type="text" id="searchInput" data-translate-placeholder="transactions.search" placeholder="Buscar...">
                         <select id="filterCategory">
                             <option value="" data-translate="transactions.allCategories">Todas las categorías</option>
                         </select>
@@ -633,9 +627,8 @@
             <div class="tab-content" id="properties-tab">
                 <div class="form-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 style="margin: 0;">🏘️ Gestionar Propiedades/Pisos</h2>
+                        <h2 style="margin: 0;">Gestionar Propiedades/Pisos</h2>
                         <button type="button" class="btn-primary" id="togglePropertyFormBtn" onclick="toggleForm('propertyForm', 'togglePropertyFormBtn')" style="display: flex; align-items: center; gap: 8px;">
-                            <span id="propertyFormIcon">➕</span>
                             <span id="propertyFormText">Nueva Propiedad</span>
                         </button>
                     </div>
@@ -686,7 +679,6 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h2 style="margin: 0;">Gestionar Cuentas Bancarias</h2>
                         <button type="button" class="btn-primary" id="toggleAccountFormBtn" onclick="toggleForm('accountForm', 'toggleAccountFormBtn')" style="display: flex; align-items: center; gap: 8px;">
-                            <span id="accountFormIcon">➕</span>
                             <span id="accountFormText">Nueva Cuenta</span>
                         </button>
                     </div>
@@ -748,7 +740,6 @@
                                     <h3 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--text-primary);">Presupuesto por Categoría</h3>
                                 </div>
                                 <button type="button" class="btn-primary" id="toggleBudgetFormBtn" onclick="toggleForm('budgetForm', 'toggleBudgetFormBtn')" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px;">
-                                    <span id="budgetFormIcon">➕</span>
                                     <span id="budgetFormText">Nuevo Presupuesto</span>
                                 </button>
                             </div>
@@ -806,7 +797,7 @@
                                         <small id="budgetAmountHelp">Límite máximo de gasto para esta categoría</small>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 8px;">💾 Establecer Presupuesto</button>
+                                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 8px;">Establecer Presupuesto</button>
                             </form>
                         </div>
                         <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
@@ -815,7 +806,6 @@
                                     <h3 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--text-primary);">Sobre (Presupuesto Flexible)</h3>
                                 </div>
                                 <button type="button" class="btn-primary" id="toggleEnvelopeFormBtn" onclick="toggleForm('envelopeForm', 'toggleEnvelopeFormBtn')" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px;">
-                                    <span id="envelopeFormIcon">➕</span>
                                     <span id="envelopeFormText">Nuevo Sobre</span>
                                 </button>
                             </div>
@@ -859,7 +849,6 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h2 style="margin: 0;">Gestionar Préstamos e Hipotecas</h2>
                         <button type="button" class="btn-primary" id="toggleLoanFormBtn" onclick="toggleForm('loanForm', 'toggleLoanFormBtn')" style="display: flex; align-items: center; gap: 8px;">
-                            <span id="loanFormIcon">➕</span>
                             <span id="loanFormText">Nuevo Préstamo</span>
                         </button>
                     </div>
@@ -937,7 +926,7 @@
                             <div class="form-group">
                                 <label for="loanTAE">TAE - Tasa Anual Equivalente (%)</label>
                                 <input type="number" id="loanTAE" step="0.01" min="0" max="100" placeholder="Opcional">
-                                <small style="color: var(--text-tertiary); font-weight: 600;">⚠️ IMPORTANTE: Incluye comisiones y gastos. Es el costo REAL del préstamo.</small>
+                                <small style="color: var(--text-tertiary); font-weight: 600;">IMPORTANTE: Incluye comisiones y gastos. Es el costo REAL del préstamo.</small>
                             </div>
                         </div>
                         <div class="form-row">
@@ -994,7 +983,6 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h2 style="margin: 0;">Gestionar Inversiones</h2>
                         <button type="button" class="btn-primary" id="toggleInvestmentFormBtn" onclick="toggleForm('investmentForm', 'toggleInvestmentFormBtn')" style="display: flex; align-items: center; gap: 8px;">
-                            <span id="investmentFormIcon">➕</span>
                             <span id="investmentFormText">Nueva Inversión</span>
                         </button>
                     </div>
@@ -1091,7 +1079,6 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h2 style="margin: 0;">Gestionar Patrimonio</h2>
                         <button type="button" class="btn-primary" id="toggleAssetFormBtn" onclick="toggleForm('assetForm', 'toggleAssetFormBtn')" style="display: flex; align-items: center; gap: 8px;">
-                            <span id="assetFormIcon">➕</span>
                             <span id="assetFormText">Nuevo Bien</span>
                         </button>
                     </div>
@@ -1498,7 +1485,7 @@
         <div class="modal-content" style="max-width: 700px;">
             <div style="background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">👤 Mi Perfil</h2>
+                    <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Mi Perfil</h2>
                     <button id="closeUserProfileModal" onclick="closeUserProfile()" style="background: rgba(255,255,255,0.2);  border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                 </div>
             </div>
