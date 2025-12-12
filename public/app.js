@@ -2150,9 +2150,15 @@ function initializeForms() {
         if (summaryMonthInput) {
             const now = new Date();
             summaryMonthInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            // Asegurar que esté oculto por defecto
+            summaryMonthInput.style.display = 'none';
+            summaryMonthInput.style.visibility = 'hidden';
         }
         if (summaryYearInput) {
             summaryYearInput.value = new Date().getFullYear();
+            // Asegurar que esté oculto por defecto
+            summaryYearInput.style.display = 'none';
+            summaryYearInput.style.visibility = 'hidden';
         }
         
         summaryPeriodSelect.addEventListener('change', (e) => {
@@ -2163,9 +2169,21 @@ function initializeForms() {
             if (summaryMonthInput) {
                 if (value === 'month-select') {
                     summaryMonthInput.style.display = 'block';
+                    summaryMonthInput.style.visibility = 'visible';
+                    summaryMonthInput.style.height = 'auto';
+                    summaryMonthInput.style.marginTop = '8px';
+                    summaryMonthInput.style.marginBottom = '0';
+                    summaryMonthInput.style.padding = '10px 12px';
+                    summaryMonthInput.style.border = '1.5px solid var(--border-color)';
                     summaryMonthInput.focus();
                 } else {
                     summaryMonthInput.style.display = 'none';
+                    summaryMonthInput.style.visibility = 'hidden';
+                    summaryMonthInput.style.height = '0';
+                    summaryMonthInput.style.marginTop = '0';
+                    summaryMonthInput.style.marginBottom = '0';
+                    summaryMonthInput.style.padding = '0';
+                    summaryMonthInput.style.border = 'none';
                 }
             }
             
@@ -2173,9 +2191,21 @@ function initializeForms() {
             if (summaryYearInput) {
                 if (value === 'year-select') {
                     summaryYearInput.style.display = 'block';
+                    summaryYearInput.style.visibility = 'visible';
+                    summaryYearInput.style.height = 'auto';
+                    summaryYearInput.style.marginTop = '8px';
+                    summaryYearInput.style.marginBottom = '0';
+                    summaryYearInput.style.padding = '10px 12px';
+                    summaryYearInput.style.border = '1.5px solid var(--border-color)';
                     summaryYearInput.focus();
                 } else {
                     summaryYearInput.style.display = 'none';
+                    summaryYearInput.style.visibility = 'hidden';
+                    summaryYearInput.style.height = '0';
+                    summaryYearInput.style.marginTop = '0';
+                    summaryYearInput.style.marginBottom = '0';
+                    summaryYearInput.style.padding = '0';
+                    summaryYearInput.style.border = 'none';
                 }
             }
             

@@ -584,7 +584,7 @@ body.dark-mode .auth-screen::before {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow-flow 10s ease-in-out infinite;
+    animation: rainbow-flow 20s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
@@ -997,7 +997,7 @@ body.dark-mode .footer-copyright strong {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 700;
-    animation: rainbow-flow 10s ease-in-out infinite;
+    animation: rainbow-flow 20s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
@@ -1007,7 +1007,7 @@ body:not(.dark-mode) .footer-veedor-text {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow-flow 10s ease-in-out infinite;
+    animation: rainbow-flow 20s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
@@ -1017,7 +1017,7 @@ body.dark-mode .footer-veedor-text {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow-flow 10s ease-in-out infinite;
+    animation: rainbow-flow 20s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
@@ -1041,7 +1041,7 @@ header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow-flow 10s ease-in-out infinite;
+    animation: rainbow-flow 20s ease-in-out infinite;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -1070,7 +1070,7 @@ body:not(.dark-mode) header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: rainbow-flow 10s ease-in-out infinite;
+    animation: rainbow-flow 20s ease-in-out infinite;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -2190,6 +2190,8 @@ tbody tr:last-child td {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .chart-card {
@@ -2202,6 +2204,9 @@ tbody tr:last-child td {
     position: relative;
     overflow: visible;
     color: var(--text-primary);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .chart-card:hover {
@@ -2211,6 +2216,16 @@ tbody tr:last-child td {
 }
 
 @media (max-width: 768px) {
+    .charts-container {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .chart-card {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
     .chart-card:hover {
         transform: none;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
@@ -2445,6 +2460,28 @@ tbody tr:last-child td {
     .charts-container {
         grid-template-columns: 1fr !important;
         gap: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .chart-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 20px 16px !important;
+        margin: 0 !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+    
+    .chart-card canvas {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        box-sizing: border-box !important;
     }
     
     /* Header mejorado */
@@ -3700,6 +3737,48 @@ tbody tr:last-child td {
         box-sizing: border-box !important;
     }
     
+    /* Gráficas del dashboard en móvil pequeño */
+    .dashboard .charts-container,
+    .charts-container {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .dashboard .chart-card,
+    .chart-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        padding: 20px 16px !important;
+        margin: 0 !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+    
+    .dashboard .chart-card canvas,
+    .chart-card canvas {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Contenedor de gráficas del dashboard */
+    .dashboard > div > div:has(.charts-container) {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow-x: hidden !important;
+    }
+    
     /* Selectores de gráficos en móvil pequeño */
     .chart-card > div:first-child {
         flex-direction: column !important;
@@ -3822,7 +3901,31 @@ tbody tr:last-child td {
         box-sizing: border-box !important;
         padding: 12px 14px !important;
         margin-top: 12px !important;
+    }
+    
+    /* Asegurar que estén ocultos cuando no se usan */
+    #summaryMonth[style*="display: none"],
+    #summaryYear[style*="display: none"],
+    #summaryMonth:not([style*="display: block"]),
+    #summaryYear:not([style*="display: block"]) {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        border: none !important;
+    }
+    
+    /* Cuando están visibles, mostrarlos correctamente */
+    #summaryMonth[style*="display: block"],
+    #summaryYear[style*="display: block"] {
         display: block !important;
+        visibility: visible !important;
+        height: auto !important;
+        margin-top: 8px !important;
+        padding: 12px 14px !important;
+        border: 1.5px solid var(--border-color) !important;
     }
     
     /* Contenedor del selector de período en móvil */

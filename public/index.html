@@ -84,7 +84,7 @@
                     <path d="M40 8 L40 16 M40 64 L40 72 M8 40 L16 40 M64 40 L72 40" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
                     <path d="M20 20 L26 26 M60 20 L54 26 M20 60 L26 54 M60 60 L54 54" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
                 </svg>
-                <h1 style="font-size: clamp(22px, 4vw, 36px); font-weight: 800; letter-spacing: -1px; margin: 0 0 clamp(6px, 1vh, 8px) 0; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: rainbow-flow 10s ease-in-out infinite; transition: all 0.3s ease; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));">Veedor</h1>
+                <h1 style="font-size: clamp(22px, 4vw, 36px); font-weight: 800; letter-spacing: -1px; margin: 0 0 clamp(6px, 1vh, 8px) 0; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: rainbow-flow 20s ease-in-out infinite; transition: all 0.3s ease; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));">Veedor</h1>
                 <p style="font-size: clamp(12px, 1.8vw, 16px); color: var(--text-secondary); margin: 0; font-weight: 500; transition: all 0.3s ease;" data-translate="auth.subtitle">Tu dinero, tu control. Toma decisiones inteligentes.</p>
             </div>
             
@@ -196,7 +196,7 @@
                         <path d="M20 4 L20 8 M20 32 L20 36 M4 20 L8 20 M32 20 L36 20" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.8" class="logo-path"/>
                         <path d="M10 10 L13 13 M30 10 L27 13 M10 30 L13 27 M30 30 L27 27" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7" class="logo-path"/>
                     </svg>
-                    <h1 style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -1px; white-space: nowrap; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: rainbow-flow 10s ease-in-out infinite; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));">Veedor</h1>
+                    <h1 style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -1px; white-space: nowrap; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: rainbow-flow 20s ease-in-out infinite; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));">Veedor</h1>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
@@ -346,8 +346,8 @@
                                 <option value="year-select" data-translate="dashboard.specificYear">Año Específico</option>
                                 <option value="all" data-translate="dashboard.allTime">Historial Completo</option>
                             </select>
-                            <input type="month" id="summaryMonth" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: none; margin-top: 8px; box-sizing: border-box;" data-translate-placeholder="dashboard.selectMonth" placeholder="Selecciona el mes">
-                            <input type="number" id="summaryYear" min="2000" max="2100" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: none; margin-top: 8px; box-sizing: border-box;" data-translate-placeholder="dashboard.selectYear" placeholder="Selecciona el año">
+                            <input type="month" id="summaryMonth" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: none; visibility: hidden; margin-top: 0; margin-bottom: 0; height: 0; padding-top: 0; padding-bottom: 0; box-sizing: border-box;" data-translate-placeholder="dashboard.selectMonth" placeholder="Selecciona el mes">
+                            <input type="number" id="summaryYear" min="2000" max="2100" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: none; visibility: hidden; margin-top: 0; margin-bottom: 0; height: 0; padding-top: 0; padding-bottom: 0; box-sizing: border-box;" data-translate-placeholder="dashboard.selectYear" placeholder="Selecciona el año">
                         </div>
                     </div>
                     
@@ -376,9 +376,9 @@
                 </div>
                 
                 <!-- Gráficas del Dashboard -->
-                <div style="margin-top: 32px; margin-bottom: 32px;">
+                <div style="margin-top: 32px; margin-bottom: 32px; width: 100%; box-sizing: border-box;">
                     <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--text-primary);">Gráficas</h2>
-                    <div class="charts-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                    <div class="charts-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; width: 100%; box-sizing: border-box;">
                         <div class="chart-card" onclick="openChartModal('savings', 'Evolución de Ahorro')" style="cursor: pointer;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                                 <h3>Evolución de Ahorro</h3>
