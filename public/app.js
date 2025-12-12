@@ -5159,7 +5159,7 @@ function updateInvestments() {
                     <div style="text-align: right; color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 18px;">
                         ${profit >= 0 ? '+' : ''}${formatCurrency(profit)}
                     </div>
-                    <div><strong>📊 Rentabilidad:</strong></div>
+                    <div><strong>Rentabilidad:</strong></div>
                     <div style="text-align: right; color: ${returnPercent >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 16px;">
                         ${returnPercent >= 0 ? '+' : ''}${returnPercent.toFixed(2)}%
                     </div>
@@ -5174,7 +5174,7 @@ function updateInvestments() {
             
             ${investment.contributions && investment.contributions.length > 0 ? `
                 <div style="margin: 12px 0; padding: 12px; background: rgba(16, 185, 129, 0.05); border-radius: var(--radius); border-left: 3px solid var(--success);">
-                    <div style="font-size: 12px; font-weight: 600; color: var(--success); margin-bottom: 8px;">💰 Historial de Aportes</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--success); margin-bottom: 8px;">Historial de Aportes</div>
                     <div style="max-height: 120px; overflow-y: auto; font-size: 12px;">
                         ${investment.contributions.slice().reverse().slice(0, 5).map(c => `
                             <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.1);">
@@ -5335,7 +5335,7 @@ function showUpdateInvestmentValueModal(id) {
     // Buscar la inversión
     const investment = investments.find(inv => (inv._id || inv.id) === id);
     if (investment) {
-        titleEl.textContent = `📊 Actualizar Valor de ${investment.name}`;
+        titleEl.textContent = `Actualizar Valor de ${investment.name}`;
         const input = document.getElementById('updateInvestmentValueInput');
         if (input) {
             input.value = investment.current_value || 0;
@@ -5992,7 +5992,7 @@ function updateAccounts() {
     summaryCard.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h3 style="margin: 0; color: white; font-size: 18px;">💰 Saldo Total</h3>
+                <h3 style="margin: 0; color: white; font-size: 18px;">Saldo Total</h3>
                 <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${accounts.length} cuenta${accounts.length !== 1 ? 's' : ''}</p>
             </div>
             <div style="text-align: right;">
@@ -9166,7 +9166,7 @@ function updateMonthDashboard() {
                 };
                 summaryCard.onclick = () => switchToTab('envelopes', true);
                 summaryCard.innerHTML = `
-                    <h5 style="font-size: 18px; font-weight: 700; margin: 0 0 20px 0; color: white;">📊 Resumen del Mes</h5>
+                    <h5 style="font-size: 18px; font-weight: 700; margin: 0 0 20px 0; color: white;">Resumen del Mes</h5>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                         <div>
                             <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Ingresos</div>
