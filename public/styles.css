@@ -835,16 +835,23 @@ body:not(.dark-mode) .main-header h1 {
 }
 
 body:not(.dark-mode) header button,
-body:not(.dark-mode) .main-header button {
+body:not(.dark-mode) .main-header button,
+body:not(.dark-mode) #mainNavDropdownBtn,
+body:not(.dark-mode) #settingsDropdownBtn {
     color: rgba(30, 58, 138, 1) !important;
     border-color: rgba(30, 58, 138, 0.4) !important;
     background: rgba(255, 255, 255, 0.9) !important;
     border-radius: 8px !important;
     border-width: 1.5px !important;
+    padding: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
 }
 
 body:not(.dark-mode) header button:hover,
-body:not(.dark-mode) .main-header button:hover {
+body:not(.dark-mode) .main-header button:hover,
+body:not(.dark-mode) #mainNavDropdownBtn:hover,
+body:not(.dark-mode) #settingsDropdownBtn:hover {
     background: rgba(255, 255, 255, 1) !important;
     border-color: rgba(30, 58, 138, 0.6) !important;
     color: rgba(30, 58, 138, 1) !important;
@@ -862,15 +869,46 @@ body:not(.dark-mode) .main-header svg {
     opacity: 1;
 }
 
-body:not(.dark-mode) header svg circle,
-body:not(.dark-mode) .main-header svg circle {
-    fill: rgba(30, 58, 138, 1);
+/* Logo del header - círculos y paths visibles en modo claro */
+body:not(.dark-mode) #headerLogo .logo-outer-circle {
+    fill: rgba(30, 58, 138, 1) !important;
 }
 
-body:not(.dark-mode) header svg path,
-body:not(.dark-mode) .main-header svg path {
-    stroke: rgba(30, 58, 138, 1);
-    fill: rgba(30, 58, 138, 1);
+body:not(.dark-mode) #headerLogo .logo-middle-circle {
+    fill: rgba(255, 255, 255, 0.95) !important;
+}
+
+body:not(.dark-mode) #headerLogo .logo-inner-circle {
+    fill: rgba(30, 58, 138, 1) !important;
+}
+
+body:not(.dark-mode) #headerLogo .logo-path {
+    stroke: rgba(30, 58, 138, 1) !important;
+    opacity: 0.9 !important;
+}
+
+/* SVG dentro de botones - asegurar visibilidad */
+body:not(.dark-mode) header button svg,
+body:not(.dark-mode) .main-header button svg,
+body:not(.dark-mode) #mainNavDropdownBtn svg,
+body:not(.dark-mode) #settingsDropdownBtn svg {
+    color: rgba(30, 58, 138, 1) !important;
+}
+
+body:not(.dark-mode) header button svg circle,
+body:not(.dark-mode) .main-header button svg circle,
+body:not(.dark-mode) #mainNavDropdownBtn svg circle,
+body:not(.dark-mode) #settingsDropdownBtn svg circle {
+    stroke: rgba(30, 58, 138, 1) !important;
+    fill: none !important;
+}
+
+body:not(.dark-mode) header button svg path,
+body:not(.dark-mode) .main-header button svg path,
+body:not(.dark-mode) #mainNavDropdownBtn svg path,
+body:not(.dark-mode) #settingsDropdownBtn svg path {
+    stroke: rgba(30, 58, 138, 1) !important;
+    fill: none !important;
 }
 
 /* Footer en modo claro con color azul */
