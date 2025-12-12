@@ -451,9 +451,53 @@ function initDarkMode() {
     updateAuthDarkModeIcon();
 }
 
+// ==================== TOGGLE FORMULARIOS ====================
+function toggleForm(formId, buttonId) {
+    const form = document.getElementById(formId);
+    const button = document.getElementById(buttonId);
+    const icon = document.getElementById(formId.replace('Form', 'FormIcon'));
+    const text = document.getElementById(formId.replace('Form', 'FormText'));
+    
+    if (!form || !button) return;
+    
+    const isVisible = form.style.display !== 'none';
+    
+    if (isVisible) {
+        // Ocultar formulario
+        form.style.display = 'none';
+        if (icon) icon.textContent = '➕';
+        if (text) {
+            const formNames = {
+                'transactionForm': 'Nueva Transacción',
+                'propertyForm': 'Nueva Propiedad',
+                'accountForm': 'Nueva Cuenta',
+                'loanForm': 'Nuevo Préstamo',
+                'investmentForm': 'Nueva Inversión',
+                'assetForm': 'Nuevo Bien'
+            };
+            text.textContent = formNames[formId] || 'Nuevo';
+        }
+        // Resetear formulario si existe función
+        const resetFunc = window['reset' + formId.charAt(0).toUpperCase() + formId.slice(1).replace('Form', 'Form')];
+        if (resetFunc && typeof resetFunc === 'function') {
+            resetFunc();
+        }
+    } else {
+        // Mostrar formulario
+        form.style.display = 'block';
+        if (icon) icon.textContent = '➖';
+        if (text) text.textContent = 'Cancelar';
+        // Scroll suave al formulario
+        setTimeout(() => {
+            form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+}
+
 // Exponer funciones globales
 window.toggleDarkMode = toggleDarkMode;
 window.updateAuthDarkModeIcon = updateAuthDarkModeIcon;
+window.toggleForm = toggleForm;
 
 // Inicialización - Ejecutar inmediatamente
 
@@ -2468,9 +2512,14 @@ async function addTransaction() {
             updateDisplay();
         }
         
-        // Limpiar formulario
+        // Limpiar formulario y ocultarlo
         console.log('✅ Limpiando formulario...');
-        document.getElementById('transactionForm').reset();
+        const transactionForm = document.getElementById('transactionForm');
+        if (transactionForm) {
+            transactionForm.reset();
+            // Ocultar formulario después de agregar exitosamente
+            toggleForm('transactionForm', 'toggleTransactionFormBtn');
+        }
         initializeDate();
         initializeCategories();
         updateEnvelopeSelect();
@@ -2516,6 +2565,11 @@ async function addEnvelope() {
         envelopes.push(envelope);
         updateDisplay();
         resetEnvelopeForm();
+        // Ocultar formulario después de agregar exitosamente
+        const envelopeForm = document.getElementById('envelopeForm');
+        if (envelopeForm && envelopeForm.style.display !== 'none') {
+            toggleForm('envelopeForm', 'toggleEnvelopeFormBtn');
+        }
         updateEnvelopeSelect();
     } catch (error) {
         alert('Error al crear sobre: ' + error.message);
@@ -4300,11 +4354,18 @@ async function addLoan() {
         
         loans.push(loan);
         updateDisplay();
-        document.getElementById('loanForm').reset();
-        const loanStartDate = document.getElementById('loanStartDate');
-        if (loanStartDate) {
-            const today = new Date().toISOString().split('T')[0];
-            loanStartDate.value = today;
+        const loanForm = document.getElementById('loanForm');
+        if (loanForm) {
+            loanForm.reset();
+            const loanStartDate = document.getElementById('loanStartDate');
+            if (loanStartDate) {
+                const today = new Date().toISOString().split('T')[0];
+                loanStartDate.value = today;
+            }
+            // Ocultar formulario después de agregar exitosamente
+            if (loanForm.style.display !== 'none') {
+                toggleForm('loanForm', 'toggleLoanFormBtn');
+            }
         }
         alert('✅ Préstamo agregado exitosamente');
     } catch (error) {
@@ -4932,12 +4993,19 @@ async function addInvestment() {
         
         investments.push(investment);
         updateDisplay();
-        document.getElementById('investmentForm').reset();
-        // Resetear campos de aportes periódicos
-        const enablePeriodicCheckbox = document.getElementById('enablePeriodicContribution');
-        const periodicFields = document.getElementById('periodicContributionFields');
-        if (enablePeriodicCheckbox) enablePeriodicCheckbox.checked = false;
-        if (periodicFields) periodicFields.style.display = 'none';
+        const investmentForm = document.getElementById('investmentForm');
+        if (investmentForm) {
+            investmentForm.reset();
+            // Resetear campos de aportes periódicos
+            const enablePeriodicCheckbox = document.getElementById('enablePeriodicContribution');
+            const periodicFields = document.getElementById('periodicContributionFields');
+            if (enablePeriodicCheckbox) enablePeriodicCheckbox.checked = false;
+            if (periodicFields) periodicFields.style.display = 'none';
+            // Ocultar formulario después de agregar exitosamente
+            if (investmentForm.style.display !== 'none') {
+                toggleForm('investmentForm', 'toggleInvestmentFormBtn');
+            }
+        }
         alert('✅ Inversión creada. Ahora puedes añadir dinero a tu hucha.');
     } catch (error) {
         alert('Error al crear inversión: ' + error.message);
@@ -5461,7 +5529,14 @@ async function addProperty() {
         properties.push(property);
         updateDisplay();
         updatePropertySelect();
-        document.getElementById('propertyForm').reset();
+        const propertyForm = document.getElementById('propertyForm');
+        if (propertyForm) {
+            propertyForm.reset();
+            // Ocultar formulario después de agregar exitosamente
+            if (propertyForm.style.display !== 'none') {
+                toggleForm('propertyForm', 'togglePropertyFormBtn');
+            }
+        }
         alert('✅ Propiedad agregada exitosamente');
     } catch (error) {
         alert('Error al crear propiedad: ' + error.message);
@@ -5750,7 +5825,14 @@ async function addAccount() {
         
         accounts.push(account);
         updateDisplay();
-        document.getElementById('accountForm').reset();
+        const accountForm = document.getElementById('accountForm');
+        if (accountForm) {
+            accountForm.reset();
+            // Ocultar formulario después de agregar exitosamente
+            if (accountForm.style.display !== 'none') {
+                toggleForm('accountForm', 'toggleAccountFormBtn');
+            }
+        }
         alert('✅ Cuenta agregada exitosamente');
     } catch (error) {
         alert('Error al crear cuenta: ' + error.message);
@@ -6135,11 +6217,18 @@ async function addAsset() {
         
         assets.push(asset);
         updateDisplay();
-        document.getElementById('assetForm').reset();
-        const assetPurchaseDate = document.getElementById('assetPurchaseDate');
-        if (assetPurchaseDate) {
-            const today = new Date().toISOString().split('T')[0];
-            assetPurchaseDate.value = today;
+        const assetForm = document.getElementById('assetForm');
+        if (assetForm) {
+            assetForm.reset();
+            const assetPurchaseDate = document.getElementById('assetPurchaseDate');
+            if (assetPurchaseDate) {
+                const today = new Date().toISOString().split('T')[0];
+                assetPurchaseDate.value = today;
+            }
+            // Ocultar formulario después de agregar exitosamente
+            if (assetForm.style.display !== 'none') {
+                toggleForm('assetForm', 'toggleAssetFormBtn');
+            }
         }
         alert('✅ Bien agregado exitosamente');
     } catch (error) {

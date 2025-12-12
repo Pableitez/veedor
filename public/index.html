@@ -413,8 +413,14 @@
             <!-- Tab: Transacciones -->
             <div class="tab-content active" id="transactions-tab">
                 <div class="form-section">
-                    <h2 data-translate="transactions.newTransaction">Nueva Transacción</h2>
-                    <form id="transactionForm">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 data-translate="transactions.newTransaction" style="margin: 0;">Nueva Transacción</h2>
+                        <button type="button" class="btn-primary" id="toggleTransactionFormBtn" onclick="toggleForm('transactionForm', 'toggleTransactionFormBtn')" style="display: flex; align-items: center; gap: 8px;">
+                            <span id="transactionFormIcon">➕</span>
+                            <span id="transactionFormText">Nueva Transacción</span>
+                        </button>
+                    </div>
+                    <form id="transactionForm" style="display: none;">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="transactionType" data-translate="transactions.type">Tipo</label>
@@ -561,11 +567,17 @@
             <!-- Tab: Propiedades/Pisos -->
             <div class="tab-content" id="properties-tab">
                 <div class="form-section">
-                    <h2 style="margin-bottom: 24px;">🏘️ Gestionar Propiedades/Pisos</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0;">🏘️ Gestionar Propiedades/Pisos</h2>
+                        <button type="button" class="btn-primary" id="togglePropertyFormBtn" onclick="toggleForm('propertyForm', 'togglePropertyFormBtn')" style="display: flex; align-items: center; gap: 8px;">
+                            <span id="propertyFormIcon">➕</span>
+                            <span id="propertyFormText">Nueva Propiedad</span>
+                        </button>
+                    </div>
                     <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus propiedades o pisos para asociar gastos específicos a cada una (agua, luz, comunidad, etc.).</p>
                     </div>
-                    <form id="propertyForm" style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                    <form id="propertyForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="propertyName">Nombre de la Propiedad</label>
@@ -606,11 +618,17 @@
             <!-- Tab: Cuentas Bancarias -->
             <div class="tab-content" id="accounts-tab">
                 <div class="form-section">
-                    <h2 style="margin-bottom: 24px;">🏦 Gestionar Cuentas Bancarias</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0;">🏦 Gestionar Cuentas Bancarias</h2>
+                        <button type="button" class="btn-primary" id="toggleAccountFormBtn" onclick="toggleForm('accountForm', 'toggleAccountFormBtn')" style="display: flex; align-items: center; gap: 8px;">
+                            <span id="accountFormIcon">➕</span>
+                            <span id="accountFormText">Nueva Cuenta</span>
+                        </button>
+                    </div>
                     <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus cuentas bancarias para hacer seguimiento de tus saldos en diferentes entidades y tipos de cuenta.</p>
                     </div>
-                    <form id="accountForm" style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                    <form id="accountForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="accountName">Nombre de la Cuenta</label>
@@ -763,7 +781,13 @@
             <!-- Tab: Préstamos -->
             <div class="tab-content" id="loans-tab">
                 <div class="form-section">
-                    <h2 style="margin-bottom: 24px;">🏦 Gestionar Préstamos e Hipotecas</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0;">🏦 Gestionar Préstamos e Hipotecas</h2>
+                        <button type="button" class="btn-primary" id="toggleLoanFormBtn" onclick="toggleForm('loanForm', 'toggleLoanFormBtn')" style="display: flex; align-items: center; gap: 8px;">
+                            <span id="loanFormIcon">➕</span>
+                            <span id="loanFormText">Nuevo Préstamo</span>
+                        </button>
+                    </div>
                     
                     <!-- Modal para tabla de amortización -->
                     <div id="amortizationModal" class="modal" style="display: none;">
@@ -811,7 +835,7 @@
                     <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus préstamos e hipotecas para hacer un seguimiento del capital restante, intereses y realizar simulaciones de amortización anticipada.</p>
                     </div>
-                    <form id="loanForm" style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                    <form id="loanForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="loanName">Nombre del Préstamo</label>
@@ -892,11 +916,17 @@
             <!-- Tab: Inversiones -->
             <div class="tab-content" id="investments-tab">
                 <div class="form-section">
-                    <h2 style="margin-bottom: 24px;">📈 Gestionar Inversiones</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0;">📈 Gestionar Inversiones</h2>
+                        <button type="button" class="btn-primary" id="toggleInvestmentFormBtn" onclick="toggleForm('investmentForm', 'toggleInvestmentFormBtn')" style="display: flex; align-items: center; gap: 8px;">
+                            <span id="investmentFormIcon">➕</span>
+                            <span id="investmentFormText">Nueva Inversión</span>
+                        </button>
+                    </div>
                     <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus inversiones para hacer seguimiento de su rendimiento, ganancias/pérdidas y rentabilidad total.</p>
                     </div>
-                    <form id="investmentForm" style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                    <form id="investmentForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="investmentName">Nombre de la Inversión</label>
@@ -983,11 +1013,17 @@
             <!-- Tab: Patrimonio -->
             <div class="tab-content" id="assets-tab">
                 <div class="form-section">
-                    <h2 style="margin-bottom: 24px;">🏠 Gestionar Patrimonio</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0;">🏠 Gestionar Patrimonio</h2>
+                        <button type="button" class="btn-primary" id="toggleAssetFormBtn" onclick="toggleForm('assetForm', 'toggleAssetFormBtn')" style="display: flex; align-items: center; gap: 8px;">
+                            <span id="assetFormIcon">➕</span>
+                            <span id="assetFormText">Nuevo Bien</span>
+                        </button>
+                    </div>
                     <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus bienes (viviendas, vehículos, joyas, etc.) y haz seguimiento de la evolución de su valor a lo largo del tiempo.</p>
                     </div>
-                    <form id="assetForm" style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                    <form id="assetForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="assetName">Nombre del Bien</label>
