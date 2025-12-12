@@ -2635,6 +2635,35 @@ async function updateSummary() {
         periodExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
         periodSavings = periodIncome - periodExpenses;
         periodLabel = `Año ${selectedYear}`;
+    } else if (summaryPeriod === 'custom') {
+        // Usar rango personalizado
+        const summaryStartDate = document.getElementById('summaryStartDate');
+        const summaryEndDate = document.getElementById('summaryEndDate');
+        
+        if (summaryStartDate && summaryEndDate && summaryStartDate.value && summaryEndDate.value) {
+            const startDate = new Date(summaryStartDate.value);
+            const endDate = new Date(summaryEndDate.value);
+            endDate.setHours(23, 59, 59, 999); // Incluir todo el día final
+            
+            const customTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate >= startDate && tDate <= endDate;
+            });
+            
+            periodIncome = customTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            periodExpenses = Math.abs(customTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            periodSavings = periodIncome - periodExpenses;
+            
+            const startFormatted = startDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const endFormatted = endDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            periodLabel = `${startFormatted} - ${endFormatted}`;
+        } else {
+            // Si no hay fechas seleccionadas, usar todas las transacciones
+            periodIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            periodExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            periodSavings = periodIncome - periodExpenses;
+            periodLabel = 'Rango personalizado';
+        }
     } else { // 'all'
         periodIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
         periodExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
@@ -4135,74 +4164,99 @@ function calculateAmortizationTable(principal, annualRate, monthlyPayment, start
     const today = currentDateOverride ? new Date(currentDateOverride) : new Date();
     today.setHours(0, 0, 0, 0);
     
-    // Calcular cuántos meses han pasado desde el inicio hasta hoy
-    const monthsElapsed = Math.max(0, Math.floor((today - start) / (1000 * 60 * 60 * 24 * 30.44)));
+    // Si la fecha de inicio es futura, retornar balance completo
+    if (start > today) {
+        return { table, totalInterest: 0, finalBalance: principal };
+    }
     
-    // Aplicar pagos anticipados (ordenados por fecha)
+    // Ordenar pagos anticipados por fecha y crear mapa de aplicados
     const sortedEarlyPayments = [...earlyPayments].sort((a, b) => new Date(a.date) - new Date(b.date));
-    sortedEarlyPayments.forEach(ep => {
+    const appliedPayments = new Set();
+    
+    // Calcular fecha de primer pago (un mes después del inicio)
+    let paymentDate = new Date(start);
+    paymentDate.setMonth(paymentDate.getMonth() + 1);
+    paymentDate.setHours(0, 0, 0, 0);
+    
+    let monthNumber = 0;
+    let currentBalance = principal;
+    
+    // Procesar pagos hasta la fecha actual
+    while (paymentDate <= today && currentBalance > 0.01) {
+        monthNumber++;
+        const paymentKey = `${paymentDate.getTime()}`;
+        
+        // Aplicar pagos anticipados que ocurrieron antes de esta fecha de pago
+        sortedEarlyPayments.forEach((ep, index) => {
+            const epDate = new Date(ep.date);
+            epDate.setHours(0, 0, 0, 0);
+            const epKey = `${epDate.getTime()}-${index}`;
+            if (epDate < paymentDate && epDate > start && !appliedPayments.has(epKey)) {
+                currentBalance -= ep.amount;
+                totalInterest += ep.commission || 0;
+                appliedPayments.add(epKey);
+            }
+        });
+        
+        // Aplicar pago mensual
+        const interest = currentBalance * monthlyRate;
+        const principalPayment = Math.min(monthlyPayment - interest, currentBalance);
+        currentBalance -= principalPayment;
+        totalInterest += interest;
+        
+        table.push({
+            month: monthNumber,
+            date: new Date(paymentDate),
+            payment: monthlyPayment,
+            principal: principalPayment,
+            interest,
+            balance: Math.max(0, currentBalance)
+        });
+        
+        // Avanzar al siguiente mes
+        paymentDate.setMonth(paymentDate.getMonth() + 1);
+    }
+    
+    // Aplicar pagos anticipados que ocurrieron después del último pago mensual pero antes de hoy
+    const lastPaymentDate = monthNumber > 0 ? new Date(start) : new Date(start);
+    if (monthNumber > 0) {
+        lastPaymentDate.setMonth(lastPaymentDate.getMonth() + monthNumber);
+    }
+    sortedEarlyPayments.forEach((ep, index) => {
         const epDate = new Date(ep.date);
         epDate.setHours(0, 0, 0, 0);
-        if (epDate <= today) {
-        balance -= ep.amount;
-        totalInterest += ep.commission || 0;
+        const epKey = `${epDate.getTime()}-${index}`;
+        if (epDate > lastPaymentDate && epDate <= today && !appliedPayments.has(epKey)) {
+            currentBalance -= ep.amount;
+            totalInterest += ep.commission || 0;
+            appliedPayments.add(epKey);
         }
     });
     
-    // Calcular pagos mensuales realizados hasta hoy
-    let currentDate = new Date(start);
-    currentDate.setHours(0, 0, 0, 0);
-    
-    // Aplicar pagos mensuales hasta la fecha actual
-    for (let month = 0; month < monthsElapsed && balance > 0.01; month++) {
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        
-        const interest = balance * monthlyRate;
-        const principalPayment = Math.min(monthlyPayment - interest, balance);
-        balance -= principalPayment;
-        totalInterest += interest;
-        
-        table.push({
-            month: month + 1,
-            date: new Date(currentDate),
-            payment: monthlyPayment,
-            principal: principalPayment,
-            interest,
-            balance: Math.max(0, balance)
-        });
-    }
-    
-    // Restar el total pagado adicional (si hay diferencia)
-    if (totalPaid > 0) {
-        const monthlyPaymentsTotal = monthsElapsed * monthlyPayment;
-        const additionalPaid = totalPaid - monthlyPaymentsTotal;
-        if (additionalPaid > 0) {
-            balance -= additionalPaid;
-        }
-    }
-    
-    // Calcular pagos futuros
-    let futureMonth = monthsElapsed;
-    while (balance > 0.01 && futureMonth < 600) { // Máximo 50 años
+    // Calcular pagos futuros (solo para la tabla completa, no afecta el balance actual)
+    let futureBalance = currentBalance;
+    let futureMonth = monthNumber;
+    let futureDate = new Date(paymentDate);
+    while (futureBalance > 0.01 && futureMonth < 600) { // Máximo 50 años
         futureMonth++;
-        currentDate.setMonth(currentDate.getMonth() + 1);
         
-        const interest = balance * monthlyRate;
-        const principalPayment = Math.min(monthlyPayment - interest, balance);
-        balance -= principalPayment;
-        totalInterest += interest;
+        const interest = futureBalance * monthlyRate;
+        const principalPayment = Math.min(monthlyPayment - interest, futureBalance);
+        futureBalance -= principalPayment;
         
         table.push({
             month: futureMonth,
-            date: new Date(currentDate),
+            date: new Date(futureDate),
             payment: monthlyPayment,
             principal: principalPayment,
             interest,
-            balance: Math.max(0, balance)
+            balance: Math.max(0, futureBalance)
         });
+        
+        futureDate.setMonth(futureDate.getMonth() + 1);
     }
     
-    return { table, totalInterest, finalBalance: Math.max(0, balance) };
+    return { table, totalInterest, finalBalance: Math.max(0, currentBalance) };
 }
 
 async function addLoan() {
