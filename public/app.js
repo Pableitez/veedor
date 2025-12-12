@@ -2731,7 +2731,7 @@ async function updateSummary() {
             loan.interest_rate,
             loan.monthly_payment,
             loan.start_date,
-            loan.total_paid || 0,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
             loan.early_payments || []
         );
         return sum + amortization.finalBalance;
@@ -2742,7 +2742,7 @@ async function updateSummary() {
             loan.interest_rate,
             loan.monthly_payment,
             loan.start_date,
-            loan.total_paid || 0,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
             loan.early_payments || []
         );
         return sum + amortization.finalBalance;
@@ -4505,18 +4505,19 @@ function updateLoans() {
         const monthsElapsed = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24 * 30.44)));
         const monthsRemaining = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24 * 30.44)));
         
-        // Calcular amortización
+        // Calcular amortización basada en el mes actual (no en total_paid)
         const amortization = calculateAmortizationTable(
             loan.principal,
             loan.interest_rate,
             loan.monthly_payment,
             loan.start_date,
-            loan.total_paid || 0,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
             loan.early_payments || []
         );
         
-        // Calcular totales
-        const totalPaid = (loan.total_paid || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
+        // Calcular totales basados en los pagos hasta la fecha actual
+        const totalPaid = amortization.table.reduce((sum, row) => sum + row.payment, 0) + 
+                         (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
         const remainingPrincipal = amortization.finalBalance;
         const totalInterestPaid = amortization.totalInterest;
         
@@ -4623,12 +4624,23 @@ function updateLoans() {
             </div>
             
             ${loan.early_payments && loan.early_payments.length > 0 ? `
-                <div style="margin: 10px 0; padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 12px; border-left: 3px solid var(--warning); border: 1px solid var(--border-color);">
-                    <strong style="color: var(--text-primary);">Amortizaciones Anticipadas:</strong> <span style="color: var(--text-primary);">${loan.early_payments.length}</span>
-                    <div style="margin-top: 4px; color: var(--text-secondary);">
-                        ${loan.early_payments.map(ep => 
-                            `${formatDate(new Date(ep.date))}: ${formatCurrency(ep.amount)}${ep.commission > 0 ? ` (+ ${formatCurrency(ep.commission)} comisión)` : ''}`
-                        ).join('<br>')}
+                <div style="margin: 10px 0; padding: 12px; background: var(--bg-tertiary); border-radius: 6px; font-size: 12px; border-left: 3px solid var(--warning); border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: var(--text-primary);">Amortizaciones Anticipadas:</strong> <span style="color: var(--text-primary);">${loan.early_payments.length}</span>
+                    </div>
+                    <div style="display: grid; gap: 6px; margin-top: 8px;">
+                        ${loan.early_payments.map((ep, index) => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: var(--bg-primary); border-radius: 4px; border: 1px solid var(--border-color);">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--text-primary);">${formatDate(new Date(ep.date))}</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">${formatCurrency(ep.amount)}${ep.commission > 0 ? ` + ${formatCurrency(ep.commission)} comisión` : ''}</div>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <button onclick="editEarlyPayment('${loan._id || loan.id}', ${index})" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">Editar</button>
+                                    <button onclick="deleteEarlyPayment('${loan._id || loan.id}', ${index})" style="background: var(--danger); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">Borrar</button>
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
             ` : ''}
@@ -4719,8 +4731,17 @@ function showLoanDetails(loanId) {
     // Título del modal
     modalTitle.textContent = `Tabla de Amortización - ${loan.name}`;
     
-    // Calcular resumen
-    const totalPaid = (loan.total_paid || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
+    // Calcular resumen basado en el mes actual
+    const amortizationForSummary = calculateAmortizationTable(
+        loan.principal,
+        loan.interest_rate,
+        loan.monthly_payment,
+        loan.start_date,
+        0, // No usar total_paid
+        loan.early_payments || []
+    );
+    const totalPaid = amortizationForSummary.table.reduce((sum, row) => sum + row.payment, 0) + 
+                     (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
     const totalInterest = amortization.totalInterest;
     const totalCommissions = (loan.opening_commission || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + (ep.commission || 0), 0);
     const totalCost = totalInterest + totalCommissions;
@@ -4859,7 +4880,7 @@ async function saveRemainingPrincipal(loanId) {
         loan.interest_rate,
         loan.monthly_payment,
         loan.start_date,
-        loan.total_paid || 0,
+        0, // No usar total_paid, calcular desde el inicio hasta hoy
         loan.early_payments || []
     );
     
@@ -4921,13 +4942,13 @@ function showEarlyPaymentModal(loanId) {
         return;
     }
     
-    // Calcular capital restante actual
+    // Calcular capital restante actual basado en el mes actual
     const amortization = calculateAmortizationTable(
         loan.principal,
         loan.interest_rate,
         loan.monthly_payment,
         loan.start_date,
-        loan.total_paid || 0,
+        0, // No usar total_paid, calcular desde el inicio hasta hoy
         loan.early_payments || []
     );
     const remainingCapital = amortization.finalBalance;
@@ -5049,6 +5070,141 @@ function showEarlyPaymentModal(loanId) {
 window.showLoanDetails = showLoanDetails;
 window.showEarlyPaymentModal = showEarlyPaymentModal;
 window.closeEarlyPaymentModal = closeEarlyPaymentModal;
+
+// Editar amortización anticipada
+async function editEarlyPayment(loanId, index) {
+    const loan = loans.find(l => (l._id || l.id) === loanId);
+    if (!loan || !loan.early_payments || index >= loan.early_payments.length) {
+        showToast('Amortización no encontrada', 'error');
+        return;
+    }
+    
+    const ep = loan.early_payments[index];
+    
+    // Crear modal de edición
+    let modal = document.getElementById('editEarlyPaymentModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editEarlyPaymentModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 500px;">
+                <div style="background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 24px; color: white; border-radius: var(--radius) var(--radius) 0 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 22px; font-weight: 700;">Editar Amortización</h2>
+                        <button onclick="closeEditEarlyPaymentModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editEarlyPaymentForm" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                    <div class="form-group">
+                        <label for="editEarlyPaymentDate">Fecha</label>
+                        <input type="date" id="editEarlyPaymentDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEarlyPaymentAmount">Monto (€)</label>
+                        <input type="number" id="editEarlyPaymentAmount" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEarlyPaymentCommission">Comisión (€)</label>
+                        <input type="number" id="editEarlyPaymentCommission" step="0.01" min="0" value="0">
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditEarlyPaymentModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditEarlyPaymentModal();
+            }
+        });
+    }
+    
+    // Pre-llenar formulario
+    document.getElementById('editEarlyPaymentDate').value = ep.date;
+    document.getElementById('editEarlyPaymentAmount').value = ep.amount;
+    document.getElementById('editEarlyPaymentCommission').value = ep.commission || 0;
+    
+    // Guardar loanId e index
+    modal.dataset.loanId = loanId;
+    modal.dataset.index = index;
+    
+    // Manejar envío
+    const form = document.getElementById('editEarlyPaymentForm');
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const date = document.getElementById('editEarlyPaymentDate').value;
+        const amount = parseFloat(document.getElementById('editEarlyPaymentAmount').value);
+        const commission = parseFloat(document.getElementById('editEarlyPaymentCommission').value) || 0;
+        
+        if (!date || !amount || amount <= 0) {
+            showToast('Por favor completa todos los campos correctamente', 'warning');
+            return;
+        }
+        
+        try {
+            showLoader('Actualizando amortización...');
+            await apiRequest(`/loans/${loanId}/early-payment/${index}`, {
+                method: 'PUT',
+                body: JSON.stringify({ date, amount, commission })
+            });
+            
+            await loadUserData();
+            updateDisplay();
+            closeEditEarlyPaymentModal();
+            // Reabrir el modal de detalles para mostrar los cambios
+            showLoanDetails(loanId);
+            showToast('Amortización actualizada exitosamente', 'success');
+        } catch (error) {
+            showToast('Error al actualizar amortización: ' + error.message, 'error');
+        } finally {
+            hideLoader();
+        }
+    };
+    
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de amortización
+function closeEditEarlyPaymentModal() {
+    const modal = document.getElementById('editEarlyPaymentModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Eliminar amortización anticipada
+async function deleteEarlyPayment(loanId, index) {
+    if (!confirm('¿Estás seguro de que quieres eliminar esta amortización anticipada?')) {
+        return;
+    }
+    
+    try {
+        showLoader('Eliminando amortización...');
+        await apiRequest(`/loans/${loanId}/early-payment/${index}`, {
+            method: 'DELETE'
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        // Reabrir el modal de detalles para mostrar los cambios
+        showLoanDetails(loanId);
+        showToast('Amortización eliminada exitosamente', 'success');
+    } catch (error) {
+        showToast('Error al eliminar amortización: ' + error.message, 'error');
+    } finally {
+        hideLoader();
+    }
+}
+
+window.editEarlyPayment = editEarlyPayment;
+window.deleteEarlyPayment = deleteEarlyPayment;
+window.closeEditEarlyPaymentModal = closeEditEarlyPaymentModal;
 
 // ==================== INVERSIONES ====================
 
@@ -9755,7 +9911,7 @@ function exportData() {
             loan.interest_rate,
             loan.monthly_payment,
             loan.start_date,
-            loan.total_paid || 0,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
             loan.early_payments || []
         );
         return sum + amortization.finalBalance;
@@ -9766,7 +9922,7 @@ function exportData() {
             loan.interest_rate,
             loan.monthly_payment,
             loan.start_date,
-            loan.total_paid || 0,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
             loan.early_payments || []
         );
         return sum + amortization.finalBalance;
@@ -9849,7 +10005,7 @@ function updateFinancialHealthMetrics() {
             loan.interest_rate,
             loan.monthly_payment,
             loan.start_date,
-            loan.total_paid || 0,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
             loan.early_payments || []
         );
         return sum + amortization.finalBalance;
@@ -10859,7 +11015,7 @@ function showFinancialHealthDetail(metric, index) {
             loan.interest_rate,
             loan.monthly_payment,
             loan.start_date,
-            loan.total_paid || 0,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
             loan.early_payments || []
         );
         return sum + amortization.finalBalance;
@@ -10884,7 +11040,7 @@ function showFinancialHealthDetail(metric, index) {
             loan.interest_rate,
             loan.monthly_payment,
             loan.start_date,
-            loan.total_paid || 0,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
             loan.early_payments || []
         );
         return sum + amortization.finalBalance;

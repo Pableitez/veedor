@@ -1878,6 +1878,60 @@ app.delete('/api/loans/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// Editar amortización anticipada
+app.put('/api/loans/:id/early-payment/:index', authenticateToken, async (req, res) => {
+    try {
+        const loan = await Loan.findOne({ _id: req.params.id, user_id: req.user.userId });
+        if (!loan) {
+            return res.status(404).json({ error: 'Préstamo no encontrado' });
+        }
+
+        const index = parseInt(req.params.index);
+        if (!loan.early_payments || index < 0 || index >= loan.early_payments.length) {
+            return res.status(404).json({ error: 'Amortización no encontrada' });
+        }
+
+        const { date, amount, commission } = req.body;
+        if (!date || !amount || amount <= 0) {
+            return res.status(400).json({ error: 'Fecha y monto son requeridos' });
+        }
+
+        loan.early_payments[index] = {
+            date,
+            amount,
+            commission: commission || 0
+        };
+
+        await loan.save();
+        res.json(loan);
+    } catch (error) {
+        console.error('Error editando amortización:', error);
+        res.status(500).json({ error: 'Error al editar amortización' });
+    }
+});
+
+// Eliminar amortización anticipada
+app.delete('/api/loans/:id/early-payment/:index', authenticateToken, async (req, res) => {
+    try {
+        const loan = await Loan.findOne({ _id: req.params.id, user_id: req.user.userId });
+        if (!loan) {
+            return res.status(404).json({ error: 'Préstamo no encontrado' });
+        }
+
+        const index = parseInt(req.params.index);
+        if (!loan.early_payments || index < 0 || index >= loan.early_payments.length) {
+            return res.status(404).json({ error: 'Amortización no encontrada' });
+        }
+
+        loan.early_payments.splice(index, 1);
+        await loan.save();
+        res.json(loan);
+    } catch (error) {
+        console.error('Error eliminando amortización:', error);
+        res.status(500).json({ error: 'Error al eliminar amortización' });
+    }
+});
+
 // ==================== RUTAS DE PRESUPUESTOS ====================
 
 // Obtener todos los presupuestos del usuario
