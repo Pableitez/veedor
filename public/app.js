@@ -3453,7 +3453,7 @@ function updateBudgets() {
                     <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%; background: ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'};"></div>
                 </div>
             </div>
-            ${isOverBudget ? `<div style="padding: 8px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 12px; font-weight: 600; margin-top: 8px;">⚠️ ${isIncome ? 'Por debajo del presupuesto' : 'Presupuesto excedido'}</div>` : ''}
+            ${isOverBudget ? `<div style="padding: 8px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 12px; font-weight: 600; margin-top: 8px;">${isIncome ? 'Por debajo del presupuesto' : 'Presupuesto excedido'}</div>` : ''}
             <div style="margin-top: 8px; padding: 6px; background: ${isIncome ? 'var(--success-light)' : 'var(--gray-50)'}; border-radius: var(--radius); font-size: 11px; color: var(--gray-700);">
                 ${isIncome ? 'Ingreso' : 'Gasto'}
             </div>
@@ -9225,7 +9225,7 @@ function updateMonthDashboard() {
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${category.name}</h5>
-                        <span style="font-size: 11px; padding: 4px 8px; background: var(--success-light); border-radius: var(--radius); color: var(--success-dark); font-weight: 600;">💰 Ingreso</span>
+                        <span style="font-size: 11px; padding: 4px 8px; background: var(--success-light); border-radius: var(--radius); color: var(--success-dark); font-weight: 600;">Ingreso</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <span style="font-size: 14px; color: var(--gray-600);">Presupuesto:</span>
@@ -9246,7 +9246,7 @@ function updateMonthDashboard() {
                         <small style="font-size: 11px; color: var(--gray-500);">${categoryIncome.length} transacciones</small>
                         <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
                     </div>
-                    ${isUnderBudget ? '<div style="margin-top: 8px; padding: 6px; background: var(--bg-secondary); border: 1px solid var(--warning); border-radius: var(--radius); color: var(--warning); font-size: 11px; font-weight: 600;">⚠️ Por debajo del presupuesto</div>' : ''}
+                    ${isUnderBudget ? '<div style="margin-top: 8px; padding: 6px; background: var(--bg-secondary); border: 1px solid var(--warning); border-radius: var(--radius); color: var(--warning); font-size: 11px; font-weight: 600;">Por debajo del presupuesto</div>' : ''}
                 `;
                 budgetsStatusContainer.appendChild(card);
             });
@@ -9282,7 +9282,7 @@ function updateMonthDashboard() {
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${category.name}</h5>
-                        <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600;">💸 Gasto</span>
+                        <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600;">Gasto</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <span style="font-size: 14px; color: var(--gray-600);">Presupuesto:</span>
@@ -9303,7 +9303,7 @@ function updateMonthDashboard() {
                         <small style="font-size: 11px; color: var(--gray-500);">${categoryExpenses.length} transacciones</small>
                         <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}% usado</small>
                     </div>
-                    ${isOverBudget ? '<div style="margin-top: 8px; padding: 6px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 11px; font-weight: 600;">⚠️ Presupuesto excedido</div>' : ''}
+                    ${isOverBudget ? '<div style="margin-top: 8px; padding: 6px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 11px; font-weight: 600;">Presupuesto excedido</div>' : ''}
                 `;
                 budgetsStatusContainer.appendChild(card);
             });
