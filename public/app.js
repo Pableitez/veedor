@@ -9746,7 +9746,10 @@ function updateFinancialHealthMetrics() {
         return sum + amortization.finalBalance;
     }, 0);
     
-    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit;
+    // Calcular valor de activos (bienes/patrimonio)
+    const assetsValue = assets.reduce((sum, asset) => sum + (asset.current_value || 0), 0);
+    
+    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit + assetsValue;
     
     // Calcular deudas totales (histórico)
     // Verificar préstamos activos (que aún no han terminado)
@@ -9831,7 +9834,7 @@ function updateFinancialHealthMetrics() {
             value: debtPercentage.toFixed(1) + '%',
             description: `Deuda sobre activos totales`,
             status: debtStatus,
-            icon: '📊',
+            icon: '',
             detail: formatCurrency(loansDebt) + ' de ' + formatCurrency(totalAssets)
         },
         {
@@ -9839,7 +9842,7 @@ function updateFinancialHealthMetrics() {
             value: (debtToAssetsRatio * 100).toFixed(1) + '%',
             description: `Deuda / Activos totales`,
             status: debtRatioStatus,
-            icon: '⚖️',
+            icon: '',
             detail: debtToAssetsRatio < 0.3 ? 'Excelente' : debtToAssetsRatio < 0.5 ? 'Bueno' : debtToAssetsRatio < 0.7 ? 'Moderado' : 'Alto'
         },
         {
@@ -9847,7 +9850,7 @@ function updateFinancialHealthMetrics() {
             value: healthRatio > 999 ? '∞' : healthRatio < -999 ? '-∞' : healthRatio.toFixed(2),
             description: `Activos / Deudas`,
             status: healthStatus,
-            icon: '💚',
+            icon: '',
             detail: !hasActiveDebts ? (totalAssets > 0 ? 'Sin deudas activas, activos positivos' : (totalAssets < 0 ? 'Sin deudas activas, pero activos negativos' : 'Sin deudas activas ni activos')) : (healthRatio > 3 ? 'Excelente' : healthRatio > 2 ? 'Buena' : healthRatio > 1 ? 'Moderada' : 'Baja')
         },
         {
@@ -9855,7 +9858,7 @@ function updateFinancialHealthMetrics() {
             value: debtCoverageRatio > 999 ? '∞' : debtCoverageRatio.toFixed(2),
             description: `Ingresos anuales / Deuda`,
             status: coverageStatus,
-            icon: '🛡️',
+            icon: '',
             detail: !hasActiveDebts ? 'Sin deudas activas' : (debtCoverageRatio > 2 ? 'Excelente' : debtCoverageRatio > 1 ? 'Buena' : debtCoverageRatio > 0.5 ? 'Moderada' : 'Baja')
         },
         {
@@ -9863,7 +9866,7 @@ function updateFinancialHealthMetrics() {
             value: savingsRatio.toFixed(1) + '%',
             description: `Ahorro del período / Ingresos del período`,
             status: savingsStatus,
-            icon: '💰',
+            icon: '',
             detail: formatCurrency(periodSavings) + ' de ' + formatCurrency(periodIncome) + (periodIncome === 0 ? ' (sin ingresos)' : '')
         },
         {
@@ -9871,7 +9874,7 @@ function updateFinancialHealthMetrics() {
             value: liquidityRatio > 999 ? '∞' : liquidityRatio < 0 ? '0.0 meses' : liquidityRatio.toFixed(1) + ' meses',
             description: `Activos líquidos / Gastos mensuales promedio`,
             status: liquidityStatus,
-            icon: '💧',
+            icon: '',
             detail: totalTransactionsBalance < 0 ? 'Balance negativo' : (avgMonthlyExpenses === 0 && totalTransactionsBalance > 0 ? 'Sin gastos, balance positivo' : (liquidityRatio >= 6 ? 'Excelente' : liquidityRatio >= 3 ? 'Buena' : liquidityRatio >= 1 ? 'Moderada' : 'Baja'))
         },
         {
@@ -9879,7 +9882,7 @@ function updateFinancialHealthMetrics() {
             value: investmentRatio.toFixed(1) + '%',
             description: `Inversiones / Activos totales`,
             status: investmentStatus,
-            icon: '📈',
+            icon: '',
             detail: totalAssets <= 0 ? 'Sin activos o activos negativos' : (formatCurrency(investmentsValue) + ' de ' + formatCurrency(totalAssets))
         },
         {
@@ -9887,7 +9890,7 @@ function updateFinancialHealthMetrics() {
             value: debtServiceRatio >= 999 ? '∞%' : debtServiceRatio.toFixed(1) + '%',
             description: `Pagos mensuales / Ingresos mensuales promedio`,
             status: debtServiceStatus,
-            icon: '💳',
+            icon: '',
             detail: formatCurrency(monthlyLoanPayments) + ' de ' + formatCurrency(avgMonthlyIncome) + (avgMonthlyIncome === 0 ? ' (sin ingresos)' : '')
         }
     ];
@@ -9939,8 +9942,7 @@ function updateFinancialHealthMetrics() {
         card.innerHTML = `
             <div style="display: flex; align-items: start; justify-content: space-between; margin-bottom: 12px;">
                 <div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                        <span style="font-size: 20px;">${metric.icon}</span>
+                    <div style="margin-bottom: 4px;">
                         <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-primary);">${metric.title}</h3>
                     </div>
                     <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">${metric.description}</p>
@@ -10695,7 +10697,7 @@ function showFinancialHealthDetail(metric, index) {
     
     if (!modal || !titleEl || !contentEl) return;
     
-    titleEl.textContent = `${metric.icon} ${metric.title}`;
+    titleEl.textContent = metric.title;
     
     // Obtener datos detallados según la métrica
     const periodTransactions = getTransactionsByPeriod();
@@ -10728,7 +10730,10 @@ function showFinancialHealthDetail(metric, index) {
         );
         return sum + amortization.finalBalance;
     }, 0);
-    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit;
+    // Calcular valor de activos (bienes/patrimonio)
+    const assetsValue = assets.reduce((sum, asset) => sum + (asset.current_value || 0), 0);
+    
+    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit + assetsValue;
     
     // Verificar préstamos activos (que aún no han terminado)
     const activeDebtLoans = loans.filter(l => {

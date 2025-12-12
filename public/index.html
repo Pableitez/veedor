@@ -84,7 +84,7 @@
                     <path d="M40 8 L40 16 M40 64 L40 72 M8 40 L16 40 M64 40 L72 40" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
                     <path d="M20 20 L26 26 M60 20 L54 26 M20 60 L26 54 M60 60 L54 54" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
                 </svg>
-                <h1 style="font-size: clamp(22px, 4vw, 36px); font-weight: 800; letter-spacing: -1px; margin: 0 0 clamp(6px, 1vh, 8px) 0; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; transition: all 0.3s ease;">Veedor</h1>
+                <h1 style="font-size: clamp(22px, 4vw, 36px); font-weight: 800; letter-spacing: -1px; margin: 0 0 clamp(6px, 1vh, 8px) 0; background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; transition: all 0.3s ease;">Veedor</h1>
                 <p style="font-size: clamp(12px, 1.8vw, 16px); color: var(--text-secondary); margin: 0; font-weight: 500; transition: all 0.3s ease;" data-translate="auth.subtitle">Tu dinero, tu control. Toma decisiones inteligentes.</p>
             </div>
             
@@ -196,7 +196,7 @@
                         <path d="M20 4 L20 8 M20 32 L20 36 M4 20 L8 20 M32 20 L36 20" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.8" class="logo-path"/>
                         <path d="M10 10 L13 13 M30 10 L27 13 M10 30 L13 27 M30 30 L27 27" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7" class="logo-path"/>
                     </svg>
-                    <h1 style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -1px; white-space: nowrap; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">Veedor</h1>
+                    <h1 style="margin: 0; font-size: 36px; font-weight: 800; letter-spacing: -1px; white-space: nowrap; background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">Veedor</h1>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
@@ -323,8 +323,8 @@
                                 <h3 style="color: rgba(255,255,255,0.9); margin-bottom: 12px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.95;">Tu Fondo de Emergencia</h3>
                                 <p class="amount" id="savingsGoal" style="color: white; font-size: 32px; font-weight: 700; margin: 8px 0 12px 0; line-height: 1.1; letter-spacing: -0.5px;">Sin meta</p>
                                 <div id="savingsGoalProgress" style="display: none; margin-top: 12px;">
-                                    <div style="background: rgba(255,255,255,0.25); border-radius: 50%; height: 8px; overflow: hidden; margin-bottom: 8px;">
-                                        <div id="savingsGoalProgressBar" style="background: white; height: 100%; border-radius: 50%; transition: width 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div>
+                                    <div style="background: rgba(255,255,255,0.25); border-radius: 8px; height: 8px; overflow: hidden; margin-bottom: 8px;">
+                                        <div id="savingsGoalProgressBar" style="background: white; height: 100%; border-radius: 8px; transition: width 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div>
                                     </div>
                                     <small id="savingsGoalProgressText" style="color: rgba(255,255,255,0.95); font-size: 11px; font-weight: 600; line-height: 1.2;"></small>
                                 </div>
@@ -1346,9 +1346,9 @@
                 </div>
                 
                 <!-- Métricas de Salud Financiera -->
-                <div class="chart-controls" style="margin-top: 32px; margin-bottom: 20px; padding: 15px; background: var(--bg-primary); border-radius: 50%; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; border: 1px solid var(--border-color); color: var(--text-primary);">
+                <div class="chart-controls" style="margin-top: 32px; margin-bottom: 20px; padding: 15px; background: var(--bg-primary); border-radius: 8px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; border: 1px solid var(--border-color); color: var(--text-primary);">
                     <label style="font-weight: 600;">Período:</label>
-                    <select id="chartPeriod" style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 50%; font-size: 14px; background: var(--bg-primary); color: var(--text-primary);">
+                    <select id="chartPeriod" style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: var(--bg-primary); color: var(--text-primary);">
                         <option value="1">Último mes</option>
                         <option value="3">Últimos 3 meses</option>
                         <option value="6" selected>Últimos 6 meses</option>
@@ -1476,7 +1476,7 @@
                 </div>
             </div>
             <div class="chart-modal-body" style="padding: 24px 32px; flex: 1; overflow-y: auto; overflow-x: hidden;">
-                <div id="chartModalControls" class="chart-modal-controls" style="margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; padding: 16px; background: var(--gray-50); border-radius: 50%;">
+                <div id="chartModalControls" class="chart-modal-controls" style="margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; padding: 16px; background: var(--gray-50); border-radius: 8px;">
                     <!-- Controles se llenarán dinámicamente -->
                 </div>
                 <div class="chart-modal-canvas-container" style="position: relative; height: 60vh; min-height: 400px; max-height: 600px; width: 100%; padding: 30px; box-sizing: border-box; margin: 0 auto;">

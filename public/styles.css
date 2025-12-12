@@ -986,30 +986,27 @@ body.dark-mode .footer-copyright strong {
     color: rgba(255, 255, 255, 0.8) !important;
 }
 
-/* Texto "Veedor" en footer - mejor visibilidad en ambos modos */
+/* Texto "Veedor" en footer - gradiente azul acorde al tema */
 .footer-veedor-text {
-    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%);
+    background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 700;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 body:not(.dark-mode) .footer-veedor-text {
-    background: linear-gradient(90deg, #EF4444 0%, #10B981 20%, #3B82F6 40%, #8B5CF6 60%, #F59E0B 80%, #EF4444 100%);
+    background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
 }
 
 body.dark-mode .footer-veedor-text {
-    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%);
+    background: linear-gradient(180deg, #3B82F6 0%, #60A5FA 50%, #93C5FD 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.1));
 }
 
 /* Enlaces del footer */
@@ -1027,7 +1024,7 @@ header h1 {
     color: rgba(255, 255, 255, 0.9);
     letter-spacing: -1px;
     margin: 0;
-    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%);
+    background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1042,16 +1039,16 @@ header svg#headerLogo,
     height: 52px;
 }
 
-/* Ajustar arcoíris en modo claro - más visible */
+/* Ajustar gradiente azul en modo claro - más visible */
 body:not(.dark-mode) header h1 {
-    background: linear-gradient(90deg, #EF4444 0%, #10B981 20%, #3B82F6 40%, #8B5CF6 60%, #F59E0B 80%, #EF4444 100%);
+    background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .header-actions {
@@ -1436,19 +1433,22 @@ input[type="datetime-local"] {
     border: 1.5px solid var(--border-color) !important;
 }
 
-input[type="month"]::-webkit-calendar-picker-indicator,
-input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
+/* Icono del calendario - visible en modo claro */
+body:not(.dark-mode) input[type="month"]::-webkit-calendar-picker-indicator,
+body:not(.dark-mode) input[type="date"]::-webkit-calendar-picker-indicator,
+body:not(.dark-mode) input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: none;
     cursor: pointer;
-    opacity: 0.8;
+    opacity: 0.7;
 }
 
+/* Icono del calendario - visible en modo oscuro */
 body.dark-mode input[type="month"]::-webkit-calendar-picker-indicator,
 body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator,
 body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     filter: invert(1) brightness(10);
     opacity: 1;
+    cursor: pointer;
 }
 
 .form-group input:focus,
@@ -1890,10 +1890,10 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     scrollbar-color: var(--border-color) var(--bg-primary);
 }
 
-/* Tablas de análisis detallado con altura máxima y scroll */
+/* Tablas de análisis detallado sin scroll vertical */
 #charts-tab .table-section .table-container {
-    max-height: 400px;
-    overflow-y: auto;
+    max-height: none;
+    overflow-y: visible;
     overflow-x: auto;
     position: relative;
 }
@@ -3075,10 +3075,10 @@ tbody tr:last-child td {
         box-sizing: border-box !important;
     }
     
-    /* Tablas de análisis detallado con altura máxima en móvil */
+    /* Tablas de análisis detallado sin scroll vertical en móvil */
     #charts-tab .table-section .table-container {
-        max-height: 350px !important;
-        overflow-y: auto !important;
+        max-height: none !important;
+        overflow-y: visible !important;
     }
     
     .table-container table {
