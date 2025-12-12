@@ -90,12 +90,12 @@ html {
     width: 100%;
     overflow-x: hidden;
     box-sizing: border-box;
-    background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 20%, #BAE6FD 40%, #7DD3FC 60%, #38BDF8 80%, #0EA5E9 100%);
+    background: linear-gradient(180deg, #F0F9FF 0%, #E0F2FE 20%, #BAE6FD 40%, #7DD3FC 60%, #38BDF8 80%, #0EA5E9 100%);
     background-attachment: fixed;
 }
 
 html.dark-mode {
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 20%, #1E3A8A 40%, #2563EB 70%, #3B82F6 90%, #6366F1 100%);
+    background: linear-gradient(180deg, #0F172A 0%, #1E293B 20%, #1E3A8A 40%, #2563EB 70%, #3B82F6 90%, #6366F1 100%);
     background-attachment: fixed;
 }
 
@@ -308,7 +308,7 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 20%, #BAE6FD 40%, #7DD3FC 60%, #38BDF8 80%, #0EA5E9 100%);
+    background: linear-gradient(180deg, #F0F9FF 0%, #E0F2FE 20%, #BAE6FD 40%, #7DD3FC 60%, #38BDF8 80%, #0EA5E9 100%);
     background-attachment: fixed;
     position: relative;
     overflow: hidden;
@@ -319,7 +319,7 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
 }
 
 body.dark-mode .auth-screen {
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 20%, #1E3A8A 40%, #2563EB 70%, #3B82F6 90%, #6366F1 100%);
+    background: linear-gradient(180deg, #0F172A 0%, #1E293B 20%, #1E3A8A 40%, #2563EB 70%, #3B82F6 90%, #6366F1 100%);
     background-attachment: fixed;
 }
 
@@ -798,9 +798,11 @@ body.dark-mode .auth-screen::before {
    ============================================ */
 
 header {
-    background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
-    color: white;
-    border-bottom: none;
+    background: linear-gradient(180deg, rgba(30, 58, 138, 0.95) 0%, rgba(59, 130, 246, 0.95) 50%, rgba(99, 102, 241, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     padding: 18px 32px;
     display: flex;
     justify-content: space-between;
@@ -808,7 +810,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
     box-sizing: border-box;
@@ -820,7 +822,7 @@ header {
 header h1 {
     font-size: 28px;
     font-weight: 700;
-    color: white;
+    color: rgba(255, 255, 255, 0.9);
     letter-spacing: -0.5px;
     margin: 0;
 }
@@ -1017,7 +1019,7 @@ body.dark-mode .revolut-card:hover {
 
 /* Card especial - Meta de Ahorro */
 .card[style*="background: linear-gradient"] {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
     border: none;
     color: white;
 }
@@ -1049,6 +1051,7 @@ body.dark-mode .revolut-card:hover {
 
 .main-content {
     padding: 40px;
+    padding-top: 24px;
     background: var(--bg-primary);
     transition: background-color 0.3s;
     max-width: 1400px;
@@ -1120,6 +1123,15 @@ body.dark-mode .revolut-card:hover {
 
 .form-section {
     background: var(--bg-primary);
+    padding: 36px;
+    border-radius: 20px;
+    margin-top: 24px;
+    margin-bottom: 32px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
+    color: var(--text-primary);
+    overflow: hidden;
 }
 
 .form-section form {
@@ -1136,14 +1148,6 @@ body.dark-mode .revolut-card:hover {
         opacity: 1;
         transform: translateY(0);
     }
-}
-    padding: 36px;
-    border-radius: 20px;
-    margin-bottom: 32px;
-    border: 1px solid var(--border-color);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
-    color: var(--text-primary);
 }
 
 .form-section h2 {
@@ -1234,7 +1238,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
    ============================================ */
 
 .btn-primary {
-    background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
+    background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
     color: white;
     border: none;
     padding: 14px 28px;
@@ -1257,7 +1261,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #4F46E5 100%);
+    background: linear-gradient(180deg, #1E40AF 0%, #2563EB 50%, #4F46E5 100%);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     /* Sin transform para evitar scroll horizontal */
 }
@@ -2524,12 +2528,15 @@ tbody tr:last-child td {
     
     .form-section {
         padding: 20px 16px !important;
+        padding-top: 20px !important;
+        margin-top: 16px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
         overflow-x: hidden !important;
+        border-radius: 16px !important;
     }
     
     .table-controls {
@@ -3457,12 +3464,15 @@ tbody tr:last-child td {
     
     .form-section {
         padding: 16px 12px !important;
+        padding-top: 16px !important;
+        margin-top: 12px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
         overflow-x: hidden !important;
+        border-radius: 16px !important;
     }
     
     /* Selector de mes en análisis - centrado en móvil */

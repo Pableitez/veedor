@@ -8474,7 +8474,6 @@ function updateAccountsBalanceChart() {
 let chartModalChart = null;
 
 function openChartModal(chartType, title) {
-    // Replicar la lógica exacta de showFinancialHealthDetail
     const modal = document.getElementById('chartModal');
     const modalTitle = document.getElementById('chartModalTitle');
     const modalContent = document.getElementById('chartModalControls');
@@ -8500,14 +8499,122 @@ function openChartModal(chartType, title) {
         chartModalChart = null;
     }
     
-    // Limpiar controles (opcional, pueden quedarse)
+    // Crear controles en el modal
     if (modalContent) {
         modalContent.innerHTML = '';
+        
+        // Obtener el período actual del gráfico original
+        const originalPeriodSelect = document.querySelector(`.chart-period-select[data-chart="${chartType}"]`);
+        const currentPeriod = originalPeriodSelect ? originalPeriodSelect.value : '6';
+        
+        // Crear selector de período
+        const periodDiv = document.createElement('div');
+        periodDiv.style.display = 'flex';
+        periodDiv.style.flexDirection = 'column';
+        periodDiv.style.gap = '8px';
+        
+        const periodLabel = document.createElement('label');
+        periodLabel.textContent = 'Período:';
+        periodLabel.style.fontWeight = '600';
+        periodLabel.style.fontSize = '14px';
+        periodLabel.style.color = 'var(--text-primary)';
+        
+        const periodSelect = document.createElement('select');
+        periodSelect.id = 'modalChartPeriod';
+        periodSelect.className = 'chart-period-select';
+        periodSelect.style.padding = '8px 12px';
+        periodSelect.style.border = '1.5px solid var(--border-color)';
+        periodSelect.style.borderRadius = '8px';
+        periodSelect.style.fontSize = '14px';
+        periodSelect.style.background = 'var(--bg-primary)';
+        periodSelect.style.color = 'var(--text-primary)';
+        periodSelect.style.cursor = 'pointer';
+        
+        const periodOptions = [
+            { value: '1', text: '1 mes' },
+            { value: '3', text: '3 meses' },
+            { value: '6', text: '6 meses' },
+            { value: '12', text: '12 meses' },
+            { value: 'all', text: 'Todo' }
+        ];
+        
+        periodOptions.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.text;
+            if (opt.value === currentPeriod) option.selected = true;
+            periodSelect.appendChild(option);
+        });
+        
+        periodDiv.appendChild(periodLabel);
+        periodDiv.appendChild(periodSelect);
+        modalContent.appendChild(periodDiv);
+        
+        // Crear selector de categoría si el gráfico lo soporta
+        const categoryCharts = ['incomeEvolution', 'expensesEvolution'];
+        if (categoryCharts.includes(chartType)) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.style.display = 'flex';
+            categoryDiv.style.flexDirection = 'column';
+            categoryDiv.style.gap = '8px';
+            
+            const categoryLabel = document.createElement('label');
+            categoryLabel.textContent = 'Categoría:';
+            categoryLabel.style.fontWeight = '600';
+            categoryLabel.style.fontSize = '14px';
+            categoryLabel.style.color = 'var(--text-primary)';
+            
+            const categorySelect = document.createElement('select');
+            categorySelect.id = 'modalChartCategoryFilter';
+            categorySelect.className = 'chart-category-filter';
+            categorySelect.style.padding = '8px 12px';
+            categorySelect.style.border = '1.5px solid var(--border-color)';
+            categorySelect.style.borderRadius = '8px';
+            categorySelect.style.fontSize = '14px';
+            categorySelect.style.background = 'var(--bg-primary)';
+            categorySelect.style.color = 'var(--text-primary)';
+            categorySelect.style.cursor = 'pointer';
+            
+            // Obtener categorías según el tipo de gráfico
+            const isIncome = chartType === 'incomeEvolution';
+            const chartCategories = isIncome ? categories.income : categories.expense;
+            
+            const allOption = document.createElement('option');
+            allOption.value = 'all';
+            allOption.textContent = 'Todas las categorías';
+            categorySelect.appendChild(allOption);
+            
+            chartCategories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categorySelect.appendChild(option);
+            });
+            
+            // Obtener el valor actual del gráfico original
+            const originalCategorySelect = document.querySelector(`.chart-category-filter[data-chart="${chartType}"]`);
+            if (originalCategorySelect) {
+                categorySelect.value = originalCategorySelect.value || 'all';
+            }
+            
+            categoryDiv.appendChild(categoryLabel);
+            categoryDiv.appendChild(categorySelect);
+            modalContent.appendChild(categoryDiv);
+            
+            // Event listener para categoría
+            categorySelect.addEventListener('change', () => {
+                updateModalChart(chartType);
+            });
+        }
+        
+        // Event listener para período
+        periodSelect.addEventListener('change', () => {
+            updateModalChart(chartType);
+        });
     }
     
     // Asegurar que el contenedor del canvas exista y tenga dimensiones
     if (modalCanvasContainer) {
-        // Usar la altura del contenedor que ya está definida en CSS (70vh)
         modalCanvasContainer.style.width = '100%';
     }
     
@@ -8517,22 +8624,80 @@ function openChartModal(chartType, title) {
         return;
     }
     
-    // Crear gráfico directamente igual que showFinancialHealthDetail
+    // Crear gráfico inicial
+    updateModalChart(chartType);
+}
+
+// Función para actualizar el gráfico del modal
+function updateModalChart(chartType) {
+    const modalCanvas = document.getElementById('chartModalCanvas');
+    if (!modalCanvas) return;
+    
+    // Obtener valores de los controles del modal
+    const modalPeriodSelect = document.getElementById('modalChartPeriod');
+    const modalCategorySelect = document.getElementById('modalChartCategoryFilter');
+    
+    if (!modalPeriodSelect) return;
+    
+    // Obtener período seleccionado en el modal
+    const modalPeriod = modalPeriodSelect.value === 'all' ? 999 : parseInt(modalPeriodSelect.value) || 6;
+    const modalCategory = modalCategorySelect ? modalCategorySelect.value : 'all';
+    
+    // Obtener transacciones filtradas según el período del modal
+    const now = new Date();
+    let periodTransactions = [];
+    
+    if (modalPeriod === 999) {
+        periodTransactions = [...transactions];
+    } else {
+        const startDate = new Date(now.getFullYear(), now.getMonth() - modalPeriod, 1);
+        periodTransactions = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate >= startDate;
+        });
+    }
+    
+    // Filtrar por categoría si está seleccionada
+    if (modalCategory !== 'all' && (chartType === 'incomeEvolution' || chartType === 'expensesEvolution')) {
+        periodTransactions = periodTransactions.filter(t => t.categoryGeneral === modalCategory);
+    }
+    
+    // Obtener el gráfico original para copiar su estructura
+    const originalChart = charts[chartType];
+    if (!originalChart) return;
+    
+    // Destruir gráfico del modal anterior
+    if (chartModalChart) {
+        chartModalChart.destroy();
+        chartModalChart = null;
+    }
+    
+    // Generar datos según el tipo de gráfico
+    let chartData = { labels: [], datasets: [] };
+    let chartOptions = JSON.parse(JSON.stringify(originalChart.options || {}));
+    
+    // Llamar a función específica para generar datos según el tipo
+    if (chartType === 'incomeEvolution' || chartType === 'expensesEvolution') {
+        chartData = generateEvolutionChartData(chartType, periodTransactions, modalPeriod);
+    } else {
+        // Para otros tipos de gráficos, usar la lógica existente pero con datos filtrados
+        // Por ahora, clonar los datos del original y actualizar con los filtros
+        chartData = JSON.parse(JSON.stringify(originalChart.data));
+    }
+    
+    // Crear nuevo gráfico en el modal
     setTimeout(() => {
         try {
-            const clonedData = JSON.parse(JSON.stringify(originalChart.data));
-            const clonedOptions = JSON.parse(JSON.stringify(originalChart.options || {}));
-            
             chartModalChart = new Chart(modalCanvas, {
                 type: originalChart.config.type,
-                data: clonedData,
+                data: chartData,
                 options: {
-                    ...clonedOptions,
+                    ...chartOptions,
                     responsive: true,
-                    maintainAspectRatio: true, // Cambiar a true para que se adapte mejor
-                    aspectRatio: 2, // Proporción más ancha
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
                     plugins: {
-                        ...clonedOptions.plugins,
+                        ...chartOptions.plugins,
                         legend: {
                             display: true,
                             position: 'top',
@@ -8542,19 +8707,18 @@ function openChartModal(chartType, title) {
                             }
                         }
                     },
-                    scales: clonedOptions.scales ? {
-                        ...clonedOptions.scales,
-                        // Asegurar que los ejes se adapten bien
-                        x: clonedOptions.scales.x ? {
-                            ...clonedOptions.scales.x,
+                    scales: chartOptions.scales ? {
+                        ...chartOptions.scales,
+                        x: chartOptions.scales.x ? {
+                            ...chartOptions.scales.x,
                             ticks: {
-                                ...clonedOptions.scales.x.ticks,
+                                ...chartOptions.scales.x.ticks,
                                 maxRotation: 45,
                                 minRotation: 0
                             }
                         } : undefined,
-                        y: clonedOptions.scales.y ? {
-                            ...clonedOptions.scales.y
+                        y: chartOptions.scales.y ? {
+                            ...chartOptions.scales.y
                         } : undefined
                     } : undefined
                 }
@@ -8563,6 +8727,113 @@ function openChartModal(chartType, title) {
             console.error('Error al crear gráfico:', error);
         }
     }, 100);
+}
+
+// Función auxiliar para generar datos de gráficos de evolución
+function generateEvolutionChartData(chartType, periodTransactions, period) {
+    const isIncome = chartType === 'incomeEvolution';
+    const now = new Date();
+    const months = [];
+    
+    if (periodTransactions.length === 0) {
+        return { labels: [], datasets: [] };
+    }
+    
+    // Generar meses
+    if (period === 999) {
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        let currentMonth = firstDate.getMonth();
+        let currentYear = firstDate.getFullYear();
+        const endMonth = now.getMonth();
+        const endYear = now.getFullYear();
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    } else {
+        for (let i = period - 1; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+        }
+    }
+    
+    // Obtener todas las categorías únicas
+    const chartCategories = {};
+    periodTransactions.filter(t => t.type === (isIncome ? 'income' : 'expense')).forEach(t => {
+        let catName;
+        const catList = isIncome ? categories.income : categories.expense;
+        const cat = catList.find(c => c.id === t.categoryGeneral);
+        if (cat) {
+            catName = cat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        if (!chartCategories[catName]) {
+            chartCategories[catName] = [];
+        }
+    });
+    
+    // Agrupar transacciones por mes y categoría
+    months.forEach(monthKey => {
+        const [monthName, year] = monthKey.split(' ');
+        const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+        const yearNum = parseInt(year);
+        
+        Object.keys(chartCategories).forEach(catName => {
+            const monthTotal = periodTransactions
+                .filter(t => {
+                    const tDate = new Date(t.date);
+                    return tDate.getMonth() === monthIndex &&
+                           tDate.getFullYear() === yearNum &&
+                           t.type === (isIncome ? 'income' : 'expense') &&
+                           (() => {
+                               const catList = isIncome ? categories.income : categories.expense;
+                               const cat = catList.find(c => c.id === t.categoryGeneral);
+                               const name = cat ? cat.name : t.categoryGeneral;
+                               return name === catName;
+                           })();
+                })
+                .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            
+            chartCategories[catName].push(monthTotal);
+        });
+    });
+    
+    // Crear datasets
+    const datasets = Object.keys(chartCategories).map((catName, index) => {
+        const colors = [
+            'rgba(59, 130, 246, 0.8)',   // Azul
+            'rgba(16, 185, 129, 0.8)',   // Verde
+            'rgba(245, 101, 101, 0.8)',  // Rojo
+            'rgba(251, 191, 36, 0.8)',   // Amarillo
+            'rgba(139, 92, 246, 0.8)',   // Púrpura
+            'rgba(236, 72, 153, 0.8)',   // Rosa
+            'rgba(20, 184, 166, 0.8)',   // Cian
+            'rgba(249, 115, 22, 0.8)'    // Naranja
+        ];
+        
+        return {
+            label: catName,
+            data: chartCategories[catName],
+            borderColor: colors[index % colors.length],
+            backgroundColor: colors[index % colors.length].replace('0.8', '0.2'),
+            borderWidth: 2,
+            fill: true
+        };
+    });
+    
+    return {
+        labels: months,
+        datasets: datasets
+    };
 }
 
 function closeChartModal() {
