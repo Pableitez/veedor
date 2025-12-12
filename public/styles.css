@@ -596,10 +596,13 @@ body.dark-mode .auth-screen::before {
 .auth-header h1 {
     font-size: clamp(22px, 4vw, 36px);
     font-weight: 800;
-    color: var(--primary);
     margin-bottom: clamp(6px, 1vh, 12px);
     letter-spacing: -1px;
     transition: all 0.3s ease;
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .auth-header p {
@@ -817,6 +820,7 @@ header {
     margin: 0;
     left: 0;
     right: 0;
+    border-radius: 0;
 }
 
 /* Ajustar colores del header en modo claro */
@@ -841,7 +845,7 @@ body:not(.dark-mode) #settingsDropdownBtn {
     color: rgba(30, 58, 138, 1) !important;
     border-color: rgba(30, 58, 138, 0.4) !important;
     background: rgba(255, 255, 255, 0.9) !important;
-    border-radius: 8px !important;
+    border-radius: 4px !important;
     border-width: 1.5px !important;
     padding: 8px !important;
     width: 36px !important;
@@ -911,6 +915,59 @@ body:not(.dark-mode) #settingsDropdownBtn svg path {
     fill: none !important;
 }
 
+/* Estilos unificados para botones del header en modo oscuro */
+body.dark-mode header button,
+body.dark-mode .main-header button,
+body.dark-mode #mainNavDropdownBtn,
+body.dark-mode #settingsDropdownBtn {
+    color: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px !important;
+    border-width: 1.5px !important;
+    padding: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
+}
+
+body.dark-mode header button:hover,
+body.dark-mode .main-header button:hover,
+body.dark-mode #mainNavDropdownBtn:hover,
+body.dark-mode #settingsDropdownBtn:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: rgba(255, 255, 255, 1) !important;
+}
+
+body.dark-mode header button span,
+body.dark-mode .main-header button span {
+    color: rgba(255, 255, 255, 0.95) !important;
+    opacity: 1 !important;
+}
+
+body.dark-mode header button svg,
+body.dark-mode .main-header button svg,
+body.dark-mode #mainNavDropdownBtn svg,
+body.dark-mode #settingsDropdownBtn svg {
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+body.dark-mode header button svg circle,
+body.dark-mode .main-header button svg circle,
+body.dark-mode #mainNavDropdownBtn svg circle,
+body.dark-mode #settingsDropdownBtn svg circle {
+    stroke: rgba(255, 255, 255, 0.95) !important;
+    fill: none !important;
+}
+
+body.dark-mode header button svg path,
+body.dark-mode .main-header button svg path,
+body.dark-mode #mainNavDropdownBtn svg path,
+body.dark-mode #settingsDropdownBtn svg path {
+    stroke: rgba(255, 255, 255, 0.95) !important;
+    fill: none !important;
+}
+
 /* Footer en modo claro con color azul */
 body:not(.dark-mode) footer,
 body:not(.dark-mode) .main-footer {
@@ -950,6 +1007,12 @@ header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+header svg#headerLogo,
+.main-header svg#headerLogo {
+    width: 48px;
+    height: 48px;
 }
 
 /* Ajustar arcoíris en modo claro */
@@ -3242,8 +3305,14 @@ tbody tr:last-child td {
     }
     
     header h1 {
-        font-size: 15px !important;
+        font-size: 22px !important;
         max-width: calc(100vw - 180px) !important;
+    }
+    
+    header svg#headerLogo,
+    .main-header svg#headerLogo {
+        width: 40px !important;
+        height: 40px !important;
     }
     
     #mainNavDropdownBtn,
