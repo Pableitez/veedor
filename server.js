@@ -182,6 +182,7 @@ const propertySchema = new mongoose.Schema({
     address: { type: String, default: null }, // Dirección completa
     type: { type: String, enum: ['apartment', 'house', 'office', 'commercial', 'other'], default: 'apartment' }, // Tipo de propiedad
     description: { type: String, default: null },
+    current_value: { type: Number, default: 0 }, // Valor actual de la propiedad
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });
@@ -2257,7 +2258,7 @@ app.post('/api/properties', authenticateToken, async (req, res) => {
 // Actualizar propiedad
 app.put('/api/properties/:id', authenticateToken, async (req, res) => {
     try {
-        const { name, address, type, description } = req.body;
+        const { name, address, type, description, current_value } = req.body;
         
         const property = await Property.findOneAndUpdate(
             { _id: req.params.id, user_id: req.user.userId },
@@ -2266,6 +2267,7 @@ app.put('/api/properties/:id', authenticateToken, async (req, res) => {
                 address, 
                 type, 
                 description,
+                current_value: current_value !== undefined ? current_value : undefined,
                 updated_at: new Date()
             },
             { new: true }

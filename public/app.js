@@ -1823,6 +1823,11 @@ function initializeForms() {
     // Formulario de préstamos
     const loanForm = document.getElementById('loanForm');
     if (loanForm) {
+        // Actualizar selectores cuando se muestra el formulario
+        updatePropertySelect('loanProperty');
+        updateAssetSelect('loanAsset');
+        updateAccountSelect('loanAccount');
+        
         loanForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             await addLoan();
@@ -2091,6 +2096,15 @@ function initializeForms() {
         updateAssetValueForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             await processUpdateAssetValue();
+        });
+    }
+    
+    // Inicializar formulario de actualizar valor de propiedad
+    const updatePropertyValueForm = document.getElementById('updatePropertyValueForm');
+    if (updatePropertyValueForm) {
+        updatePropertyValueForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processUpdatePropertyValue();
         });
     }
     
@@ -5895,8 +5909,13 @@ function updateProperties() {
                     <div style="font-size: 18px; font-weight: 700; color: var(--success);">${formatCurrency(propertyIncomes)}</div>
                 </div>
             </div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
+                <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Valor Actual</div>
+                <div style="font-size: 18px; font-weight: 700; color: var(--primary);">${formatCurrency(property.current_value || 0)}</div>
+            </div>
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 16px;">
                 <button class="btn-secondary" onclick="editProperty('${property._id || property.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-secondary" onclick="showUpdatePropertyValueModal('${property._id || property.id}')" style="flex: 1;">Actualizar Valor</button>
                 <button class="btn-danger" onclick="deleteProperty('${property._id || property.id}')" style="flex: 1;">Eliminar</button>
             </div>
         `;
@@ -6053,6 +6072,81 @@ async function updatePropertyFromModal() {
 }
 
 window.closeEditPropertyModal = closeEditPropertyModal;
+
+// Variable global para el ID de la propiedad que se está editando
+let currentPropertyId = null;
+
+// Mostrar modal de actualizar valor de propiedad
+function showUpdatePropertyValueModal(propertyId) {
+    const property = properties.find(p => (p._id || p.id) === propertyId);
+    if (!property) {
+        showToast('Propiedad no encontrada', 'error');
+        return;
+    }
+    
+    currentPropertyId = propertyId;
+    
+    const modal = document.getElementById('updatePropertyValueModal');
+    const title = document.getElementById('updatePropertyValueTitle');
+    const input = document.getElementById('updatePropertyValueInput');
+    
+    if (!modal || !title || !input) {
+        showToast('Modal no encontrado', 'error');
+        return;
+    }
+    
+    title.textContent = `Actualizar Valor de ${property.name}`;
+    input.value = property.current_value || 0;
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de actualizar valor de propiedad
+function closeUpdatePropertyValueModal() {
+    const modal = document.getElementById('updatePropertyValueModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentPropertyId = null;
+    }
+}
+
+// Procesar actualización de valor de propiedad
+async function processUpdatePropertyValue() {
+    if (!currentPropertyId) return;
+    
+    const property = properties.find(p => (p._id || p.id) === currentPropertyId);
+    if (!property) return;
+    
+    const input = document.getElementById('updatePropertyValueInput');
+    if (!input || input.value === '' || isNaN(input.value)) {
+        showToast('Por favor ingresa un número válido', 'warning');
+        return;
+    }
+    
+    const currentValue = parseFloat(input.value);
+    
+    try {
+        showLoader('Actualizando valor...');
+        await apiRequest(`/properties/${currentPropertyId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                ...property,
+                current_value: currentValue
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        closeUpdatePropertyValueModal();
+        showToast('Valor actualizado exitosamente', 'success');
+    } catch (error) {
+        showToast('Error al actualizar valor: ' + error.message, 'error');
+    } finally {
+        hideLoader();
+    }
+}
+
+window.showUpdatePropertyValueModal = showUpdatePropertyValueModal;
+window.closeUpdatePropertyValueModal = closeUpdatePropertyValueModal;
 
 // Eliminar propiedad
 async function deleteProperty(id) {
