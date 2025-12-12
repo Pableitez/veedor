@@ -1289,6 +1289,8 @@ async function loadUserData() {
         // Actualizar selectores después de cargar datos
         updateAccountSelect();
         updatePropertySelect();
+        updateLoanSelect();
+        updateInvestmentSelect();
         
         // Guardar en cache
         const cacheKey = `veedor_data_cache_${currentUser}`;
@@ -2464,6 +2466,7 @@ async function addTransaction() {
             envelope: normalizedEnvelope,
             account_id: normalizedAccountId,
             investment_id: normalizedInvestmentId,
+            loan_id: normalizedLoanId,
             property_id: normalizedPropertyId,
             description: normalizedDescription
         };
@@ -3682,6 +3685,12 @@ async function editTransaction(id) {
                                 <option value="">Ninguna</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label for="editTransactionLoan">Préstamo (Opcional)</label>
+                            <select id="editTransactionLoan">
+                                <option value="">Ninguno</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group" style="flex: 1;">
@@ -3770,6 +3779,7 @@ async function editTransaction(id) {
         updateAccountSelect('editTransactionAccount');
         updateInvestmentSelect('editTransactionInvestment');
         updatePropertySelect('editTransactionProperty');
+        updateLoanSelect('editTransactionLoan');
         
         setTimeout(() => {
             if (transaction.envelope_id && envelopeEl) {
@@ -3783,6 +3793,10 @@ async function editTransaction(id) {
             }
             if (transaction.property_id && propertyIdEl) {
                 propertyIdEl.value = transaction.property_id;
+            }
+            const loanIdEl = document.getElementById('editTransactionLoan');
+            if (transaction.loan_id && loanIdEl) {
+                loanIdEl.value = transaction.loan_id;
             }
             if (descriptionEl) {
                 descriptionEl.value = transaction.description || '';
@@ -3929,6 +3943,7 @@ async function updateTransaction() {
         const envelopeEl = document.getElementById('envelope');
         const accountIdEl = document.getElementById('transactionAccount');
         const investmentIdEl = document.getElementById('transactionInvestment');
+        const loanIdEl = document.getElementById('editTransactionLoan');
         const propertyIdEl = document.getElementById('transactionProperty');
         const descriptionEl = document.getElementById('transactionDescription');
         
@@ -3945,6 +3960,7 @@ async function updateTransaction() {
         const envelope = envelopeEl ? envelopeEl.value : '';
         const accountId = accountIdEl ? accountIdEl.value : '';
         const investmentId = investmentIdEl ? investmentIdEl.value : '';
+        const loanId = loanIdEl ? loanIdEl.value : '';
         const propertyId = propertyIdEl ? propertyIdEl.value : '';
         const description = descriptionEl ? descriptionEl.value : '';
         
@@ -3966,6 +3982,7 @@ async function updateTransaction() {
                 envelope: envelope || null,
                 account_id: accountId || null,
                 investment_id: investmentId || null,
+                loan_id: loanId || null,
                 property_id: propertyId || null,
                 description: description || null
             })
@@ -4375,6 +4392,7 @@ async function addLoan() {
         
         loans.push(loan);
         updateDisplay();
+        updateLoanSelect(); // Actualizar selector de préstamos en transacciones
         const loanForm = document.getElementById('loanForm');
         if (loanForm) {
             loanForm.reset();
@@ -7339,8 +7357,8 @@ function updateDashboardSavingsChart() {
     charts.dashboardSavings.data.datasets = [{
         label: 'Ahorro Acumulado',
         data: savings,
-        borderColor: '#94a3b8',
-        backgroundColor: 'rgba(148, 163, 184, 0.15)',
+        borderColor: '#d4af37',
+        backgroundColor: 'rgba(212, 175, 55, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -7435,12 +7453,12 @@ function updateDashboardIncomeExpenseChart() {
         {
             label: 'Ingresos',
             data: incomeData,
-            backgroundColor: '#cbd5e1'
+            backgroundColor: '#d4af37'
         },
         {
             label: 'Gastos',
             data: expenseData,
-            backgroundColor: '#94a3b8'
+            backgroundColor: '#cd7f32'
         }
     ];
     charts.dashboardIncomeExpense.update();
@@ -7475,7 +7493,7 @@ function updateDashboardExpensesChart() {
     charts.dashboardExpenses.data.labels = labels;
     charts.dashboardExpenses.data.datasets = [{
         data: data,
-        backgroundColor: '#64748b'
+        backgroundColor: '#b87333'
     }];
     charts.dashboardExpenses.update();
 }
@@ -7506,9 +7524,9 @@ function updateDashboardDistributionChart() {
     charts.dashboardDistribution.data.datasets = [{
         data: data,
         backgroundColor: [
-            '#cbd5e1', '#94a3b8', '#64748b', '#475569',
-            '#334155', '#e2e8f0', '#f1f5f9', '#f8fafc',
-            '#cbd5e1', '#94a3b8', '#64748b', '#475569'
+            '#d4af37', '#c0c0c0', '#cd7f32', '#b87333',
+            '#daa520', '#c9b037', '#e6c200', '#f4d03f',
+            '#d4af37', '#c0c0c0', '#cd7f32', '#b87333'
         ]
     }];
     charts.dashboardDistribution.update();
@@ -7597,8 +7615,8 @@ function updateDashboardIncomeEvolutionChart() {
     charts.dashboardIncomeEvolution.data.datasets = [{
         label: 'Ingresos',
         data: incomeData,
-        borderColor: '#cbd5e1',
-        backgroundColor: 'rgba(203, 213, 225, 0.15)',
+        borderColor: '#d4af37',
+        backgroundColor: 'rgba(212, 175, 55, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -7688,8 +7706,8 @@ function updateDashboardExpensesEvolutionChart() {
     charts.dashboardExpensesEvolution.data.datasets = [{
         label: 'Gastos',
         data: expensesData,
-        borderColor: '#94a3b8',
-        backgroundColor: 'rgba(148, 163, 184, 0.15)',
+        borderColor: '#cd7f32',
+        backgroundColor: 'rgba(205, 127, 50, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -7775,8 +7793,8 @@ function updateSavingsChart() {
     charts.savings.data.datasets = [{
         label: 'Ahorro Acumulado',
         data: savings,
-        borderColor: '#64748b',
-        backgroundColor: 'rgba(100, 116, 139, 0.15)',
+        borderColor: '#d4af37',
+        backgroundColor: 'rgba(212, 175, 55, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -7811,9 +7829,9 @@ function updateExpensesChart() {
         label: 'Gastos',
         data: data,
         backgroundColor: [
-            '#cbd5e1', '#94a3b8', '#64748b', '#475569',
-            '#334155', '#e2e8f0', '#f1f5f9', '#f8fafc',
-            '#cbd5e1', '#94a3b8', '#64748b', '#475569'
+            '#d4af37', '#c0c0c0', '#cd7f32', '#b87333',
+            '#daa520', '#c9b037', '#e6c200', '#f4d03f',
+            '#d4af37', '#c0c0c0', '#cd7f32', '#b87333'
         ]
     }];
     charts.expenses.update();
@@ -7896,12 +7914,12 @@ function updateIncomeExpenseChart() {
         {
             label: 'Ingresos',
             data: incomes,
-            backgroundColor: '#cbd5e1'
+            backgroundColor: '#d4af37'
         },
         {
             label: 'Gastos',
             data: expenses,
-            backgroundColor: '#94a3b8'
+            backgroundColor: '#cd7f32'
         }
     ];
     charts.incomeExpense.update();
@@ -7933,9 +7951,9 @@ function updateDistributionChart() {
     charts.distribution.data.datasets = [{
         data: data,
         backgroundColor: [
-            '#cbd5e1', '#94a3b8', '#64748b', '#475569',
-            '#334155', '#e2e8f0', '#f1f5f9', '#f8fafc',
-            '#cbd5e1', '#94a3b8', '#64748b', '#475569'
+            '#d4af37', '#c0c0c0', '#cd7f32', '#b87333',
+            '#daa520', '#c9b037', '#e6c200', '#f4d03f',
+            '#d4af37', '#c0c0c0', '#cd7f32', '#b87333'
         ]
     }];
     charts.distribution.update();
@@ -8054,8 +8072,8 @@ function updateIncomeEvolutionChart() {
     
     // Colores metálicos para las categorías
     const colors = [
-        '#cbd5e1', '#94a3b8', '#64748b', '#475569', '#334155',
-        '#e2e8f0', '#f1f5f9', '#f8fafc', '#cbd5e1', '#94a3b8'
+        '#d4af37', '#c0c0c0', '#cd7f32', '#b87333', '#daa520',
+        '#c9b037', '#e6c200', '#f4d03f', '#d4af37', '#c0c0c0'
     ];
     
     // Crear datasets para cada categoría
@@ -8079,8 +8097,8 @@ function updateIncomeEvolutionChart() {
     charts.incomeEvolution.data.datasets = datasets.length > 0 ? datasets : [{
         label: 'Ingresos',
         data: new Array(months.length).fill(0),
-        borderColor: '#cbd5e1',
-        backgroundColor: 'rgba(203, 213, 225, 0.15)',
+        borderColor: '#d4af37',
+        backgroundColor: 'rgba(212, 175, 55, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -8200,8 +8218,8 @@ function updateExpensesEvolutionChart() {
     
     // Colores metálicos para las categorías
     const colors = [
-        '#94a3b8', '#64748b', '#475569', '#334155', '#cbd5e1',
-        '#e2e8f0', '#f1f5f9', '#f8fafc', '#cbd5e1', '#94a3b8'
+        '#cd7f32', '#b87333', '#daa520', '#c9b037', '#d4af37',
+        '#c0c0c0', '#e6c200', '#f4d03f', '#d4af37', '#cd7f32'
     ];
     
     // Crear datasets para cada categoría
@@ -8225,8 +8243,8 @@ function updateExpensesEvolutionChart() {
     charts.expensesEvolution.data.datasets = datasets.length > 0 ? datasets : [{
         label: 'Gastos',
         data: new Array(months.length).fill(0),
-        borderColor: '#94a3b8',
-        backgroundColor: 'rgba(148, 163, 184, 0.15)',
+        borderColor: '#cd7f32',
+        backgroundColor: 'rgba(205, 127, 50, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -8299,8 +8317,8 @@ function updateLoansOutstandingChart() {
     charts.loansPending.data.datasets = [{
         label: 'Préstamos Pendientes',
         data: outstandingData,
-        borderColor: '#64748b',
-        backgroundColor: 'rgba(100, 116, 139, 0.15)',
+        borderColor: '#b87333',
+        backgroundColor: 'rgba(184, 115, 51, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -8392,8 +8410,8 @@ function updateAssetsEvolutionChart() {
     charts.assetsEvolution.data.datasets = [{
         label: 'Patrimonio Total',
         data: assetsData,
-        borderColor: '#475569',
-        backgroundColor: 'rgba(71, 85, 105, 0.15)',
+        borderColor: '#daa520',
+        backgroundColor: 'rgba(218, 165, 32, 0.15)',
         tension: 0.4,
         fill: true
     }];
@@ -8810,14 +8828,14 @@ function generateEvolutionChartData(chartType, periodTransactions, period) {
     // Crear datasets
     const datasets = Object.keys(chartCategories).map((catName, index) => {
         const colors = [
-            'rgba(203, 213, 225, 0.8)',   // Plata claro
-            'rgba(148, 163, 184, 0.8)',   // Plata medio
-            'rgba(100, 116, 139, 0.8)',   // Plata oscuro
-            'rgba(71, 85, 105, 0.8)',     // Acero
-            'rgba(51, 65, 85, 0.8)',      // Acero oscuro
-            'rgba(226, 232, 240, 0.8)',   // Gris metálico claro
-            'rgba(241, 245, 249, 0.8)',   // Gris metálico muy claro
-            'rgba(203, 213, 225, 0.8)'     // Plata claro
+            'rgba(212, 175, 55, 0.8)',    // Dorado
+            'rgba(192, 192, 192, 0.8)',    // Plata
+            'rgba(205, 127, 50, 0.8)',     // Bronce
+            'rgba(184, 115, 51, 0.8)',     // Cobre
+            'rgba(218, 165, 32, 0.8)',     // Oro
+            'rgba(201, 176, 55, 0.8)',     // Latón
+            'rgba(230, 194, 0, 0.8)',      // Amarillo metálico
+            'rgba(244, 208, 63, 0.8)'      // Amarillo dorado
         ];
         
         return {
@@ -10750,7 +10768,7 @@ function showFinancialHealthDetail(metric, index) {
                 labels: ['Deuda', 'Activos'],
                 datasets: [{
                     data: [loansDebt, Math.max(0, totalAssets - loansDebt)],
-                    backgroundColor: ['#ef4444', '#10b981']
+                    backgroundColor: ['#cd7f32', '#d4af37']
                 }]
             }
         };
@@ -10763,7 +10781,7 @@ function showFinancialHealthDetail(metric, index) {
                 datasets: [{
                     label: 'Euros',
                     data: [periodIncome, periodExpenses, Math.max(0, periodSavings)],
-                    backgroundColor: ['#10b981', '#ef4444', '#6366f1']
+                    backgroundColor: ['#d4af37', '#cd7f32', '#c0c0c0']
                 }]
             },
             options: {
@@ -10792,8 +10810,8 @@ function showFinancialHealthDetail(metric, index) {
                 datasets: [{
                     label: 'Balance',
                     data: balances,
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                    borderColor: '#d4af37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.15)',
                     tension: 0.4,
                     fill: true
                 }]
@@ -10807,7 +10825,7 @@ function showFinancialHealthDetail(metric, index) {
                 labels: ['Inversiones', 'Otros Activos'],
                 datasets: [{
                     data: [investmentsValue, Math.max(0, totalAssets - investmentsValue)],
-                    backgroundColor: ['#10b981', '#6366f1']
+                    backgroundColor: ['#d4af37', '#c0c0c0']
                 }]
             }
         };

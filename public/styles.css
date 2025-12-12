@@ -949,14 +949,12 @@ body.dark-mode #settingsDropdownBtn svg path {
     fill: none !important;
 }
 
-/* Footer en modo claro con color azul */
+/* Footer en modo claro - transparente */
 body:not(.dark-mode) footer,
 body:not(.dark-mode) .main-footer {
-    background: linear-gradient(180deg, rgba(59, 130, 246, 0.95) 0%, rgba(37, 99, 235, 0.95) 100%) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: transparent !important;
     color: rgba(255, 255, 255, 1) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-top: none !important;
 }
 
 body:not(.dark-mode) footer h3,
@@ -1315,7 +1313,7 @@ body.dark-mode .revolut-card:hover {
 .form-section {
     background: var(--bg-primary);
     padding: 36px;
-    border-radius: 20px;
+    border-radius: 12px;
     margin-top: 24px;
     margin-bottom: 32px;
     border: 1px solid var(--border-color);
@@ -3702,6 +3700,46 @@ tbody tr:last-child td {
         text-align: center !important;
         width: 100% !important;
         margin: 0 auto !important;
+    }
+    
+    /* Campos de mes y año específicos en móvil */
+    #summaryMonth,
+    #summaryYear {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+        box-sizing: border-box !important;
+        padding: 12px 14px !important;
+        margin-top: 12px !important;
+        display: block !important;
+    }
+    
+    /* Contenedor del selector de período en móvil */
+    .dashboard > div > div:first-child > div:last-child {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    /* Asegurar que el contenedor del selector de período ocupe todo el ancho en móvil */
+    .dashboard > div > div:first-child {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    .dashboard > div > div:first-child > div:last-child {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    .dashboard > div > div:first-child > div:last-child > select,
+    .dashboard > div > div:first-child > div:last-child > input {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     /* Centrar selectores en formularios de transacciones y otros */
