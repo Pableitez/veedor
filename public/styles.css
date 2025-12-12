@@ -3152,6 +3152,24 @@ tbody tr:last-child td {
         overflow-x: hidden !important;
     }
     
+    /* Selector de mes en análisis - centrado en móvil */
+    #monthAnalysisSelector {
+        padding: 16px 12px !important;
+    }
+    
+    #monthAnalysisSelector > div {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    #dashboardMonth {
+        text-align: center !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+    }
+    
     .tab-content {
         width: 100% !important;
         max-width: 100% !important;

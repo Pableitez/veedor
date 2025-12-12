@@ -1,5 +1,5 @@
 // Evitar cargar múltiples veces
-// Versión: 2.5.0 - Detalles de resumen, fondo de emergencia en BD, header mejorado
+// Versión: 2.5.0 - Detalles de resumen, meta de ahorro en BD, header mejorado
 if (window.VEEDOR_LOADED) {
     console.warn('⚠️ app.js ya fue cargado, evitando carga duplicada');
 } else {
@@ -1245,14 +1245,14 @@ async function loadUserData() {
             timestamp: Date.now()
         }));
         
-        // Cargar fondo de emergencia desde el perfil del usuario
+        // Cargar meta de ahorro desde el perfil del usuario
         try {
             const profileData = await apiRequest('/user/profile');
             if (profileData && profileData.savingsGoal !== undefined) {
                 savingsGoal = profileData.savingsGoal;
             }
         } catch (error) {
-            console.warn('No se pudo cargar el fondo de emergencia:', error);
+            console.warn('No se pudo cargar la meta de ahorro:', error);
             // Fallback a localStorage si existe (migración)
             const savedGoal = localStorage.getItem('veedor_savingsGoal');
             if (savedGoal) {
@@ -1914,9 +1914,17 @@ function initializeForms() {
     updateChartFilters();
     
     
-    // Modal de amortización - listeners se manejan en showLoanDetails y closeAmortizationModal
+    // Modal de amortización - listeners básicos (se reforzarán en showLoanDetails)
+    const amortizationModal = document.getElementById('amortizationModal');
+    if (amortizationModal) {
+        amortizationModal.addEventListener('click', (e) => {
+            if (e.target === amortizationModal) {
+                amortizationModal.style.display = 'none';
+            }
+        });
+    }
     
-    // Botón para establecer fondo de emergencia
+    // Botón para establecer meta de ahorro
     const setSavingsGoalBtn = document.getElementById('setSavingsGoalBtn');
     if (setSavingsGoalBtn) {
         setSavingsGoalBtn.addEventListener('click', () => {
@@ -1924,7 +1932,7 @@ function initializeForms() {
         });
     }
     
-    // Inicializar formulario de fondo de emergencia
+    // Inicializar formulario de meta de ahorro
     const savingsGoalForm = document.getElementById('savingsGoalForm');
     if (savingsGoalForm) {
         // Remover listeners anteriores si existen
@@ -1941,7 +1949,7 @@ function initializeForms() {
             
             const value = input.value.trim();
             if (!value) {
-                alert('Por favor ingresa una cantidad válida para tu fondo de emergencia');
+                alert('Por favor ingresa una cantidad válida');
                 return;
             }
             
@@ -1965,10 +1973,10 @@ function initializeForms() {
                 
                 updateSummary();
                 closeSavingsGoalModal();
-                alert('✅ Fondo de emergencia guardado exitosamente');
+                alert('✅ Meta de ahorro guardada exitosamente');
             } catch (error) {
-                console.error('Error al guardar el fondo de emergencia:', error);
-                alert('Error al guardar el fondo de emergencia: ' + (error.message || 'Error desconocido'));
+                console.error('Error al guardar la meta de ahorro:', error);
+                alert('Error al guardar la meta de ahorro: ' + (error.message || 'Error desconocido'));
             }
         });
     }
@@ -2057,9 +2065,7 @@ function initializeForms() {
     
     // Selector de período en dashboard
     const summaryPeriodSelect = document.getElementById('summaryPeriod');
-    const summaryMonthContainer = document.getElementById('summaryMonthContainer');
     const summaryMonthInput = document.getElementById('summaryMonth');
-    const summaryYearContainer = document.getElementById('summaryYearContainer');
     const summaryYearInput = document.getElementById('summaryYear');
     if (summaryPeriodSelect) {
         // Inicializar mes y año actual
@@ -2076,26 +2082,22 @@ function initializeForms() {
             summaryPeriod = value;
             
             // Mostrar/ocultar selector de mes
-            if (summaryMonthContainer) {
+            if (summaryMonthInput) {
                 if (value === 'month-select') {
-                    summaryMonthContainer.style.display = 'block';
-                    if (summaryMonthInput) {
-                        setTimeout(() => summaryMonthInput.focus(), 100);
-                    }
+                    summaryMonthInput.style.display = 'block';
+                    summaryMonthInput.focus();
                 } else {
-                    summaryMonthContainer.style.display = 'none';
+                    summaryMonthInput.style.display = 'none';
                 }
             }
             
             // Mostrar/ocultar selector de año
-            if (summaryYearContainer) {
+            if (summaryYearInput) {
                 if (value === 'year-select') {
-                    summaryYearContainer.style.display = 'block';
-                    if (summaryYearInput) {
-                        setTimeout(() => summaryYearInput.focus(), 100);
-                    }
+                    summaryYearInput.style.display = 'block';
+                    summaryYearInput.focus();
                 } else {
-                    summaryYearContainer.style.display = 'none';
+                    summaryYearInput.style.display = 'none';
                 }
             }
             
@@ -2682,7 +2684,7 @@ async function updateSummary() {
     if (periodSavingsLabelEl) periodSavingsLabelEl.textContent = `Ahorro ${periodLabel}`;
     if (periodSavingsSubLabelEl) periodSavingsSubLabelEl.textContent = periodLabel;
     
-    // Actualizar fondo de emergencia
+    // Actualizar meta de ahorro
     const savingsGoalEl = document.getElementById('savingsGoal');
     const savingsGoalProgress = document.getElementById('savingsGoalProgress');
     const savingsGoalProgressBar = document.getElementById('savingsGoalProgressBar');
@@ -2704,7 +2706,7 @@ async function updateSummary() {
                 }
                 if (savingsGoalProgressText) {
                     if (isAchieved) {
-                        savingsGoalProgressText.textContent = `¡Fondo completo! 🎉`;
+                        savingsGoalProgressText.textContent = `¡Meta alcanzada! 🎉`;
                         savingsGoalProgressText.style.color = 'rgba(255,255,255,1)';
             } else {
                         const remaining = savingsGoal - totalAccountsBalance;
@@ -2714,7 +2716,7 @@ async function updateSummary() {
                 }
             }
         } else {
-            savingsGoalEl.textContent = 'Sin fondo establecido';
+            savingsGoalEl.textContent = 'Sin meta';
             if (savingsGoalProgress) {
                 savingsGoalProgress.style.display = 'none';
             }
@@ -4491,11 +4493,6 @@ function updateLoans() {
         `;
         grid.appendChild(card);
     });
-    
-    // Actualizar gráfica de préstamos pendientes
-    if (typeof updateLoansOutstandingChart === 'function') {
-        setTimeout(() => updateLoansOutstandingChart(), 100);
-    }
 }
 
 // Mostrar detalles del préstamo con tabla de amortización completa
@@ -4614,42 +4611,44 @@ function showLoanDetails(loanId) {
     modalContent.innerHTML = contentHTML;
     modal.style.display = 'flex';
     
-    // Asegurar que el botón de cerrar funcione correctamente
-    // Usar setTimeout para asegurar que el DOM esté listo
+    // Asegurar que los event listeners estén activos - usar setTimeout para asegurar que el DOM esté actualizado
     setTimeout(() => {
         const closeBtn = document.getElementById('closeAmortizationModal');
         if (closeBtn) {
-            // Remover cualquier listener anterior
+            // Remover listeners anteriores clonando el botón
             const newCloseBtn = closeBtn.cloneNode(true);
             closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
             
-            // Agregar listener al nuevo botón
-            const updatedCloseBtn = document.getElementById('closeAmortizationModal');
-            if (updatedCloseBtn) {
-                updatedCloseBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    closeAmortizationModal();
-                });
-            }
+            // Añadir nuevo listener con preventDefault y stopPropagation
+            newCloseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                modal.style.display = 'none';
+            });
         }
         
         // Cerrar al hacer clic fuera del modal
         const modalContentDiv = modal.querySelector('.modal-content');
         if (modalContentDiv) {
-            // Asegurar que los clics dentro del contenido no cierren el modal
             modalContentDiv.addEventListener('click', (e) => {
                 e.stopPropagation();
             });
         }
         
-        // Cerrar al hacer clic en el fondo del modal
-        modal.addEventListener('click', (e) => {
+        // Asegurar que el modal cierre al hacer clic en el fondo
+        const existingModalListener = modal._amortizationCloseListener;
+        if (existingModalListener) {
+            modal.removeEventListener('click', existingModalListener);
+        }
+        
+        const modalCloseListener = (e) => {
             if (e.target === modal) {
-                closeAmortizationModal();
+                modal.style.display = 'none';
             }
-        });
-    }, 100);
+        };
+        modal.addEventListener('click', modalCloseListener);
+        modal._amortizationCloseListener = modalCloseListener;
+    }, 0);
 }
 
 // Cerrar modal de amortización
@@ -6214,11 +6213,6 @@ function updateAssets() {
         </div>
     `;
     grid.appendChild(summaryCard);
-    
-    // Actualizar gráfica de evolución de patrimonio
-    if (typeof updateAssetsEvolutionChart === 'function') {
-        setTimeout(() => updateAssetsEvolutionChart(), 100);
-    }
 }
 
 // Editar bien - Abre modal con formulario pre-rellenado
@@ -6704,72 +6698,6 @@ function initializeCharts() {
             }
         });
     }
-    
-    // Agregar event listeners para abrir gráficas en modal al hacer clic
-    setupChartClickListeners();
-}
-
-// Configurar listeners de clic en las gráficas para abrirlas en modal
-function setupChartClickListeners() {
-    // Mapeo de canvas IDs a chart types y títulos
-    const chartMap = {
-        'savingsChart': { type: 'savings', title: 'Evolución de Ahorro' },
-        'expensesChart': { type: 'expenses', title: 'Gastos por Categoría' },
-        'incomeExpenseChart': { type: 'incomeExpense', title: 'Ingresos vs Gastos' },
-        'distributionChart': { type: 'distribution', title: 'Distribución de Gastos' },
-        'incomeEvolutionChart': { type: 'incomeEvolution', title: 'Evolución de Ingresos' },
-        'expensesEvolutionChart': { type: 'expensesEvolution', title: 'Evolución de Gastos' },
-        'loansPendingChart': { type: 'loansPending', title: 'Capital Pendiente de Préstamos' },
-        'assetsEvolutionChart': { type: 'assetsEvolution', title: 'Evolución del Patrimonio' },
-        'accountsBalanceChart': { type: 'accountsBalance', title: 'Evolución del Saldo de Cuentas' }
-    };
-    
-    // Agregar listeners a cada canvas
-    Object.keys(chartMap).forEach(canvasId => {
-        const canvas = document.getElementById(canvasId);
-        if (canvas) {
-            // Encontrar el contenedor chart-card padre
-            const chartCard = canvas.closest('.chart-card');
-            if (chartCard) {
-                // Obtener el título del h3 dentro del chart-card
-                const titleElement = chartCard.querySelector('h3');
-                const title = titleElement ? titleElement.textContent.trim() : chartMap[canvasId].title;
-                
-                // Hacer el chart-card clickeable
-                chartCard.style.cursor = 'pointer';
-                chartCard.style.transition = 'transform 0.2s, box-shadow 0.2s';
-                
-                // Agregar hover effect
-                chartCard.addEventListener('mouseenter', () => {
-                    chartCard.style.transform = 'translateY(-2px)';
-                    chartCard.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                });
-                
-                chartCard.addEventListener('mouseleave', () => {
-                    chartCard.style.transform = 'translateY(0)';
-                    chartCard.style.boxShadow = '';
-                });
-                
-                // Agregar listener de clic
-                chartCard.addEventListener('click', (e) => {
-                    // No abrir modal si se hace clic en controles (selects, inputs, botones)
-                    if (e.target.tagName === 'SELECT' || 
-                        e.target.tagName === 'INPUT' || 
-                        e.target.tagName === 'BUTTON' ||
-                        e.target.closest('select') ||
-                        e.target.closest('input') ||
-                        e.target.closest('button')) {
-                        return;
-                    }
-                    
-                    const chartInfo = chartMap[canvasId];
-                    if (chartInfo && charts[chartInfo.type]) {
-                        openChartModal(chartInfo.type, title);
-                    }
-                });
-            }
-        }
-    });
 }
 
 // Obtener período seleccionado (global o específico de gráfico)
@@ -6960,11 +6888,6 @@ function updateCharts() {
     updateExpensesChart();
     updateIncomeExpenseChart();
     updateDistributionChart();
-    
-    // Asegurar que los listeners de clic estén configurados después de actualizar
-    setTimeout(() => {
-        setupChartClickListeners();
-    }, 100);
     // Actualizar gráficas de evolución (si existen) - con manejo de errores
     try {
         if (typeof updateIncomeEvolutionChart === 'function') updateIncomeEvolutionChart();
@@ -7548,7 +7471,7 @@ function updateLoansOutstandingChart() {
     const months = [];
     const outstandingData = [];
     
-    if (filteredLoans.length === 0) {
+    if (loans.length === 0) {
         charts.loansPending.data.labels = [];
         charts.loansPending.data.datasets = [];
         charts.loansPending.update();
@@ -7560,31 +7483,22 @@ function updateLoansOutstandingChart() {
     
     for (let i = periodMonths - 1; i >= 0; i--) {
         const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        // Usar el último día del mes para el cálculo
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
-        endOfMonth.setHours(23, 59, 59, 999);
         const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
         months.push(monthKey);
         
-        // Calcular préstamos pendientes en ese mes usando calculateAmortizationTable
+        // Calcular préstamos pendientes en ese mes
         let totalOutstanding = 0;
         filteredLoans.forEach(loan => {
             const loanDate = new Date(loan.start_date);
-            if (loanDate <= endOfMonth) {
-                // Calcular capital pendiente hasta el final de ese mes
-                const amortization = calculateAmortizationTable(
-                    loan.principal,
-                    loan.interest_rate,
-                    loan.monthly_payment,
-                    loan.start_date,
-                    loan.total_paid || 0,
-                    loan.early_payments || [],
-                    endOfMonth
-                );
-                totalOutstanding += Math.max(0, amortization.finalBalance);
-            } else {
-                // Si el préstamo aún no ha comenzado, el capital pendiente es el principal completo
-                totalOutstanding += loan.principal;
+            if (loanDate <= date) {
+                // Calcular cuánto se ha pagado hasta esa fecha
+                const paymentsUntilDate = loan.payments.filter(p => {
+                    const pDate = new Date(p.date);
+                    return pDate <= date;
+                });
+                const paidAmount = paymentsUntilDate.reduce((sum, p) => sum + p.amount, 0);
+                const outstanding = loan.principal_amount - paidAmount;
+                totalOutstanding += Math.max(0, outstanding);
             }
         });
         
@@ -7593,7 +7507,7 @@ function updateLoansOutstandingChart() {
     
     charts.loansPending.data.labels = months;
     charts.loansPending.data.datasets = [{
-        label: 'Capital Pendiente de Préstamos',
+        label: 'Préstamos Pendientes',
         data: outstandingData,
         borderColor: '#f59e0b',
         backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -7619,7 +7533,7 @@ function updateAssetsEvolutionChart() {
     const months = [];
     const assetsData = [];
     
-    if (filteredAssets.length === 0) {
+    if (assets.length === 0) {
         charts.assetsEvolution.data.labels = [];
         charts.assetsEvolution.data.datasets = [];
         charts.assetsEvolution.update();
@@ -7636,38 +7550,20 @@ function updateAssetsEvolutionChart() {
         // Calcular patrimonio total en ese mes
         let totalAssets = 0;
         filteredAssets.forEach(asset => {
-            // Usar purchase_date si existe, sino asumir que el bien ya existía
-            const assetDate = asset.purchase_date ? new Date(asset.purchase_date) : new Date(0);
+            const assetDate = new Date(asset.purchase_date);
             if (assetDate <= date) {
-                // Si hay historial de valores, buscar el más cercano a esa fecha
+                // Buscar valor histórico más cercano a esa fecha
                 let assetValue = asset.current_value || 0;
-                
-                if (asset.value_history && Array.isArray(asset.value_history) && asset.value_history.length > 0) {
-                    const historicalValues = asset.value_history
-                        .filter(v => {
-                            if (!v || !v.date) return false;
-                            const vDate = new Date(v.date);
-                            return vDate <= date;
-                        })
-                        .sort((a, b) => new Date(b.date) - new Date(a.date)); // Ordenar descendente
-                    
+                if (asset.value_history && asset.value_history.length > 0) {
+                    const historicalValues = asset.value_history.filter(v => {
+                        const vDate = new Date(v.date);
+                        return vDate <= date;
+                    });
                     if (historicalValues.length > 0) {
-                        // Tomar el valor más reciente antes o en esa fecha
-                        assetValue = historicalValues[0].value || asset.current_value || asset.purchase_price || 0;
-                    } else {
-                        // Si no hay valores históricos antes de esa fecha, usar el precio de compra
-                        assetValue = asset.purchase_price || asset.current_value || 0;
-                    }
-                } else {
-                    // Si no hay historial, usar el valor actual para todos los meses después de la compra
-                    // Si la fecha es antes de la compra, no incluir el bien
-                    if (assetDate <= date) {
-                        assetValue = asset.current_value || asset.purchase_price || 0;
-                    } else {
-                        assetValue = 0;
+                        const latest = historicalValues[historicalValues.length - 1];
+                        assetValue = latest.value || asset.current_value || 0;
                     }
                 }
-                
                 totalAssets += assetValue;
             }
         });
@@ -7792,10 +7688,9 @@ function openChartModal(chartType, title) {
         modalContent.innerHTML = '';
     }
     
-    // Asegurar que el contenedor del canvas exista y tenga dimensiones más grandes
+    // Asegurar que el contenedor del canvas exista y tenga dimensiones
     if (modalCanvasContainer) {
-        modalCanvasContainer.style.height = '70vh';
-        modalCanvasContainer.style.minHeight = '500px';
+        modalCanvasContainer.style.height = '600px';
         modalCanvasContainer.style.width = '100%';
     }
     
@@ -9614,7 +9509,7 @@ function closeSummaryDetails() {
     }
 }
 
-// Funciones para modal de fondo de emergencia
+// Funciones para modal de meta de ahorro
 function showSavingsGoalModal() {
     const modal = document.getElementById('savingsGoalModal');
     const input = document.getElementById('savingsGoalInput');
@@ -9639,7 +9534,7 @@ async function deleteSavingsGoal() {
         updateSummary();
         closeSavingsGoalModal();
     } catch (error) {
-        alert('Error al eliminar el fondo de emergencia: ' + error.message);
+        alert('Error al eliminar la meta de ahorro: ' + error.message);
     }
 }
 
