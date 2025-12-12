@@ -1091,7 +1091,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 
 .btn-primary:hover {
     background: linear-gradient(135deg, var(--primary-dark) 0%, #6B21A8 100%);
-    transform: translateY(-2px) scale(1.02);
+    transform: scale(1.02);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
