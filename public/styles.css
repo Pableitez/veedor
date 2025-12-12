@@ -836,32 +836,41 @@ body:not(.dark-mode) .main-header h1 {
 
 body:not(.dark-mode) header button,
 body:not(.dark-mode) .main-header button {
-    color: rgba(255, 255, 255, 0.95) !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
-    background: rgba(255, 255, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 1) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.3) !important;
     border-radius: 8px !important;
+    border-width: 1.5px !important;
 }
 
 body:not(.dark-mode) header button:hover,
 body:not(.dark-mode) .main-header button:hover {
-    background: rgba(255, 255, 255, 0.3) !important;
-    border-color: rgba(255, 255, 255, 0.4) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.7) !important;
     color: rgba(255, 255, 255, 1) !important;
+}
+
+body:not(.dark-mode) header button span,
+body:not(.dark-mode) .main-header button span {
+    color: rgba(255, 255, 255, 1) !important;
+    opacity: 1 !important;
 }
 
 body:not(.dark-mode) header svg,
 body:not(.dark-mode) .main-header svg {
     filter: brightness(0) invert(1);
+    opacity: 1;
 }
 
 body:not(.dark-mode) header svg circle,
 body:not(.dark-mode) .main-header svg circle {
-    fill: rgba(255, 255, 255, 0.9);
+    fill: rgba(255, 255, 255, 1);
 }
 
 body:not(.dark-mode) header svg path,
 body:not(.dark-mode) .main-header svg path {
-    stroke: rgba(255, 255, 255, 0.9);
+    stroke: rgba(255, 255, 255, 1);
+    fill: rgba(255, 255, 255, 1);
 }
 
 /* Footer en modo claro con color azul */
@@ -934,7 +943,7 @@ body:not(.dark-mode) header h1 {
 
 .dashboard {
     padding: 32px 48px;
-    padding-top: 32px;
+    padding-top: 24px;
     background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
     transition: background-color 0.3s;
     max-width: 1400px;
@@ -944,7 +953,7 @@ body:not(.dark-mode) header h1 {
     overflow-x: hidden;
     min-height: calc(100vh - 80px);
     border-radius: 12px;
-    margin-top: 72px;
+    margin-top: 24px;
     margin-bottom: 24px;
 }
 
@@ -1140,12 +1149,12 @@ body.dark-mode .revolut-card:hover {
 
 .main-content {
     padding: 40px;
-    padding-top: 40px;
+    padding-top: 24px;
     background: var(--bg-primary);
     transition: background-color 0.3s;
     max-width: 1400px;
     margin: 0 auto;
-    margin-top: 72px;
+    margin-top: 24px;
     margin-bottom: 24px;
     width: 100%;
     box-sizing: border-box;
@@ -2559,12 +2568,13 @@ tbody tr:last-child td {
     
     .dashboard {
         padding: 16px 12px !important;
+        padding-top: 16px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
         border-radius: 12px !important;
-        margin-top: 56px !important;
+        margin-top: 24px !important;
         margin-bottom: 16px !important;
     }
     
@@ -2607,11 +2617,12 @@ tbody tr:last-child td {
     
     .main-content {
         padding: 16px 12px !important;
+        padding-top: 16px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
-        margin: 56px auto 16px auto !important;
+        margin: 24px auto 16px auto !important;
         border-radius: 12px !important;
     }
     
@@ -3557,11 +3568,12 @@ tbody tr:last-child td {
     .dashboard,
     .main-content {
         padding: 12px 10px !important;
+        padding-top: 12px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
-        margin: 48px auto 12px auto !important;
+        margin: 20px auto 12px auto !important;
         border-radius: 10px !important;
     }
     
