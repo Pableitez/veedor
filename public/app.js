@@ -193,7 +193,7 @@ let charts = {};
 let currentUser = null;
 let currentUserEmail = null;
 let authToken = null;
-let summaryPeriod = 'month'; // 'month', 'year', 'all'
+let summaryPeriod = 'year'; // 'month', 'year', 'all'
 
 // Variables para debounce y cache
 let filterDebounceTimeouts = {};
@@ -2140,6 +2140,10 @@ function initializeForms() {
     const summaryMonthInput = document.getElementById('summaryMonth');
     const summaryYearInput = document.getElementById('summaryYear');
     if (summaryPeriodSelect) {
+        // Inicializar con valor por defecto "Este año"
+        summaryPeriodSelect.value = 'year';
+        summaryPeriod = 'year';
+        
         // Inicializar mes y año actual
         if (summaryMonthInput) {
             const now = new Date();

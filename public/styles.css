@@ -842,12 +842,24 @@ header h1 {
 
 .summary-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     margin-bottom: 16px;
     width: 100%;
     box-sizing: border-box;
     overflow: visible;
+}
+
+@media (max-width: 1024px) {
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
 }
 
 .card {
@@ -862,6 +874,10 @@ header h1 {
     overflow-wrap: break-word;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     color: var(--text-primary);
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 
@@ -1556,6 +1572,26 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: var(--border-color) var(--bg-primary);
+}
+
+/* Tablas de análisis detallado con altura máxima y scroll */
+#charts-tab .table-section .table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
+    position: relative;
+}
+
+#charts-tab .table-section .table-container table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-tertiary);
+}
+
+#charts-tab .table-section .table-container table thead th {
+    background: var(--bg-tertiary);
+    border-bottom: 2px solid var(--border-color);
 }
 
 #transactionsTableContainer {
@@ -2706,6 +2742,12 @@ tbody tr:last-child td {
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
+    }
+    
+    /* Tablas de análisis detallado con altura máxima en móvil */
+    #charts-tab .table-section .table-container {
+        max-height: 350px !important;
+        overflow-y: auto !important;
     }
     
     .table-container table {
