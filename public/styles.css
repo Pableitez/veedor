@@ -834,30 +834,31 @@ body:not(.dark-mode) .main-header h1 {
 body:not(.dark-mode) header button,
 body:not(.dark-mode) .main-header button {
     color: rgba(17, 24, 39, 0.95) !important;
-    border-color: rgba(0, 0, 0, 0.2) !important;
-    background: rgba(255, 255, 255, 0.6) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    border-radius: 8px !important;
 }
 
 body:not(.dark-mode) header button:hover,
 body:not(.dark-mode) .main-header button:hover {
-    background: rgba(255, 255, 255, 0.8) !important;
-    border-color: rgba(0, 0, 0, 0.3) !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+    border-color: rgba(0, 0, 0, 0.25) !important;
     color: rgba(17, 24, 39, 1) !important;
 }
 
 body:not(.dark-mode) header svg,
 body:not(.dark-mode) .main-header svg {
-    filter: brightness(0.2);
+    filter: brightness(0.5);
 }
 
 body:not(.dark-mode) header svg circle,
 body:not(.dark-mode) .main-header svg circle {
-    fill: rgba(17, 24, 39, 0.9);
+    fill: rgba(17, 24, 39, 0.7);
 }
 
 body:not(.dark-mode) header svg path,
 body:not(.dark-mode) .main-header svg path {
-    stroke: rgba(17, 24, 39, 0.9);
+    stroke: rgba(17, 24, 39, 0.7);
 }
 
 header h1 {
@@ -911,7 +912,7 @@ body:not(.dark-mode) header h1 {
     overflow-x: hidden;
     min-height: calc(100vh - 80px);
     border-radius: 20px;
-    margin-top: 32px;
+    margin-top: 48px;
     margin-bottom: 24px;
 }
 
@@ -1112,7 +1113,7 @@ body.dark-mode .revolut-card:hover {
     transition: background-color 0.3s;
     max-width: 1400px;
     margin: 0 auto;
-    margin-top: 32px;
+    margin-top: 48px;
     margin-bottom: 24px;
     width: 100%;
     box-sizing: border-box;
@@ -2531,7 +2532,7 @@ tbody tr:last-child td {
         box-sizing: border-box !important;
         overflow-x: hidden !important;
         border-radius: 16px !important;
-        margin-top: 24px !important;
+        margin-top: 32px !important;
         margin-bottom: 16px !important;
     }
     
@@ -2578,7 +2579,7 @@ tbody tr:last-child td {
         max-width: 100% !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
-        margin: 24px auto 16px auto !important;
+        margin: 32px auto 16px auto !important;
         border-radius: 16px !important;
     }
     
@@ -3528,7 +3529,7 @@ tbody tr:last-child td {
         max-width: 100% !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
-        margin: 20px auto 12px auto !important;
+        margin: 24px auto 12px auto !important;
         border-radius: 12px !important;
     }
     
