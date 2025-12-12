@@ -417,6 +417,18 @@ function toggleDarkMode() {
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = '☀️ Modo Claro';
     }
+    
+    // Actualizar icono en welcome page
+    updateAuthDarkModeIcon();
+}
+
+// Actualizar icono del botón de modo oscuro en welcome page
+function updateAuthDarkModeIcon() {
+    const authIcon = document.getElementById('authDarkModeIcon');
+    if (authIcon) {
+        const isDark = document.body.classList.contains('dark-mode');
+        authIcon.textContent = isDark ? '☀️' : '🌙';
+    }
 }
 
 function initDarkMode() {
@@ -434,10 +446,14 @@ function initDarkMode() {
         document.documentElement.classList.remove('dark-mode');
         document.body.classList.remove('dark-mode');
     }
+    
+    // Actualizar icono en welcome page
+    updateAuthDarkModeIcon();
 }
 
-// Exponer función global
+// Exponer funciones globales
 window.toggleDarkMode = toggleDarkMode;
+window.updateAuthDarkModeIcon = updateAuthDarkModeIcon;
 
 // Inicialización - Ejecutar inmediatamente
 
