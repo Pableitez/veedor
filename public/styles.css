@@ -126,7 +126,7 @@ body:not(.dark-mode)::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(147, 51, 234, 0.12) 1.5px, transparent 1.5px);
+    background: radial-gradient(circle, rgba(147, 51, 234, 0.22) 2px, transparent 2px);
     background-size: 35px 35px;
     pointer-events: none;
     z-index: 0;
@@ -141,11 +141,11 @@ body.dark-mode::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
     background-size: 45px 45px;
     pointer-events: none;
     z-index: 0;
-    opacity: 0.4;
+    opacity: 1;
 }
 
 /* Animaciones mejoradas */
