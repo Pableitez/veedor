@@ -9035,7 +9035,7 @@ function updateMonthDashboard() {
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-top: 4px;">
                                 <small style="font-size: 11px; color: var(--text-tertiary);">Restante: ${formatCurrency(Math.max(0, budgetAmount - data.amount))}</small>
-                                ${percentage > 100 ? `<small style="font-size: 11px; color: var(--danger-color); font-weight: 600;">⚠️ Excedido</small>` : ''}
+                                ${percentage > 100 ? `<small style="font-size: 11px; color: var(--danger-color); font-weight: 600;">Excedido</small>` : ''}
                             </div>
                         </div>
                     ` : '<small style="color: var(--text-tertiary);">Sin presupuesto establecido</small>'}
@@ -9111,7 +9111,7 @@ function updateMonthDashboard() {
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-top: 4px;">
                                 <small style="font-size: 11px; color: var(--text-tertiary);">Diferencia: ${formatCurrency(data.amount - budgetAmount)}</small>
-                                ${percentage < 100 ? `<small style="font-size: 11px; color: var(--warning); font-weight: 600; background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--warning);">⚠️ Por debajo del presupuesto</small>` : ''}
+                                ${percentage < 100 ? `<small style="font-size: 11px; color: var(--warning); font-weight: 600; background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--warning);">Por debajo del presupuesto</small>` : ''}
                             </div>
                             </div>
                     ` : '<small style="color: var(--text-tertiary);">Sin presupuesto establecido</small>'}
