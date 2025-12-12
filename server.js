@@ -2260,16 +2260,19 @@ app.put('/api/properties/:id', authenticateToken, async (req, res) => {
     try {
         const { name, address, type, description, current_value } = req.body;
         
+        const updateData = {
+            updated_at: new Date()
+        };
+        
+        if (name !== undefined) updateData.name = name;
+        if (address !== undefined) updateData.address = address;
+        if (type !== undefined) updateData.type = type;
+        if (description !== undefined) updateData.description = description;
+        if (current_value !== undefined) updateData.current_value = current_value;
+        
         const property = await Property.findOneAndUpdate(
             { _id: req.params.id, user_id: req.user.userId },
-            { 
-                name, 
-                address, 
-                type, 
-                description,
-                current_value: current_value !== undefined ? current_value : undefined,
-                updated_at: new Date()
-            },
+            updateData,
             { new: true }
         );
         

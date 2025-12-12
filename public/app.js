@@ -6126,19 +6126,25 @@ async function processUpdatePropertyValue() {
     
     try {
         showLoader('Actualizando valor...');
-        await apiRequest(`/properties/${currentPropertyId}`, {
+        const updatedProperty = await apiRequest(`/properties/${currentPropertyId}`, {
             method: 'PUT',
             body: JSON.stringify({
-                ...property,
                 current_value: currentValue
             })
         });
+        
+        // Actualizar la propiedad en el array local
+        const propertyIndex = properties.findIndex(p => (p._id || p.id) === currentPropertyId);
+        if (propertyIndex !== -1) {
+            properties[propertyIndex] = updatedProperty;
+        }
         
         await loadUserData();
         updateDisplay();
         closeUpdatePropertyValueModal();
         showToast('Valor actualizado exitosamente', 'success');
     } catch (error) {
+        console.error('Error actualizando valor de propiedad:', error);
         showToast('Error al actualizar valor: ' + error.message, 'error');
     } finally {
         hideLoader();
