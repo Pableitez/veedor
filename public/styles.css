@@ -51,10 +51,10 @@
 }
 
 :root {
-    /* Colores de fondo y texto base (modo claro) - Tono profesional suave */
-    --bg-primary: #FAFBFC;
-    --bg-secondary: #F5F7FA;
-    --bg-tertiary: #F0F2F5;
+    /* Colores de fondo y texto base (modo claro) - Tono profesional suave con transparencia para gradiente */
+    --bg-primary: rgba(255, 255, 255, 0.85);
+    --bg-secondary: rgba(249, 250, 251, 0.75);
+    --bg-tertiary: rgba(243, 244, 246, 0.65);
     --text-primary: #111827;
     --text-secondary: #374151;
     --text-tertiary: #6B7280;
@@ -64,9 +64,9 @@
 /* Modo oscuro - Aplicar también a html para evitar flash */
 html.dark-mode,
 body.dark-mode {
-    --bg-primary: #1F2937;
-    --bg-secondary: #111827;
-    --bg-tertiary: #0F172A;
+    --bg-primary: rgba(31, 41, 55, 0.85);
+    --bg-secondary: rgba(17, 24, 39, 0.75);
+    --bg-tertiary: rgba(15, 23, 42, 0.65);
     --text-primary: #F9FAFB;
     --text-secondary: #E5E7EB;
     --text-tertiary: #9CA3AF;
@@ -103,7 +103,8 @@ html {
 
 body {
     font-family: var(--font-sans);
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 30%, #1E3A8A 60%, #2563EB 85%, #3B82F6 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -118,7 +119,12 @@ body {
     position: relative;
 }
 
-/* Patrón de puntos sutil para modo claro */
+body:not(.dark-mode) {
+    background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 20%, #BAE6FD 40%, #7DD3FC 60%, #38BDF8 80%, #0EA5E9 100%);
+    background-attachment: fixed;
+}
+
+/* Patrón de puntos sutil para modo claro - sobre gradiente */
 body:not(.dark-mode)::before {
     content: '';
     position: fixed;
@@ -126,14 +132,14 @@ body:not(.dark-mode)::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.22) 2px, transparent 2px);
+    background: radial-gradient(circle, rgba(30, 58, 138, 0.15) 2px, transparent 2px);
     background-size: 35px 35px;
     pointer-events: none;
     z-index: 0;
     opacity: 1;
 }
 
-/* Patrón de puntos para modo oscuro */
+/* Patrón de puntos para modo oscuro - sobre gradiente */
 body.dark-mode::before {
     content: '';
     position: fixed;
@@ -141,7 +147,7 @@ body.dark-mode::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px);
     background-size: 45px 45px;
     pointer-events: none;
     z-index: 0;
