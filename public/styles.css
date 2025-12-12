@@ -86,25 +86,27 @@ body.dark-mode {
     --primary-light: #1E3A8A;
 }
 
-html.dark-mode {
-    background: #111827;
-}
-
-html.dark-mode body {
-    background: #111827;
-    color: #F9FAFB;
-}
-
 html {
     width: 100%;
     overflow-x: hidden;
     box-sizing: border-box;
+    background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 20%, #BAE6FD 40%, #7DD3FC 60%, #38BDF8 80%, #0EA5E9 100%);
+    background-attachment: fixed;
+}
+
+html.dark-mode {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 20%, #1E3A8A 40%, #2563EB 70%, #3B82F6 90%, #6366F1 100%);
+    background-attachment: fixed;
+}
+
+html.dark-mode body {
+    background: transparent;
+    color: #F9FAFB;
 }
 
 body {
     font-family: var(--font-sans);
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 30%, #1E3A8A 60%, #2563EB 85%, #3B82F6 100%);
-    background-attachment: fixed;
+    background: transparent;
     color: var(--text-primary);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -117,11 +119,6 @@ body {
     overflow-x: hidden;
     box-sizing: border-box;
     position: relative;
-}
-
-body:not(.dark-mode) {
-    background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 20%, #BAE6FD 40%, #7DD3FC 60%, #38BDF8 80%, #0EA5E9 100%);
-    background-attachment: fixed;
 }
 
 /* Patrón de puntos sutil para modo claro - sobre gradiente */
@@ -311,7 +308,8 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background: linear-gradient(135deg, #9333EA 0%, #7E22CE 50%, #A855F7 100%);
+    background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 20%, #BAE6FD 40%, #7DD3FC 60%, #38BDF8 80%, #0EA5E9 100%);
+    background-attachment: fixed;
     position: relative;
     overflow: hidden;
     overflow-x: hidden; /* Eliminar scroll horizontal */
@@ -321,20 +319,39 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
 }
 
 body.dark-mode .auth-screen {
-    background: linear-gradient(135deg, #1F2937 0%, #111827 50%, #0F172A 100%);
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 20%, #1E3A8A 40%, #2563EB 70%, #3B82F6 90%, #6366F1 100%);
+    background-attachment: fixed;
 }
 
-.auth-screen::before {
+/* Patrón de puntos para página de inicio - modo claro */
+.auth-screen:not(.dark-mode)::before,
+body:not(.dark-mode) .auth-screen::before {
     content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-    background-size: 50px 50px;
-    animation: float 20s infinite linear;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(30, 58, 138, 0.15) 2px, transparent 2px);
+    background-size: 35px 35px;
     pointer-events: none;
+    z-index: 0;
+    opacity: 1;
+}
+
+/* Patrón de puntos para página de inicio - modo oscuro */
+body.dark-mode .auth-screen::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px);
+    background-size: 45px 45px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 1;
 }
 
 @keyframes float {
@@ -363,6 +380,7 @@ body.dark-mode .auth-screen {
     color: var(--text-primary);
     margin: clamp(10px, 2vh, 20px) auto;
     position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
 }
