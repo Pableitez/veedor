@@ -90,7 +90,7 @@ html {
     width: 100%;
     overflow-x: hidden;
     box-sizing: border-box;
-    background: #F9FAFB;
+    background: linear-gradient(180deg, #E5E7EB 0%, #D1D5DB 50%, #9CA3AF 100%);
     background-attachment: fixed;
 }
 
@@ -308,7 +308,7 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background: #F9FAFB;
+    background: linear-gradient(180deg, #E5E7EB 0%, #D1D5DB 50%, #9CA3AF 100%);
     background-attachment: fixed;
     position: relative;
     overflow: hidden;
@@ -819,12 +819,65 @@ header {
     right: 0;
 }
 
+/* Ajustar colores del header en modo claro */
+body:not(.dark-mode) header {
+    color: rgba(17, 24, 39, 0.9);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body:not(.dark-mode) header h1 {
+    /* El arcoíris ya está aplicado, no necesita color adicional */
+}
+
+body:not(.dark-mode) header button,
+body:not(.dark-mode) .main-header button {
+    color: rgba(17, 24, 39, 0.9) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+    background: rgba(255, 255, 255, 0.4) !important;
+}
+
+body:not(.dark-mode) header button:hover,
+body:not(.dark-mode) .main-header button:hover {
+    background: rgba(255, 255, 255, 0.6) !important;
+    border-color: rgba(0, 0, 0, 0.25) !important;
+    color: rgba(17, 24, 39, 1) !important;
+}
+
+body:not(.dark-mode) header svg,
+body:not(.dark-mode) .main-header svg {
+    filter: brightness(0.3);
+}
+
 header h1 {
     font-size: 28px;
     font-weight: 700;
     color: rgba(255, 255, 255, 0.9);
     letter-spacing: -0.5px;
     margin: 0;
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow 3s linear infinite;
+}
+
+@keyframes rainbow {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+/* Ajustar arcoíris en modo claro */
+body:not(.dark-mode) header h1 {
+    background: linear-gradient(90deg, #EF4444 0%, #10B981 20%, #3B82F6 40%, #8B5CF6 60%, #F59E0B 80%, #EF4444 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .header-actions {
