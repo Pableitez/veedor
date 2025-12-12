@@ -860,7 +860,7 @@ body:not(.dark-mode) #headerLogo .logo-middle-circle {
 }
 
 body:not(.dark-mode) #headerLogo .logo-inner-circle {
-    fill: rgba(255, 255, 255, 0.95) !important;
+    fill: rgba(30, 58, 138, 0.3) !important;
 }
 
 body:not(.dark-mode) #headerLogo .logo-center {
@@ -868,8 +868,8 @@ body:not(.dark-mode) #headerLogo .logo-center {
 }
 
 body:not(.dark-mode) #headerLogo .logo-path {
-    stroke: rgba(255, 255, 255, 1) !important;
-    opacity: 0.8 !important;
+    stroke: url(#headerLogoGradient) !important;
+    opacity: 0.9 !important;
 }
 
 /* SVG dentro de botones - asegurar visibilidad */
@@ -949,11 +949,11 @@ body.dark-mode #settingsDropdownBtn svg path {
     fill: none !important;
 }
 
-/* Footer en modo claro - transparente */
+/* Footer en modo claro - transparente con texto oscuro */
 body:not(.dark-mode) footer,
 body:not(.dark-mode) .main-footer {
     background: transparent !important;
-    color: rgba(255, 255, 255, 1) !important;
+    color: rgba(30, 58, 138, 1) !important;
     border-top: none !important;
 }
 
@@ -961,19 +961,47 @@ body:not(.dark-mode) footer h3,
 body:not(.dark-mode) footer h4,
 body:not(.dark-mode) .main-footer h3,
 body:not(.dark-mode) .main-footer h4 {
-    color: rgba(255, 255, 255, 1) !important;
+    color: rgba(30, 58, 138, 1) !important;
 }
 
 body:not(.dark-mode) footer p,
 body:not(.dark-mode) footer a,
 body:not(.dark-mode) .main-footer p,
 body:not(.dark-mode) .main-footer a {
-    color: rgba(255, 255, 255, 0.95) !important;
+    color: rgba(30, 58, 138, 0.9) !important;
 }
 
 body:not(.dark-mode) footer a:hover,
 body:not(.dark-mode) .main-footer a:hover {
-    color: rgba(255, 255, 255, 1) !important;
+    color: rgba(30, 58, 138, 1) !important;
+}
+
+body:not(.dark-mode) .footer-copyright,
+body:not(.dark-mode) .footer-copyright strong {
+    color: rgba(30, 58, 138, 0.8) !important;
+}
+
+body.dark-mode .footer-copyright,
+body.dark-mode .footer-copyright strong {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Logo del footer - adaptativo */
+body:not(.dark-mode) .footer-logo-middle {
+    fill: rgba(30, 58, 138, 0.2) !important;
+}
+
+body.dark-mode .footer-logo-middle {
+    fill: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Enlaces del footer */
+.footer-link {
+    color: inherit;
+}
+
+.footer-separator {
+    color: inherit;
 }
 
 header h1 {
@@ -1040,7 +1068,7 @@ body:not(.dark-mode) header h1 {
     box-sizing: border-box;
     overflow-x: hidden;
     min-height: calc(100vh - 80px);
-    border-radius: 12px;
+    border-radius: 8px;
     margin-top: 64px;
     margin-bottom: 24px;
 }
@@ -1247,7 +1275,7 @@ body.dark-mode .revolut-card:hover {
     width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
-    border-radius: 12px;
+    border-radius: 8px;
 }
 
 /* ============================================
@@ -1313,7 +1341,7 @@ body.dark-mode .revolut-card:hover {
 .form-section {
     background: var(--bg-primary);
     padding: 36px;
-    border-radius: 12px;
+    border-radius: 8px;
     margin-top: 24px;
     margin-bottom: 32px;
     border: 1px solid var(--border-color);
@@ -1374,7 +1402,7 @@ body.dark-mode .revolut-card:hover {
 .form-group select {
     padding: 14px 18px;
     border: 1.5px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 15px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: var(--bg-primary);
@@ -1431,7 +1459,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     color: white;
     border: none;
     padding: 14px 28px;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
@@ -2205,7 +2233,7 @@ tbody tr:last-child td {
     max-width: 100%;
     margin: 20px auto;
     padding: 0;
-    border-radius: 20px;
+    border-radius: 8px;
     width: 85%;
     max-width: 800px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
