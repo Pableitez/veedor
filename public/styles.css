@@ -579,10 +579,13 @@ body.dark-mode .auth-screen::before {
     margin-bottom: clamp(6px, 1vh, 12px);
     letter-spacing: -1px;
     transition: all 0.3s ease;
-    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 20%, #45B7D1 40%, #96CEB4 60%, #FFEAA7 80%, #FF6B6B 100%);
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%);
+    background-size: 300% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: rainbow-flow 4s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .auth-header p {
@@ -986,27 +989,36 @@ body.dark-mode .footer-copyright strong {
     color: rgba(255, 255, 255, 0.8) !important;
 }
 
-/* Texto "Veedor" en footer - gradiente azul acorde al tema */
+/* Texto "Veedor" en footer - efecto arcoíris sublime */
 .footer-veedor-text {
-    background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%);
+    background-size: 300% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 700;
+    animation: rainbow-flow 4s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 body:not(.dark-mode) .footer-veedor-text {
-    background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
+    background: linear-gradient(90deg, #EF4444 0%, #10B981 12%, #3B82F6 24%, #8B5CF6 36%, #F59E0B 48%, #EC4899 60%, #06B6D4 72%, #84CC16 84%, #F97316 96%, #EF4444 100%);
+    background-size: 300% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: rainbow-flow 4s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
 body.dark-mode .footer-veedor-text {
-    background: linear-gradient(180deg, #3B82F6 0%, #60A5FA 50%, #93C5FD 100%);
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%);
+    background-size: 300% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: rainbow-flow 4s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 /* Enlaces del footer */
@@ -1024,13 +1036,25 @@ header h1 {
     color: rgba(255, 255, 255, 0.9);
     letter-spacing: -1px;
     margin: 0;
-    background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%);
+    background-size: 300% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: rainbow-flow 4s ease-in-out infinite;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+@keyframes rainbow-flow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 header svg#headerLogo,
@@ -1039,16 +1063,18 @@ header svg#headerLogo,
     height: 52px;
 }
 
-/* Ajustar gradiente azul en modo claro - más visible */
+/* Efecto arcoíris sublime en modo claro */
 body:not(.dark-mode) header h1 {
-    background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%);
+    background: linear-gradient(90deg, #EF4444 0%, #10B981 12%, #3B82F6 24%, #8B5CF6 36%, #F59E0B 48%, #EC4899 60%, #06B6D4 72%, #84CC16 84%, #F97316 96%, #EF4444 100%);
+    background-size: 300% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: rainbow-flow 4s ease-in-out infinite;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
 .header-actions {
@@ -1301,6 +1327,7 @@ body.dark-mode .revolut-card:hover {
     margin-bottom: 32px;
     border-bottom: 2px solid var(--gray-200);
     overflow-x: auto;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -3132,13 +3159,37 @@ tbody tr:last-child td {
         overflow: visible !important;
     }
     
-    footer {
+    footer,
+    .main-footer {
         padding: 16px 12px !important;
     }
     
-    footer > div > div {
+    footer > div,
+    .main-footer > div {
+        padding: 0 12px !important;
+    }
+    
+    footer > div > div:first-child,
+    .main-footer > div > div:first-child {
         grid-template-columns: 1fr !important;
-        gap: 16px !important;
+        gap: 20px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    footer > div > div:first-child > div:last-child,
+    .main-footer > div > div:first-child > div:last-child {
+        align-items: flex-start !important;
+        text-align: left !important;
+    }
+    
+    footer > div > div:first-child > div:last-child > div,
+    .main-footer > div > div:first-child > div:last-child > div {
+        align-items: flex-start !important;
+    }
+    
+    footer h4,
+    .main-footer h4 {
+        text-align: left !important;
     }
     
     /* Modales generales en móvil */
@@ -3731,6 +3782,11 @@ tbody tr:last-child td {
     /* Selector de mes en análisis - centrado en móvil */
     #monthAnalysisSelector {
         padding: 16px 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
     }
     
     #monthAnalysisSelector > div {
@@ -3738,12 +3794,18 @@ tbody tr:last-child td {
         align-items: center !important;
         justify-content: center !important;
         width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     #dashboardMonth {
         text-align: center !important;
         width: 100% !important;
+        max-width: 100% !important;
         margin: 0 auto !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important;
+        min-height: 44px !important;
+        padding: 12px 14px !important;
     }
     
     /* Campos de mes y año específicos en móvil */
