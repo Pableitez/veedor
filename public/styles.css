@@ -3170,6 +3170,32 @@ tbody tr:last-child td {
         margin: 0 auto !important;
     }
     
+    /* Centrar selectores en formularios de transacciones y otros */
+    .form-group select {
+        text-align: left !important;
+        text-align-last: left !important;
+        appearance: auto !important;
+        -webkit-appearance: menulist !important;
+        -moz-appearance: menulist !important;
+    }
+    
+    /* Asegurar que los selectores estén bien alineados */
+    #transactionType,
+    #categoryGeneral,
+    #categorySpecific,
+    #editTransactionType,
+    #editTransactionCategoryGeneral,
+    #editTransactionCategorySpecific {
+        text-align: left !important;
+        text-align-last: left !important;
+        padding-left: 14px !important;
+    }
+    
+    /* Asegurar que los labels estén bien alineados */
+    .form-group label {
+        text-align: left !important;
+    }
+    
     .tab-content {
         width: 100% !important;
         max-width: 100% !important;

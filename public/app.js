@@ -1245,14 +1245,14 @@ async function loadUserData() {
             timestamp: Date.now()
         }));
         
-        // Cargar meta de ahorro desde el perfil del usuario
+        // Cargar fondo de emergencia desde el perfil del usuario
         try {
             const profileData = await apiRequest('/user/profile');
             if (profileData && profileData.savingsGoal !== undefined) {
                 savingsGoal = profileData.savingsGoal;
             }
         } catch (error) {
-            console.warn('No se pudo cargar la meta de ahorro:', error);
+            console.warn('No se pudo cargar el fondo de emergencia:', error);
             // Fallback a localStorage si existe (migración)
             const savedGoal = localStorage.getItem('veedor_savingsGoal');
             if (savedGoal) {
@@ -1914,7 +1914,7 @@ function initializeForms() {
     updateChartFilters();
     
     
-    // Modal de amortización - listeners básicos (se reforzarán en showLoanDetails)
+    // Modal de amortización - añadir a la lista de modales que se cierran al hacer clic fuera
     const amortizationModal = document.getElementById('amortizationModal');
     if (amortizationModal) {
         amortizationModal.addEventListener('click', (e) => {
@@ -1973,10 +1973,10 @@ function initializeForms() {
                 
                 updateSummary();
                 closeSavingsGoalModal();
-                alert('✅ Meta de ahorro guardada exitosamente');
+                alert('✅ Fondo de emergencia guardado exitosamente');
             } catch (error) {
-                console.error('Error al guardar la meta de ahorro:', error);
-                alert('Error al guardar la meta de ahorro: ' + (error.message || 'Error desconocido'));
+                console.error('Error al guardar el fondo de emergencia:', error);
+                alert('Error al guardar el fondo de emergencia: ' + (error.message || 'Error desconocido'));
             }
         });
     }
@@ -4493,6 +4493,11 @@ function updateLoans() {
         `;
         grid.appendChild(card);
     });
+    
+    // Actualizar gráfico de evolución de deuda
+    if (typeof updateLoansOutstandingChart === 'function') {
+        updateLoansOutstandingChart();
+    }
 }
 
 // Mostrar detalles del préstamo con tabla de amortización completa
@@ -4611,44 +4616,13 @@ function showLoanDetails(loanId) {
     modalContent.innerHTML = contentHTML;
     modal.style.display = 'flex';
     
-    // Asegurar que los event listeners estén activos - usar setTimeout para asegurar que el DOM esté actualizado
-    setTimeout(() => {
-        const closeBtn = document.getElementById('closeAmortizationModal');
-        if (closeBtn) {
-            // Remover listeners anteriores clonando el botón
-            const newCloseBtn = closeBtn.cloneNode(true);
-            closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
-            
-            // Añadir nuevo listener con preventDefault y stopPropagation
-            newCloseBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                modal.style.display = 'none';
-            });
-        }
-        
-        // Cerrar al hacer clic fuera del modal
-        const modalContentDiv = modal.querySelector('.modal-content');
-        if (modalContentDiv) {
-            modalContentDiv.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-        }
-        
-        // Asegurar que el modal cierre al hacer clic en el fondo
-        const existingModalListener = modal._amortizationCloseListener;
-        if (existingModalListener) {
-            modal.removeEventListener('click', existingModalListener);
-        }
-        
-        const modalCloseListener = (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
+    // Prevenir que el contenido del modal cierre el modal al hacer clic
+    const modalContentDiv = modal.querySelector('.modal-content');
+    if (modalContentDiv) {
+        modalContentDiv.onclick = (e) => {
+            e.stopPropagation();
         };
-        modal.addEventListener('click', modalCloseListener);
-        modal._amortizationCloseListener = modalCloseListener;
-    }, 0);
+    }
 }
 
 // Cerrar modal de amortización
@@ -6213,6 +6187,11 @@ function updateAssets() {
         </div>
     `;
     grid.appendChild(summaryCard);
+    
+    // Actualizar gráfico de evolución de patrimonio
+    if (typeof updateAssetsEvolutionChart === 'function') {
+        updateAssetsEvolutionChart();
+    }
 }
 
 // Editar bien - Abre modal con formulario pre-rellenado
@@ -7471,7 +7450,7 @@ function updateLoansOutstandingChart() {
     const months = [];
     const outstandingData = [];
     
-    if (loans.length === 0) {
+    if (filteredLoans.length === 0) {
         charts.loansPending.data.labels = [];
         charts.loansPending.data.datasets = [];
         charts.loansPending.update();
@@ -7483,22 +7462,26 @@ function updateLoansOutstandingChart() {
     
     for (let i = periodMonths - 1; i >= 0; i--) {
         const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        date.setHours(23, 59, 59, 999); // Fin del mes
         const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
         months.push(monthKey);
         
-        // Calcular préstamos pendientes en ese mes
+        // Calcular préstamos pendientes en ese mes usando calculateAmortizationTable
         let totalOutstanding = 0;
         filteredLoans.forEach(loan => {
             const loanDate = new Date(loan.start_date);
             if (loanDate <= date) {
-                // Calcular cuánto se ha pagado hasta esa fecha
-                const paymentsUntilDate = loan.payments.filter(p => {
-                    const pDate = new Date(p.date);
-                    return pDate <= date;
-                });
-                const paidAmount = paymentsUntilDate.reduce((sum, p) => sum + p.amount, 0);
-                const outstanding = loan.principal_amount - paidAmount;
-                totalOutstanding += Math.max(0, outstanding);
+                // Calcular amortización hasta esa fecha
+                const amortization = calculateAmortizationTable(
+                    loan.principal,
+                    loan.interest_rate,
+                    loan.monthly_payment,
+                    loan.start_date,
+                    loan.total_paid || 0,
+                    loan.early_payments || [],
+                    date // currentDateOverride: calcular hasta esta fecha
+                );
+                totalOutstanding += Math.max(0, amortization.finalBalance);
             }
         });
         
@@ -7533,7 +7516,7 @@ function updateAssetsEvolutionChart() {
     const months = [];
     const assetsData = [];
     
-    if (assets.length === 0) {
+    if (filteredAssets.length === 0) {
         charts.assetsEvolution.data.labels = [];
         charts.assetsEvolution.data.datasets = [];
         charts.assetsEvolution.update();
@@ -7544,26 +7527,53 @@ function updateAssetsEvolutionChart() {
     
     for (let i = periodMonths - 1; i >= 0; i--) {
         const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        date.setHours(23, 59, 59, 999); // Fin del mes
         const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
         months.push(monthKey);
         
         // Calcular patrimonio total en ese mes
         let totalAssets = 0;
         filteredAssets.forEach(asset => {
-            const assetDate = new Date(asset.purchase_date);
-            if (assetDate <= date) {
-                // Buscar valor histórico más cercano a esa fecha
-                let assetValue = asset.current_value || 0;
+            const purchaseDate = new Date(asset.purchase_date);
+            if (purchaseDate <= date) {
+                // Si el activo fue comprado antes o en ese mes, calcular su valor
+                let assetValue = asset.purchase_price || 0; // Valor inicial
+                
+                // Si hay historial de valores, buscar el más cercano a esa fecha
                 if (asset.value_history && asset.value_history.length > 0) {
-                    const historicalValues = asset.value_history.filter(v => {
-                        const vDate = new Date(v.date);
-                        return vDate <= date;
-                    });
+                    // Filtrar valores históricos hasta esa fecha
+                    const historicalValues = asset.value_history
+                        .filter(v => {
+                            const vDate = new Date(v.date);
+                            return vDate <= date;
+                        })
+                        .sort((a, b) => new Date(b.date) - new Date(a.date)); // Más reciente primero
+                    
                     if (historicalValues.length > 0) {
-                        const latest = historicalValues[historicalValues.length - 1];
-                        assetValue = latest.value || asset.current_value || 0;
+                        // Usar el valor histórico más reciente hasta esa fecha
+                        assetValue = historicalValues[0].value || asset.purchase_price || 0;
+                    } else {
+                        // Si no hay valores históricos antes de esa fecha, usar el precio de compra
+                        assetValue = asset.purchase_price || 0;
+                    }
+                } else {
+                    // Si no hay historial, usar el valor actual (asumiendo que es el valor en ese momento)
+                    // O mejor, interpolar entre purchase_price y current_value basado en el tiempo
+                    if (asset.current_value && asset.purchase_price) {
+                        const daysSincePurchase = (date - purchaseDate) / (1000 * 60 * 60 * 24);
+                        const totalDays = (new Date() - purchaseDate) / (1000 * 60 * 60 * 24);
+                        if (totalDays > 0) {
+                            // Interpolación lineal simple
+                            const progress = Math.min(1, daysSincePurchase / totalDays);
+                            assetValue = asset.purchase_price + (asset.current_value - asset.purchase_price) * progress;
+                        } else {
+                            assetValue = asset.purchase_price;
+                        }
+                    } else {
+                        assetValue = asset.current_value || asset.purchase_price || 0;
                     }
                 }
+                
                 totalAssets += assetValue;
             }
         });
@@ -9088,7 +9098,7 @@ function closeTermsModal() {
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         const modalsToClose = [
-            'privacyModal', 
+            'privacyModal',
             'cookiesModal', 
             'termsModal', 
             'summaryDetailsModal',
@@ -9099,7 +9109,8 @@ if (typeof document !== 'undefined') {
             'updateAccountBalanceModal',
             'updateAssetValueModal',
             'userProfileModal',
-            'chartModal'
+            'chartModal',
+            'amortizationModal'
         ];
         
         modalsToClose.forEach(modalId => {
@@ -9122,6 +9133,7 @@ if (typeof document !== 'undefined') {
                         }
                         else if (modalId === 'userProfileModal') closeUserProfile();
                         else if (modalId === 'chartModal') closeChartModal();
+                        else if (modalId === 'amortizationModal') closeAmortizationModal();
                         else modal.style.display = 'none';
                     }
                 });
@@ -9534,7 +9546,7 @@ async function deleteSavingsGoal() {
         updateSummary();
         closeSavingsGoalModal();
     } catch (error) {
-        alert('Error al eliminar la meta de ahorro: ' + error.message);
+        alert('Error al eliminar el fondo de emergencia: ' + error.message);
     }
 }
 
