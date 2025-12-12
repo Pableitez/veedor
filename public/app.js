@@ -2171,10 +2171,17 @@ function initializeForms() {
                     summaryMonthInput.style.display = 'block';
                     summaryMonthInput.style.visibility = 'visible';
                     summaryMonthInput.style.height = 'auto';
-                    summaryMonthInput.style.marginTop = '8px';
+                    summaryMonthInput.style.marginTop = '12px';
                     summaryMonthInput.style.marginBottom = '0';
-                    summaryMonthInput.style.padding = '10px 12px';
+                    summaryMonthInput.style.marginLeft = '0';
+                    summaryMonthInput.style.marginRight = '0';
+                    summaryMonthInput.style.padding = '12px 14px';
                     summaryMonthInput.style.border = '1.5px solid var(--border-color)';
+                    summaryMonthInput.style.width = '100%';
+                    summaryMonthInput.style.maxWidth = '100%';
+                    summaryMonthInput.style.minWidth = '100%';
+                    summaryMonthInput.style.boxSizing = 'border-box';
+                    summaryMonthInput.style.overflow = 'visible';
                     summaryMonthInput.focus();
                 } else {
                     summaryMonthInput.style.display = 'none';
@@ -2182,6 +2189,8 @@ function initializeForms() {
                     summaryMonthInput.style.height = '0';
                     summaryMonthInput.style.marginTop = '0';
                     summaryMonthInput.style.marginBottom = '0';
+                    summaryMonthInput.style.marginLeft = '0';
+                    summaryMonthInput.style.marginRight = '0';
                     summaryMonthInput.style.padding = '0';
                     summaryMonthInput.style.border = 'none';
                 }
@@ -2193,10 +2202,17 @@ function initializeForms() {
                     summaryYearInput.style.display = 'block';
                     summaryYearInput.style.visibility = 'visible';
                     summaryYearInput.style.height = 'auto';
-                    summaryYearInput.style.marginTop = '8px';
+                    summaryYearInput.style.marginTop = '12px';
                     summaryYearInput.style.marginBottom = '0';
-                    summaryYearInput.style.padding = '10px 12px';
+                    summaryYearInput.style.marginLeft = '0';
+                    summaryYearInput.style.marginRight = '0';
+                    summaryYearInput.style.padding = '12px 14px';
                     summaryYearInput.style.border = '1.5px solid var(--border-color)';
+                    summaryYearInput.style.width = '100%';
+                    summaryYearInput.style.maxWidth = '100%';
+                    summaryYearInput.style.minWidth = '100%';
+                    summaryYearInput.style.boxSizing = 'border-box';
+                    summaryYearInput.style.overflow = 'visible';
                     summaryYearInput.focus();
                 } else {
                     summaryYearInput.style.display = 'none';
@@ -2204,6 +2220,8 @@ function initializeForms() {
                     summaryYearInput.style.height = '0';
                     summaryYearInput.style.marginTop = '0';
                     summaryYearInput.style.marginBottom = '0';
+                    summaryYearInput.style.marginLeft = '0';
+                    summaryYearInput.style.marginRight = '0';
                     summaryYearInput.style.padding = '0';
                     summaryYearInput.style.border = 'none';
                 }

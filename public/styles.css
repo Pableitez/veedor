@@ -3901,6 +3901,10 @@ tbody tr:last-child td {
         box-sizing: border-box !important;
         padding: 12px 14px !important;
         margin-top: 12px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-bottom: 0 !important;
+        overflow: visible !important;
     }
     
     /* Asegurar que estén ocultos cuando no se usan */
@@ -3923,9 +3927,17 @@ tbody tr:last-child td {
         display: block !important;
         visibility: visible !important;
         height: auto !important;
-        margin-top: 8px !important;
+        margin-top: 12px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-bottom: 0 !important;
         padding: 12px 14px !important;
         border: 1.5px solid var(--border-color) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
     }
     
     /* Contenedor del selector de período en móvil */
@@ -3946,13 +3958,27 @@ tbody tr:last-child td {
         min-width: 100% !important;
         flex: 1 1 100% !important;
         box-sizing: border-box !important;
+        overflow: visible !important;
+        position: relative !important;
     }
     
     .dashboard > div > div:first-child > div:last-child > select,
     .dashboard > div > div:first-child > div:last-child > input {
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 100% !important;
         box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+    
+    /* Asegurar que el input type="month" no se corte en móvil */
+    .dashboard > div > div:first-child > div:last-child > input[type="month"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        position: relative !important;
     }
     
     /* Selector de período en móvil */
