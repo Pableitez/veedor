@@ -4516,10 +4516,11 @@ function updateLoans() {
         );
         
         // Calcular totales basados en los pagos hasta la fecha actual
-        const totalPaid = amortization.table.reduce((sum, row) => sum + row.payment, 0) + 
-                         (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
         const remainingPrincipal = amortization.finalBalance;
-        const totalInterestPaid = amortization.totalInterest;
+        const capitalPaid = loan.principal - remainingPrincipal; // Capital realmente pagado
+        const totalInterestPaid = amortization.totalInterest; // Intereses pagados hasta hoy
+        const totalPaidIncludingInterest = amortization.table.reduce((sum, row) => sum + row.payment, 0) + 
+                                          (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
         
         // Calcular costo real usando TAE si está disponible, sino TIN
         const effectiveRate = loan.tae || loan.interest_rate;
@@ -4539,6 +4540,9 @@ function updateLoans() {
         const totalCommissions = (loan.opening_commission || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + (ep.commission || 0), 0);
         const realCost = totalInterestProjected + totalCommissions; // Costo real del préstamo
         const totalCost = totalAmount - loan.principal; // Costo total (intereses + comisiones)
+        
+        // Calcular progreso basado en capital pagado vs capital total
+        const progressPercentage = (capitalPaid / loan.principal) * 100;
         
         // Calcular próximo pago
         const nextPaymentDate = new Date(startDate);
@@ -4578,11 +4582,19 @@ function updateLoans() {
                         <span style="color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'}; font-size: 18px; font-weight: bold;">${formatCurrency(remainingPrincipal)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <strong style="color: var(--text-secondary);">Total Pagado:</strong>
-                        <span style="color: var(--text-primary);">${formatCurrency(totalPaid)}</span>
+                        <strong style="color: var(--text-secondary);">Capital Pagado:</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(capitalPaid)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <strong style="color: var(--text-secondary);">Intereses Totales:</strong>
+                        <strong style="color: var(--text-secondary);">Total Pagado (con intereses):</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(totalPaidIncludingInterest)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: var(--text-secondary);">Intereses Pagados:</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(totalInterestPaid)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: var(--text-secondary);">Intereses Totales (proyectados):</strong>
                         <span style="color: var(--text-primary);">${formatCurrency(totalInterestProjected)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
@@ -4604,7 +4616,7 @@ function updateLoans() {
                     </div>
                     <div style="display: flex; justify-content: space-between;">
                         <strong style="color: var(--text-primary);">Progreso:</strong>
-                        <span style="color: var(--text-primary);">${((totalPaid / totalAmount) * 100).toFixed(1)}%</span>
+                        <span style="color: var(--text-primary);">${progressPercentage.toFixed(1)}%</span>
                     </div>
                     <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
@@ -4740,12 +4752,14 @@ function showLoanDetails(loanId) {
         0, // No usar total_paid
         loan.early_payments || []
     );
-    const totalPaid = amortizationForSummary.table.reduce((sum, row) => sum + row.payment, 0) + 
-                     (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
+    const remainingPrincipal = amortization.finalBalance;
+    const capitalPaid = loan.principal - remainingPrincipal;
+    const totalPaidIncludingInterest = amortizationForSummary.table.reduce((sum, row) => sum + row.payment, 0) + 
+                                       (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
     const totalInterest = amortization.totalInterest;
     const totalCommissions = (loan.opening_commission || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + (ep.commission || 0), 0);
     const totalCost = totalInterest + totalCommissions;
-    const remainingPrincipal = amortization.finalBalance;
+    const progressPercentage = (capitalPaid / loan.principal) * 100;
     
     // Crear contenido del modal
     let contentHTML = `
@@ -4763,8 +4777,12 @@ function showLoanDetails(loanId) {
                     </div>
                 </div>
                 <div>
-                    <strong style="color: var(--text-secondary); font-size: 12px;">Total Pagado</strong>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--text-primary);">${formatCurrency(totalPaid)}</div>
+                    <strong style="color: var(--text-secondary); font-size: 12px;">Capital Pagado</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-primary);">${formatCurrency(capitalPaid)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--text-secondary); font-size: 12px;">Total Pagado (con intereses)</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-primary);">${formatCurrency(totalPaidIncludingInterest)}</div>
                 </div>
                 <div>
                     <strong style="color: var(--text-secondary); font-size: 12px;">Intereses Totales</strong>
