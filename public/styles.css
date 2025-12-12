@@ -831,46 +831,46 @@ body:not(.dark-mode) .main-header {
 
 body:not(.dark-mode) header h1,
 body:not(.dark-mode) .main-header h1 {
-    /* El arcoíris ya está aplicado, no necesita color adicional */
+    color: white;
 }
 
 body:not(.dark-mode) header button,
 body:not(.dark-mode) .main-header button {
-    color: rgba(255, 255, 255, 1) !important;
-    border-color: rgba(255, 255, 255, 0.5) !important;
-    background: rgba(255, 255, 255, 0.3) !important;
+    color: rgba(30, 58, 138, 1) !important;
+    border-color: rgba(30, 58, 138, 0.4) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
     border-radius: 8px !important;
     border-width: 1.5px !important;
 }
 
 body:not(.dark-mode) header button:hover,
 body:not(.dark-mode) .main-header button:hover {
-    background: rgba(255, 255, 255, 0.5) !important;
-    border-color: rgba(255, 255, 255, 0.7) !important;
-    color: rgba(255, 255, 255, 1) !important;
+    background: rgba(255, 255, 255, 1) !important;
+    border-color: rgba(30, 58, 138, 0.6) !important;
+    color: rgba(30, 58, 138, 1) !important;
 }
 
 body:not(.dark-mode) header button span,
 body:not(.dark-mode) .main-header button span {
-    color: rgba(255, 255, 255, 1) !important;
+    color: rgba(30, 58, 138, 1) !important;
     opacity: 1 !important;
 }
 
 body:not(.dark-mode) header svg,
 body:not(.dark-mode) .main-header svg {
-    filter: brightness(0) invert(1);
+    filter: none;
     opacity: 1;
 }
 
 body:not(.dark-mode) header svg circle,
 body:not(.dark-mode) .main-header svg circle {
-    fill: rgba(255, 255, 255, 1);
+    fill: rgba(30, 58, 138, 1);
 }
 
 body:not(.dark-mode) header svg path,
 body:not(.dark-mode) .main-header svg path {
-    stroke: rgba(255, 255, 255, 1);
-    fill: rgba(255, 255, 255, 1);
+    stroke: rgba(30, 58, 138, 1);
+    fill: rgba(30, 58, 138, 1);
 }
 
 /* Footer en modo claro con color azul */
@@ -953,7 +953,7 @@ body:not(.dark-mode) header h1 {
     overflow-x: hidden;
     min-height: calc(100vh - 80px);
     border-radius: 12px;
-    margin-top: 24px;
+    margin-top: 64px;
     margin-bottom: 24px;
 }
 
@@ -1154,7 +1154,7 @@ body.dark-mode .revolut-card:hover {
     transition: background-color 0.3s;
     max-width: 1400px;
     margin: 0 auto;
-    margin-top: 24px;
+    margin-top: 64px;
     margin-bottom: 24px;
     width: 100%;
     box-sizing: border-box;
@@ -2574,7 +2574,7 @@ tbody tr:last-child td {
         box-sizing: border-box !important;
         overflow-x: hidden !important;
         border-radius: 12px !important;
-        margin-top: 24px !important;
+        margin-top: 56px !important;
         margin-bottom: 16px !important;
     }
     
@@ -2622,7 +2622,7 @@ tbody tr:last-child td {
         max-width: 100% !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
-        margin: 24px auto 16px auto !important;
+        margin: 56px auto 16px auto !important;
         border-radius: 12px !important;
     }
     
@@ -3573,7 +3573,7 @@ tbody tr:last-child td {
         max-width: 100% !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
-        margin: 20px auto 12px auto !important;
+        margin: 48px auto 12px auto !important;
         border-radius: 10px !important;
     }
     
