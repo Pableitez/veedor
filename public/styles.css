@@ -802,10 +802,8 @@ body.dark-mode .auth-screen::before {
 
 header {
     background: transparent;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     color: rgba(255, 255, 255, 0.9);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: none;
     padding: 18px 32px;
     display: flex;
     justify-content: space-between;
@@ -813,7 +811,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
     box-sizing: border-box;
@@ -826,11 +824,9 @@ header {
 /* Ajustar colores del header en modo claro */
 body:not(.dark-mode) header,
 body:not(.dark-mode) .main-header {
-    background: linear-gradient(180deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: transparent;
     color: rgba(255, 255, 255, 0.95);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    border-bottom: none;
 }
 
 body:not(.dark-mode) header h1,
@@ -1007,6 +1003,7 @@ header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-stroke: 0.5px rgba(30, 58, 138, 1);
 }
 
 header svg#headerLogo,
