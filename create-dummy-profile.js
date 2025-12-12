@@ -183,10 +183,21 @@ async function createDummyProfile() {
             firstName: 'María',
             lastName: 'García',
             savingsGoal: 15000,
-            emailVerified: true
+            emailVerified: true,
+            emailVerificationToken: null,
+            emailVerificationExpiry: null
         });
         await user.save();
         console.log('✅ Usuario creado:', user.email);
+        console.log('   Email verificado:', user.emailVerified);
+        console.log('   ID:', user._id.toString());
+        
+        // Verificar que el usuario se guardó correctamente
+        const savedUser = await User.findById(user._id);
+        if (!savedUser) {
+            throw new Error('Error: El usuario no se guardó correctamente');
+        }
+        console.log('✅ Usuario verificado en la base de datos');
 
         const userId = user._id;
 
@@ -477,6 +488,18 @@ async function createDummyProfile() {
         }
         console.log('✅ Presupuestos creados');
 
+        // Verificar que el usuario puede hacer login
+        console.log('\n🔐 Verificando que el usuario puede hacer login...');
+        const testUser = await User.findOne({ email: 'demo@veedor.com' });
+        if (!testUser) {
+            throw new Error('Error: El usuario no se encontró después de crearlo');
+        }
+        const testPassword = await bcrypt.compare('demo123', testUser.password);
+        if (!testPassword) {
+            throw new Error('Error: La contraseña no coincide');
+        }
+        console.log('✅ Usuario verificado - puede hacer login correctamente');
+        
         console.log('\n✅ ========================================');
         console.log('✅ PERFIL DEMO CREADO EXITOSAMENTE');
         console.log('✅ ========================================');
@@ -484,6 +507,9 @@ async function createDummyProfile() {
         console.log('   Email: demo@veedor.com');
         console.log('   Usuario: demo_user');
         console.log('   Contraseña: demo123');
+        console.log('\n⚠️  IMPORTANTE:');
+        console.log('   Si ves "sesión expirada", simplemente cierra sesión');
+        console.log('   y vuelve a iniciar sesión con las credenciales de arriba.');
         console.log('\n💰 Resumen del perfil:');
         console.log('   • 3 cuentas bancarias (Total: ~24,200€)');
         console.log('   • 1 propiedad (Piso valorado en 310,000€)');

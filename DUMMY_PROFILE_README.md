@@ -8,6 +8,16 @@ Este script crea un perfil de demostración con datos financieros realistas de u
 - **Usuario:** `demo_user`
 - **Contraseña:** `demo123`
 
+## ⚠️ Importante: Si ves "Sesión Expirada"
+
+Si después de crear el perfil dummy ves el mensaje "Sesión expirada", simplemente:
+
+1. **Cierra sesión** (si estás logueado con otro usuario)
+2. **Inicia sesión** con las credenciales de arriba
+3. El usuario dummy está completamente funcional y listo para usar
+
+El mensaje de "sesión expirada" aparece porque puede haber un token antiguo en el navegador. Al hacer login de nuevo con las credenciales del usuario dummy, todo funcionará correctamente.
+
 ## 🚀 Cómo Ejecutar
 
 1. Asegúrate de tener un archivo `.env` en la raíz del proyecto con tu `MONGODB_URI`:
