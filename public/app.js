@@ -286,7 +286,7 @@ function showToast(message, type = 'info', duration = 5000) {
         },
         info: { 
             border: '#6366f1', 
-            bg: isDark ? 'rgba(99, 102, 241, 0.15)' : '#eef2ff', 
+            bg: isDark ? 'rgba(147, 51, 234, 0.15)' : '#f3e8ff', 
             icon: 'ℹ️', 
             text: isDark ? '#818cf8' : '#3730a3' 
         }
@@ -5019,7 +5019,7 @@ function updateInvestments() {
                     </div>
                 </div>
             ` : `
-                <div style="margin: 12px 0; padding: 12px; background: rgba(99, 102, 241, 0.05); border-radius: var(--radius); border-left: 3px solid var(--primary);">
+                <div style="margin: 12px 0; padding: 12px; background: rgba(147, 51, 234, 0.05); border-radius: var(--radius); border-left: 3px solid var(--primary);">
                     <div style="font-size: 12px; color: var(--gray-600); text-align: center;">
                         💡 Aún no has añadido dinero. Haz clic en "Añadir Dinero" para empezar.
                     </div>
@@ -9778,7 +9778,7 @@ function showFinancialHealthDetail(metric, index) {
                     label: 'Balance',
                     data: balances,
                     borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    backgroundColor: 'rgba(147, 51, 234, 0.1)',
                     tension: 0.4,
                     fill: true
                 }]
