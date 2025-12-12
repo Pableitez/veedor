@@ -2433,11 +2433,60 @@ tbody tr:last-child td {
         width: 100% !important;
         flex-direction: column !important;
         gap: 8px !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
     
     .table-controls label {
         font-size: 13px !important;
         white-space: normal !important;
+        width: 100% !important;
+        margin-bottom: 4px !important;
+        display: block !important;
+    }
+    
+    /* Campos de fecha en móvil */
+    .table-controls input[type="date"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+        box-sizing: border-box !important;
+        padding: 12px 14px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    /* Contenedor de filtros de fecha en móvil */
+    .date-filters-container {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 12px !important;
+    }
+    
+    .date-filters-container > div {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        align-items: flex-start !important;
+    }
+    
+    .date-filters-container > div > label {
+        width: 100% !important;
+        display: block !important;
+        margin-bottom: 4px !important;
+        font-size: 13px !important;
+    }
+    
+    .date-filters-container > div > input[type="date"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+        box-sizing: border-box !important;
+        padding: 12px 14px !important;
     }
     
     .table-container {
