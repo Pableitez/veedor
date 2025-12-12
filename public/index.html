@@ -765,7 +765,7 @@
                             <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <h2 id="amortizationModalTitle" style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">📊 Tabla de Amortización</h2>
-                                    <button onclick="closeAmortizationModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                                    <button onclick="closeAmortizationModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 8px; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                                 </div>
                             </div>
                             <div id="amortizationModalContent" style="padding: 32px; max-height: calc(90vh - 100px); overflow-y: auto; flex: 1;">
@@ -778,8 +778,8 @@
                         <div class="modal-content" style="max-width: 600px; max-height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
                             <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">💰 Amortización Anticipada</h2>
-                                    <button onclick="closeEarlyPaymentModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                                    <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Amortización Anticipada</h2>
+                                    <button onclick="closeEarlyPaymentModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 8px; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                                 </div>
                             </div>
                             <div style="padding: 32px; max-height: calc(90vh - 100px); overflow-y: auto; flex: 1;">
@@ -794,9 +794,9 @@
                                     <div id="earlyPaymentCommissionInfo" style="padding: 16px; background: #FEF3C7; border-radius: 12px; border-left: 4px solid var(--warning); display: none;">
                                         <strong style="color: var(--text-primary);">Comisión:</strong> <span id="earlyPaymentCommissionAmount" style="color: var(--text-secondary);">0,00 €</span>
                                     </div>
-                                    <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                                        <button type="button" class="btn-secondary" onclick="closeEarlyPaymentModal()">Cancelar</button>
-                                        <button type="submit" class="btn-primary">✅ Confirmar Amortización</button>
+                                    <div style="display: flex; gap: 12px; justify-content: center; align-items: center; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                                        <button type="button" class="btn-secondary" onclick="closeEarlyPaymentModal()" style="flex: 1; min-width: 120px; padding: 12px 24px; font-size: 15px; font-weight: 600;">Cancelar</button>
+                                        <button type="submit" class="btn-primary" style="flex: 1; min-width: 120px; padding: 12px 24px; font-size: 15px; font-weight: 600;">Confirmar Amortización</button>
                                     </div>
                                 </form>
                             </div>
@@ -1365,11 +1365,11 @@
                     <button onclick="closeChartModal()" class="chart-modal-close" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 300; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                 </div>
             </div>
-            <div class="chart-modal-body" style="padding: 24px 32px; flex: 1; overflow-y: auto;">
+            <div class="chart-modal-body" style="padding: 24px 32px; flex: 1; overflow-y: auto; overflow-x: hidden;">
                 <div id="chartModalControls" class="chart-modal-controls" style="margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; padding: 16px; background: var(--gray-50); border-radius: 8px;">
                     <!-- Controles se llenarán dinámicamente -->
                 </div>
-                <div class="chart-modal-canvas-container" style="position: relative; height: 60vh; min-height: 400px; max-height: 600px; width: 100%; padding: 20px; box-sizing: border-box;">
+                <div class="chart-modal-canvas-container" style="position: relative; height: 60vh; min-height: 400px; max-height: 600px; width: 100%; padding: 30px; box-sizing: border-box; margin: 0 auto;">
                     <canvas id="chartModalCanvas"></canvas>
                 </div>
             </div>
