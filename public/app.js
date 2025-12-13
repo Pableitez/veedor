@@ -10496,9 +10496,11 @@ function updateFinancialHealthMetrics() {
     const debtPercentage = totalAssets > 0 ? (netDebt / totalAssets) * 100 : (netDebt > 0 ? 100 : 0);
     const debtStatus = debtPercentage < 30 ? 'excellent' : debtPercentage < 50 ? 'good' : debtPercentage < 70 ? 'warning' : 'danger';
     
-    // 2. Ratio de Endeudamiento (Deuda neta / Activos)
-    const debtToAssetsRatio = totalAssets > 0 ? (netDebt / totalAssets) : (netDebt > 0 ? 1 : 0);
-    const debtRatioStatus = debtToAssetsRatio < 0.3 ? 'excellent' : debtToAssetsRatio < 0.5 ? 'good' : debtToAssetsRatio < 0.7 ? 'warning' : 'danger';
+    // 2. Ratio de Endeudamiento (Cuotas mensuales de préstamos / Ingresos mensuales)
+    const avgMonthlyIncome = monthsInPeriod > 0 ? periodIncome / monthsInPeriod : 0;
+    const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
+    const debtToIncomeRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 999 : 0);
+    const debtRatioStatus = avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'danger' : (debtToIncomeRatio >= 40 ? 'danger' : debtToIncomeRatio >= 30 ? 'warning' : debtToIncomeRatio >= 20 ? 'good' : 'excellent');
     
     // 3. Ratio de Salud Financiera (Activos / Deudas netas)
     const healthRatio = netDebt > 0 ? (totalAssets / netDebt) : (totalAssets > 0 ? 999 : (totalAssets < 0 ? -999 : 0));
@@ -10528,8 +10530,7 @@ function updateFinancialHealthMetrics() {
     const investmentStatus = totalAssets <= 0 ? 'danger' : (investmentRatio > 20 ? 'excellent' : investmentRatio > 10 ? 'good' : investmentRatio > 5 ? 'warning' : 'danger');
     
     // 8. Ratio de Servicio de Deuda (Pagos mensuales / Ingresos mensuales promedio del período)
-    const avgMonthlyIncome = monthsInPeriod > 0 ? periodIncome / monthsInPeriod : 0;
-    const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
+    // Nota: avgMonthlyIncome y monthlyLoanPayments ya están calculados arriba para el Ratio de Endeudamiento
     const debtServiceRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 999 : 0);
     // Si no hay ingresos pero hay pagos = peligro crítico
     const debtServiceStatus = avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'danger' : (debtServiceRatio >= 40 ? 'danger' : debtServiceRatio >= 30 ? 'warning' : debtServiceRatio >= 20 ? 'good' : 'excellent');
@@ -10545,11 +10546,11 @@ function updateFinancialHealthMetrics() {
         },
         {
             title: 'Ratio de Endeudamiento',
-            value: (debtToAssetsRatio * 100).toFixed(1) + '%',
-            description: `Deuda neta / Activos totales${propertyValueOffset > 0 ? ' (considerando propiedades asociadas)' : ''}`,
+            value: debtToIncomeRatio >= 999 ? '∞%' : debtToIncomeRatio.toFixed(1) + '%',
+            description: `Cuotas mensuales de préstamos / Ingresos mensuales`,
             status: debtRatioStatus,
             icon: '',
-            detail: debtToAssetsRatio < 0.3 ? 'Excelente' : debtToAssetsRatio < 0.5 ? 'Bueno' : debtToAssetsRatio < 0.7 ? 'Moderado' : 'Alto' + (propertyValueOffset > 0 ? ` | Valor propiedades: ${formatCurrency(propertyValueOffset)}` : '')
+            detail: avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'Sin ingresos pero hay cuotas' : (debtToIncomeRatio >= 40 ? 'Alto (≥40%)' : debtToIncomeRatio >= 30 ? 'Moderado (30-40%)' : debtToIncomeRatio >= 20 ? 'Bueno (20-30%)' : 'Excelente (<20%)') + ` | Cuotas: ${formatCurrency(monthlyLoanPayments)} / Ingresos: ${formatCurrency(avgMonthlyIncome)}`
         },
         {
             title: 'Salud Financiera',
