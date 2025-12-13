@@ -478,39 +478,84 @@ function toggleForm(formId, buttonId) {
     
     if (!form || !button) return;
     
-    const isVisible = form.style.display !== 'none';
+    // Buscar el form-section padre
+    const formSection = form.closest('.form-section');
+    const isMobile = window.innerWidth <= 768;
     
-    if (isVisible) {
-        // Ocultar formulario
-        form.style.display = 'none';
-        if (icon) icon.textContent = '➕';
-        if (text) {
-            const formNames = {
-                'transactionForm': 'Nueva Transacción',
-                'propertyForm': 'Nueva Propiedad',
-                'accountForm': 'Nueva Cuenta',
-                'loanForm': 'Nuevo Préstamo',
-                'investmentForm': 'Nueva Inversión',
-                'patrimonioForm': 'Nueva Propiedad',
-                'budgetForm': 'Nuevo Presupuesto',
-                'envelopeForm': 'Nuevo Sobre'
-            };
-            text.textContent = formNames[formId] || 'Nuevo';
-        }
-        // Resetear formulario si existe función
-        const resetFunc = window['reset' + formId.charAt(0).toUpperCase() + formId.slice(1).replace('Form', 'Form')];
-        if (resetFunc && typeof resetFunc === 'function') {
-            resetFunc();
+    if (isMobile && formSection) {
+        // En móvil: usar la lógica de expandir/colapsar
+        const isExpanded = formSection.classList.contains('expanded');
+        
+        if (isExpanded) {
+            // Colapsar
+            formSection.classList.remove('expanded');
+            form.style.display = 'none';
+            if (icon) icon.textContent = '➕';
+            if (text) {
+                const formNames = {
+                    'transactionForm': 'Nueva Transacción',
+                    'propertyForm': 'Nueva Propiedad',
+                    'accountForm': 'Nueva Cuenta',
+                    'loanForm': 'Nuevo Préstamo',
+                    'investmentForm': 'Nueva Inversión',
+                    'patrimonioForm': 'Nueva Propiedad',
+                    'budgetForm': 'Nuevo Presupuesto',
+                    'envelopeForm': 'Nuevo Sobre'
+                };
+                text.textContent = formNames[formId] || 'Nuevo';
+            }
+            // Resetear formulario si existe función
+            const resetFunc = window['reset' + formId.charAt(0).toUpperCase() + formId.slice(1).replace('Form', 'Form')];
+            if (resetFunc && typeof resetFunc === 'function') {
+                resetFunc();
+            }
+        } else {
+            // Expandir
+            formSection.classList.add('expanded');
+            form.style.display = 'block';
+            if (icon) icon.textContent = '➖';
+            if (text) text.textContent = 'Cancelar';
+            // Scroll suave al formulario
+            setTimeout(() => {
+                formSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
         }
     } else {
-        // Mostrar formulario
-        form.style.display = 'block';
-        if (icon) icon.textContent = '➖';
-        if (text) text.textContent = 'Cancelar';
-        // Scroll suave al formulario
-        setTimeout(() => {
-            form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 100);
+        // En desktop: lógica original
+        const isVisible = form.style.display !== 'none';
+        
+        if (isVisible) {
+            // Ocultar formulario
+            form.style.display = 'none';
+            if (icon) icon.textContent = '➕';
+            if (text) {
+                const formNames = {
+                    'transactionForm': 'Nueva Transacción',
+                    'propertyForm': 'Nueva Propiedad',
+                    'accountForm': 'Nueva Cuenta',
+                    'loanForm': 'Nuevo Préstamo',
+                    'investmentForm': 'Nueva Inversión',
+                    'patrimonioForm': 'Nueva Propiedad',
+                    'budgetForm': 'Nuevo Presupuesto',
+                    'envelopeForm': 'Nuevo Sobre'
+                };
+                text.textContent = formNames[formId] || 'Nuevo';
+            }
+            // Resetear formulario si existe función
+            const resetFunc = window['reset' + formId.charAt(0).toUpperCase() + formId.slice(1).replace('Form', 'Form')];
+            if (resetFunc && typeof resetFunc === 'function') {
+                resetFunc();
+            }
+        } else {
+            // Mostrar formulario
+            form.style.display = 'block';
+            if (icon) icon.textContent = '➖';
+            if (text) text.textContent = 'Cancelar';
+            // Scroll suave al formulario
+            setTimeout(() => {
+                form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
     }
 }
 

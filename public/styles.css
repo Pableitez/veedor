@@ -2904,8 +2904,12 @@ tbody tr:last-child td {
     }
     
     .form-section {
-        padding: 20px 16px !important;
-        padding-top: 20px !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        opacity: 0 !important;
+        transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease, padding 0.3s ease !important;
+        margin-bottom: 0 !important;
+        padding: 0 !important;
         margin-top: 16px !important;
         width: 100% !important;
         max-width: 100% !important;
@@ -2914,6 +2918,14 @@ tbody tr:last-child td {
         margin-right: 0 !important;
         overflow-x: hidden !important;
         border-radius: 16px !important;
+    }
+    
+    .form-section.expanded {
+        max-height: 5000px !important;
+        opacity: 1 !important;
+        margin-bottom: 16px !important;
+        padding: 20px 16px !important;
+        padding-top: 20px !important;
     }
     
     .table-controls {
@@ -3952,6 +3964,22 @@ tbody tr:last-child td {
         overflow-x: hidden !important;
         margin: 48px auto 12px auto !important;
         border-radius: 10px !important;
+    }
+    
+    .form-section {
+        max-height: 0 !important;
+        overflow: hidden !important;
+        opacity: 0 !important;
+        transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease, padding 0.3s ease !important;
+        margin-bottom: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .form-section.expanded {
+        max-height: 5000px !important;
+        opacity: 1 !important;
+        margin-bottom: 16px !important;
+        padding: 20px 16px !important;
     }
     
     .form-section {
