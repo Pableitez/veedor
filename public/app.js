@@ -10537,11 +10537,8 @@ function updateFinancialHealthMetrics() {
     // Si activos negativos o 0% = bajo, si positivo según porcentaje
     const investmentStatus = totalAssets <= 0 ? 'danger' : (investmentRatio > 20 ? 'excellent' : investmentRatio > 10 ? 'good' : investmentRatio > 5 ? 'warning' : 'danger');
     
-    // 8. Ratio de Servicio de Deuda (Pagos mensuales / Ingresos mensuales promedio del período)
-    // Nota: avgMonthlyIncome y monthlyLoanPayments ya están calculados arriba para el Ratio de Endeudamiento
-    const debtServiceRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 999 : 0);
-    // Si no hay ingresos pero hay pagos = peligro crítico
-    const debtServiceStatus = avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'danger' : (debtServiceRatio >= 40 ? 'danger' : debtServiceRatio >= 30 ? 'warning' : debtServiceRatio >= 20 ? 'good' : 'excellent');
+    // Nota: Servicio de Deuda eliminado porque es duplicado del Ratio de Endeudamiento
+    // Ambos calculan lo mismo: Cuotas mensuales / Ingresos mensuales
     
     const metrics = [
         {
@@ -10587,10 +10584,10 @@ function updateFinancialHealthMetrics() {
         {
             title: 'Liquidez',
             value: liquidityRatio > 999 ? '∞' : liquidityRatio < 0 ? '0.0 meses' : liquidityRatio.toFixed(1) + ' meses',
-            description: `Activos líquidos / Gastos mensuales promedio`,
+            description: `Cuántos meses puedes cubrir tus gastos con el dinero disponible en cuentas`,
             status: liquidityStatus,
             icon: '',
-            detail: totalTransactionsBalance < 0 ? 'Balance negativo' : (avgMonthlyExpenses === 0 && totalTransactionsBalance > 0 ? 'Sin gastos, balance positivo' : (liquidityRatio >= 6 ? 'Excelente' : liquidityRatio >= 3 ? 'Buena' : liquidityRatio >= 1 ? 'Moderada' : 'Baja'))
+            detail: totalTransactionsBalance < 0 ? 'Balance negativo - No puedes cubrir gastos' : (avgMonthlyExpenses === 0 && totalTransactionsBalance > 0 ? 'Sin gastos, balance positivo' : `Balance: ${formatCurrency(totalTransactionsBalance)} | Gastos mensuales: ${formatCurrency(avgMonthlyExpenses)} | ${liquidityRatio >= 6 ? 'Excelente (≥6 meses)' : liquidityRatio >= 3 ? 'Buena (3-6 meses)' : liquidityRatio >= 1 ? 'Moderada (1-3 meses)' : 'Baja (<1 mes)'}`)
         },
         {
             title: 'Ratio de Inversión',
@@ -10600,14 +10597,6 @@ function updateFinancialHealthMetrics() {
             icon: '',
             detail: totalAssets <= 0 ? 'Sin activos o activos negativos' : (formatCurrency(investmentsValue) + ' de ' + formatCurrency(totalAssets))
         },
-        {
-            title: 'Servicio de Deuda',
-            value: debtServiceRatio >= 999 ? '∞%' : debtServiceRatio.toFixed(1) + '%',
-            description: `Pagos mensuales / Ingresos mensuales promedio`,
-            status: debtServiceStatus,
-            icon: '',
-            detail: formatCurrency(monthlyLoanPayments) + ' de ' + formatCurrency(avgMonthlyIncome) + (avgMonthlyIncome === 0 ? ' (sin ingresos)' : '')
-        }
     ];
     
     metrics.forEach((metric, index) => {
@@ -11620,16 +11609,6 @@ function showFinancialHealthDetail(metric, index) {
                 <strong>Ahorro del Período:</strong> ${formatCurrency(periodSavings)}
             </div>
         `;
-    } else if (index === 7) { // Servicio de Deuda
-        detailContent += `
-            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
-                <strong>Pagos Mensuales de Préstamos:</strong> ${formatCurrency(monthlyLoanPayments)}
-            </div>
-            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
-                <strong>Ingresos Mensuales Promedio:</strong> ${formatCurrency(avgMonthlyIncome)} ${avgMonthlyIncome === 0 ? '(sin ingresos)' : ''}
-            </div>
-        `;
-    }
     
     detailContent += `
                 </div>
