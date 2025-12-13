@@ -11034,10 +11034,10 @@ function updateRecommendations() {
             
             switch(rec.action.type) {
                 case 'edit_loan':
-                    onclickHandler = `handleRecommendationAction('edit_loan', '${rec.action.loanId}')`;
+                    onclickHandler = `handleRecommendationAction('edit_loan', '${String(rec.action.loanId).replace(/'/g, "\\'")}')`;
                     break;
                 case 'edit_patrimonio':
-                    onclickHandler = `handleRecommendationAction('edit_patrimonio', '${rec.action.patrimonioId}')`;
+                    onclickHandler = `handleRecommendationAction('edit_patrimonio', '${String(rec.action.patrimonioId).replace(/'/g, "\\'")}')`;
                     break;
                 case 'view_loans':
                     onclickHandler = `handleRecommendationAction('view_loans')`;
@@ -11057,8 +11057,9 @@ function updateRecommendations() {
             }
             
             if (onclickHandler) {
+                const escapedHandler = onclickHandler.replace(/"/g, '&quot;');
                 actionButton = `
-                    <button onclick="${onclickHandler}" 
+                    <button onclick="${escapedHandler}" 
                         style="margin-top: 12px; padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
                         onmouseover="this.style.background='var(--primary-dark)'"
                         onmouseout="this.style.background='var(--primary)'">
@@ -12619,3 +12620,4 @@ try {
 
 // Cerrar el bloque de protección contra carga múltiple
 } // Cierre del else de window.VEEDOR_LOADED (línea 5)
+} // Cierre del if de window.VEEDOR_LOADED (línea 3)
