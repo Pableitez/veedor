@@ -7853,7 +7853,6 @@ function updateDashboardSavingsChart() {
         }
     } else {
         // Para períodos específicos, mostrar meses del período
-        const summaryMonthInput = document.getElementById('summaryMonth');
         const summaryYearInput = document.getElementById('summaryYear');
         let startMonth, startYear, endMonth, endYear;
         
