@@ -2917,6 +2917,21 @@ tbody tr:last-child td {
     }
     
     .table-controls {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        margin-bottom: 0;
+        padding: 0;
+    }
+    
+    .table-controls.expanded {
+        max-height: 2000px;
+        opacity: 1;
+        margin-bottom: 16px;
+        padding: 16px;
+    }
+    
+    .mobile-filter-toggle {
         flex-direction: column !important;
         gap: 10px !important;
         margin-bottom: 16px !important;

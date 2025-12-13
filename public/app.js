@@ -13356,6 +13356,58 @@ try {
     console.error('❌ Error al exponer openChartModal al final:', error);
 }
 
+// Función para mostrar/ocultar filtros de transacciones en móvil
+function toggleTransactionFilters() {
+    const filtersContainer = document.getElementById('transactionFilters');
+    const toggleBtn = document.getElementById('toggleFiltersBtn');
+    const toggleText = document.getElementById('toggleFiltersText');
+    
+    if (filtersContainer && toggleBtn && toggleText) {
+        const isExpanded = filtersContainer.classList.contains('expanded');
+        
+        if (isExpanded) {
+            filtersContainer.classList.remove('expanded');
+            toggleText.textContent = 'Mostrar Filtros';
+        } else {
+            filtersContainer.classList.add('expanded');
+            toggleText.textContent = 'Ocultar Filtros';
+        }
+    }
+}
+
+// Exponer función globalmente
+window.toggleTransactionFilters = toggleTransactionFilters;
+
+// Detectar tamaño de pantalla y mostrar/ocultar botón
+function updateFilterToggleVisibility() {
+    const toggleBtn = document.getElementById('toggleFiltersBtn');
+    const filtersContainer = document.getElementById('transactionFilters');
+    
+    if (toggleBtn && filtersContainer) {
+        if (window.innerWidth <= 768) {
+            toggleBtn.style.display = 'flex';
+            // Asegurar que esté colapsado en móvil
+            if (!filtersContainer.classList.contains('expanded')) {
+                filtersContainer.classList.remove('expanded');
+            }
+        } else {
+            toggleBtn.style.display = 'none';
+            // Asegurar que esté expandido en desktop
+            filtersContainer.classList.add('expanded');
+        }
+    }
+}
+
+// Ejecutar al cargar y al redimensionar
+if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateFilterToggleVisibility);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateFilterToggleVisibility);
+    } else {
+        updateFilterToggleVisibility();
+    }
+}
+
 // Cerrar el bloque de protección contra carga múltiple
 } // Cierre del else de window.VEEDOR_LOADED (línea 5)
 } // Cierre del if de window.VEEDOR_LOADED (línea 3)
