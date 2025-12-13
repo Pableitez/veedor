@@ -1472,6 +1472,51 @@ function toggleTransactionFilters() {
     }
 }
 
+// Mostrar/ocultar botón de filtros según el tamaño de pantalla
+function updateFiltersButtonVisibility() {
+    const toggleBtn = document.getElementById('toggleFiltersBtn');
+    const filters = document.getElementById('transactionFilters');
+    
+    if (toggleBtn && filters) {
+        if (window.innerWidth <= 768) {
+            toggleBtn.style.display = 'flex';
+            // Asegurar que esté colapsado en móvil
+            if (!filters.classList.contains('expanded')) {
+                filters.classList.remove('expanded');
+            }
+        } else {
+            toggleBtn.style.display = 'none';
+            // Asegurar que esté expandido en desktop
+            filters.classList.add('expanded');
+        }
+    }
+}
+
+// Exponer funciones globalmente
+window.toggleTransactionFilters = toggleTransactionFilters;
+
+// Toggle de filtros de transacciones en móvil
+function toggleTransactionFilters() {
+    const filters = document.getElementById('transactionFilters');
+    const toggleBtn = document.getElementById('toggleFiltersBtn');
+    const toggleText = document.getElementById('toggleFiltersText');
+    const toggleIcon = document.getElementById('toggleFiltersIcon');
+    
+    if (filters && toggleBtn && toggleText && toggleIcon) {
+        const isExpanded = filters.classList.contains('expanded');
+        
+        if (isExpanded) {
+            filters.classList.remove('expanded');
+            toggleText.textContent = 'Mostrar Filtros';
+            toggleIcon.style.transform = 'rotate(0deg)';
+        } else {
+            filters.classList.add('expanded');
+            toggleText.textContent = 'Ocultar Filtros';
+            toggleIcon.style.transform = 'rotate(180deg)';
+        }
+    }
+}
+
 // Exponer función globalmente
 window.toggleTransactionFilters = toggleTransactionFilters;
 
