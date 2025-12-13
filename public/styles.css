@@ -1172,6 +1172,9 @@ body:not(.dark-mode) header h1 {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
 }
 
 /* Asegurar que las revolut-cards tengan la misma altura que las summary-cards */
