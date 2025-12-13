@@ -2221,7 +2221,6 @@ function initializeForms() {
     
     // Selector de período en dashboard
     const summaryPeriodSelect = document.getElementById('summaryPeriod');
-    const summaryMonthInput = document.getElementById('summaryMonth');
     const summaryYearInput = document.getElementById('summaryYear');
     if (summaryPeriodSelect) {
         // Inicializar con valor por defecto "Este año"
@@ -2773,7 +2772,6 @@ async function updateSummary() {
     }
     
     // Obtener mes y año seleccionados si aplica
-    const summaryMonthInput = document.getElementById('summaryMonth');
     const summaryYearInput = document.getElementById('summaryYear');
     let selectedMonth = currentMonth;
     let selectedYear = currentYear;
@@ -2849,7 +2847,7 @@ async function updateSummary() {
         periodIncome = selectedMonthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
         periodExpenses = Math.abs(selectedMonthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
         periodSavings = periodIncome - periodExpenses;
-        const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
         periodLabel = `${monthNames[selectedMonth]} ${selectedYear}`;
     } else if (summaryPeriod === 'year') {
         // Usar año actual cuando se selecciona "Este Año"
@@ -7744,7 +7742,6 @@ function getTransactionsBySummaryPeriod() {
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     
-    const summaryMonthInput = document.getElementById('summaryMonth');
     const summaryYearInput = document.getElementById('summaryYear');
     let selectedMonth = currentMonth;
     let selectedYear = currentYear;
@@ -7945,11 +7942,10 @@ function updateDashboardIncomeExpenseChart() {
     const expenseData = [];
     
     let startMonth, startYear, endMonth, endYear;
-    const summaryMonthInput = document.getElementById('summaryMonth');
     const summaryYearInput = document.getElementById('summaryYear');
     
     if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
-        if (summaryPeriod === 'month-select' && summaryMonthInput && summaryMonthInput.value) {
+        if (summaryPeriod === 'month-select') {
             const summaryMonthSelect = document.getElementById('summaryMonthSelect');
             const summaryMonthYear = document.getElementById('summaryMonthYear');
             if (summaryMonthSelect && summaryMonthYear) {
@@ -8124,11 +8120,10 @@ function updateDashboardIncomeEvolutionChart() {
     const incomeData = [];
     
     let startMonth, startYear, endMonth, endYear;
-    const summaryMonthInput = document.getElementById('summaryMonth');
     const summaryYearInput = document.getElementById('summaryYear');
     
     if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
-        if (summaryPeriod === 'month-select' && summaryMonthInput && summaryMonthInput.value) {
+        if (summaryPeriod === 'month-select') {
             const summaryMonthSelect = document.getElementById('summaryMonthSelect');
             const summaryMonthYear = document.getElementById('summaryMonthYear');
             if (summaryMonthSelect && summaryMonthYear) {
@@ -8228,11 +8223,10 @@ function updateDashboardExpensesEvolutionChart() {
     const expensesData = [];
     
     let startMonth, startYear, endMonth, endYear;
-    const summaryMonthInput = document.getElementById('summaryMonth');
     const summaryYearInput = document.getElementById('summaryYear');
     
     if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
-        if (summaryPeriod === 'month-select' && summaryMonthInput && summaryMonthInput.value) {
+        if (summaryPeriod === 'month-select') {
             const summaryMonthSelect = document.getElementById('summaryMonthSelect');
             const summaryMonthYear = document.getElementById('summaryMonthYear');
             if (summaryMonthSelect && summaryMonthYear) {
