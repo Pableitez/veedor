@@ -2265,10 +2265,10 @@ function initializeForms() {
                     summaryYearInput.style.marginTop = 'clamp(12px, 3vw, 16px)';
                     summaryYearInput.style.marginBottom = '0';
                     summaryYearInput.style.marginLeft = '0';
+                    summaryYearInput.style.marginRight = '0';
                     summaryYearInput.style.padding = 'clamp(10px, 2.5vw, 12px)';
                     summaryYearInput.style.minHeight = 'clamp(40px, 10vw, 44px)';
-                    summaryYearInput.style.marginRight = '0';
-                    summaryYearInput.style.padding = '12px 14px';
+                    summaryYearInput.style.fontSize = 'clamp(14px, 3.5vw, 16px)';
                     summaryYearInput.style.border = '1.5px solid var(--border-color)';
                     summaryYearInput.style.width = '100%';
                     summaryYearInput.style.maxWidth = '100%';
