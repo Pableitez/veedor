@@ -2774,12 +2774,16 @@ async function updateSummary() {
     let selectedMonth = currentMonth;
     let selectedYear = currentYear;
     
-    if (summaryMonthInput && summaryPeriod === 'month-select') {
-        const monthValue = summaryMonthInput.value;
-        if (monthValue) {
-            const [year, month] = monthValue.split('-').map(Number);
-            selectedYear = year;
-            selectedMonth = month - 1; // Los meses en JS son 0-indexed
+    if (summaryPeriod === 'month-select') {
+        const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+        const summaryMonthYear = document.getElementById('summaryMonthYear');
+        if (summaryMonthSelect && summaryMonthYear) {
+            const month = parseInt(summaryMonthSelect.value);
+            const year = parseInt(summaryMonthYear.value);
+            if (month && year) {
+                selectedYear = year;
+                selectedMonth = month - 1; // Los meses en JS son 0-indexed
+            }
         }
     }
     
