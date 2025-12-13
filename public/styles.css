@@ -4360,16 +4360,7 @@ tbody tr:last-child td {
 
 /* Botón flotante para añadir transacción */
 .floating-add-btn {
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-8px);
-    }
+    /* Sin animación de destello */
 }
 
 .floating-add-btn:active {
@@ -4406,6 +4397,19 @@ tbody tr:last-child td {
     
     .floating-add-btn {
         display: flex !important;
+    }
+    
+    /* Cards de resumen ocupando toda la pantalla en móvil */
+    .revolut-cards-grid {
+        grid-template-columns: 1fr !important;
+        gap: clamp(16px, 4vw, 20px) !important;
+        padding: 0 clamp(12px, 3vw, 16px) !important;
+    }
+    
+    .revolut-card {
+        width: 100% !important;
+        min-height: clamp(140px, 35vw, 180px) !important;
+        padding: clamp(20px, 5vw, 24px) !important;
     }
 }
 

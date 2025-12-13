@@ -13482,15 +13482,22 @@ if (typeof window !== 'undefined') {
 // Función para añadir transacción rápidamente
 function quickAddTransaction() {
     // Cambiar a la pestaña de transacciones
-    switchToTab('transactions', true);
+    if (typeof switchToTab === 'function') {
+        switchToTab('transactions', true);
+    }
     
     // Esperar a que la pestaña se active y luego expandir el formulario
     setTimeout(() => {
         const transactionForm = document.getElementById('transactionForm');
-        const formSection = transactionForm?.closest('.form-section');
+        if (!transactionForm) {
+            console.error('Formulario de transacciones no encontrado');
+            return;
+        }
+        
+        const formSection = transactionForm.closest('.form-section');
         const toggleBtn = document.getElementById('toggleTransactionFormBtn');
         
-        if (formSection && toggleBtn) {
+        if (formSection) {
             // En móvil: expandir el form-section
             if (window.innerWidth <= 768) {
                 formSection.classList.add('expanded');
@@ -13508,9 +13515,11 @@ function quickAddTransaction() {
                 } else {
                     transactionForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
-            }, 100);
+            }, 200);
+        } else {
+            console.error('form-section no encontrado');
         }
-    }, 300);
+    }, 500);
 }
 
 // Exponer función globalmente
