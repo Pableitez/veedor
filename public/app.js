@@ -7039,7 +7039,8 @@ async function updateLoanFromModal() {
         const type = typeEl.value;
         const principal = parseFloat(principalEl.value);
         const interestRate = parseFloat(interestRateEl.value);
-        const tae = taeEl && taeEl.value ? parseFloat(taeEl.value) : null;
+        const taeInput = taeEl ? taeEl.value : '';
+        const tae = taeInput !== '' ? parseFloat(taeInput) : null;
         const startDate = startDateEl.value;
         const endDate = endDateEl.value;
         const monthlyPayment = parseFloat(monthlyPaymentEl.value);
@@ -7051,7 +7052,7 @@ async function updateLoanFromModal() {
         const propertyId = document.getElementById('editLoanProperty') ? document.getElementById('editLoanProperty').value : '';
         const assetId = document.getElementById('editLoanAsset') ? document.getElementById('editLoanAsset').value : '';
         
-        if (!name || !type || !principal || principal <= 0 || !interestRate || interestRate < 0 || !startDate || !endDate || !monthlyPayment || monthlyPayment <= 0) {
+        if (!name || !type || !principal || principal <= 0 || isNaN(interestRate) || interestRate < 0 || !startDate || !endDate || !monthlyPayment || monthlyPayment <= 0) {
             showToast('Por favor completa todos los campos requeridos correctamente', 'warning');
             return;
         }
