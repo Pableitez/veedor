@@ -8086,7 +8086,37 @@ function updateDashboardExpensesEvolutionChart() {
             return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'expense';
         });
         
-        const monthExpenses = Math.abs(monthTransactions.reduce((sum, t) => sum + t.amount, 0));
+        // Agregar pagos de préstamos desde su fecha de inicio
+        let loanPaymentsForMonth = 0;
+        loans.filter(loan => loan.type === 'debt').forEach(loan => {
+            const loanStartDate = new Date(loan.start_date);
+            const loanEndDate = new Date(loan.end_date);
+            const monthDate = new Date(currentYear, currentMonth, 1);
+            
+            // Si el préstamo está activo en este mes
+            if (monthDate >= loanStartDate && monthDate <= loanEndDate) {
+                // Calcular el número de mes del préstamo
+                const monthsSinceStart = (currentYear - loanStartDate.getFullYear()) * 12 + (currentMonth - loanStartDate.getMonth());
+                if (monthsSinceStart >= 0) {
+                    const amortization = calculateAmortizationTable(
+                        loan.principal,
+                        loan.interest_rate,
+                        loan.monthly_payment,
+                        loan.start_date,
+                        0,
+                        loan.early_payments || [],
+                        new Date(currentYear, currentMonth + 1, 0) // Fin del mes
+                    );
+                    
+                    // Obtener el pago de este mes específico
+                    if (amortization.table[monthsSinceStart]) {
+                        loanPaymentsForMonth += amortization.table[monthsSinceStart].payment;
+                    }
+                }
+            }
+        });
+        
+        const monthExpenses = Math.abs(monthTransactions.reduce((sum, t) => sum + t.amount, 0)) + loanPaymentsForMonth;
         expensesData.push(monthExpenses);
         
         currentMonth++;
