@@ -3043,51 +3043,51 @@ async function updateSummary() {
     if (periodSavingsLabelEl) periodSavingsLabelEl.textContent = `Ahorro ${periodLabel}`;
     if (periodSavingsSubLabelEl) periodSavingsSubLabelEl.textContent = periodLabel;
     
-    // Actualizar meta de ahorro
-    const savingsGoalEl = document.getElementById('savingsGoal');
-    const savingsGoalProgress = document.getElementById('savingsGoalProgress');
-    const savingsGoalProgressBar = document.getElementById('savingsGoalProgressBar');
-    const savingsGoalProgressText = document.getElementById('savingsGoalProgressText');
+    // Actualizar fondo base
+    const baseFundDisplayEl = document.getElementById('baseFundDisplay');
+    const baseFundProgress = document.getElementById('baseFundProgress');
+    const baseFundProgressBar = document.getElementById('baseFundProgressBar');
+    const baseFundProgressText = document.getElementById('baseFundProgressText');
     
     // Mostrar siempre la barra de progreso
-    if (savingsGoalProgress) {
-        savingsGoalProgress.style.display = 'block';
+    if (baseFundProgress) {
+        baseFundProgress.style.display = 'block';
     }
     
-    if (savingsGoalEl) {
-        if (savingsGoal && savingsGoal > 0) {
-            savingsGoalEl.textContent = formatCurrency(savingsGoal);
+    if (baseFundDisplayEl) {
+        if (baseFund && baseFund > 0) {
+            baseFundDisplayEl.textContent = formatCurrency(baseFund);
             
             // Calcular progreso basado en el saldo de cuentas
-            const progress = Math.min((totalAccountsBalance / savingsGoal) * 100, 100);
-            const isAchieved = totalAccountsBalance >= savingsGoal;
+            const progress = Math.min((totalAccountsBalance / baseFund) * 100, 100);
+            const isAchieved = totalAccountsBalance >= baseFund;
             
-            if (savingsGoalProgress) {
-                savingsGoalProgress.style.display = 'block';
-                if (savingsGoalProgressBar) {
-                    savingsGoalProgressBar.style.width = `${Math.max(0, progress)}%`;
-                    savingsGoalProgressBar.style.background = isAchieved ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)';
+            if (baseFundProgress) {
+                baseFundProgress.style.display = 'block';
+                if (baseFundProgressBar) {
+                    baseFundProgressBar.style.width = `${Math.max(0, progress)}%`;
+                    baseFundProgressBar.style.background = isAchieved ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)';
                 }
-                if (savingsGoalProgressText) {
+                if (baseFundProgressText) {
                     if (isAchieved) {
-                        savingsGoalProgressText.textContent = `¡Meta alcanzada! 🎉`;
-                        savingsGoalProgressText.style.color = 'rgba(255,255,255,1)';
-            } else {
-                        const remaining = savingsGoal - totalAccountsBalance;
-                        savingsGoalProgressText.textContent = `${progress.toFixed(1)}% - Faltan ${formatCurrency(remaining)}`;
-                        savingsGoalProgressText.style.color = 'rgba(255,255,255,0.9)';
+                        baseFundProgressText.textContent = `Fondo base alcanzado`;
+                        baseFundProgressText.style.color = 'rgba(255,255,255,1)';
+                    } else {
+                        const remaining = baseFund - totalAccountsBalance;
+                        baseFundProgressText.textContent = `${progress.toFixed(1)}% - Faltan ${formatCurrency(remaining)}`;
+                        baseFundProgressText.style.color = 'rgba(255,255,255,0.9)';
                     }
                 }
             }
         } else {
-            savingsGoalEl.textContent = 'Sin meta';
-            if (savingsGoalProgress) {
-                savingsGoalProgress.style.display = 'block';
-                if (savingsGoalProgressBar) {
-                    savingsGoalProgressBar.style.width = '0%';
+            baseFundDisplayEl.textContent = 'Sin fondo';
+            if (baseFundProgress) {
+                baseFundProgress.style.display = 'block';
+                if (baseFundProgressBar) {
+                    baseFundProgressBar.style.width = '0%';
                 }
-                if (savingsGoalProgressText) {
-                    savingsGoalProgressText.textContent = '';
+                if (baseFundProgressText) {
+                    baseFundProgressText.textContent = '';
                 }
             }
         }
