@@ -3587,6 +3587,9 @@ tbody tr:last-child td {
     .revolut-card {
         min-height: 130px !important;
         padding: 16px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
     }
     
     .revolut-card .amount {
