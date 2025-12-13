@@ -213,17 +213,11 @@ async function apiRequest(endpoint, options = {}) {
 
     if (authToken) {
         headers['Authorization'] = `Bearer ${authToken}`;
-        console.log('🔑 Token enviado en request:', authToken.substring(0, 20) + '...');
-    } else {
+    } else if (endpoint !== '/login' && endpoint !== '/register' && endpoint !== '/forgot-password' && endpoint !== '/reset-password') {
         console.warn('⚠️ No hay token disponible para la petición a:', endpoint);
     }
 
     try {
-        console.log('📤 Enviando petición a:', `${API_URL}${endpoint}`, {
-            method: options.method || 'GET',
-            hasAuth: !!authToken,
-            headers: Object.keys(headers)
-        });
         
         const response = await fetch(`${API_URL}${endpoint}`, {
             ...options,
@@ -1239,52 +1233,110 @@ function updateUserInfo() {
 // Cargar datos del usuario actual
 async function loadUserData() {
     try {
-        const [transactionsData, envelopesData, loansData, investmentsData] = await Promise.all([
+        // Intentar cargar desde caché primero
+        const cacheKey = `veedor_data_cache_${currentUser}`;
+        const cachedData = sessionStorage.getItem(cacheKey);
+        if (cachedData) {
+            try {
+                const parsed = JSON.parse(cachedData);
+                const cacheAge = Date.now() - parsed.timestamp;
+                // Usar caché si tiene menos de 30 segundos
+                if (cacheAge < 30000 && parsed.data) {
+                    transactions = parsed.data.transactions || [];
+                    envelopes = parsed.data.envelopes || [];
+                    loans = parsed.data.loans || [];
+                    investments = parsed.data.investments || [];
+                    budgets = parsed.data.budgets || [];
+                    accounts = parsed.data.accounts || [];
+                    patrimonio = parsed.data.patrimonio || [];
+                    
+                    // Actualizar selectores
+                    updateAccountSelect();
+                    updatePatrimonioSelect();
+                    updateLoanSelect();
+                    updateInvestmentSelect();
+                    
+                    // Cargar datos frescos en segundo plano
+                    loadUserDataFresh();
+                    return;
+                }
+            } catch (e) {
+                // Si hay error con el caché, continuar con carga normal
+            }
+        }
+        
+        // Cargar todos los datos en paralelo para mejor rendimiento
+        await loadUserDataFresh();
+    } catch (error) {
+        console.error('Error cargando datos:', error);
+        transactions = [];
+        envelopes = [];
+    }
+}
+
+// Cargar datos frescos del servidor
+async function loadUserDataFresh() {
+    try {
+        // Hacer todas las llamadas en paralelo
+        const [
+            transactionsData,
+            envelopesData,
+            loansData,
+            investmentsData,
+            budgetsData,
+            accountsData,
+            patrimonioData,
+            profileData
+        ] = await Promise.allSettled([
             apiRequest('/transactions'),
             apiRequest('/envelopes'),
             apiRequest('/loans'),
-            apiRequest('/investments').catch(() => [])
+            apiRequest('/investments').catch(() => []),
+            apiRequest('/budgets').catch(() => []),
+            apiRequest('/accounts').catch(() => []),
+            apiRequest('/patrimonio').catch(() => []),
+            apiRequest('/user/profile').catch(() => null)
         ]);
         
-        transactions = transactionsData.map(t => ({
-            ...t,
-            categoryGeneral: t.category_general,
-            categorySpecific: t.category_specific
-        }));
+        // Procesar transacciones
+        transactions = transactionsData.status === 'fulfilled' 
+            ? transactionsData.value.map(t => ({
+                ...t,
+                categoryGeneral: t.category_general,
+                categorySpecific: t.category_specific
+            }))
+            : [];
         
-        envelopes = envelopesData;
-        loans = loansData;
-        investments = investmentsData || [];
+        envelopes = envelopesData.status === 'fulfilled' ? envelopesData.value : [];
+        loans = loansData.status === 'fulfilled' ? loansData.value : [];
+        investments = investmentsData.status === 'fulfilled' ? (investmentsData.value || []) : [];
+        budgets = budgetsData.status === 'fulfilled' ? (budgetsData.value || []) : [];
+        accounts = accountsData.status === 'fulfilled' ? (accountsData.value || []) : [];
+        patrimonio = patrimonioData.status === 'fulfilled' ? (patrimonioData.value || []) : [];
         
-        // Cargar presupuestos por separado para manejar errores
-        let budgetsData = [];
-        try {
-            budgetsData = await apiRequest('/budgets');
-        } catch (error) {
-            console.warn('No se pudieron cargar presupuestos:', error);
-            budgetsData = [];
+        // Procesar perfil
+        if (profileData.status === 'fulfilled' && profileData.value) {
+            if (profileData.value.savingsGoal !== undefined) {
+                savingsGoal = profileData.value.savingsGoal;
+            }
+        } else {
+            // Fallback a localStorage si existe (migración)
+            const savedGoal = localStorage.getItem('veedor_savingsGoal');
+            if (savedGoal) {
+                try {
+                    savingsGoal = parseFloat(savedGoal);
+                    // Migrar a la BD en segundo plano
+                    apiRequest('/user/profile', {
+                        method: 'PUT',
+                        body: JSON.stringify({ savingsGoal })
+                    }).then(() => {
+                        localStorage.removeItem('veedor_savingsGoal');
+                    }).catch(() => {});
+                } catch (e) {
+                    savingsGoal = null;
+                }
+            }
         }
-        budgets = budgetsData || [];
-        
-        // Cargar cuentas bancarias por separado para manejar errores
-        let accountsData = [];
-        try {
-            accountsData = await apiRequest('/accounts');
-        } catch (error) {
-            console.warn('No se pudieron cargar cuentas:', error);
-            accountsData = [];
-        }
-        accounts = accountsData || [];
-        
-        // Cargar patrimonio por separado para manejar errores
-        let patrimonioData = [];
-        try {
-            patrimonioData = await apiRequest('/patrimonio');
-        } catch (error) {
-            console.warn('No se pudo cargar patrimonio:', error);
-            patrimonioData = [];
-        }
-        patrimonio = patrimonioData || [];
         
         // Actualizar selectores después de cargar datos
         updateAccountSelect();
@@ -1307,35 +1359,8 @@ async function loadUserData() {
             data: cacheData,
             timestamp: Date.now()
         }));
-        
-        // Cargar fondo de emergencia desde el perfil del usuario
-        try {
-            const profileData = await apiRequest('/user/profile');
-            if (profileData && profileData.savingsGoal !== undefined) {
-                savingsGoal = profileData.savingsGoal;
-            }
-        } catch (error) {
-            console.warn('No se pudo cargar el fondo de emergencia:', error);
-            // Fallback a localStorage si existe (migración)
-            const savedGoal = localStorage.getItem('veedor_savingsGoal');
-            if (savedGoal) {
-                try {
-                    savingsGoal = parseFloat(savedGoal);
-                    // Migrar a la BD
-                    await apiRequest('/user/profile', {
-                        method: 'PUT',
-                        body: JSON.stringify({ savingsGoal })
-                    });
-                    localStorage.removeItem('veedor_savingsGoal');
-                } catch (e) {
-                    savingsGoal = null;
-                }
-            }
-        }
     } catch (error) {
-        console.error('Error cargando datos:', error);
-        transactions = [];
-        envelopes = [];
+        console.error('Error cargando datos frescos:', error);
     }
 }
 
@@ -2684,7 +2709,6 @@ function updateDisplay() {
         updateLoans();
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
-        updateProperties(); // Actualizar propiedades
         updatePatrimonio(); // Actualizar patrimonio
         updateMonthFilter();
         updateMonthDashboard();
