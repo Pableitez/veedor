@@ -219,6 +219,10 @@
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+                <!-- Botón rápido de transacción (solo desktop) -->
+                <button id="quickAddTransactionBtn" class="quick-add-btn desktop-only" onclick="quickAddTransaction()" style="display: none; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'">
+                    <span style="margin-right: 6px;">+</span> Transacción
+                </button>
                 <!-- Menú de Navegación Desplegable -->
                 <div style="position: relative; flex-shrink: 0;">
                     <button id="mainNavDropdownBtn" onclick="toggleMainNavDropdown()" style="padding: 8px; border-radius: 4px; font-size: 18px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" title="Menú de Navegación">
@@ -1932,6 +1936,11 @@
             <p style="margin: 0; color: var(--text-primary); font-size: 14px; font-weight: 500;" id="globalLoaderText">Cargando...</p>
         </div>
     </div>
+    
+    <!-- Botón flotante para añadir transacción rápidamente (solo móvil) -->
+    <button id="floatingAddTransactionBtn" class="floating-add-btn mobile-only" onclick="quickAddTransaction()" style="display: none; position: fixed; bottom: clamp(20px, 5vw, 24px); right: clamp(20px, 5vw, 24px); width: clamp(56px, 14vw, 64px); height: clamp(56px, 14vw, 64px); background: var(--primary); color: white; border: none; border-radius: 50%; font-size: clamp(28px, 7vw, 32px); font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4), 0 2px 8px rgba(0, 0, 0, 0.1); z-index: 999; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; line-height: 1; touch-action: manipulation;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.5), 0 4px 12px rgba(0, 0, 0, 0.15)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(59, 130, 246, 0.4), 0 2px 8px rgba(0, 0, 0, 0.1)'" title="Añadir Transacción Rápida">
+        <span style="line-height: 1; display: flex; align-items: center; justify-content: center;">+</span>
+    </button>
 </body>
 </html>
 
