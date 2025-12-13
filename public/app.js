@@ -403,13 +403,13 @@ function toggleDarkMode() {
         body.classList.remove('dark-mode');
         localStorage.setItem('veedor_darkMode', 'false');
         const toggleText = document.getElementById('darkModeToggleText');
-        if (toggleText) toggleText.textContent = '🌙 Modo Oscuro';
+        if (toggleText) toggleText.textContent = 'Modo Oscuro';
     } else {
         html.classList.add('dark-mode');
         body.classList.add('dark-mode');
         localStorage.setItem('veedor_darkMode', 'true');
         const toggleText = document.getElementById('darkModeToggleText');
-        if (toggleText) toggleText.textContent = '☀️ Modo Claro';
+        if (toggleText) toggleText.textContent = 'Modo Claro';
     }
     
     // Actualizar icono en welcome page
@@ -421,7 +421,7 @@ function updateAuthDarkModeIcon() {
     const authIcon = document.getElementById('authDarkModeIcon');
     if (authIcon) {
         const isDark = document.body.classList.contains('dark-mode');
-        authIcon.textContent = isDark ? '☀️' : '🌙';
+        authIcon.textContent = isDark ? '☀' : '🌙';
     }
 }
 
@@ -432,7 +432,7 @@ function initDarkMode() {
         document.documentElement.classList.add('dark-mode');
         document.body.classList.add('dark-mode');
         const toggleText = document.getElementById('darkModeToggleText');
-        if (toggleText) toggleText.textContent = '☀️ Modo Claro';
+        if (toggleText) toggleText.textContent = 'Modo Claro';
         if (savedMode === null) {
             localStorage.setItem('veedor_darkMode', 'true');
         }
@@ -12789,7 +12789,7 @@ function updateTranslations() {
         });
         
         // Actualizar banderas
-        const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
+        const flags = { es: 'ES', en: 'EN', de: 'DE', fr: 'FR' };
         const flagEl = document.getElementById('currentLanguageFlag');
         if (flagEl) flagEl.textContent = flags[lang] || flags['es'];
         const authFlagEl = document.getElementById('authCurrentLanguageFlag');
