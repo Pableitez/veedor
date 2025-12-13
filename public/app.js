@@ -3227,22 +3227,10 @@ function updateTransactionsTable() {
         return 0;
     });
     
-    tbody.innerHTML = '';
-    
-    if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">No hay transacciones registradas</td></tr>';
-        return;
-    }
-    
-    // Aplicar paginación si rowsPerPage > 0
-    let transactionsToShow = filtered;
-    if (rowsPerPage > 0) {
-        const startIndex = (currentPage - 1) * rowsPerPage;
-        const endIndex = startIndex + rowsPerPage;
-        transactionsToShow = filtered.slice(startIndex, endIndex);
-    }
-    
-    transactionsToShow.forEach(transaction => {
+    // Función auxiliar para renderizar filas
+    const renderTransactionRow = (transaction, targetTbody) => {
+        if (!targetTbody) return;
+        
         const row = document.createElement('tr');
         const date = new Date(transaction.date);
         
@@ -3292,7 +3280,32 @@ function updateTransactionsTable() {
                 <button class="btn-danger" onclick="deleteTransaction('${transaction._id || transaction.id}')" style="flex: 1; min-width: 80px;">Eliminar</button>
             </td>
         `;
-        tbody.appendChild(row);
+        targetTbody.appendChild(row);
+    };
+    
+    // Limpiar ambas tablas
+    if (tbody) tbody.innerHTML = '';
+    if (tbodyDashboard) tbodyDashboard.innerHTML = '';
+    
+    if (filtered.length === 0) {
+        const emptyMessage = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">No hay transacciones registradas</td></tr>';
+        if (tbody) tbody.innerHTML = emptyMessage;
+        if (tbodyDashboard) tbodyDashboard.innerHTML = emptyMessage;
+        return;
+    }
+    
+    // Aplicar paginación si rowsPerPage > 0
+    let transactionsToShow = filtered;
+    if (rowsPerPage > 0) {
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+        transactionsToShow = filtered.slice(startIndex, endIndex);
+    }
+    
+    // Renderizar en ambas tablas
+    transactionsToShow.forEach(transaction => {
+        renderTransactionRow(transaction, tbody);
+        renderTransactionRow(transaction, tbodyDashboard);
     });
     
     // Mostrar información de paginación si hay más filas que las mostradas
