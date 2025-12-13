@@ -2932,9 +2932,7 @@ tbody tr:last-child td {
     }
     
     .mobile-filter-toggle {
-        flex-direction: column !important;
-        gap: 10px !important;
-        margin-bottom: 16px !important;
+        display: flex !important;
     }
     
     .table-controls input,
