@@ -1350,6 +1350,9 @@ async function loadUserDataFresh() {
             if (profileData.value.savingsGoal !== undefined) {
                 savingsGoal = profileData.value.savingsGoal;
             }
+            if (profileData.value.baseFund !== undefined) {
+                baseFund = profileData.value.baseFund;
+            }
         } else {
             // Fallback a localStorage si existe (migración)
             const savedGoal = localStorage.getItem('veedor_savingsGoal');
@@ -12247,6 +12250,7 @@ if (typeof document !== 'undefined') {
                         else if (modalId === 'summaryDetailsModal') closeSummaryDetails();
                         else if (modalId === 'categoryDetailsModal') closeCategoryDetailsModal();
                         else if (modalId === 'savingsGoalModal') closeSavingsGoalModal();
+                        else if (modalId === 'baseFundModal') closeBaseFundModal();
                         else if (modalId === 'addMoneyInvestmentModal') closeAddMoneyInvestmentModal();
                         else if (modalId === 'updateInvestmentValueModal') closeUpdateInvestmentValueModal();
                         else if (modalId === 'updateAccountBalanceModal') closeUpdateAccountBalanceModal();
