@@ -1785,17 +1785,11 @@ function initializeForms() {
         // La rentabilidad se calcula en base a los aportes acumulados
     }
     
-    // Formulario de patrimonio - Remover listeners anteriores para evitar duplicados
+    // Formulario de patrimonio
     const assetForm = document.getElementById('assetForm');
     if (assetForm) {
-        // Clonar formulario para remover listeners anteriores
-        const newForm = assetForm.cloneNode(true);
-        assetForm.parentNode.replaceChild(newForm, assetForm);
-        const cleanForm = document.getElementById('assetForm');
-        
-        cleanForm.addEventListener('submit', async (e) => {
+        assetForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            e.stopPropagation();
             await addAsset();
         });
         
