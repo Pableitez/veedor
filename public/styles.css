@@ -1253,6 +1253,9 @@ body.dark-mode .revolut-card:hover {
     .revolut-card {
         min-height: 130px;
         padding: 16px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
     }
     
     .revolut-card .amount {
