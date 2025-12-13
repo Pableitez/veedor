@@ -4745,11 +4745,9 @@ function updateLoans() {
                     </table>
                 </div>
                 <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
-                    <button class="btn-secondary" onclick="editLoan('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Editar</button>
                     <button onclick="showLoanDetails('${loan._id || loan.id}')" class="btn-secondary" style="flex: 1; min-width: 100px; font-size: 13px; padding: 8px;">
                         Ver Cuadro
-                </button>
-                    <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Eliminar</button>
+                    </button>
                 </div>
             </div>
             
