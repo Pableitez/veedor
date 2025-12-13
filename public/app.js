@@ -3895,7 +3895,6 @@ async function editTransaction(id) {
         updateEnvelopeSelect('editTransactionEnvelope');
         updateAccountSelect('editTransactionAccount');
         updateInvestmentSelect('editTransactionInvestment');
-        updatePropertySelect('editTransactionProperty');
         updateLoanSelect('editTransactionLoan');
         
         setTimeout(() => {
@@ -5877,8 +5876,6 @@ async function addProperty() {
         
         properties.push(property);
         updateDisplay();
-        updatePropertySelect();
-        updatePropertySelect('loanProperty');
         
         const propertyForm = document.getElementById('propertyForm');
         if (propertyForm) {
@@ -6984,16 +6981,11 @@ async function editLoan(id) {
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="editLoanProperty">Propiedad Asociada (Opcional)</label>
-                            <select id="editLoanProperty">
+                            <label for="editLoanPatrimonio">Propiedad del Patrimonio Asociada (Opcional)</label>
+                            <select id="editLoanPatrimonio">
                                 <option value="">Ninguna</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="editLoanAsset">Vehículo/Activo Asociado (Opcional)</label>
-                            <select id="editLoanAsset">
-                                <option value="">Ninguno</option>
-                            </select>
+                            <small style="color: var(--text-tertiary);">Propiedad del patrimonio relacionada con este préstamo (ej: hipoteca)</small>
                         </div>
                     </div>
                     <div class="form-row">
@@ -7040,13 +7032,11 @@ async function editLoan(id) {
     const paymentDayEl = document.getElementById('editLoanPaymentDay');
     const descriptionEl = document.getElementById('editLoanDescription');
     const accountEl = document.getElementById('editLoanAccount');
-    const propertyEl = document.getElementById('editLoanProperty');
-    const assetEl = document.getElementById('editLoanAsset');
+    const patrimonioEl = document.getElementById('editLoanPatrimonio');
     
     // Actualizar selectores
     updateAccountSelect('editLoanAccount');
-    updatePropertySelect('editLoanProperty');
-    updateAssetSelect('editLoanAsset');
+    updatePatrimonioSelect('editLoanPatrimonio');
     
     if (!nameEl || !typeEl || !principalEl || !interestRateEl || !startDateEl || !endDateEl || !monthlyPaymentEl) {
         showToast('Error: No se encontraron todos los campos del formulario', 'error');
@@ -7066,8 +7056,7 @@ async function editLoan(id) {
     if (paymentDayEl) paymentDayEl.value = loan.payment_day || 1;
     if (descriptionEl) descriptionEl.value = loan.description || '';
     if (accountEl) accountEl.value = loan.account_id || '';
-    if (propertyEl) propertyEl.value = loan.property_id || '';
-    if (assetEl) assetEl.value = loan.asset_id || '';
+    if (patrimonioEl) patrimonioEl.value = loan.patrimonio_id || '';
     
     // Mostrar modal
     modal.style.display = 'flex';
@@ -7122,8 +7111,7 @@ async function updateLoanFromModal() {
         const paymentDay = paymentDayEl ? parseInt(paymentDayEl.value) || 1 : 1;
         const description = descriptionEl ? descriptionEl.value.trim() : '';
         const accountId = document.getElementById('editLoanAccount') ? document.getElementById('editLoanAccount').value : '';
-        const propertyId = document.getElementById('editLoanProperty') ? document.getElementById('editLoanProperty').value : '';
-        const assetId = document.getElementById('editLoanAsset') ? document.getElementById('editLoanAsset').value : '';
+        const patrimonioId = document.getElementById('editLoanPatrimonio') ? document.getElementById('editLoanPatrimonio').value : '';
         
         if (!name || !type || !principal || principal <= 0 || isNaN(interestRate) || interestRate < 0 || !startDate || !endDate || !monthlyPayment || monthlyPayment <= 0) {
             showToast('Por favor completa todos los campos requeridos correctamente', 'warning');
@@ -7139,8 +7127,7 @@ async function updateLoanFromModal() {
                 principal,
                 interest_rate: interestRate,
                 account_id: accountId || null,
-                property_id: propertyId || null,
-                asset_id: assetId || null,
+                patrimonio_id: patrimonioId || null,
                 tae: tae,
                 start_date: startDate,
                 end_date: endDate,
