@@ -13285,6 +13285,18 @@ window.updateTranslations = updateTranslations;
 window.changeLanguage = changeLanguage;
 window.toggleLanguageDropdown = toggleLanguageDropdown;
 
+// Actualizar visibilidad del botón de filtros al cargar y al redimensionar
+if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateFiltersButtonVisibility);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(updateFiltersButtonVisibility, 200);
+        });
+    } else {
+        setTimeout(updateFiltersButtonVisibility, 200);
+    }
+}
+
 // Inicializar traducciones cuando se carga la app
 function initializeTranslationsOnLoad() {
     // Establecer español como idioma por defecto si no hay idioma guardado
