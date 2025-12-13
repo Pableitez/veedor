@@ -5812,31 +5812,48 @@ window.editInvestment = editInvestment;
 
 // Agregar propiedad
 async function addProperty() {
-    const name = document.getElementById('propertyName').value.trim();
-    const type = document.getElementById('propertyType').value;
-    const address = document.getElementById('propertyAddress').value.trim();
-    const description = document.getElementById('propertyDescription').value.trim();
+    const nameEl = document.getElementById('propertyName');
+    const typeEl = document.getElementById('propertyType');
+    const addressEl = document.getElementById('propertyAddress');
+    const descriptionEl = document.getElementById('propertyDescription');
     
-    if (!name) {
-        alert('Por favor ingresa el nombre de la propiedad');
+    if (!nameEl || !typeEl) {
+        alert('Error: No se encontraron todos los campos del formulario');
+        return;
+    }
+    
+    const name = nameEl.value.trim();
+    const type = typeEl.value;
+    const address = addressEl ? addressEl.value.trim() : '';
+    const description = descriptionEl ? descriptionEl.value.trim() : '';
+    
+    if (!name || !type) {
+        alert('Por favor completa todos los campos requeridos');
         return;
     }
     
     try {
+        const propertyData = {
+            name,
+            type,
+            address: address || null,
+            description: description || null
+        };
+        
+        console.log('📤 Enviando propiedad:', propertyData);
+        
         const property = await apiRequest('/properties', {
             method: 'POST',
-            body: JSON.stringify({
-                name,
-                type,
-                address: address || null,
-                description: description || null
-            })
+            body: JSON.stringify(propertyData)
         });
+        
+        console.log('✅ Propiedad creada:', property);
         
         properties.push(property);
         updateDisplay();
         updatePropertySelect();
         updatePropertySelect('loanProperty');
+        
         const propertyForm = document.getElementById('propertyForm');
         if (propertyForm) {
             propertyForm.reset();
@@ -5847,7 +5864,8 @@ async function addProperty() {
         }
         alert('✅ Propiedad agregada exitosamente');
     } catch (error) {
-        alert('Error al crear propiedad: ' + error.message);
+        console.error('❌ Error al crear propiedad:', error);
+        alert('Error al crear propiedad: ' + (error.message || 'Error desconocido'));
     }
 }
 
