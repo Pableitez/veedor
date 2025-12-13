@@ -2229,9 +2229,11 @@ function initializeForms() {
                     summaryMonthInput.style.display = 'block';
                     summaryMonthInput.style.visibility = 'visible';
                     summaryMonthInput.style.height = 'auto';
-                    summaryMonthInput.style.marginTop = '12px';
+                    summaryMonthInput.style.marginTop = 'clamp(12px, 3vw, 16px)';
                     summaryMonthInput.style.marginBottom = '0';
                     summaryMonthInput.style.marginLeft = '0';
+                    summaryMonthInput.style.padding = 'clamp(10px, 2.5vw, 12px)';
+                    summaryMonthInput.style.minHeight = 'clamp(40px, 10vw, 44px)';
                     summaryMonthInput.style.marginRight = '0';
                     summaryMonthInput.style.padding = '12px 14px';
                     summaryMonthInput.style.border = '1.5px solid var(--border-color)';
@@ -2260,9 +2262,11 @@ function initializeForms() {
                     summaryYearInput.style.display = 'block';
                     summaryYearInput.style.visibility = 'visible';
                     summaryYearInput.style.height = 'auto';
-                    summaryYearInput.style.marginTop = '12px';
+                    summaryYearInput.style.marginTop = 'clamp(12px, 3vw, 16px)';
                     summaryYearInput.style.marginBottom = '0';
                     summaryYearInput.style.marginLeft = '0';
+                    summaryYearInput.style.padding = 'clamp(10px, 2.5vw, 12px)';
+                    summaryYearInput.style.minHeight = 'clamp(40px, 10vw, 44px)';
                     summaryYearInput.style.marginRight = '0';
                     summaryYearInput.style.padding = '12px 14px';
                     summaryYearInput.style.border = '1.5px solid var(--border-color)';
