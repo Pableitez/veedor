@@ -2678,12 +2678,11 @@ async function addTransaction() {
 async function addEnvelope() {
     const name = document.getElementById('envelopeName').value;
     const budget = parseFloat(document.getElementById('envelopeBudget').value);
-    const patrimonio_id = document.getElementById('envelopePatrimonio').value || null;
     
     try {
         const envelope = await apiRequest('/envelopes', {
             method: 'POST',
-            body: JSON.stringify({ name, budget, patrimonio_id })
+            body: JSON.stringify({ name, budget })
         });
         
         envelopes.push(envelope);
