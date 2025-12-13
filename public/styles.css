@@ -3059,6 +3059,16 @@ tbody tr:last-child td {
         pointer-events: auto !important;
     }
     
+    /* Menú móvil mejorado */
+    .mobile-nav-menu[style*="display: block"] {
+        display: block !important;
+    }
+    
+    .mobile-nav-item {
+        min-height: 56px !important;
+        touch-action: manipulation !important;
+    }
+    
     /* Cards en móvil */
     .envelope-card,
     .card {
@@ -3287,6 +3297,24 @@ tbody tr:last-child td {
     footer h4,
     .main-footer h4 {
         text-align: left !important;
+    }
+    
+    /* Badges de App Store y Google Play en móvil */
+    footer img[alt*="App Store"],
+    footer img[alt*="Google Play"],
+    .main-footer img[alt*="App Store"],
+    .main-footer img[alt*="Google Play"] {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block !important;
+    }
+    
+    /* Mejorar visualización de badges en móvil */
+    footer > div > div:last-child > div:first-child,
+    .main-footer > div > div:last-child > div:first-child {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: clamp(12px, 3vw, 16px) !important;
     }
     
     /* Modales generales en móvil */
@@ -4162,6 +4190,95 @@ tbody tr:last-child td {
 
 .nav-dropdown-item[data-tab] {
     cursor: pointer;
+}
+
+/* ============================================
+   MENÚ HAMBURGUESA MÓVIL MEJORADO
+   ============================================ */
+
+.mobile-nav-menu {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 9998 !important;
+}
+
+.mobile-nav-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(320px, 85vw);
+    height: 100%;
+    background: var(--bg-primary);
+    box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-overflow-scrolling: touch;
+}
+
+.mobile-nav-menu[style*="display: block"] .mobile-nav-content {
+    transform: translateX(0);
+}
+
+.mobile-nav-item {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 3vw, 16px);
+    padding: clamp(14px, 3.5vw, 18px);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: 12px;
+    margin-bottom: clamp(8px, 2vw, 12px);
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid var(--border-color);
+    font-size: clamp(15px, 3.75vw, 16px);
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+}
+
+.mobile-nav-item:active {
+    transform: scale(0.98);
+    background: var(--bg-tertiary);
+}
+
+.mobile-nav-item:hover {
+    background: var(--bg-tertiary);
+    transform: translateX(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.mobile-nav-item svg {
+    flex-shrink: 0;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.hamburger-menu-btn {
+    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+}
+
+/* Mejoras para Android */
+@media (max-width: 768px) {
+    .mobile-nav-content {
+        width: min(300px, 90vw);
+    }
+    
+    .mobile-nav-item {
+        min-height: 56px;
+        touch-action: manipulation;
+    }
+    
+    /* Mejorar scroll en Android */
+    .mobile-nav-content {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
 }
 
 /* ============================================

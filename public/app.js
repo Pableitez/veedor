@@ -1424,9 +1424,35 @@ function updateCurrentDateDisplay() {
 function toggleMainNavDropdown() {
     const dropdown = document.getElementById('mainNavDropdown');
     const settingsDropdown = document.getElementById('settingsDropdown');
+    const navContent = dropdown ? dropdown.querySelector('.mobile-nav-content') : null;
+    
     if (dropdown) {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        const isOpen = dropdown.style.display === 'block';
+        
+        if (isOpen) {
+            // Cerrar menú con animación
+            if (navContent) {
+                navContent.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    dropdown.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 300);
+            } else {
+                dropdown.style.display = 'none';
+            }
+        } else {
+            // Abrir menú con animación
+            dropdown.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            if (navContent) {
+                // Pequeño delay para que el display: block se aplique primero
+                setTimeout(() => {
+                    navContent.style.transform = 'translateX(0)';
+                }, 10);
+            }
+        }
     }
+    
     // Cerrar settings dropdown si está abierto
     if (settingsDropdown && settingsDropdown.style.display === 'block') {
         settingsDropdown.style.display = 'none';
@@ -1456,9 +1482,18 @@ document.addEventListener('click', function(event) {
     const mainBtn = document.getElementById('mainNavDropdownBtn');
     const dashboardDropdown = document.getElementById('dashboardDropdown');
     const dashboardBtn = document.getElementById('dashboardDropdownBtn');
+    const navContent = mainDropdown ? mainDropdown.querySelector('.mobile-nav-content') : null;
     
     if (mainDropdown && mainBtn && !mainDropdown.contains(event.target) && !mainBtn.contains(event.target)) {
-        mainDropdown.style.display = 'none';
+        if (navContent && mainDropdown.style.display === 'block') {
+            navContent.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                mainDropdown.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        } else {
+            mainDropdown.style.display = 'none';
+        }
     }
     
     const settingsDropdown = document.getElementById('settingsDropdown');
