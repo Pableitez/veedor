@@ -8665,6 +8665,41 @@ function updateExpensesEvolutionChart() {
                 return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'expense';
             });
             
+            // Agregar pagos de préstamos desde su fecha de inicio
+            let loanPaymentsForMonth = 0;
+            loans.filter(loan => loan.type === 'debt').forEach(loan => {
+                const loanStartDate = new Date(loan.start_date);
+                const loanEndDate = new Date(loan.end_date);
+                const monthDate = new Date(currentYear, currentMonth, 1);
+                
+                if (monthDate >= loanStartDate && monthDate <= loanEndDate) {
+                    const monthsSinceStart = (currentYear - loanStartDate.getFullYear()) * 12 + (currentMonth - loanStartDate.getMonth());
+                    if (monthsSinceStart >= 0) {
+                        const amortization = calculateAmortizationTable(
+                            loan.principal,
+                            loan.interest_rate,
+                            loan.monthly_payment,
+                            loan.start_date,
+                            0,
+                            loan.early_payments || [],
+                            new Date(currentYear, currentMonth + 1, 0)
+                        );
+                        
+                        if (amortization.table[monthsSinceStart]) {
+                            loanPaymentsForMonth += amortization.table[monthsSinceStart].payment;
+                        }
+                    }
+                }
+            });
+            
+            // Agregar préstamos a la categoría "Deudas y Préstamos" si existe
+            const debtCategory = categories.expense.find(c => c.id === 'debt');
+            if (debtCategory && loanPaymentsForMonth > 0) {
+                if (!expenseCategories[debtCategory.name]) {
+                    expenseCategories[debtCategory.name] = [];
+                }
+            }
+            
             Object.keys(expenseCategories).forEach(catName => {
                 if (!expenseCategories[catName]) expenseCategories[catName] = [];
                 const catExpenses = Math.abs(monthTransactions
@@ -8679,7 +8714,13 @@ function updateExpensesEvolutionChart() {
                         return tCatName === catName;
                     })
                     .reduce((sum, t) => sum + t.amount, 0));
-                expenseCategories[catName].push(catExpenses);
+                
+                // Si es la categoría de deudas, agregar los pagos de préstamos
+                if (debtCategory && catName === debtCategory.name) {
+                    expenseCategories[catName].push(catExpenses + loanPaymentsForMonth);
+                } else {
+                    expenseCategories[catName].push(catExpenses);
+                }
             });
             
             currentMonth++;
@@ -8699,6 +8740,41 @@ function updateExpensesEvolutionChart() {
                 return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear() && t.type === 'expense';
             });
             
+            // Agregar pagos de préstamos desde su fecha de inicio
+            let loanPaymentsForMonth = 0;
+            loans.filter(loan => loan.type === 'debt').forEach(loan => {
+                const loanStartDate = new Date(loan.start_date);
+                const loanEndDate = new Date(loan.end_date);
+                const monthDate = new Date(date.getFullYear(), date.getMonth(), 1);
+                
+                if (monthDate >= loanStartDate && monthDate <= loanEndDate) {
+                    const monthsSinceStart = (date.getFullYear() - loanStartDate.getFullYear()) * 12 + (date.getMonth() - loanStartDate.getMonth());
+                    if (monthsSinceStart >= 0) {
+                        const amortization = calculateAmortizationTable(
+                            loan.principal,
+                            loan.interest_rate,
+                            loan.monthly_payment,
+                            loan.start_date,
+                            0,
+                            loan.early_payments || [],
+                            new Date(date.getFullYear(), date.getMonth() + 1, 0)
+                        );
+                        
+                        if (amortization.table[monthsSinceStart]) {
+                            loanPaymentsForMonth += amortization.table[monthsSinceStart].payment;
+                        }
+                    }
+                }
+            });
+            
+            // Agregar préstamos a la categoría "Deudas y Préstamos" si existe
+            const debtCategory = categories.expense.find(c => c.id === 'debt');
+            if (debtCategory && loanPaymentsForMonth > 0) {
+                if (!expenseCategories[debtCategory.name]) {
+                    expenseCategories[debtCategory.name] = [];
+                }
+            }
+            
             Object.keys(expenseCategories).forEach(catName => {
                 if (!expenseCategories[catName]) expenseCategories[catName] = [];
                 const catExpenses = Math.abs(monthTransactions
@@ -8713,7 +8789,13 @@ function updateExpensesEvolutionChart() {
                         return tCatName === catName;
                     })
                     .reduce((sum, t) => sum + t.amount, 0));
-                expenseCategories[catName].push(catExpenses);
+                
+                // Si es la categoría de deudas, agregar los pagos de préstamos
+                if (debtCategory && catName === debtCategory.name) {
+                    expenseCategories[catName].push(catExpenses + loanPaymentsForMonth);
+                } else {
+                    expenseCategories[catName].push(catExpenses);
+                }
             });
         }
     }
