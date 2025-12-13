@@ -2301,9 +2301,7 @@ function initializeForms() {
             updateDashboardCharts();
         });
         
-        // Listener para cambio de mes
-        const summaryMonthSelect = document.getElementById('summaryMonthSelect');
-        const summaryMonthYear = document.getElementById('summaryMonthYear');
+        // Listener para cambio de mes (usar las variables ya declaradas arriba)
         if (summaryMonthSelect) {
             summaryMonthSelect.addEventListener('change', () => {
                 if (summaryPeriod === 'month-select') {
