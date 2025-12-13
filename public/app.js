@@ -2263,9 +2263,11 @@ function initializeForms() {
                     summaryMonthInput.style.border = '1.5px solid var(--border-color)';
                     summaryMonthInput.style.width = '100%';
                     summaryMonthInput.style.maxWidth = '100%';
-                    summaryMonthInput.style.minWidth = '100%';
+                    summaryMonthInput.style.minWidth = '0';
                     summaryMonthInput.style.boxSizing = 'border-box';
                     summaryMonthInput.style.overflow = 'visible';
+                    summaryMonthInput.style.textOverflow = 'ellipsis';
+                    summaryMonthInput.style.whiteSpace = 'nowrap';
                     summaryMonthInput.focus();
                 } else {
                     summaryMonthInput.style.display = 'none';
@@ -2296,9 +2298,11 @@ function initializeForms() {
                     summaryYearInput.style.border = '1.5px solid var(--border-color)';
                     summaryYearInput.style.width = '100%';
                     summaryYearInput.style.maxWidth = '100%';
-                    summaryYearInput.style.minWidth = '100%';
+                    summaryYearInput.style.minWidth = '0';
                     summaryYearInput.style.boxSizing = 'border-box';
                     summaryYearInput.style.overflow = 'visible';
+                    summaryYearInput.style.textOverflow = 'ellipsis';
+                    summaryYearInput.style.whiteSpace = 'nowrap';
                     summaryYearInput.focus();
                 } else {
                     summaryYearInput.style.display = 'none';
