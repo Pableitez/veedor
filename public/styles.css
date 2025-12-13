@@ -1177,6 +1177,43 @@ body:not(.dark-mode) header h1 {
     box-sizing: border-box;
 }
 
+/* Card específica para Fondo de Emergencia - Replica exacta de saldo en cuentas */
+.savings-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+}
+
+.savings-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+.savings-card:active {
+    transform: translateY(-2px);
+}
+
+body:not(.dark-mode) .savings-card {
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.25);
+}
+
+body:not(.dark-mode) .savings-card:hover {
+    box-shadow: 0 12px 32px rgba(30, 58, 138, 0.35) !important;
+}
+
+body.dark-mode .savings-card {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .savings-card:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
 /* Asegurar que las revolut-cards tengan la misma altura que las summary-cards */
 .revolut-section > div {
     display: grid;
