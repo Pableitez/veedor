@@ -3151,6 +3151,16 @@ tbody tr:last-child td {
         white-space: normal !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+    }
+    
+    #setSavingsGoalBtn span {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        text-align: center !important;
+        line-height: 1.4 !important;
     }
     
     /* Desplegables en móvil */
