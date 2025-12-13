@@ -1424,35 +1424,9 @@ function updateCurrentDateDisplay() {
 function toggleMainNavDropdown() {
     const dropdown = document.getElementById('mainNavDropdown');
     const settingsDropdown = document.getElementById('settingsDropdown');
-    const navContent = dropdown ? dropdown.querySelector('.mobile-nav-content') : null;
-    
     if (dropdown) {
-        const isOpen = dropdown.style.display === 'block';
-        
-        if (isOpen) {
-            // Cerrar menú con animación
-            if (navContent) {
-                navContent.style.transform = 'translateX(100%)';
-                setTimeout(() => {
-                    dropdown.style.display = 'none';
-                    document.body.style.overflow = '';
-                }, 300);
-            } else {
-                dropdown.style.display = 'none';
-            }
-        } else {
-            // Abrir menú con animación
-            dropdown.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            if (navContent) {
-                // Pequeño delay para que el display: block se aplique primero
-                setTimeout(() => {
-                    navContent.style.transform = 'translateX(0)';
-                }, 10);
-            }
-        }
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
     }
-    
     // Cerrar settings dropdown si está abierto
     if (settingsDropdown && settingsDropdown.style.display === 'block') {
         settingsDropdown.style.display = 'none';
@@ -1482,18 +1456,9 @@ document.addEventListener('click', function(event) {
     const mainBtn = document.getElementById('mainNavDropdownBtn');
     const dashboardDropdown = document.getElementById('dashboardDropdown');
     const dashboardBtn = document.getElementById('dashboardDropdownBtn');
-    const navContent = mainDropdown ? mainDropdown.querySelector('.mobile-nav-content') : null;
     
     if (mainDropdown && mainBtn && !mainDropdown.contains(event.target) && !mainBtn.contains(event.target)) {
-        if (navContent && mainDropdown.style.display === 'block') {
-            navContent.style.transform = 'translateX(100%)';
-            setTimeout(() => {
-                mainDropdown.style.display = 'none';
-                document.body.style.overflow = '';
-            }, 300);
-        } else {
-            mainDropdown.style.display = 'none';
-        }
+        mainDropdown.style.display = 'none';
     }
     
     const settingsDropdown = document.getElementById('settingsDropdown');
@@ -2264,12 +2229,15 @@ function initializeForms() {
         summaryPeriod = 'year';
         
         // Inicializar mes y año actual
-        if (summaryMonthInput) {
+        const summaryMonthContainer = document.getElementById('summaryMonthContainer');
+        const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+        const summaryMonthYear = document.getElementById('summaryMonthYear');
+        if (summaryMonthContainer && summaryMonthSelect && summaryMonthYear) {
             const now = new Date();
-            summaryMonthInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            summaryMonthSelect.value = now.getMonth() + 1;
+            summaryMonthYear.value = now.getFullYear();
             // Asegurar que esté oculto por defecto
-            summaryMonthInput.style.display = 'none';
-            summaryMonthInput.style.visibility = 'hidden';
+            summaryMonthContainer.style.display = 'none';
         }
         if (summaryYearInput) {
             summaryYearInput.value = new Date().getFullYear();
@@ -2283,37 +2251,16 @@ function initializeForms() {
             summaryPeriod = value;
             
             // Mostrar/ocultar selector de mes
-            if (summaryMonthInput) {
+            if (summaryMonthContainer) {
                 if (value === 'month-select') {
-                    summaryMonthInput.style.display = 'block';
-                    summaryMonthInput.style.visibility = 'visible';
-                    summaryMonthInput.style.height = 'auto';
-                    summaryMonthInput.style.marginTop = 'clamp(12px, 3vw, 16px)';
-                    summaryMonthInput.style.marginBottom = '0';
-                    summaryMonthInput.style.marginLeft = '0';
-                    summaryMonthInput.style.marginRight = '0';
-                    summaryMonthInput.style.padding = 'clamp(10px, 2.5vw, 12px)';
-                    summaryMonthInput.style.minHeight = 'clamp(40px, 10vw, 44px)';
-                    summaryMonthInput.style.fontSize = 'clamp(14px, 3.5vw, 16px)';
-                    summaryMonthInput.style.border = '1.5px solid var(--border-color)';
-                    summaryMonthInput.style.width = '100%';
-                    summaryMonthInput.style.maxWidth = '100%';
-                    summaryMonthInput.style.minWidth = '0';
-                    summaryMonthInput.style.boxSizing = 'border-box';
-                    summaryMonthInput.style.overflow = 'visible';
-                    summaryMonthInput.style.textOverflow = 'ellipsis';
-                    summaryMonthInput.style.whiteSpace = 'nowrap';
-                    summaryMonthInput.focus();
+                    summaryMonthContainer.style.display = 'flex';
+                    summaryMonthContainer.style.marginTop = 'clamp(12px, 3vw, 16px)';
+                    summaryMonthContainer.style.marginBottom = '0';
+                    if (summaryMonthSelect) summaryMonthSelect.focus();
                 } else {
-                    summaryMonthInput.style.display = 'none';
-                    summaryMonthInput.style.visibility = 'hidden';
-                    summaryMonthInput.style.height = '0';
-                    summaryMonthInput.style.marginTop = '0';
-                    summaryMonthInput.style.marginBottom = '0';
-                    summaryMonthInput.style.marginLeft = '0';
-                    summaryMonthInput.style.marginRight = '0';
-                    summaryMonthInput.style.padding = '0';
-                    summaryMonthInput.style.border = 'none';
+                    summaryMonthContainer.style.display = 'none';
+                    summaryMonthContainer.style.marginTop = '0';
+                    summaryMonthContainer.style.marginBottom = '0';
                 }
             }
             
@@ -2333,11 +2280,9 @@ function initializeForms() {
                     summaryYearInput.style.border = '1.5px solid var(--border-color)';
                     summaryYearInput.style.width = '100%';
                     summaryYearInput.style.maxWidth = '100%';
-                    summaryYearInput.style.minWidth = '0';
+                    summaryYearInput.style.minWidth = '100%';
                     summaryYearInput.style.boxSizing = 'border-box';
                     summaryYearInput.style.overflow = 'visible';
-                    summaryYearInput.style.textOverflow = 'ellipsis';
-                    summaryYearInput.style.whiteSpace = 'nowrap';
                     summaryYearInput.focus();
                 } else {
                     summaryYearInput.style.display = 'none';
@@ -2358,12 +2303,33 @@ function initializeForms() {
         });
         
         // Listener para cambio de mes
-        if (summaryMonthInput) {
-            summaryMonthInput.addEventListener('change', () => {
+        const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+        const summaryMonthYear = document.getElementById('summaryMonthYear');
+        if (summaryMonthSelect) {
+            summaryMonthSelect.addEventListener('change', () => {
                 if (summaryPeriod === 'month-select') {
                     updateSummary();
                     updateMonthDashboard();
                     updateDashboardCharts();
+                }
+            });
+        }
+        if (summaryMonthYear) {
+            summaryMonthYear.addEventListener('change', () => {
+                if (summaryPeriod === 'month-select') {
+                    updateSummary();
+                    updateMonthDashboard();
+                    updateDashboardCharts();
+                }
+            });
+            summaryMonthYear.addEventListener('input', () => {
+                if (summaryPeriod === 'month-select') {
+                    const yearValue = parseInt(summaryMonthYear.value);
+                    if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
+                        updateSummary();
+                        updateMonthDashboard();
+                        updateDashboardCharts();
+                    }
                 }
             });
         }
@@ -7783,12 +7749,16 @@ function getTransactionsBySummaryPeriod() {
     let selectedMonth = currentMonth;
     let selectedYear = currentYear;
     
-    if (summaryMonthInput && summaryPeriod === 'month-select') {
-        const monthValue = summaryMonthInput.value;
-        if (monthValue) {
-            const [year, month] = monthValue.split('-').map(Number);
-            selectedYear = year;
-            selectedMonth = month - 1;
+    if (summaryPeriod === 'month-select') {
+        const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+        const summaryMonthYear = document.getElementById('summaryMonthYear');
+        if (summaryMonthSelect && summaryMonthYear) {
+            const month = parseInt(summaryMonthSelect.value);
+            const year = parseInt(summaryMonthYear.value);
+            if (month && year) {
+                selectedYear = year;
+                selectedMonth = month - 1;
+            }
         }
     }
     
@@ -7889,8 +7859,13 @@ function updateDashboardSavingsChart() {
         let startMonth, startYear, endMonth, endYear;
         
         if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
-            if (summaryPeriod === 'month-select' && summaryMonthInput && summaryMonthInput.value) {
-                const [year, month] = summaryMonthInput.value.split('-').map(Number);
+            if (summaryPeriod === 'month-select') {
+                const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+                const summaryMonthYear = document.getElementById('summaryMonthYear');
+                if (summaryMonthSelect && summaryMonthYear) {
+                    const month = parseInt(summaryMonthSelect.value);
+                    const year = parseInt(summaryMonthYear.value);
+                    if (month && year) {
                 startMonth = month - 1;
                 startYear = year;
             } else {
@@ -7975,9 +7950,22 @@ function updateDashboardIncomeExpenseChart() {
     
     if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
         if (summaryPeriod === 'month-select' && summaryMonthInput && summaryMonthInput.value) {
-            const [year, month] = summaryMonthInput.value.split('-').map(Number);
-            startMonth = month - 1;
-            startYear = year;
+            const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+            const summaryMonthYear = document.getElementById('summaryMonthYear');
+            if (summaryMonthSelect && summaryMonthYear) {
+                const month = parseInt(summaryMonthSelect.value);
+                const year = parseInt(summaryMonthYear.value);
+                if (month && year) {
+                    startMonth = month - 1;
+                    startYear = year;
+                } else {
+                    startMonth = now.getMonth();
+                    startYear = now.getFullYear();
+                }
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+            }
         } else {
             startMonth = now.getMonth();
             startYear = now.getFullYear();
@@ -8141,9 +8129,22 @@ function updateDashboardIncomeEvolutionChart() {
     
     if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
         if (summaryPeriod === 'month-select' && summaryMonthInput && summaryMonthInput.value) {
-            const [year, month] = summaryMonthInput.value.split('-').map(Number);
-            startMonth = month - 1;
-            startYear = year;
+            const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+            const summaryMonthYear = document.getElementById('summaryMonthYear');
+            if (summaryMonthSelect && summaryMonthYear) {
+                const month = parseInt(summaryMonthSelect.value);
+                const year = parseInt(summaryMonthYear.value);
+                if (month && year) {
+                    startMonth = month - 1;
+                    startYear = year;
+                } else {
+                    startMonth = now.getMonth();
+                    startYear = now.getFullYear();
+                }
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+            }
         } else {
             startMonth = now.getMonth();
             startYear = now.getFullYear();
@@ -8232,9 +8233,22 @@ function updateDashboardExpensesEvolutionChart() {
     
     if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
         if (summaryPeriod === 'month-select' && summaryMonthInput && summaryMonthInput.value) {
-            const [year, month] = summaryMonthInput.value.split('-').map(Number);
-            startMonth = month - 1;
-            startYear = year;
+            const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+            const summaryMonthYear = document.getElementById('summaryMonthYear');
+            if (summaryMonthSelect && summaryMonthYear) {
+                const month = parseInt(summaryMonthSelect.value);
+                const year = parseInt(summaryMonthYear.value);
+                if (month && year) {
+                    startMonth = month - 1;
+                    startYear = year;
+                } else {
+                    startMonth = now.getMonth();
+                    startYear = now.getFullYear();
+                }
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+            }
         } else {
             startMonth = now.getMonth();
             startYear = now.getFullYear();
