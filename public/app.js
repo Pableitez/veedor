@@ -7623,6 +7623,7 @@ function updateCharts() {
         // Función no disponible, ignorar silenciosamente
     }
     updateFinancialHealthMetrics();
+    updateRecommendations();
     updateAnalysisTables();
 }
 
@@ -10668,6 +10669,482 @@ function updateFinancialHealthMetrics() {
         container.appendChild(card);
     });
 }
+
+// ==================== SISTEMA DE RECOMENDACIONES ECONÓMICAS ====================
+
+// Generar recomendaciones personalizadas basadas en los datos del usuario
+function generateRecommendations() {
+    const recommendations = [];
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Obtener transacciones del mes actual
+    const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+    });
+    
+    const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    const monthSavings = monthIncome - monthExpenses;
+    const savingsRate = monthIncome > 0 ? (monthSavings / monthIncome) * 100 : 0;
+    
+    // Calcular balances y ratios
+    const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const patrimonioValue = patrimonio.reduce((sum, prop) => sum + (prop.current_value || 0), 0);
+    
+    const activeDebtLoans = loans.filter(l => l.type === 'debt' && new Date(l.end_date) >= now);
+    const monthlyLoanPayments = activeDebtLoans.reduce((sum, loan) => sum + loan.monthly_payment, 0);
+    const avgMonthlyIncome = monthIncome;
+    const debtToIncomeRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : 0;
+    
+    const avgMonthlyExpenses = monthExpenses;
+    const liquidityRatio = avgMonthlyExpenses > 0 ? (transactionsBalance / avgMonthlyExpenses) : (transactionsBalance > 0 ? 999 : 0);
+    
+    // 1. RECOMENDACIONES DE AMORTIZACIÓN DE PRÉSTAMOS
+    activeDebtLoans.forEach(loan => {
+        const interestRate = loan.interest_rate || 0;
+        const principal = loan.principal || 0;
+        const monthlyPayment = loan.monthly_payment || 0;
+        const remainingMonths = Math.ceil((new Date(loan.end_date) - now) / (1000 * 60 * 60 * 24 * 30));
+        
+        // Calcular ahorro potencial por amortización
+        if (interestRate > 5 && principal > 1000 && remainingMonths > 6) {
+            // Calcular balance actual aproximado
+            const amortization = calculateAmortizationTable(
+                principal,
+                interestRate,
+                monthlyPayment,
+                loan.start_date,
+                loan.total_paid || 0,
+                loan.early_payments || []
+            );
+            const currentBalance = amortization.finalBalance;
+            
+            // Recomendar amortizar 10% del balance actual o 5000€ máximo
+            const recommendedAmount = Math.min(currentBalance * 0.1, 5000);
+            
+            // Calcular ahorro aproximado: intereses que no se pagarían
+            const monthlyInterest = currentBalance * (interestRate / 100 / 12);
+            const monthsSaved = Math.floor(recommendedAmount / monthlyPayment);
+            const interestSaved = monthlyInterest * monthsSaved * 0.7; // 70% del interés estimado
+            
+            if (interestSaved > 50 && recommendedAmount > 500) {
+                recommendations.push({
+                    type: 'loan_amortization',
+                    priority: interestRate > 8 ? 'high' : 'medium',
+                    icon: '💰',
+                    title: `Amortizar préstamo "${loan.name}"`,
+                    description: `Si ahorras ${formatCurrency(recommendedAmount)} durante ${Math.ceil(recommendedAmount / (monthSavings || 500))} meses y lo amortizas anticipadamente, podrías ahorrar aproximadamente ${formatCurrency(interestSaved)} en intereses y reducir el plazo en ${monthsSaved} meses.`,
+                    impact: `Ahorro estimado: ${formatCurrency(interestSaved)}`,
+                    action: {
+                        type: 'edit_loan',
+                        loanId: loan._id || loan.id,
+                        text: 'Ver préstamo'
+                    },
+                    category: 'Optimización de Deuda'
+                });
+            }
+        }
+        
+        // Recomendación de refinanciación para préstamos con alta tasa
+        if (interestRate > 7) {
+            recommendations.push({
+                type: 'loan_refinance',
+                priority: 'medium',
+                icon: '🔄',
+                title: `Considera refinanciar "${loan.name}"`,
+                description: `Tu préstamo tiene una tasa del ${interestRate}%. Si encuentras una tasa menor al ${(interestRate * 0.7).toFixed(1)}%, podrías ahorrar significativamente en intereses.`,
+                impact: `Tasa actual: ${interestRate}%`,
+                action: {
+                    type: 'edit_loan',
+                    loanId: loan._id || loan.id,
+                    text: 'Ver préstamo'
+                },
+                category: 'Optimización de Deuda'
+            });
+        }
+    });
+    
+    // 2. ANÁLISIS DE GASTOS RECURRENTES/SUSCRIPCIONES
+    const recurringExpenses = {};
+    monthTransactions.filter(t => t.type === 'expense').forEach(t => {
+        const key = t.description?.toLowerCase() || t.categorySpecific?.toLowerCase() || '';
+        if (key.includes('netflix') || key.includes('spotify') || key.includes('amazon') || 
+            key.includes('gym') || key.includes('suscripción') || key.includes('subscription') ||
+            key.includes('premium') || key.includes('pro')) {
+            const category = t.categorySpecific || 'Suscripciones';
+            recurringExpenses[category] = (recurringExpenses[category] || 0) + Math.abs(t.amount);
+        }
+    });
+    
+    const totalSubscriptions = Object.values(recurringExpenses).reduce((sum, val) => sum + val, 0);
+    const subscriptionCount = Object.keys(recurringExpenses).length;
+    
+    if (subscriptionCount >= 3 && totalSubscriptions > 30) {
+        recommendations.push({
+            type: 'subscriptions_review',
+            priority: 'medium',
+            icon: '📱',
+            title: 'Revisa tus suscripciones',
+            description: `Detectamos ${subscriptionCount} suscripciones que suman ${formatCurrency(totalSubscriptions)}/mes. Si cancelas 1-2 que no uses frecuentemente, ahorrarías ${formatCurrency(totalSubscriptions * 0.3)}/mes (${formatCurrency(totalSubscriptions * 0.3 * 12)}/año).`,
+            impact: `Ahorro potencial: ${formatCurrency(totalSubscriptions * 0.3 * 12)}/año`,
+            action: {
+                type: 'view_transactions',
+                filter: 'subscriptions',
+                text: 'Ver suscripciones'
+            },
+            category: 'Optimización de Gastos'
+        });
+    }
+    
+    // 3. RECOMENDACIONES DE AHORRO
+    if (savingsGoal && savingsGoal > 0) {
+        const currentSavings = transactionsBalance;
+        const remaining = savingsGoal - currentSavings;
+        const monthsToGoal = savingsRate > 0 ? Math.ceil(remaining / (monthSavings || 1)) : 999;
+        
+        if (remaining > 0) {
+            if (savingsRate < 10 && monthIncome > 0) {
+                const targetRate = 20;
+                const targetSavings = monthIncome * (targetRate / 100);
+                const monthsWithTarget = Math.ceil(remaining / targetSavings);
+                
+                recommendations.push({
+                    type: 'savings_increase',
+                    priority: 'medium',
+                    icon: '🎯',
+                    title: 'Aumenta tu tasa de ahorro',
+                    description: `Con tu tasa actual (${savingsRate.toFixed(1)}%), alcanzarías tu meta en ${monthsToGoal} meses. Si aumentas al ${targetRate}%, lo lograrías en ${monthsWithTarget} meses.`,
+                    impact: `Ahorro adicional: ${formatCurrency(targetSavings - monthSavings)}/mes`,
+                    action: {
+                        type: 'view_summary',
+                        text: 'Ver resumen'
+                    },
+                    category: 'Ahorro'
+                });
+            }
+        }
+    }
+    
+    // Recomendación de fondo de emergencia
+    if (liquidityRatio < 3 && transactionsBalance > 0) {
+        const targetEmergencyFund = avgMonthlyExpenses * 6;
+        const missing = targetEmergencyFund - transactionsBalance;
+        
+        if (missing > 0) {
+            recommendations.push({
+                type: 'emergency_fund',
+                priority: liquidityRatio < 1 ? 'high' : 'medium',
+                icon: '🛡️',
+                title: 'Construye tu fondo de emergencia',
+                description: `Tu liquidez es de ${liquidityRatio.toFixed(1)} meses. Lo ideal es 3-6 meses. Te faltan ${formatCurrency(missing)} para alcanzar 6 meses de gastos (${formatCurrency(targetEmergencyFund)}).`,
+                impact: `Meta: ${formatCurrency(targetEmergencyFund)}`,
+                action: {
+                    type: 'view_summary',
+                    text: 'Ver resumen'
+                },
+                category: 'Ahorro'
+            });
+        }
+    }
+    
+    // 4. OPTIMIZACIÓN DE DEUDA
+    if (debtToIncomeRatio > 30) {
+        const targetRatio = 20;
+        const neededReduction = (debtToIncomeRatio - targetRatio) / 100 * avgMonthlyIncome;
+        
+        recommendations.push({
+            type: 'debt_optimization',
+            priority: debtToIncomeRatio > 40 ? 'high' : 'medium',
+            icon: '📉',
+            title: 'Reduce tu ratio de endeudamiento',
+            description: `Tu ratio es ${debtToIncomeRatio.toFixed(1)}% (ideal: <20%). Para alcanzarlo, necesitas reducir ${formatCurrency(neededReduction)}/mes en cuotas o aumentar tus ingresos.`,
+            impact: `Reducción necesaria: ${formatCurrency(neededReduction)}/mes`,
+            action: {
+                type: 'view_loans',
+                text: 'Ver préstamos'
+            },
+            category: 'Optimización de Deuda'
+        });
+    }
+    
+    // 5. ALERTAS DE PRESUPUESTO
+    budgets.forEach(budget => {
+        const budgetTransactions = monthTransactions.filter(t => 
+            t.categoryGeneral === budget.category_id || t.categorySpecific === budget.category_id
+        );
+        const spent = Math.abs(budgetTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const daysPassed = now.getDate();
+        const expectedSpending = (budget.amount / daysInMonth) * daysPassed;
+        
+        if (percentage > 90 && spent > expectedSpending * 1.1) {
+            recommendations.push({
+                type: 'budget_alert',
+                priority: percentage > 100 ? 'high' : 'medium',
+                icon: '⚠️',
+                title: `Presupuesto "${budget.category_id}" casi agotado`,
+                description: `Has gastado ${percentage.toFixed(1)}% del presupuesto (${formatCurrency(spent)} de ${formatCurrency(budget.amount)}) y aún quedan ${daysInMonth - daysPassed} días del mes.`,
+                impact: `Exceso: ${formatCurrency(Math.max(0, spent - budget.amount))}`,
+                action: {
+                    type: 'view_budgets',
+                    text: 'Ver presupuestos'
+                },
+                category: 'Presupuesto'
+            });
+        }
+    });
+    
+    // 6. RECOMENDACIONES DE INVERSIÓN
+    if (transactionsBalance > avgMonthlyExpenses * 6 && investmentsValue < transactionsBalance * 0.3) {
+        const excessCash = transactionsBalance - (avgMonthlyExpenses * 6);
+        const recommendedInvestment = excessCash * 0.5;
+        
+        recommendations.push({
+            type: 'investment_opportunity',
+            priority: 'low',
+            icon: '📈',
+            title: 'Considera invertir el exceso de efectivo',
+            description: `Tienes ${formatCurrency(excessCash)} más de lo necesario para tu fondo de emergencia. Considera invertir ${formatCurrency(recommendedInvestment)} para hacer crecer tu patrimonio.`,
+            impact: `Oportunidad: ${formatCurrency(recommendedInvestment)}`,
+            action: {
+                type: 'view_investments',
+                text: 'Ver inversiones'
+            },
+            category: 'Inversión'
+        });
+    }
+    
+    // 7. ANÁLISIS DE CATEGORÍAS DE GASTOS
+    const categoryExpenses = {};
+    monthTransactions.filter(t => t.type === 'expense').forEach(t => {
+        const cat = t.categorySpecific || t.categoryGeneral || 'Otros';
+        categoryExpenses[cat] = (categoryExpenses[cat] || 0) + Math.abs(t.amount);
+    });
+    
+    const totalExpenses = Object.values(categoryExpenses).reduce((sum, val) => sum + val, 0);
+    Object.entries(categoryExpenses).forEach(([category, amount]) => {
+        const percentage = totalExpenses > 0 ? (amount / totalExpenses) * 100 : 0;
+        
+        if (percentage > 25 && amount > 200) {
+            recommendations.push({
+                type: 'category_review',
+                priority: 'low',
+                icon: '🔍',
+                title: `Revisa gastos en "${category}"`,
+                description: `Esta categoría representa el ${percentage.toFixed(1)}% de tus gastos (${formatCurrency(amount)}/mes). Considera si todos estos gastos son necesarios.`,
+                impact: `Gasto mensual: ${formatCurrency(amount)}`,
+                action: {
+                    type: 'view_transactions',
+                    filter: category,
+                    text: 'Ver transacciones'
+                },
+                category: 'Optimización de Gastos'
+            });
+        }
+    });
+    
+    // 8. RECOMENDACIONES DE PATRIMONIO
+    patrimonio.forEach(prop => {
+        const purchaseDate = prop.purchase_date ? new Date(prop.purchase_date) : null;
+        if (purchaseDate) {
+            const monthsSincePurchase = (now - purchaseDate) / (1000 * 60 * 60 * 24 * 30);
+            if (monthsSincePurchase > 12 && prop.value_history && prop.value_history.length < 3) {
+                recommendations.push({
+                    type: 'patrimonio_update',
+                    priority: 'low',
+                    icon: '🏠',
+                    title: `Actualiza el valor de "${prop.name}"`,
+                    description: `Han pasado ${Math.floor(monthsSincePurchase)} meses desde la última actualización. Considera actualizar el valor actual para tener un seguimiento preciso.`,
+                    impact: 'Mejor seguimiento',
+                    action: {
+                        type: 'edit_patrimonio',
+                        patrimonioId: prop._id || prop.id,
+                        text: 'Actualizar valor'
+                    },
+                    category: 'Patrimonio'
+                });
+            }
+        }
+    });
+    
+    // Ordenar por prioridad (high > medium > low)
+    const priorityOrder = { high: 3, medium: 2, low: 1 };
+    recommendations.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+    
+    return recommendations.slice(0, 8); // Limitar a 8 recomendaciones más relevantes
+}
+
+// Mostrar recomendaciones en la interfaz
+function updateRecommendations() {
+    const container = document.getElementById('recommendationsContainer');
+    if (!container) return;
+    
+    const recommendations = generateRecommendations();
+    
+    container.innerHTML = '';
+    
+    if (recommendations.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column: 1/-1; padding: 40px; text-align: center; background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color);">
+                <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+                <h3 style="margin: 0 0 8px 0; color: var(--text-primary); font-size: 18px;">¡Todo está en orden!</h3>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">No hay recomendaciones específicas en este momento. Sigue así.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    recommendations.forEach((rec, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.padding = '20px';
+        card.style.borderLeft = `4px solid ${
+            rec.priority === 'high' ? 'var(--danger)' :
+            rec.priority === 'medium' ? 'var(--warning)' :
+            'var(--primary)'
+        }`;
+        card.style.position = 'relative';
+        card.style.transition = 'transform 0.2s, box-shadow 0.2s';
+        card.style.cursor = 'default';
+        
+        card.onmouseenter = () => {
+            card.style.transform = 'translateY(-2px)';
+            card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+        };
+        card.onmouseleave = () => {
+            card.style.transform = 'translateY(0)';
+            card.style.boxShadow = 'none';
+        };
+        
+        const priorityBadge = {
+            high: { text: 'Alta', color: 'var(--danger)', bg: 'rgba(239, 68, 68, 0.1)' },
+            medium: { text: 'Media', color: 'var(--warning)', bg: 'rgba(251, 191, 36, 0.1)' },
+            low: { text: 'Baja', color: 'var(--primary)', bg: 'rgba(59, 130, 246, 0.1)' }
+        }[rec.priority];
+        
+        let actionButton = '';
+        if (rec.action) {
+            let onclickHandler = '';
+            const actionId = `rec_action_${index}`;
+            
+            switch(rec.action.type) {
+                case 'edit_loan':
+                    onclickHandler = `handleRecommendationAction('edit_loan', '${rec.action.loanId}')`;
+                    break;
+                case 'edit_patrimonio':
+                    onclickHandler = `handleRecommendationAction('edit_patrimonio', '${rec.action.patrimonioId}')`;
+                    break;
+                case 'view_loans':
+                    onclickHandler = `handleRecommendationAction('view_loans')`;
+                    break;
+                case 'view_investments':
+                    onclickHandler = `handleRecommendationAction('view_investments')`;
+                    break;
+                case 'view_budgets':
+                    onclickHandler = `handleRecommendationAction('view_budgets')`;
+                    break;
+                case 'view_transactions':
+                    onclickHandler = `handleRecommendationAction('view_transactions')`;
+                    break;
+                case 'view_summary':
+                    onclickHandler = `handleRecommendationAction('view_summary')`;
+                    break;
+            }
+            
+            if (onclickHandler) {
+                actionButton = `
+                    <button onclick="${onclickHandler}" 
+                        style="margin-top: 12px; padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.background='var(--primary-dark)'"
+                        onmouseout="this.style.background='var(--primary)'">
+                        ${rec.action.text}
+                    </button>
+                `;
+            }
+        }
+        
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">${rec.icon}</span>
+                    <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-primary);">${rec.title}</h3>
+                </div>
+                <span style="padding: 4px 10px; background: ${priorityBadge.bg}; color: ${priorityBadge.color}; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                    ${priorityBadge.text}
+                </span>
+            </div>
+            <p style="margin: 0 0 12px 0; color: var(--text-secondary); font-size: 14px; line-height: 1.6;">
+                ${rec.description}
+            </p>
+            <div style="padding: 10px; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 12px;">
+                <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 4px;">Impacto</div>
+                <div style="font-size: 15px; font-weight: 700; color: var(--primary);">${rec.impact}</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; color: var(--text-tertiary); padding: 4px 8px; background: var(--bg-secondary); border-radius: 6px;">
+                    ${rec.category}
+                </span>
+                ${actionButton}
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// Manejar acciones de recomendaciones
+function handleRecommendationAction(actionType, id = null) {
+    if (typeof closeSummaryDetails === 'function') {
+        closeSummaryDetails();
+    }
+    
+    switch(actionType) {
+        case 'edit_loan':
+            if (id && typeof editLoan === 'function') {
+                editLoan(id);
+            }
+            break;
+        case 'edit_patrimonio':
+            if (id && typeof editPatrimonio === 'function') {
+                editPatrimonio(id);
+            }
+            break;
+        case 'view_loans':
+            if (typeof switchToTab === 'function') {
+                switchToTab('loans', true);
+            }
+            break;
+        case 'view_investments':
+            if (typeof switchToTab === 'function') {
+                switchToTab('investments', true);
+            }
+            break;
+        case 'view_budgets':
+            if (typeof switchToTab === 'function') {
+                switchToTab('budgets', true);
+            }
+            break;
+        case 'view_transactions':
+            if (typeof switchToTab === 'function') {
+                switchToTab('transactions', true);
+            }
+            break;
+        case 'view_summary':
+            if (typeof switchToTab === 'function') {
+                switchToTab('summary', true);
+            }
+            break;
+    }
+}
+
+// Exponer funciones globalmente
+window.updateRecommendations = updateRecommendations;
+window.handleRecommendationAction = handleRecommendationAction;
 
 // Actualizar tablas de análisis
 function updateAnalysisTables() {

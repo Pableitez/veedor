@@ -1394,6 +1394,17 @@
                     </div>
                 </div>
                 
+                <!-- Recomendaciones Económicas -->
+                <div style="margin-bottom: 32px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                        <h2 style="font-size: 20px; font-weight: 700; margin: 0; color: var(--text-primary);">💡 Recomendaciones Personalizadas</h2>
+                        <button id="refreshRecommendationsBtn" onclick="updateRecommendations()" style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">🔄 Actualizar</button>
+                    </div>
+                    <div id="recommendationsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px;">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+                
                 <!-- Tablas de Análisis -->
                 <div style="margin-bottom: 32px;">
                     <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--text-primary);">Análisis Detallado</h2>
@@ -1795,7 +1806,7 @@
     </div>
 
     <!-- Cargar aplicación JavaScript directamente -->
-    <script src="app.js?v=2.26.0"></script>
+    <script src="app.js?v=2.25.0"></script>
     
     <!-- Footer (solo visible en la app principal, no en welcome page) -->
     <footer id="mainFooter" style="background: transparent; color: rgba(255,255,255,0.9); padding: 16px 0; margin-top: 40px; border-top: none; box-shadow: none; display: none;" class="main-footer">
