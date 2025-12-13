@@ -13479,6 +13479,77 @@ if (typeof window !== 'undefined') {
     }
 }
 
+// Función para añadir transacción rápidamente
+function quickAddTransaction() {
+    // Cambiar a la pestaña de transacciones
+    switchToTab('transactions', true);
+    
+    // Esperar a que la pestaña se active y luego expandir el formulario
+    setTimeout(() => {
+        const transactionForm = document.getElementById('transactionForm');
+        const formSection = transactionForm?.closest('.form-section');
+        const toggleBtn = document.getElementById('toggleTransactionFormBtn');
+        
+        if (formSection && toggleBtn) {
+            // En móvil: expandir el form-section
+            if (window.innerWidth <= 768) {
+                formSection.classList.add('expanded');
+            }
+            // Mostrar el formulario
+            transactionForm.style.display = 'block';
+            // Actualizar texto del botón
+            const text = document.getElementById('transactionFormText');
+            if (text) text.textContent = 'Cancelar';
+            
+            // Scroll suave al formulario
+            setTimeout(() => {
+                if (window.innerWidth <= 768) {
+                    formSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    transactionForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 100);
+        }
+    }, 300);
+}
+
+// Exponer función globalmente
+window.quickAddTransaction = quickAddTransaction;
+
+// Actualizar visibilidad de botones según tamaño de pantalla
+function updateQuickAddButtonVisibility() {
+    const desktopBtn = document.getElementById('quickAddTransactionBtn');
+    const mobileBtn = document.getElementById('floatingAddTransactionBtn');
+    
+    if (window.innerWidth <= 768) {
+        if (desktopBtn) desktopBtn.style.display = 'none';
+        if (mobileBtn) mobileBtn.style.display = 'flex';
+    } else {
+        if (desktopBtn) desktopBtn.style.display = 'flex';
+        if (mobileBtn) mobileBtn.style.display = 'none';
+    }
+}
+
+// Ejecutar al cargar y al redimensionar
+if (typeof window !== 'undefined') {
+    window.addEventListener('resize', () => {
+        updateFilterToggleVisibility();
+        updateFormSectionsVisibility();
+        updateQuickAddButtonVisibility();
+    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            updateFilterToggleVisibility();
+            updateFormSectionsVisibility();
+            updateQuickAddButtonVisibility();
+        });
+    } else {
+        updateFilterToggleVisibility();
+        updateFormSectionsVisibility();
+        updateQuickAddButtonVisibility();
+    }
+}
+
 // Cerrar el bloque de protección contra carga múltiple
 } // Cierre del else de window.VEEDOR_LOADED (línea 5)
 } // Cierre del if de window.VEEDOR_LOADED (línea 3)
