@@ -1820,6 +1820,15 @@ function initializeForms() {
         });
     }
     
+    // Formulario de propiedades
+    const propertyForm = document.getElementById('propertyForm');
+    if (propertyForm) {
+        propertyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addProperty();
+        });
+    }
+    
     // Formulario de préstamos
     const loanForm = document.getElementById('loanForm');
     if (loanForm) {
@@ -8087,8 +8096,86 @@ function updateDashboardExpensesEvolutionChart() {
         }
     }
     
+    // Obtener todas las categorías de gastos únicas
+    const expenseCategories = {};
+    periodTransactions.filter(t => t.type === 'expense').forEach(t => {
+        let catName;
+        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+        if (expenseCat) {
+            catName = expenseCat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        if (!expenseCategories[catName]) {
+            expenseCategories[catName] = [];
+        }
+    });
+    
+    // Calcular gastos por categoría para cada mes
+    let currentMonthCalc = startMonth;
+    let currentYearCalc = startYear;
+    const categoryData = {};
+    
+    Object.keys(expenseCategories).forEach(catName => {
+        categoryData[catName] = [];
+    });
+    
+    let monthIndex = 0;
+    while (currentYearCalc < endYear || (currentYearCalc === endYear && currentMonthCalc <= endMonth)) {
+        const monthTransactions = periodTransactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === currentMonthCalc && tDate.getFullYear() === currentYearCalc && t.type === 'expense';
+        });
+        
+        Object.keys(expenseCategories).forEach(catName => {
+            const catExpenses = Math.abs(monthTransactions
+                .filter(t => {
+                    let tCatName;
+                    const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+                    if (expenseCat) {
+                        tCatName = expenseCat.name;
+                    } else {
+                        tCatName = t.categoryGeneral;
+                    }
+                    return tCatName === catName;
+                })
+                .reduce((sum, t) => sum + t.amount, 0));
+            categoryData[catName].push(catExpenses);
+        });
+        
+        currentMonthCalc++;
+        if (currentMonthCalc > 11) {
+            currentMonthCalc = 0;
+            currentYearCalc++;
+        }
+        monthIndex++;
+    }
+    
+    // Colores variados para las categorías
+    const colors = [
+        '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+        '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1',
+        '#14B8A6', '#FBBF24', '#FB7185', '#A78BFA', '#60A5FA'
+    ];
+    
+    // Crear datasets para cada categoría
+    const datasets = Object.keys(categoryData).map((catName, index) => {
+        const data = categoryData[catName];
+        const hasData = data.some(v => v > 0);
+        if (!hasData) return null;
+        
+        return {
+            label: catName,
+            data: data,
+            borderColor: colors[index % colors.length],
+            backgroundColor: colors[index % colors.length] + '20',
+            tension: 0.4,
+            fill: false
+        };
+    }).filter(d => d !== null);
+    
     charts.dashboardExpensesEvolution.data.labels = months;
-    charts.dashboardExpensesEvolution.data.datasets = [{
+    charts.dashboardExpensesEvolution.data.datasets = datasets.length > 0 ? datasets : [{
         label: 'Gastos',
         data: expensesData,
         borderColor: '#EF4444',
@@ -8601,10 +8688,11 @@ function updateExpensesEvolutionChart() {
         }
     }
     
-    // Colores metálicos para las categorías
+    // Colores variados para las categorías
     const colors = [
-        '#cd7f32', '#b87333', '#daa520', '#c9b037', '#d4af37',
-        '#c0c0c0', '#e6c200', '#f4d03f', '#d4af37', '#cd7f32'
+        '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+        '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1',
+        '#14B8A6', '#FBBF24', '#FB7185', '#A78BFA', '#60A5FA'
     ];
     
     // Crear datasets para cada categoría
