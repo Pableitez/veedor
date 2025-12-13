@@ -4263,6 +4263,52 @@ tbody tr:last-child td {
     -webkit-tap-highlight-color: rgba(0,0,0,0.1);
 }
 
+/* Mejoras específicas para Android */
+@media (max-width: 768px) {
+    .mobile-nav-content {
+        width: min(300px, 90vw);
+    }
+    
+    .mobile-nav-item {
+        min-height: 56px;
+        touch-action: manipulation;
+    }
+    
+    /* Mejorar scroll en Android */
+    .mobile-nav-content {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+    
+    /* Mejoras específicas para Android */
+    @supports (-webkit-appearance: none) {
+        .mobile-nav-item {
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .hamburger-menu-btn {
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+    
+    /* Mejorar renderizado en Android */
+    .mobile-nav-content,
+    .mobile-nav-item {
+        will-change: transform;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+    }
+    
+    /* Footer badges en Android */
+    footer img[alt*="App Store"],
+    footer img[alt*="Google Play"],
+    .main-footer img[alt*="App Store"],
+    .main-footer img[alt*="Google Play"] {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
 /* Mejoras para Android */
 @media (max-width: 768px) {
     .mobile-nav-content {
