@@ -905,7 +905,7 @@ async function requestPasswordReset() {
                         </div>
                         <div style="background: var(--bg-primary); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--primary); margin: 6px 0; display: flex; align-items: center; justify-content: space-between; gap: 6px; color: var(--text-primary);">
                             <code style="font-size: 10px; font-weight: 600; color: var(--primary); word-break: break-all; flex: 1; font-family: 'Courier New', monospace; line-height: 1.3;">${data.token}</code>
-                            <button type="button" onclick="event.preventDefault(); event.stopPropagation(); const token = '${data.token}'; navigator.clipboard.writeText(token).then(() => { const btn = event.target; btn.textContent='✓'; setTimeout(() => { btn.textContent='📋'; }, 2000); }).catch(err => console.error('Error copiando:', err));" style="background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; flex-shrink: 0;" title="Copiar">📋</button>
+                            <button type="button" onclick="event.preventDefault(); event.stopPropagation(); const token = '${data.token}'; navigator.clipboard.writeText(token).then(() => { const btn = event.target; btn.textContent='Copiado'; setTimeout(() => { btn.textContent='Copiar'; }, 2000); }).catch(err => console.error('Error copiando:', err));" style="background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; flex-shrink: 0;" title="Copiar">Copiar</button>
                         </div>
                     </div>
                 `;
@@ -6309,7 +6309,7 @@ function updateAccounts() {
                     <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--gray-900);">${account.name}</h3>
                     <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--gray-600);">${typeNames[account.type] || account.type}</p>
                     ${account.bank ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">🏦 ${account.bank}</p>` : ''}
-                    ${account.account_number ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">📋 ****${account.account_number}</p>` : ''}
+                    ${account.account_number ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">****${account.account_number}</p>` : ''}
                 </div>
             </div>
             
@@ -11519,7 +11519,7 @@ function updateRecommendations() {
     recommendations.forEach((rec, index) => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.style.padding = '20px';
+        card.style.padding = 'clamp(16px, 4vw, 20px)';
         card.style.borderLeft = `4px solid ${
             rec.priority === 'high' ? 'var(--danger)' :
             rec.priority === 'medium' ? 'var(--warning)' :
@@ -11528,6 +11528,8 @@ function updateRecommendations() {
         card.style.position = 'relative';
         card.style.transition = 'transform 0.2s, box-shadow 0.2s';
         card.style.cursor = 'default';
+        card.style.width = '100%';
+        card.style.boxSizing = 'border-box';
         
         card.onmouseenter = () => {
             card.style.transform = 'translateY(-2px)';
@@ -11586,7 +11588,7 @@ function updateRecommendations() {
                 const escapedHandler = onclickHandler.replace(/"/g, '&quot;');
                 actionButton = `
                     <button onclick="${escapedHandler}" 
-                        style="margin-top: 12px; padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                        style="padding: clamp(6px, 1.5vw, 8px) clamp(12px, 3vw, 16px); background: var(--primary); color: white; border: none; border-radius: 6px; font-size: clamp(11px, 2.5vw, 13px); font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; width: 100%; max-width: 200px;"
                         onmouseover="this.style.background='var(--primary-dark)'"
                         onmouseout="this.style.background='var(--primary)'">
                         ${rec.action.text}
@@ -11599,51 +11601,53 @@ function updateRecommendations() {
         let trackingButtons = '';
         if (!isApplied) {
             trackingButtons = `
-                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                <div style="display: flex; gap: clamp(6px, 1.5vw, 8px); margin-top: 12px; flex-wrap: wrap;">
                     <button onclick="markRecommendationAsApplied('${recId}')" 
-                        style="flex: 1; padding: 6px 12px; background: var(--success); color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                        style="flex: 1; min-width: 120px; padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 12px); background: var(--success); color: white; border: none; border-radius: 6px; font-size: clamp(11px, 2.5vw, 12px); font-weight: 600; cursor: pointer; transition: all 0.2s;"
                         onmouseover="this.style.background='var(--success-dark)'"
                         onmouseout="this.style.background='var(--success)'">
-                        ✓ Aplicada
+                        Aplicada
                     </button>
                     <button onclick="dismissRecommendation('${recId}')" 
-                        style="flex: 1; padding: 6px 12px; background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                        style="flex: 1; min-width: 120px; padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 12px); background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: 6px; font-size: clamp(11px, 2.5vw, 12px); font-weight: 600; cursor: pointer; transition: all 0.2s;"
                         onmouseover="this.style.background='var(--bg-secondary)'"
                         onmouseout="this.style.background='var(--bg-tertiary)'">
-                        ✕ Descartar
+                        Descartar
                     </button>
                 </div>
             `;
         } else {
             trackingButtons = `
-                <div style="margin-top: 12px; padding: 8px; background: rgba(16, 185, 129, 0.1); border-radius: 6px; border: 1px solid var(--success);">
-                    <span style="font-size: 12px; color: var(--success); font-weight: 600;">✓ Recomendación aplicada</span>
+                <div style="margin-top: 12px; padding: clamp(6px, 1.5vw, 8px); background: rgba(16, 185, 129, 0.1); border-radius: 6px; border: 1px solid var(--success);">
+                    <span style="font-size: clamp(11px, 2.5vw, 12px); color: var(--success); font-weight: 600;">Recomendación aplicada</span>
                 </div>
             `;
         }
         
         card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    ${rec.icon ? `<span style="font-size: 24px;">${rec.icon}</span>` : ''}
-                    <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-primary);">${rec.title}</h3>
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                    ${rec.icon ? `<span style="font-size: clamp(20px, 5vw, 24px); flex-shrink: 0;">${rec.icon}</span>` : ''}
+                    <h3 style="margin: 0; font-size: clamp(14px, 3.5vw, 16px); font-weight: 700; color: var(--text-primary); word-wrap: break-word; flex: 1; min-width: 0;">${rec.title}</h3>
                 </div>
-                <span style="padding: 4px 10px; background: ${priorityBadge.bg}; color: ${priorityBadge.color}; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                <span style="padding: 4px 10px; background: ${priorityBadge.bg}; color: ${priorityBadge.color}; border-radius: 12px; font-size: clamp(10px, 2.5vw, 11px); font-weight: 600; white-space: nowrap; flex-shrink: 0;">
                     ${priorityBadge.text}
                 </span>
             </div>
-            <p style="margin: 0 0 12px 0; color: var(--text-secondary); font-size: 14px; line-height: 1.6;">
+            <p style="margin: 0 0 12px 0; color: var(--text-secondary); font-size: clamp(13px, 3vw, 14px); line-height: 1.6; word-wrap: break-word;">
                 ${rec.description}
             </p>
-            <div style="padding: 10px; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 12px;">
-                <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 4px;">Impacto</div>
-                <div style="font-size: 15px; font-weight: 700; color: var(--primary);">${rec.impact}</div>
+            <div style="padding: clamp(8px, 2vw, 10px); background: var(--bg-secondary); border-radius: 8px; margin-bottom: 12px;">
+                <div style="font-size: clamp(11px, 2.5vw, 12px); color: var(--text-tertiary); margin-bottom: 4px;">Impacto</div>
+                <div style="font-size: clamp(13px, 3.5vw, 15px); font-weight: 700; color: var(--primary); word-wrap: break-word;">${rec.impact}</div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-size: 11px; color: var(--text-tertiary); padding: 4px 8px; background: var(--bg-secondary); border-radius: 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                <span style="font-size: clamp(10px, 2.5vw, 11px); color: var(--text-tertiary); padding: 4px 8px; background: var(--bg-secondary); border-radius: 6px; white-space: nowrap;">
                     ${rec.category}
                 </span>
-                ${actionButton}
+                <div style="flex: 1; min-width: 0; display: flex; justify-content: flex-end;">
+                    ${actionButton}
+                </div>
             </div>
             ${trackingButtons}
         `;
