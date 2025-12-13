@@ -1823,10 +1823,21 @@ function initializeForms() {
     // Formulario de propiedades
     const propertyForm = document.getElementById('propertyForm');
     if (propertyForm) {
+        console.log('🔧 Inicializando formulario de propiedades');
         propertyForm.addEventListener('submit', async (e) => {
+            console.log('🎯 Evento submit de propiedad disparado');
             e.preventDefault();
-            await addProperty();
+            e.stopPropagation();
+            try {
+                await addProperty();
+            } catch (error) {
+                console.error('❌ Error en addProperty desde event listener:', error);
+                alert('Error al crear propiedad: ' + (error.message || 'Error desconocido'));
+            }
         });
+        console.log('✅ Event listener agregado al formulario de propiedades');
+    } else {
+        console.error('❌ ERROR: No se encontró el formulario propertyForm');
     }
     
     // Formulario de préstamos
