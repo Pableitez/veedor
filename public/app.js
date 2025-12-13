@@ -186,7 +186,7 @@ let envelopes = [];
 let budgets = [];
 let accounts = [];
 let properties = [];
-let assets = [];
+let patrimonio = [];
 let loans = [];
 let investments = [];
 let charts = {};
@@ -473,7 +473,7 @@ function toggleForm(formId, buttonId) {
                 'accountForm': 'Nueva Cuenta',
                 'loanForm': 'Nuevo Préstamo',
                 'investmentForm': 'Nueva Inversión',
-                'assetForm': 'Nuevo Bien',
+                'patrimonioForm': 'Nueva Propiedad',
                 'budgetForm': 'Nuevo Presupuesto',
                 'envelopeForm': 'Nuevo Sobre'
             };
@@ -1276,22 +1276,21 @@ async function loadUserData() {
         }
         accounts = accountsData || [];
         
-        // Cargar propiedades por separado para manejar errores
-        let propertiesData = [];
+        // Cargar patrimonio por separado para manejar errores
+        let patrimonioData = [];
         try {
-            propertiesData = await apiRequest('/properties');
+            patrimonioData = await apiRequest('/patrimonio');
         } catch (error) {
-            console.warn('No se pudieron cargar propiedades:', error);
-            propertiesData = [];
+            console.warn('No se pudo cargar patrimonio:', error);
+            patrimonioData = [];
         }
-        properties = propertiesData || [];
+        patrimonio = patrimonioData || [];
         
         // Actualizar selectores después de cargar datos
         updateAccountSelect();
-        updatePropertySelect();
+        updatePatrimonioSelect();
         updateLoanSelect();
         updateInvestmentSelect();
-        updateAssetSelect();
         
         // Guardar en cache
         const cacheKey = `veedor_data_cache_${currentUser}`;
@@ -1302,8 +1301,7 @@ async function loadUserData() {
             investments,
             budgets,
             accounts,
-            properties,
-            assets
+            patrimonio
         };
         sessionStorage.setItem(cacheKey, JSON.stringify({
             data: cacheData,
@@ -1647,7 +1645,7 @@ function switchToTab(targetTab, doScroll = false) {
     // Actualizar patrimonio cuando se cambia al tab de patrimonio
     if (targetTab === 'assets') {
         setTimeout(() => {
-            updateAssets();
+            updatePatrimonio();
         }, 100);
     }
     
@@ -1657,8 +1655,7 @@ function switchToTab(targetTab, doScroll = false) {
             updateLoans();
             // Actualizar selectores en el formulario de préstamos
             updateAccountSelect('loanAccount');
-            updatePropertySelect('loanProperty');
-            updateAssetSelect('loanAsset');
+            updatePatrimonioSelect('loanPatrimonio');
         }, 100);
     }
     
@@ -1786,18 +1783,18 @@ function initializeForms() {
     }
     
     // Formulario de patrimonio
-    const assetForm = document.getElementById('assetForm');
-    if (assetForm) {
-        assetForm.addEventListener('submit', async (e) => {
+    const patrimonioForm = document.getElementById('patrimonioForm');
+    if (patrimonioForm) {
+        patrimonioForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            await addAsset();
+            await addPatrimonio();
         });
         
         // Inicializar fecha de adquisición con hoy
-        const assetPurchaseDate = document.getElementById('assetPurchaseDate');
-        if (assetPurchaseDate) {
+        const patrimonioPurchaseDate = document.getElementById('patrimonioPurchaseDate');
+        if (patrimonioPurchaseDate) {
             const today = new Date().toISOString().split('T')[0];
-            assetPurchaseDate.value = today;
+            patrimonioPurchaseDate.value = today;
         }
     }
     
@@ -1844,8 +1841,7 @@ function initializeForms() {
     const loanForm = document.getElementById('loanForm');
     if (loanForm) {
         // Actualizar selectores cuando se muestra el formulario
-        updatePropertySelect('loanProperty');
-        updateAssetSelect('loanAsset');
+        updatePatrimonioSelect('loanPatrimonio');
         updateAccountSelect('loanAccount');
         
         loanForm.addEventListener('submit', async (e) => {
@@ -2115,7 +2111,7 @@ function initializeForms() {
     if (updateAssetValueForm) {
         updateAssetValueForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            await processUpdateAssetValue();
+            await processUpdatePatrimonioValue();
         });
     }
     
@@ -2683,7 +2679,7 @@ function updateDisplay() {
         updateEnvelopeSelect();
         updateAccountSelect(); // Actualizar selector de cuentas
         updateInvestmentSelect(); // Actualizar selector de inversiones
-        updatePropertySelect(); // Actualizar selector de propiedades
+        updatePatrimonioSelect(); // Actualizar selector de patrimonio
         updateLoanSelect(); // Actualizar selector de préstamos
         updateLoans();
         updateInvestments();
@@ -2781,8 +2777,8 @@ async function updateSummary() {
         );
         return sum + amortization.finalBalance;
     }, 0);
-    const assetsValue = assets.reduce((sum, asset) => sum + (asset.current_value || 0), 0);
-    const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt + assetsValue;
+    const patrimonioValue = patrimonio.reduce((sum, prop) => sum + (prop.current_value || 0), 0);
+    const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt + patrimonioValue;
     // Calcular según período seleccionado
     let periodIncome, periodExpenses, periodSavings, periodLabel;
     
@@ -3200,19 +3196,6 @@ function updateInvestmentSelect(selectId = 'transactionInvestment') {
 }
 
 // Actualizar selector de propiedades
-function updatePropertySelect(selectId = 'transactionProperty') {
-    const select = document.getElementById(selectId);
-    if (!select) return;
-    
-    select.innerHTML = '<option value="">Ninguna</option>';
-    properties.forEach(property => {
-        const option = document.createElement('option');
-        option.value = property._id || property.id;
-        option.textContent = property.name;
-        select.appendChild(option);
-    });
-}
-
 // Actualizar selector de préstamos
 function updateLoanSelect(selectId = 'transactionLoan') {
     const select = document.getElementById(selectId);
@@ -3227,17 +3210,27 @@ function updateLoanSelect(selectId = 'transactionLoan') {
     });
 }
 
-// Actualizar selector de activos (vehículos y otros)
-function updateAssetSelect(selectId = 'loanAsset') {
+// Actualizar selector de patrimonio (para préstamos)
+function updatePatrimonioSelect(selectId = 'loanPatrimonio') {
     const select = document.getElementById(selectId);
     if (!select) return;
     
-    select.innerHTML = '<option value="">Ninguno</option>';
-    // Filtrar solo vehículos y otros activos relevantes
-    assets.filter(asset => asset.type === 'vehicle' || asset.type === 'other').forEach(asset => {
+    select.innerHTML = '<option value="">Ninguna</option>';
+    patrimonio.forEach(prop => {
         const option = document.createElement('option');
-        option.value = asset._id || asset.id;
-        option.textContent = `${asset.name} (${asset.type === 'vehicle' ? 'Vehículo' : 'Activo'})`;
+        option.value = prop._id || prop.id;
+        const typeNames = {
+            apartment: 'Apartamento',
+            house: 'Casa',
+            office: 'Oficina',
+            commercial: 'Comercial',
+            vehicle: 'Vehículo',
+            jewelry: 'Joyas',
+            art: 'Arte',
+            electronics: 'Electrónica',
+            other: 'Otro'
+        };
+        option.textContent = `${prop.name} (${typeNames[prop.type] || prop.type})`;
         select.appendChild(option);
     });
 }
@@ -4461,8 +4454,7 @@ async function addLoan() {
     const monthlyPayment = parseFloat(document.getElementById('loanMonthlyPayment').value);
     const type = document.getElementById('loanType').value;
     const accountId = document.getElementById('loanAccount') ? document.getElementById('loanAccount').value : '';
-    const propertyId = document.getElementById('loanProperty') ? document.getElementById('loanProperty').value : '';
-    const assetId = document.getElementById('loanAsset') ? document.getElementById('loanAsset').value : '';
+    const patrimonioId = document.getElementById('loanPatrimonio') ? document.getElementById('loanPatrimonio').value : '';
     const description = document.getElementById('loanDescription').value.trim();
     const openingCommission = parseFloat(document.getElementById('loanOpeningCommission').value) || 0;
     const earlyPaymentCommission = parseFloat(document.getElementById('loanEarlyPaymentCommission').value) || 0;
@@ -4486,8 +4478,7 @@ async function addLoan() {
                 monthly_payment: monthlyPayment,
                 type,
                 account_id: accountId || null,
-                property_id: propertyId || null,
-                asset_id: assetId || null,
+                patrimonio_id: patrimonioId || null,
                 description: description || null,
                 opening_commission: openingCommission,
                 early_payment_commission: earlyPaymentCommission,
@@ -6609,82 +6600,87 @@ window.closeUpdateAccountBalanceModal = closeUpdateAccountBalanceModal;
 
 // ==================== PATRIMONIO ====================
 
-// Agregar bien
-async function addAsset() {
-    const name = document.getElementById('assetName').value.trim();
-    const type = document.getElementById('assetType').value;
-    const purchaseDate = document.getElementById('assetPurchaseDate').value;
-    const purchasePrice = parseFloat(document.getElementById('assetPurchasePrice').value);
-    const currentValue = parseFloat(document.getElementById('assetCurrentValue').value);
-    const location = document.getElementById('assetLocation').value.trim();
-    const description = document.getElementById('assetDescription').value.trim();
+// Agregar propiedad al patrimonio
+async function addPatrimonio() {
+    const name = document.getElementById('patrimonioName').value.trim();
+    const type = document.getElementById('patrimonioType').value;
+    const address = document.getElementById('patrimonioAddress').value.trim();
+    const location = document.getElementById('patrimonioLocation').value.trim();
+    const purchaseDate = document.getElementById('patrimonioPurchaseDate').value;
+    const purchasePrice = parseFloat(document.getElementById('patrimonioPurchasePrice').value) || 0;
+    const currentValue = parseFloat(document.getElementById('patrimonioCurrentValue').value);
+    const description = document.getElementById('patrimonioDescription').value.trim();
     
-    if (!name || !type || !purchaseDate || isNaN(purchasePrice) || purchasePrice < 0 || isNaN(currentValue) || currentValue < 0) {
-        alert('Por favor completa todos los campos requeridos correctamente');
+    if (!name || !type || isNaN(currentValue) || currentValue < 0) {
+        alert('Por favor completa todos los campos requeridos correctamente (nombre, tipo y valor actual)');
         return;
     }
     
     try {
-        const asset = await apiRequest('/assets', {
+        const propiedad = await apiRequest('/patrimonio', {
             method: 'POST',
             body: JSON.stringify({
                 name,
                 type,
-                purchase_date: purchaseDate,
+                address: address || null,
+                location: location || null,
+                purchase_date: purchaseDate || null,
                 purchase_price: purchasePrice,
                 current_value: currentValue,
-                location: location || null,
                 description: description || null
             })
         });
         
-        assets.push(asset);
+        patrimonio.push(propiedad);
         updateDisplay();
-        updateAssetSelect('loanAsset');
-        const assetForm = document.getElementById('assetForm');
-        if (assetForm) {
-            assetForm.reset();
-            const assetPurchaseDate = document.getElementById('assetPurchaseDate');
-            if (assetPurchaseDate) {
+        updatePatrimonioSelect('loanPatrimonio');
+        const patrimonioForm = document.getElementById('patrimonioForm');
+        if (patrimonioForm) {
+            patrimonioForm.reset();
+            const patrimonioPurchaseDate = document.getElementById('patrimonioPurchaseDate');
+            if (patrimonioPurchaseDate) {
                 const today = new Date().toISOString().split('T')[0];
-                assetPurchaseDate.value = today;
+                patrimonioPurchaseDate.value = today;
             }
             // Ocultar formulario después de agregar exitosamente
-            if (assetForm.style.display !== 'none') {
-                toggleForm('assetForm', 'toggleAssetFormBtn');
+            if (patrimonioForm.style.display !== 'none') {
+                toggleForm('patrimonioForm', 'togglePatrimonioFormBtn');
             }
         }
-        alert('✅ Bien agregado exitosamente');
+        alert('✅ Propiedad agregada exitosamente');
     } catch (error) {
-        alert('Error al crear bien: ' + error.message);
+        alert('Error al crear propiedad: ' + error.message);
     }
 }
 
 // Actualizar patrimonio
-function updateAssets() {
-    const grid = document.getElementById('assetsGrid');
+function updatePatrimonio() {
+    const grid = document.getElementById('patrimonioGrid');
     if (!grid) return;
     
     grid.innerHTML = '';
     
-    if (assets.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay bienes registrados</p>';
+    if (patrimonio.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay propiedades registradas</p>';
         return;
     }
     
-    const totalPurchaseValue = assets.reduce((sum, a) => sum + a.purchase_price, 0);
-    const totalCurrentValue = assets.reduce((sum, a) => sum + a.current_value, 0);
+    const totalPurchaseValue = patrimonio.reduce((sum, p) => sum + (p.purchase_price || 0), 0);
+    const totalCurrentValue = patrimonio.reduce((sum, p) => sum + (p.current_value || 0), 0);
     const totalAppreciation = totalCurrentValue - totalPurchaseValue;
     const totalAppreciationPercent = totalPurchaseValue > 0 ? ((totalAppreciation / totalPurchaseValue) * 100) : 0;
     
-    assets.forEach(asset => {
-        const appreciation = asset.current_value - asset.purchase_price;
-        const appreciationPercent = asset.purchase_price > 0 ? ((appreciation / asset.purchase_price) * 100) : 0;
-        const purchaseDate = new Date(asset.purchase_date);
-        const daysOwned = Math.floor((new Date() - purchaseDate) / (1000 * 60 * 60 * 24));
+    patrimonio.forEach(prop => {
+        const appreciation = prop.current_value - (prop.purchase_price || 0);
+        const appreciationPercent = (prop.purchase_price || 0) > 0 ? ((appreciation / prop.purchase_price) * 100) : 0;
+        const purchaseDate = prop.purchase_date ? new Date(prop.purchase_date) : null;
+        const daysOwned = purchaseDate ? Math.floor((new Date() - purchaseDate) / (1000 * 60 * 60 * 24)) : null;
         
         const typeNames = {
-            property: 'Propiedad',
+            apartment: 'Apartamento',
+            house: 'Casa',
+            office: 'Oficina',
+            commercial: 'Comercial',
             vehicle: 'Vehículo',
             jewelry: 'Joyas',
             art: 'Arte',
@@ -6695,21 +6691,32 @@ function updateAssets() {
         const card = document.createElement('div');
         card.className = 'envelope-card';
         card.style.borderLeft = `4px solid ${appreciation >= 0 ? 'var(--success)' : 'var(--danger)'}`;
+        
+        // Obtener préstamos asociados
+        const associatedLoans = prop.associated_loans || [];
+        const loansInfo = associatedLoans.length > 0 
+            ? `<div style="margin: 8px 0; padding: 8px; background: var(--primary-light); border-radius: var(--radius);">
+                <strong style="font-size: 11px; color: var(--primary);">Préstamos asociados: ${associatedLoans.length}</strong>
+                ${associatedLoans.map(loan => `<div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">• ${loan.name || 'Sin nombre'}</div>`).join('')}
+               </div>`
+            : '';
+        
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                 <div>
-                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--gray-900);">${asset.name}</h3>
-                    <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--gray-600);">${typeNames[asset.type] || asset.type}</p>
-                    ${asset.location ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">📍 ${asset.location}</p>` : ''}
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--gray-900);">${prop.name}</h3>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--gray-600);">${typeNames[prop.type] || prop.type}</p>
+                    ${prop.address ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">📍 ${prop.address}</p>` : ''}
+                    ${prop.location && !prop.address ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">📍 ${prop.location}</p>` : ''}
                 </div>
             </div>
             
             <div style="margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
                     <div><strong>Compra:</strong></div>
-                    <div style="text-align: right;">${formatCurrency(asset.purchase_price)}</div>
+                    <div style="text-align: right;">${formatCurrency(prop.purchase_price || 0)}</div>
                     <div><strong>Valor Actual:</strong></div>
-                    <div style="text-align: right; font-weight: 600;">${formatCurrency(asset.current_value)}</div>
+                    <div style="text-align: right; font-weight: 600;">${formatCurrency(prop.current_value)}</div>
                     <div><strong>Evolución:</strong></div>
                     <div style="text-align: right; color: ${appreciation >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 16px;">
                         ${appreciation >= 0 ? '+' : ''}${formatCurrency(appreciation)}
@@ -6718,18 +6725,22 @@ function updateAssets() {
                     <div style="text-align: right; color: ${appreciationPercent >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700;">
                         ${appreciationPercent >= 0 ? '+' : ''}${appreciationPercent.toFixed(2)}%
                     </div>
-                    <div><strong>Días:</strong></div>
-                    <div style="text-align: right; color: var(--gray-600);">${daysOwned}</div>
+                    ${daysOwned !== null ? `
+                        <div><strong>Días:</strong></div>
+                        <div style="text-align: right; color: var(--gray-600);">${daysOwned}</div>
+                    ` : ''}
                 </div>
             </div>
             
-            ${asset.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${asset.description}</div>` : ''}
+            ${prop.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${prop.description}</div>` : ''}
             
-            ${asset.value_history && asset.value_history.length > 2 ? `
+            ${loansInfo}
+            
+            ${prop.value_history && prop.value_history.length > 2 ? `
                 <div style="margin: 12px 0; padding: 12px; background: var(--gray-100); border-radius: var(--radius);">
                     <strong style="font-size: 12px; color: var(--gray-700);">Historial de Valores:</strong>
                     <div style="margin-top: 8px; font-size: 11px; color: var(--gray-600); max-height: 100px; overflow-y: auto;">
-                        ${asset.value_history.slice(-5).map(h => `
+                        ${prop.value_history.slice(-5).map(h => `
                             <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                                 <span>${h.date}</span>
                                 <span style="font-weight: 600;">${formatCurrency(h.value)}</span>
@@ -6740,8 +6751,8 @@ function updateAssets() {
             ` : ''}
             
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
-                <button class="btn-secondary" onclick="editAsset('${asset._id || asset.id}')" style="flex: 1;">Editar</button>
-                <button class="btn-danger" onclick="deleteAsset('${asset._id || asset.id}')" style="flex: 1;">Eliminar</button>
+                <button class="btn-secondary" onclick="editPatrimonio('${prop._id || prop.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deletePatrimonio('${prop._id || prop.id}')" style="flex: 1;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -6758,7 +6769,7 @@ function updateAssets() {
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <h3 style="margin: 0; color: white; font-size: 18px;">🏠 Valor Total del Patrimonio</h3>
-                <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${assets.length} bien${assets.length !== 1 ? 'es' : ''}</p>
+                <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${patrimonio.length} propiedad${patrimonio.length !== 1 ? 'es' : ''}</p>
             </div>
             <div style="text-align: right;">
                 <div style="font-size: 32px; font-weight: 700; color: white;">
@@ -6778,15 +6789,15 @@ function updateAssets() {
     }
 }
 
-// Editar bien - Abre modal con formulario pre-rellenado
-async function editAsset(id) {
-    const asset = assets.find(a => (a._id || a.id) === id);
-    if (!asset) {
-        showToast('Bien no encontrado', 'error');
+// Editar propiedad del patrimonio - Abre modal con formulario pre-rellenado
+async function editPatrimonio(id) {
+    const prop = patrimonio.find(p => (p._id || p.id) === id);
+    if (!prop) {
+        showToast('Propiedad no encontrada', 'error');
         return;
     }
     
-    currentAssetId = id;
+    currentPatrimonioId = id;
     
     // Abrir modal de actualización de valor (que ya existe)
     const modal = document.getElementById('updateAssetValueModal');
@@ -6794,7 +6805,7 @@ async function editAsset(id) {
         // Pre-llenar el valor actual
         const input = document.getElementById('updateAssetValueInput');
         if (input) {
-            input.value = asset.current_value || asset.purchase_price || 0;
+            input.value = prop.current_value || prop.purchase_price || 0;
         }
         modal.style.display = 'flex';
     } else {
@@ -6802,12 +6813,12 @@ async function editAsset(id) {
     }
 }
 
-// Procesar actualización de valor de bien desde el modal
-async function processUpdateAssetValue() {
-    if (!currentAssetId) return;
+// Procesar actualización de valor de propiedad desde el modal
+async function processUpdatePatrimonioValue() {
+    if (!currentPatrimonioId) return;
     
-    const asset = assets.find(a => (a._id || a.id) === currentAssetId);
-    if (!asset) return;
+    const prop = patrimonio.find(p => (p._id || p.id) === currentPatrimonioId);
+    if (!prop) return;
     
     const input = document.getElementById('updateAssetValueInput');
     if (!input || !input.value || isNaN(input.value)) {
@@ -6818,10 +6829,10 @@ async function processUpdateAssetValue() {
     const currentValue = parseFloat(input.value);
     
     try {
-        await apiRequest(`/assets/${currentAssetId}`, {
+        await apiRequest(`/patrimonio/${currentPatrimonioId}`, {
             method: 'PUT',
             body: JSON.stringify({
-                ...asset,
+                ...prop,
                 current_value: currentValue,
                 update_value_history: true
             })
@@ -6831,36 +6842,36 @@ async function processUpdateAssetValue() {
         updateDisplay();
         closeUpdateAssetValueModal();
     } catch (error) {
-        alert('Error al actualizar bien: ' + error.message);
+        alert('Error al actualizar propiedad: ' + error.message);
     }
 }
 
-// Eliminar bien
-async function deleteAsset(id) {
+// Eliminar propiedad del patrimonio
+async function deletePatrimonio(id) {
     const confirmed = await showConfirm(
-        'Eliminar Bien',
-        '¿Estás seguro de eliminar este bien? Esta acción no se puede deshacer.',
+        'Eliminar Propiedad',
+        '¿Estás seguro de eliminar esta propiedad? Esta acción no se puede deshacer. Los préstamos asociados se desasociarán automáticamente.',
         'Eliminar',
         'Cancelar'
     );
     if (!confirmed) return;
     
     try {
-        showLoader('Eliminando bien...');
-        await apiRequest(`/assets/${id}`, { method: 'DELETE' });
+        showLoader('Eliminando propiedad...');
+        await apiRequest(`/patrimonio/${id}`, { method: 'DELETE' });
         await loadUserData();
         updateDisplay();
         hideLoader();
-        showToast('Bien eliminado exitosamente', 'success');
+        showToast('Propiedad eliminada exitosamente', 'success');
     } catch (error) {
         hideLoader();
-        showToast('Error al eliminar bien: ' + error.message, 'error');
+        showToast('Error al eliminar propiedad: ' + error.message, 'error');
     }
 }
 
 // Exponer funciones globales
-window.editAsset = editAsset;
-window.deleteAsset = deleteAsset;
+window.editPatrimonio = editPatrimonio;
+window.deletePatrimonio = deletePatrimonio;
 
 // Editar préstamo - Abre modal con formulario pre-rellenado
 async function editLoan(id) {
@@ -10406,9 +10417,9 @@ function updateFinancialHealthMetrics() {
     }, 0);
     
     // Calcular valor de activos (bienes/patrimonio)
-    const assetsValue = assets.reduce((sum, asset) => sum + (asset.current_value || 0), 0);
+    const patrimonioValue = patrimonio.reduce((sum, prop) => sum + (prop.current_value || 0), 0);
     
-    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit + assetsValue;
+    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit + patrimonioValue;
     
     // Calcular deudas totales (histórico)
     // Verificar préstamos activos (que aún no han terminado)
@@ -11112,8 +11123,8 @@ function showSummaryDetails(type) {
             );
             return sum + amortization.finalBalance;
         }, 0);
-        const assetsValue = assets.reduce((sum, asset) => sum + (asset.current_value || 0), 0);
-        const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt + assetsValue;
+        const patrimonioValue = patrimonio.reduce((sum, prop) => sum + (prop.current_value || 0), 0);
+        const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt + patrimonioValue;
         
         content = `
             <div style="display: grid; gap: 16px;">
@@ -11415,9 +11426,9 @@ function showFinancialHealthDetail(metric, index) {
         return sum + amortization.finalBalance;
     }, 0);
     // Calcular valor de activos (bienes/patrimonio)
-    const assetsValue = assets.reduce((sum, asset) => sum + (asset.current_value || 0), 0);
+    const patrimonioValue = patrimonio.reduce((sum, prop) => sum + (prop.current_value || 0), 0);
     
-    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit + assetsValue;
+    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit + patrimonioValue;
     
     // Verificar préstamos activos (que aún no han terminado)
     const activeDebtLoans = loans.filter(l => {

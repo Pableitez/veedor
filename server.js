@@ -110,8 +110,7 @@ const loanSchema = new mongoose.Schema({
     monthly_payment: { type: Number, required: true },
     type: { type: String, enum: ['debt', 'credit'], required: true }, // Deuda que debo o crédito que me deben
     description: { type: String, default: null },
-    property_id: { type: String, default: null }, // ID de la propiedad asociada
-    asset_id: { type: String, default: null }, // ID del activo/vehículo asociado
+    patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null }, // ID de la propiedad del patrimonio asociada
     opening_commission: { type: Number, default: 0 }, // Comisión de apertura
     early_payment_commission: { type: Number, default: 0 }, // Comisión por amortización anticipada (%)
     payment_frequency: { type: String, enum: ['monthly', 'quarterly', 'yearly'], default: 'monthly' },
@@ -187,27 +186,38 @@ const propertySchema = new mongoose.Schema({
     updated_at: { type: Date, default: Date.now }
 });
 
-const Property = mongoose.model('Property', propertySchema);
-
-const assetSchema = new mongoose.Schema({
+// ==================== MÓDULO PATRIMONIO ====================
+// Nuevo esquema unificado de Patrimonio que reemplaza Property y Asset
+const patrimonioSchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    name: { type: String, required: true }, // Nombre del bien (ej: "Piso en Madrid", "Coche Toyota")
-    type: { type: String, enum: ['property', 'vehicle', 'jewelry', 'art', 'electronics', 'other'], required: true },
-    purchase_date: { type: String, required: true }, // Fecha de adquisición
-    purchase_price: { type: Number, required: true }, // Precio de compra
-    current_value: { type: Number, required: true }, // Valor actual
+    name: { type: String, required: true }, // Nombre de la propiedad (ej: "Piso Calle Mayor 5", "Casa en la playa", "Coche Toyota")
+    type: { 
+        type: String, 
+        enum: ['apartment', 'house', 'office', 'commercial', 'vehicle', 'jewelry', 'art', 'electronics', 'other'], 
+        required: true 
+    }, // Tipo de propiedad
+    address: { type: String, default: null }, // Dirección completa (para propiedades inmobiliarias)
+    location: { type: String, default: null }, // Ubicación general (para otros tipos)
+    purchase_date: { type: String, default: null }, // Fecha de adquisición
+    purchase_price: { type: Number, default: 0 }, // Precio de compra
+    current_value: { type: Number, required: true, default: 0 }, // Valor actual
     description: { type: String, default: null },
-    location: { type: String, default: null }, // Ubicación (para propiedades)
-    value_history: [{ // Historial de valores
+    // Historial de valores para seguimiento de evolución
+    value_history: [{ 
         date: { type: String, required: true },
         value: { type: Number, required: true },
         notes: { type: String, default: null }
+    }],
+    // Préstamos asociados a esta propiedad
+    associated_loans: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Loan' 
     }],
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });
 
-const Asset = mongoose.model('Asset', assetSchema);
+const Patrimonio = mongoose.model('Patrimonio', patrimonioSchema);
 
 // Conectar a MongoDB
 console.log('=== CONFIGURACIÓN MONGODB ===');
@@ -1274,8 +1284,7 @@ app.delete('/api/user', authenticateToken, async (req, res) => {
         await Loan.deleteMany({ user_id: userId });
         await Investment.deleteMany({ user_id: userId });
         await Account.deleteMany({ user_id: userId });
-        await Property.deleteMany({ user_id: userId });
-        await Asset.deleteMany({ user_id: userId });
+        await Patrimonio.deleteMany({ user_id: userId });
         
         // Eliminar el usuario
         await User.findByIdAndDelete(userId);
@@ -1715,7 +1724,7 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
         const { 
             name, principal, interest_rate, tae, start_date, end_date, monthly_payment, type, description,
             opening_commission, early_payment_commission, payment_frequency, payment_day, account_id,
-            property_id, asset_id
+            patrimonio_id
         } = req.body;
 
         if (!name || principal === undefined || interest_rate === undefined || !start_date || !end_date || monthly_payment === undefined || !type) {
@@ -1733,8 +1742,7 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
             monthly_payment,
             type,
             description: description || null,
-            property_id: property_id || null,
-            asset_id: asset_id || null,
+            patrimonio_id: patrimonio_id || null,
             opening_commission: opening_commission || 0,
             early_payment_commission: early_payment_commission || 0,
             payment_frequency: payment_frequency || 'monthly',
@@ -2448,107 +2456,206 @@ app.delete('/api/investments/:id', authenticateToken, async (req, res) => {
 
 // ==================== RUTAS DE PATRIMONIO ====================
 
-// Obtener todos los bienes del usuario
-app.get('/api/assets', authenticateToken, async (req, res) => {
+// Obtener todas las propiedades del patrimonio del usuario
+app.get('/api/patrimonio', authenticateToken, async (req, res) => {
     try {
-        const assets = await Asset.find({ user_id: req.user.userId })
+        const patrimonio = await Patrimonio.find({ user_id: req.user.userId })
+            .populate('associated_loans')
             .sort({ created_at: -1 });
-        res.json(assets);
+        res.json(patrimonio);
     } catch (error) {
-        console.error('Error obteniendo bienes:', error);
-        res.status(500).json({ error: 'Error al obtener bienes' });
+        console.error('Error obteniendo patrimonio:', error);
+        res.status(500).json({ error: 'Error al obtener patrimonio' });
     }
 });
 
-// Crear bien
-app.post('/api/assets', authenticateToken, async (req, res) => {
+// Obtener una propiedad específica del patrimonio
+app.get('/api/patrimonio/:id', authenticateToken, async (req, res) => {
     try {
-        const { name, type, purchase_date, purchase_price, current_value, description, location } = req.body;
+        const patrimonio = await Patrimonio.findOne({ 
+            _id: req.params.id, 
+            user_id: req.user.userId 
+        }).populate('associated_loans');
         
-        if (!name || !type || !purchase_date || !purchase_price || current_value === undefined) {
-            return res.status(400).json({ error: 'Todos los campos requeridos deben estar completos' });
+        if (!patrimonio) {
+            return res.status(404).json({ error: 'Propiedad no encontrada' });
         }
         
-        const asset = new Asset({
+        res.json(patrimonio);
+    } catch (error) {
+        console.error('Error obteniendo propiedad:', error);
+        res.status(500).json({ error: 'Error al obtener propiedad' });
+    }
+});
+
+// Crear nueva propiedad en el patrimonio
+app.post('/api/patrimonio', authenticateToken, async (req, res) => {
+    try {
+        const { name, type, address, location, purchase_date, purchase_price, current_value, description } = req.body;
+        
+        if (!name || !type || current_value === undefined) {
+            return res.status(400).json({ error: 'Nombre, tipo y valor actual son campos requeridos' });
+        }
+        
+        const patrimonio = new Patrimonio({
             user_id: req.user.userId,
             name,
             type,
-            purchase_date,
-            purchase_price,
+            address: address || null,
+            location: location || null,
+            purchase_date: purchase_date || null,
+            purchase_price: purchase_price || 0,
             current_value,
             description: description || null,
-            location: location || null,
-            value_history: [{
+            value_history: []
+        });
+        
+        // Agregar valor inicial al historial si se proporciona fecha de compra
+        if (purchase_date && purchase_price) {
+            patrimonio.value_history.push({
                 date: purchase_date,
                 value: purchase_price,
                 notes: 'Valor inicial de compra'
-            }, {
-                date: new Date().toISOString().split('T')[0],
-                value: current_value,
-                notes: 'Valor actual'
-            }]
+            });
+        }
+        
+        // Agregar valor actual al historial
+        patrimonio.value_history.push({
+            date: new Date().toISOString().split('T')[0],
+            value: current_value,
+            notes: 'Valor actual'
         });
         
-        await asset.save();
-        res.status(201).json(asset);
+        await patrimonio.save();
+        res.status(201).json(patrimonio);
     } catch (error) {
-        console.error('Error creando bien:', error);
-        res.status(500).json({ error: 'Error al crear bien' });
+        console.error('Error creando propiedad:', error);
+        res.status(500).json({ error: 'Error al crear propiedad' });
     }
 });
 
-// Actualizar bien (incluyendo valor actual)
-app.put('/api/assets/:id', authenticateToken, async (req, res) => {
+// Actualizar propiedad del patrimonio
+app.put('/api/patrimonio/:id', authenticateToken, async (req, res) => {
     try {
-        const { name, type, purchase_date, purchase_price, current_value, description, location, update_value_history } = req.body;
+        const { name, type, address, location, purchase_date, purchase_price, current_value, description, update_value_history } = req.body;
         
-        const asset = await Asset.findOne({ _id: req.params.id, user_id: req.user.userId });
-        if (!asset) {
-            return res.status(404).json({ error: 'Bien no encontrado' });
+        const patrimonio = await Patrimonio.findOne({ _id: req.params.id, user_id: req.user.userId });
+        if (!patrimonio) {
+            return res.status(404).json({ error: 'Propiedad no encontrada' });
         }
         
         // Si se actualiza el valor actual, agregar al historial
-        if (update_value_history && current_value !== undefined && current_value !== asset.current_value) {
-            asset.value_history.push({
+        if (update_value_history && current_value !== undefined && current_value !== patrimonio.current_value) {
+            patrimonio.value_history.push({
                 date: new Date().toISOString().split('T')[0],
                 value: current_value,
                 notes: 'Actualización de valor'
             });
         }
         
-        asset.name = name || asset.name;
-        asset.type = type || asset.type;
-        asset.purchase_date = purchase_date || asset.purchase_date;
-        asset.purchase_price = purchase_price !== undefined ? purchase_price : asset.purchase_price;
-        asset.current_value = current_value !== undefined ? current_value : asset.current_value;
-        asset.description = description !== undefined ? description : asset.description;
-        asset.location = location !== undefined ? location : asset.location;
-        asset.updated_at = new Date();
+        patrimonio.name = name !== undefined ? name : patrimonio.name;
+        patrimonio.type = type !== undefined ? type : patrimonio.type;
+        patrimonio.address = address !== undefined ? address : patrimonio.address;
+        patrimonio.location = location !== undefined ? location : patrimonio.location;
+        patrimonio.purchase_date = purchase_date !== undefined ? purchase_date : patrimonio.purchase_date;
+        patrimonio.purchase_price = purchase_price !== undefined ? purchase_price : patrimonio.purchase_price;
+        patrimonio.current_value = current_value !== undefined ? current_value : patrimonio.current_value;
+        patrimonio.description = description !== undefined ? description : patrimonio.description;
+        patrimonio.updated_at = new Date();
         
-        await asset.save();
-        res.json(asset);
+        await patrimonio.save();
+        res.json(patrimonio);
     } catch (error) {
-        console.error('Error actualizando bien:', error);
-        res.status(500).json({ error: 'Error al actualizar bien' });
+        console.error('Error actualizando propiedad:', error);
+        res.status(500).json({ error: 'Error al actualizar propiedad' });
     }
 });
 
-// Eliminar bien
-app.delete('/api/assets/:id', authenticateToken, async (req, res) => {
+// Eliminar propiedad del patrimonio
+app.delete('/api/patrimonio/:id', authenticateToken, async (req, res) => {
     try {
-        const asset = await Asset.findOneAndDelete({
-            _id: req.params.id,
-            user_id: req.user.userId
-        });
+        const patrimonio = await Patrimonio.findOne({ _id: req.params.id, user_id: req.user.userId });
         
-        if (!asset) {
-            return res.status(404).json({ error: 'Bien no encontrado' });
+        if (!patrimonio) {
+            return res.status(404).json({ error: 'Propiedad no encontrada' });
         }
         
-        res.json({ message: 'Bien eliminado exitosamente' });
+        // Desasociar préstamos relacionados
+        if (patrimonio.associated_loans && patrimonio.associated_loans.length > 0) {
+            await Loan.updateMany(
+                { _id: { $in: patrimonio.associated_loans } },
+                { $unset: { patrimonio_id: "" } }
+            );
+        }
+        
+        await Patrimonio.findByIdAndDelete(req.params.id);
+        
+        res.json({ message: 'Propiedad eliminada exitosamente' });
     } catch (error) {
-        console.error('Error eliminando bien:', error);
-        res.status(500).json({ error: 'Error al eliminar bien' });
+        console.error('Error eliminando propiedad:', error);
+        res.status(500).json({ error: 'Error al eliminar propiedad' });
+    }
+});
+
+// Asociar un préstamo a una propiedad del patrimonio
+app.post('/api/patrimonio/:id/loans/:loanId', authenticateToken, async (req, res) => {
+    try {
+        const patrimonio = await Patrimonio.findOne({ _id: req.params.id, user_id: req.user.userId });
+        if (!patrimonio) {
+            return res.status(404).json({ error: 'Propiedad no encontrada' });
+        }
+        
+        const loan = await Loan.findOne({ _id: req.params.loanId, user_id: req.user.userId });
+        if (!loan) {
+            return res.status(404).json({ error: 'Préstamo no encontrado' });
+        }
+        
+        // Agregar préstamo a la propiedad si no está ya asociado
+        if (!patrimonio.associated_loans.includes(loan._id)) {
+            patrimonio.associated_loans.push(loan._id);
+            await patrimonio.save();
+        }
+        
+        // Asociar propiedad al préstamo
+        loan.patrimonio_id = patrimonio._id;
+        await loan.save();
+        
+        const updatedPatrimonio = await Patrimonio.findById(patrimonio._id).populate('associated_loans');
+        res.json(updatedPatrimonio);
+    } catch (error) {
+        console.error('Error asociando préstamo:', error);
+        res.status(500).json({ error: 'Error al asociar préstamo' });
+    }
+});
+
+// Desasociar un préstamo de una propiedad del patrimonio
+app.delete('/api/patrimonio/:id/loans/:loanId', authenticateToken, async (req, res) => {
+    try {
+        const patrimonio = await Patrimonio.findOne({ _id: req.params.id, user_id: req.user.userId });
+        if (!patrimonio) {
+            return res.status(404).json({ error: 'Propiedad no encontrada' });
+        }
+        
+        const loan = await Loan.findOne({ _id: req.params.loanId, user_id: req.user.userId });
+        if (!loan) {
+            return res.status(404).json({ error: 'Préstamo no encontrado' });
+        }
+        
+        // Remover préstamo de la propiedad
+        patrimonio.associated_loans = patrimonio.associated_loans.filter(
+            loanId => loanId.toString() !== loan._id.toString()
+        );
+        await patrimonio.save();
+        
+        // Desasociar propiedad del préstamo
+        loan.patrimonio_id = null;
+        await loan.save();
+        
+        const updatedPatrimonio = await Patrimonio.findById(patrimonio._id).populate('associated_loans');
+        res.json(updatedPatrimonio);
+    } catch (error) {
+        console.error('Error desasociando préstamo:', error);
+        res.status(500).json({ error: 'Error al desasociar préstamo' });
     }
 });
 
