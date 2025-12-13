@@ -125,6 +125,30 @@ if (window.VEEDOR_LOADED) {
 
     // Log inicial para verificar que el script se carga
     console.log('🚀 app.js cargado correctamente');
+    
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then((registration) => {
+                    console.log('✅ Service Worker registrado:', registration.scope);
+                    
+                    // Verificar actualizaciones periódicamente
+                    setInterval(() => {
+                        registration.update();
+                    }, 60000); // Cada minuto
+                })
+                .catch((error) => {
+                    console.log('❌ Error registrando Service Worker:', error);
+                });
+            
+            // Escuchar actualizaciones del Service Worker
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                console.log('🔄 Nueva versión del Service Worker disponible');
+                // Opcional: mostrar notificación al usuario
+            });
+        });
+    }
     console.log('API_URL:', API_URL);
     console.log('URL actual:', window.location.href);
 
