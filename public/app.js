@@ -7873,6 +7873,12 @@ function updateDashboardSavingsChart() {
                 }
                 endMonth = startMonth;
                 endYear = startYear;
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+                endMonth = startMonth;
+                endYear = startYear;
+            }
         } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
             if (summaryPeriod === 'year-select' && summaryYearInput && summaryYearInput.value) {
                 startYear = parseInt(summaryYearInput.value);
@@ -13349,4 +13355,3 @@ try {
 
 // Cerrar el bloque de protección contra carga múltiple
 } // Cierre del else de window.VEEDOR_LOADED (línea 5)
-} // Cierre del if de window.VEEDOR_LOADED (línea 3)
