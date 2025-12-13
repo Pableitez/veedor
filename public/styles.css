@@ -95,18 +95,25 @@ html {
 }
 
 html.dark-mode {
-    background: linear-gradient(180deg, #0F172A 0%, #1E293B 40%, #1E3A5F 80%, #1E293B 100%);
+    background: #0F172A;
+    background-image: linear-gradient(180deg, #0F172A 0%, #1E293B 40%, #1E3A5F 80%, #1E293B 100%);
     background-attachment: fixed;
+    min-height: 100vh;
 }
 
 html.dark-mode body {
-    background: transparent;
+    background: #0F172A;
+    background-image: linear-gradient(180deg, #0F172A 0%, #1E293B 40%, #1E3A5F 80%, #1E293B 100%);
+    background-attachment: fixed;
     color: #F9FAFB;
+    min-height: 100vh;
 }
 
 body {
     font-family: var(--font-sans);
-    background: transparent;
+    background: #F8FAFC;
+    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -123,6 +130,7 @@ body {
     overflow-x: hidden;
     box-sizing: border-box;
     position: relative;
+    min-height: 100vh;
 }
 
 /* Asegurar que el contenido respete safe-area en iOS */
