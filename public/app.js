@@ -10972,11 +10972,529 @@ function generateRecommendations() {
         }
     });
     
+    // ==================== NUEVAS FUNCIONALIDADES ====================
+    
+    // 9. ANÁLISIS TEMPORAL Y TENDENCIAS
+    const last3Months = [];
+    for (let i = 1; i <= 3; i++) {
+        const monthDate = new Date(currentYear, currentMonth - i, 1);
+        const monthTrans = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === monthDate.getMonth() && tDate.getFullYear() === monthDate.getFullYear();
+        });
+        const monthInc = monthTrans.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        const monthExp = Math.abs(monthTrans.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        last3Months.push({ income: monthInc, expenses: monthExp, savings: monthInc - monthExp });
+    }
+    
+    if (last3Months.length >= 2) {
+        const avgExpenses3Months = last3Months.reduce((sum, m) => sum + m.expenses, 0) / last3Months.length;
+        const expenseIncrease = ((monthExpenses - avgExpenses3Months) / avgExpenses3Months) * 100;
+        
+        if (expenseIncrease > 20 && monthExpenses > 500) {
+            recommendations.push({
+                type: 'expense_trend',
+                priority: expenseIncrease > 40 ? 'high' : 'medium',
+                icon: '',
+                title: 'Aumento significativo en gastos',
+                description: `Tus gastos han aumentado un ${expenseIncrease.toFixed(1)}% comparado con el promedio de los últimos 3 meses (${formatCurrency(monthExpenses)} vs ${formatCurrency(avgExpenses3Months)}). Revisa qué categorías han aumentado más.`,
+                impact: `Aumento: ${formatCurrency(monthExpenses - avgExpenses3Months)}/mes`,
+                action: {
+                    type: 'view_transactions',
+                    filter: 'expenses',
+                    text: 'Ver gastos'
+                },
+                category: 'Análisis de Tendencias'
+            });
+        }
+        
+        const avgSavings3Months = last3Months.reduce((sum, m) => sum + m.savings, 0) / last3Months.length;
+        if (monthSavings < avgSavings3Months * 0.5 && monthSavings > 0) {
+            recommendations.push({
+                type: 'savings_decline',
+                priority: 'medium',
+                icon: '',
+                title: 'Tasa de ahorro en declive',
+                description: `Tu ahorro este mes (${formatCurrency(monthSavings)}) es significativamente menor que el promedio de los últimos 3 meses (${formatCurrency(avgSavings3Months)}). Considera revisar tus gastos.`,
+                impact: `Diferencia: ${formatCurrency(avgSavings3Months - monthSavings)}`,
+                action: {
+                    type: 'view_summary',
+                    text: 'Ver resumen'
+                },
+                category: 'Análisis de Tendencias'
+            });
+        }
+    }
+    
+    // 10. DETECCIÓN MEJORADA DE PATRONES - GASTOS RECURRENTES AUTOMÁTICOS
+    const recurringPatterns = {};
+    const last6Months = [];
+    for (let i = 0; i < 6; i++) {
+        const monthDate = new Date(currentYear, currentMonth - i, 1);
+        const monthTrans = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === monthDate.getMonth() && tDate.getFullYear() === monthDate.getFullYear();
+        });
+        last6Months.push(monthTrans.filter(t => t.type === 'expense'));
+    }
+    
+    // Detectar gastos recurrentes (mismo monto aproximado, misma fecha aproximada)
+    const expenseMap = {};
+    last6Months.flat().forEach(t => {
+        const key = `${t.description?.toLowerCase() || ''}_${Math.round(Math.abs(t.amount) / 10) * 10}`;
+        if (!expenseMap[key]) {
+            expenseMap[key] = { count: 0, total: 0, dates: [], category: t.categorySpecific || t.categoryGeneral };
+        }
+        expenseMap[key].count++;
+        expenseMap[key].total += Math.abs(t.amount);
+        expenseMap[key].dates.push(new Date(t.date));
+    });
+    
+    Object.entries(expenseMap).forEach(([key, data]) => {
+        if (data.count >= 3 && data.total / data.count > 10) {
+            const avgAmount = data.total / data.count;
+            const isMonthly = data.count >= 4;
+            const lastDate = new Date(Math.max(...data.dates));
+            const daysSinceLast = (now - lastDate) / (1000 * 60 * 60 * 24);
+            
+            if (isMonthly && daysSinceLast > 45) {
+                recommendations.push({
+                    type: 'missing_recurring',
+                    priority: 'low',
+                    icon: '',
+                    title: `Posible gasto recurrente faltante`,
+                    description: `Detectamos un gasto recurrente de aproximadamente ${formatCurrency(avgAmount)} en "${data.category}" que normalmente aparece mensualmente, pero no se ha registrado en los últimos ${Math.floor(daysSinceLast)} días.`,
+                    impact: `Monto esperado: ${formatCurrency(avgAmount)}`,
+                    action: {
+                        type: 'view_transactions',
+                        filter: data.category,
+                        text: 'Ver transacciones'
+                    },
+                    category: 'Detección de Patrones'
+                });
+            }
+        }
+    });
+    
+    // Detectar duplicados potenciales
+    const recentTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        const daysDiff = (now - tDate) / (1000 * 60 * 60 * 24);
+        return daysDiff <= 7;
+    });
+    
+    const duplicateCheck = {};
+    recentTransactions.forEach(t => {
+        const key = `${t.description?.toLowerCase() || ''}_${Math.abs(t.amount).toFixed(2)}`;
+        if (!duplicateCheck[key]) {
+            duplicateCheck[key] = [];
+        }
+        duplicateCheck[key].push(t);
+    });
+    
+    Object.entries(duplicateCheck).forEach(([key, dups]) => {
+        if (dups.length > 1 && Math.abs(dups[0].amount) > 20) {
+            recommendations.push({
+                type: 'possible_duplicate',
+                priority: 'medium',
+                icon: '',
+                title: 'Posibles transacciones duplicadas',
+                description: `Detectamos ${dups.length} transacciones similares de ${formatCurrency(Math.abs(dups[0].amount))} con la misma descripción en los últimos 7 días. Verifica si son duplicados.`,
+                impact: `Monto total: ${formatCurrency(dups.reduce((sum, t) => sum + Math.abs(t.amount), 0))}`,
+                action: {
+                    type: 'view_transactions',
+                    filter: 'recent',
+                    text: 'Ver transacciones recientes'
+                },
+                category: 'Detección de Patrones'
+            });
+        }
+    });
+    
+    // 11. COMPARACIÓN CON BENCHMARKS
+    const benchmarkSavingsRate = 20; // 20% es un buen estándar
+    if (savingsRate < benchmarkSavingsRate && monthIncome > 1000) {
+        const benchmarkSavings = monthIncome * (benchmarkSavingsRate / 100);
+        recommendations.push({
+            type: 'benchmark_savings',
+            priority: 'low',
+            icon: '',
+            title: 'Tasa de ahorro por debajo del estándar',
+            description: `Tu tasa de ahorro es del ${savingsRate.toFixed(1)}%, mientras que el estándar recomendado es del ${benchmarkSavingsRate}%. Si ahorraras ${formatCurrency(benchmarkSavings)}/mes en lugar de ${formatCurrency(monthSavings)}, tendrías ${formatCurrency((benchmarkSavings - monthSavings) * 12)} más al año.`,
+            impact: `Diferencia anual: ${formatCurrency((benchmarkSavings - monthSavings) * 12)}`,
+            action: {
+                type: 'view_summary',
+                text: 'Ver resumen'
+            },
+            category: 'Comparación con Estándares'
+        });
+    }
+    
+    const benchmarkDebtRatio = 20; // 20% es el estándar
+    if (debtToIncomeRatio > benchmarkDebtRatio && debtToIncomeRatio < 30) {
+        recommendations.push({
+            type: 'benchmark_debt',
+            priority: 'medium',
+            icon: '',
+            title: 'Ratio de endeudamiento por encima del estándar',
+            description: `Tu ratio de endeudamiento es del ${debtToIncomeRatio.toFixed(1)}%, mientras que el estándar recomendado es del ${benchmarkDebtRatio}% o menos. Estás ${(debtToIncomeRatio - benchmarkDebtRatio).toFixed(1)} puntos porcentuales por encima.`,
+            impact: `Reducción necesaria: ${formatCurrency((debtToIncomeRatio - benchmarkDebtRatio) / 100 * avgMonthlyIncome)}/mes`,
+            action: {
+                type: 'view_loans',
+                text: 'Ver préstamos'
+            },
+            category: 'Comparación con Estándares'
+        });
+    }
+    
+    // 12. RECOMENDACIONES DE INGRESOS
+    if (monthIncome > 0 && monthSavings < monthIncome * 0.1) {
+        const potentialIncomeIncrease = monthIncome * 0.1;
+        recommendations.push({
+            type: 'income_opportunity',
+            priority: 'low',
+            icon: '',
+            title: 'Considera aumentar tus ingresos',
+            description: `Con una tasa de ahorro del ${savingsRate.toFixed(1)}%, podrías beneficiarte de aumentar tus ingresos. Un aumento del 10% (${formatCurrency(potentialIncomeIncrease)}/mes) te daría más margen para ahorrar e invertir. Considera negociar un aumento, buscar ingresos pasivos o monetizar habilidades.`,
+            impact: `Ingreso adicional potencial: ${formatCurrency(potentialIncomeIncrease)}/mes`,
+            action: {
+                type: 'view_summary',
+                text: 'Ver resumen'
+            },
+            category: 'Optimización de Ingresos'
+        });
+    }
+    
+    // 13. OPTIMIZACIÓN FISCAL
+    const currentMonthNum = currentMonth + 1;
+    if (currentMonthNum === 11 || currentMonthNum === 12) {
+        const totalYearIncome = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getFullYear() === currentYear && t.type === 'income';
+        }).reduce((sum, t) => sum + t.amount, 0);
+        
+        if (totalYearIncome > 12000) {
+            recommendations.push({
+                type: 'tax_optimization',
+                priority: 'medium',
+                icon: '',
+                title: 'Optimización fiscal de fin de año',
+                description: `Estamos cerca del fin del año fiscal. Considera maximizar deducciones fiscales: aportaciones a planes de pensiones, donaciones, gastos deducibles. Tu ingreso anual es de ${formatCurrency(totalYearIncome)}.`,
+                impact: 'Ahorro fiscal potencial',
+                action: {
+                    type: 'view_summary',
+                    text: 'Ver resumen'
+                },
+                category: 'Optimización Fiscal'
+            });
+        }
+    }
+    
+    // 14. DIVERSIFICACIÓN DE INVERSIONES
+    if (investments.length > 0) {
+        const investmentTypes = {};
+        investments.forEach(inv => {
+            const type = inv.type || 'other';
+            investmentTypes[type] = (investmentTypes[type] || 0) + inv.current_value;
+        });
+        
+        const totalInvValue = Object.values(investmentTypes).reduce((sum, val) => sum + val, 0);
+        const dominantType = Object.entries(investmentTypes).sort((a, b) => b[1] - a[1])[0];
+        const dominantPercentage = (dominantType[1] / totalInvValue) * 100;
+        
+        if (dominantPercentage > 70 && investments.length > 1) {
+            recommendations.push({
+                type: 'investment_diversification',
+                priority: 'low',
+                icon: '',
+                title: 'Considera diversificar tus inversiones',
+                description: `El ${dominantPercentage.toFixed(1)}% de tu cartera está concentrado en ${dominantType[0]}. Para reducir el riesgo, considera diversificar en otros tipos de inversión (acciones, bonos, fondos, inmuebles).`,
+                impact: `Concentración actual: ${dominantPercentage.toFixed(1)}%`,
+                action: {
+                    type: 'view_investments',
+                    text: 'Ver inversiones'
+                },
+                category: 'Diversificación'
+            });
+        }
+    }
+    
+    // 15. GASTOS INNECESARIOS AVANZADOS
+    // Detectar servicios similares/duplicados
+    const serviceCategories = ['Streaming', 'Gym', 'Suscripciones', 'Premium', 'Pro'];
+    const serviceExpenses = {};
+    monthTransactions.filter(t => t.type === 'expense').forEach(t => {
+        const cat = t.categorySpecific || t.categoryGeneral || '';
+        const desc = t.description?.toLowerCase() || '';
+        serviceCategories.forEach(service => {
+            if (cat.includes(service) || desc.includes(service.toLowerCase())) {
+                if (!serviceExpenses[service]) {
+                    serviceExpenses[service] = [];
+                }
+                serviceExpenses[service].push(t);
+            }
+        });
+    });
+    
+    Object.entries(serviceExpenses).forEach(([service, exps]) => {
+        if (exps.length > 2) {
+            const total = exps.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            recommendations.push({
+                type: 'duplicate_services',
+                priority: 'medium',
+                icon: '',
+                title: `Múltiples servicios de ${service}`,
+                description: `Tienes ${exps.length} servicios diferentes de ${service} que suman ${formatCurrency(total)}/mes. Considera consolidar o cancelar los que uses menos.`,
+                impact: `Gasto mensual: ${formatCurrency(total)}`,
+                action: {
+                    type: 'view_transactions',
+                    filter: service,
+                    text: 'Ver servicios'
+                },
+                category: 'Optimización de Gastos'
+            });
+        }
+    });
+    
+    // 16. OBJETIVOS PERSONALIZADOS MÚLTIPLES
+    // (Esto requeriría una estructura de datos adicional, por ahora usamos savingsGoal)
+    if (savingsGoal && savingsGoal > 0) {
+        const progress = (transactionsBalance / savingsGoal) * 100;
+        if (progress > 50 && progress < 80) {
+            recommendations.push({
+                type: 'goal_progress',
+                priority: 'low',
+                icon: '',
+                title: 'Buen progreso hacia tu meta',
+                description: `Has alcanzado el ${progress.toFixed(1)}% de tu meta de ahorro (${formatCurrency(transactionsBalance)} de ${formatCurrency(savingsGoal)}). ¡Sigue así!`,
+                impact: `Faltan: ${formatCurrency(savingsGoal - transactionsBalance)}`,
+                action: {
+                    type: 'view_summary',
+                    text: 'Ver resumen'
+                },
+                category: 'Objetivos'
+            });
+        }
+    }
+    
+    // 17. ALERTAS PROACTIVAS - VENCIMIENTOS
+    activeDebtLoans.forEach(loan => {
+        const endDate = new Date(loan.end_date);
+        const daysUntilEnd = (endDate - now) / (1000 * 60 * 60 * 24);
+        
+        if (daysUntilEnd <= 90 && daysUntilEnd > 0) {
+            recommendations.push({
+                type: 'loan_ending',
+                priority: daysUntilEnd <= 30 ? 'high' : 'medium',
+                icon: '',
+                title: `Préstamo "${loan.name}" finaliza pronto`,
+                description: `Tu préstamo finaliza en ${Math.floor(daysUntilEnd)} días. Asegúrate de tener el capital restante disponible o considera refinanciar si es necesario.`,
+                impact: `Días restantes: ${Math.floor(daysUntilEnd)}`,
+                action: {
+                    type: 'edit_loan',
+                    loanId: loan._id || loan.id,
+                    text: 'Ver préstamo'
+                },
+                category: 'Alertas Proactivas'
+            });
+        }
+    });
+    
+    // 18. ANÁLISIS DE CUENTAS BANCARIAS
+    if (accounts.length > 3) {
+        recommendations.push({
+            type: 'account_consolidation',
+            priority: 'low',
+            icon: '',
+            title: 'Considera consolidar cuentas bancarias',
+            description: `Tienes ${accounts.length} cuentas bancarias. Consolidar algunas podría simplificar tu gestión financiera y reducir comisiones. Considera mantener solo las cuentas que realmente uses.`,
+            impact: `Número de cuentas: ${accounts.length}`,
+            action: {
+                type: 'view_summary',
+                text: 'Ver cuentas'
+            },
+            category: 'Optimización de Cuentas'
+        });
+    }
+    
+    const totalAccountBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
+    if (totalAccountBalance > 50000 && investmentsValue < totalAccountBalance * 0.2) {
+        recommendations.push({
+            type: 'excess_cash',
+            priority: 'low',
+            icon: '',
+            title: 'Exceso de efectivo en cuentas',
+            description: `Tienes ${formatCurrency(totalAccountBalance)} en cuentas bancarias pero solo ${formatCurrency(investmentsValue)} invertido. Considera mover parte del exceso a cuentas de ahorro con mejor interés o inversiones.`,
+            impact: `Efectivo disponible: ${formatCurrency(totalAccountBalance)}`,
+            action: {
+                type: 'view_investments',
+                text: 'Ver inversiones'
+            },
+            category: 'Optimización de Cuentas'
+        });
+    }
+    
+    // 19. ANÁLISIS AVANZADO DE PRÉSTAMOS
+    if (activeDebtLoans.length > 1) {
+        // Estrategia: pagar primero el préstamo con mayor tasa
+        const sortedLoans = [...activeDebtLoans].sort((a, b) => (b.interest_rate || 0) - (a.interest_rate || 0));
+        const highestRateLoan = sortedLoans[0];
+        const secondHighestRate = sortedLoans[1]?.interest_rate || 0;
+        
+        if (highestRateLoan.interest_rate > secondHighestRate + 2) {
+            recommendations.push({
+                type: 'loan_strategy',
+                priority: 'medium',
+                icon: '',
+                title: `Prioriza pagar "${highestRateLoan.name}"`,
+                description: `Este préstamo tiene la tasa más alta (${highestRateLoan.interest_rate}%) de tus ${activeDebtLoans.length} préstamos. Pagarlo primero te ahorrará más en intereses. Considera la estrategia de "avalancha de deuda".`,
+                impact: `Tasa: ${highestRateLoan.interest_rate}%`,
+                action: {
+                    type: 'edit_loan',
+                    loanId: highestRateLoan._id || highestRateLoan.id,
+                    text: 'Ver préstamo'
+                },
+                category: 'Estrategia de Deuda'
+            });
+        }
+    }
+    
+    // 20. ANÁLISIS AVANZADO DE PATRIMONIO
+    patrimonio.forEach(prop => {
+        const purchaseValue = prop.purchase_value || prop.initial_value || 0;
+        const currentValue = prop.current_value || 0;
+        if (purchaseValue > 0 && currentValue > 0) {
+            const appreciation = ((currentValue - purchaseValue) / purchaseValue) * 100;
+            const purchaseDate = prop.purchase_date ? new Date(prop.purchase_date) : null;
+            
+            if (purchaseDate) {
+                const yearsOwned = (now - purchaseDate) / (1000 * 60 * 60 * 24 * 365);
+                const annualAppreciation = appreciation / yearsOwned;
+                
+                if (annualAppreciation < -5 && yearsOwned > 1) {
+                    recommendations.push({
+                        type: 'patrimonio_depreciation',
+                        priority: 'medium',
+                        icon: '',
+                        title: `Depreciación significativa en "${prop.name}"`,
+                        description: `El valor de "${prop.name}" ha disminuido un ${Math.abs(appreciation).toFixed(1)}% desde la compra (${Math.abs(annualAppreciation).toFixed(1)}%/año). Considera revisar el valor o evaluar si es el momento de vender.`,
+                        impact: `Depreciación: ${Math.abs(appreciation).toFixed(1)}%`,
+                        action: {
+                            type: 'edit_patrimonio',
+                            patrimonioId: prop._id || prop.id,
+                            text: 'Ver patrimonio'
+                        },
+                        category: 'Análisis de Patrimonio'
+                    });
+                } else if (annualAppreciation > 10 && yearsOwned > 2) {
+                    recommendations.push({
+                        type: 'patrimonio_appreciation',
+                        priority: 'low',
+                        icon: '',
+                        title: `Buena apreciación en "${prop.name}"`,
+                        description: `El valor de "${prop.name}" ha aumentado un ${appreciation.toFixed(1)}% desde la compra (${annualAppreciation.toFixed(1)}%/año). Considera si es momento de realizar ganancias o mantener para más crecimiento.`,
+                        impact: `Apreciación: ${appreciation.toFixed(1)}%`,
+                        action: {
+                            type: 'edit_patrimonio',
+                            patrimonioId: prop._id || prop.id,
+                            text: 'Ver patrimonio'
+                        },
+                        category: 'Análisis de Patrimonio'
+                    });
+                }
+            }
+        }
+    });
+    
+    // 21. EFICIENCIA ENERGÉTICA
+    const utilityCategories = ['Luz', 'Agua', 'Gas', 'Calefacción', 'Internet', 'Teléfono'];
+    const utilityExpenses = {};
+    monthTransactions.filter(t => t.type === 'expense').forEach(t => {
+        const cat = t.categorySpecific || t.categoryGeneral || '';
+        utilityCategories.forEach(util => {
+            if (cat.includes(util)) {
+                if (!utilityExpenses[util]) {
+                    utilityExpenses[util] = { amount: 0, count: 0 };
+                }
+                utilityExpenses[util].amount += Math.abs(t.amount);
+                utilityExpenses[util].count++;
+            }
+        });
+    });
+    
+    Object.entries(utilityExpenses).forEach(([util, data]) => {
+        const avgMonthly = data.amount / Math.max(data.count, 1);
+        // Benchmarks aproximados (ajustar según región)
+        const benchmarks = {
+            'Luz': 80,
+            'Agua': 40,
+            'Gas': 60,
+            'Calefacción': 100,
+            'Internet': 50,
+            'Teléfono': 30
+        };
+        
+        const benchmark = benchmarks[util];
+        if (benchmark && avgMonthly > benchmark * 1.5) {
+            recommendations.push({
+                type: 'utility_optimization',
+                priority: 'medium',
+                icon: '',
+                title: `Gasto alto en ${util}`,
+                description: `Tu gasto promedio en ${util} es de ${formatCurrency(avgMonthly)}/mes, significativamente por encima del promedio (${formatCurrency(benchmark)}). Considera revisar tu consumo, cambiar de proveedor o mejorar la eficiencia energética.`,
+                impact: `Ahorro potencial: ${formatCurrency(avgMonthly - benchmark)}/mes`,
+                action: {
+                    type: 'view_transactions',
+                    filter: util,
+                    text: 'Ver gastos'
+                },
+                category: 'Eficiencia Energética'
+            });
+        }
+    });
+    
+    // 22. PLANIFICACIÓN DE RETIRO
+    // Usar edad estimada basada en datos financieros o default 35
+    const userAge = 35; // TODO: Obtener del perfil del usuario cuando esté disponible
+    const retirementAge = 65;
+    const yearsToRetirement = retirementAge - userAge;
+    const estimatedMonthlyNeeds = avgMonthlyExpenses * 0.8; // 80% de gastos actuales
+    const totalNeeded = estimatedMonthlyNeeds * 12 * 20; // 20 años de retiro
+    const currentNetWorth = transactionsBalance + investmentsValue + patrimonioValue - 
+        activeDebtLoans.reduce((sum, l) => {
+            const amort = calculateAmortizationTable(l.principal, l.interest_rate, l.monthly_payment, l.start_date, l.total_paid || 0, l.early_payments || []);
+            return sum + amort.finalBalance;
+        }, 0);
+    
+    if (yearsToRetirement > 0 && yearsToRetirement <= 30) {
+        const monthlySavingsNeeded = (totalNeeded - currentNetWorth) / (yearsToRetirement * 12);
+        const currentMonthlySavings = monthSavings;
+        
+        if (monthlySavingsNeeded > currentMonthlySavings * 1.2) {
+            recommendations.push({
+                type: 'retirement_planning',
+                priority: 'low',
+                icon: '',
+                title: 'Planificación para el retiro',
+                description: `Para mantener tu nivel de vida en el retiro, necesitarías ahorrar aproximadamente ${formatCurrency(monthlySavingsNeeded)}/mes. Actualmente ahorras ${formatCurrency(currentMonthlySavings)}/mes. Considera aumentar tu ahorro o revisar tus expectativas de retiro.`,
+                impact: `Diferencia: ${formatCurrency(monthlySavingsNeeded - currentMonthlySavings)}/mes`,
+                action: {
+                    type: 'view_summary',
+                    text: 'Ver resumen'
+                },
+                category: 'Planificación de Retiro'
+            });
+        }
+    }
+    
+    // 23. SISTEMA DE SEGUIMIENTO (esto se implementará en la UI)
+    // Por ahora solo generamos las recomendaciones
+    
     // Ordenar por prioridad (high > medium > low)
     const priorityOrder = { high: 3, medium: 2, low: 1 };
     recommendations.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
     
-    return recommendations.slice(0, 8); // Limitar a 8 recomendaciones más relevantes
+    return recommendations.slice(0, 15); // Aumentar límite a 15 recomendaciones
 }
 
 // Mostrar recomendaciones en la interfaz
@@ -11026,8 +11544,17 @@ function updateRecommendations() {
             low: { text: 'Baja', color: 'var(--primary)', bg: 'rgba(59, 130, 246, 0.1)' }
         }[rec.priority];
         
+        // Sistema de seguimiento de recomendaciones
+        const recId = `${rec.type}_${rec.title.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        const recStatus = localStorage.getItem(`rec_status_${recId}`) || 'pending';
+        const isApplied = recStatus === 'applied';
+        const isDismissed = recStatus === 'dismissed';
+        
+        // Si está descartada, no mostrar
+        if (isDismissed) return;
+        
         let actionButton = '';
-        if (rec.action) {
+        if (rec.action && !isApplied) {
             let onclickHandler = '';
             const actionId = `rec_action_${index}`;
             
@@ -11068,6 +11595,33 @@ function updateRecommendations() {
             }
         }
         
+        // Botones de seguimiento
+        let trackingButtons = '';
+        if (!isApplied) {
+            trackingButtons = `
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <button onclick="markRecommendationAsApplied('${recId}')" 
+                        style="flex: 1; padding: 6px 12px; background: var(--success); color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.background='var(--success-dark)'"
+                        onmouseout="this.style.background='var(--success)'">
+                        ✓ Aplicada
+                    </button>
+                    <button onclick="dismissRecommendation('${recId}')" 
+                        style="flex: 1; padding: 6px 12px; background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.background='var(--bg-secondary)'"
+                        onmouseout="this.style.background='var(--bg-tertiary)'">
+                        ✕ Descartar
+                    </button>
+                </div>
+            `;
+        } else {
+            trackingButtons = `
+                <div style="margin-top: 12px; padding: 8px; background: rgba(16, 185, 129, 0.1); border-radius: 6px; border: 1px solid var(--success);">
+                    <span style="font-size: 12px; color: var(--success); font-weight: 600;">✓ Recomendación aplicada</span>
+                </div>
+            `;
+        }
+        
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -11085,12 +11639,13 @@ function updateRecommendations() {
                 <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 4px;">Impacto</div>
                 <div style="font-size: 15px; font-weight: 700; color: var(--primary);">${rec.impact}</div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <span style="font-size: 11px; color: var(--text-tertiary); padding: 4px 8px; background: var(--bg-secondary); border-radius: 6px;">
                     ${rec.category}
                 </span>
                 ${actionButton}
             </div>
+            ${trackingButtons}
         `;
         
         container.appendChild(card);
@@ -11142,9 +11697,25 @@ function handleRecommendationAction(actionType, id = null) {
     }
 }
 
+// Funciones de seguimiento de recomendaciones
+function markRecommendationAsApplied(recId) {
+    localStorage.setItem(`rec_status_${recId}`, 'applied');
+    localStorage.setItem(`rec_applied_date_${recId}`, new Date().toISOString());
+    updateRecommendations();
+    showToast('Recomendación marcada como aplicada', 'success');
+}
+
+function dismissRecommendation(recId) {
+    localStorage.setItem(`rec_status_${recId}`, 'dismissed');
+    updateRecommendations();
+    showToast('Recomendación descartada', 'info');
+}
+
 // Exponer funciones globalmente
 window.updateRecommendations = updateRecommendations;
 window.handleRecommendationAction = handleRecommendationAction;
+window.markRecommendationAsApplied = markRecommendationAsApplied;
+window.dismissRecommendation = dismissRecommendation;
 
 // Actualizar tablas de análisis
 function updateAnalysisTables() {
