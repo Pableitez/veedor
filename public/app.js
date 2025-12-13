@@ -3024,7 +3024,13 @@ async function updateSummary() {
         } else {
             savingsGoalEl.textContent = 'Sin meta';
             if (savingsGoalProgress) {
-                savingsGoalProgress.style.display = 'none';
+                savingsGoalProgress.style.display = 'block';
+                if (savingsGoalProgressBar) {
+                    savingsGoalProgressBar.style.width = '0%';
+                }
+                if (savingsGoalProgressText) {
+                    savingsGoalProgressText.textContent = '';
+                }
             }
         }
     }
