@@ -2028,6 +2028,53 @@ function initializeForms() {
         });
     }
     
+    // Actualizar toggle de filtros del dashboard
+    function toggleTransactionFiltersDashboard() {
+        const filtersContainer = document.getElementById('transactionFiltersDashboard');
+        const toggleBtn = document.getElementById('toggleFiltersBtnDashboard');
+        const toggleText = document.getElementById('toggleFiltersTextDashboard');
+        
+        if (filtersContainer && toggleBtn && toggleText) {
+            const isExpanded = filtersContainer.classList.contains('expanded');
+            
+            if (isExpanded) {
+                filtersContainer.classList.remove('expanded');
+                toggleText.textContent = 'Mostrar Filtros';
+            } else {
+                filtersContainer.classList.add('expanded');
+                toggleText.textContent = 'Ocultar Filtros';
+            }
+        }
+    }
+    
+    // Exponer función globalmente
+    window.toggleTransactionFiltersDashboard = toggleTransactionFiltersDashboard;
+    
+    // Actualizar visibilidad del botón de filtros del dashboard
+    function updateFilterToggleVisibilityDashboard() {
+        const toggleBtn = document.getElementById('toggleFiltersBtnDashboard');
+        const filtersContainer = document.getElementById('transactionFiltersDashboard');
+        
+        if (toggleBtn && filtersContainer) {
+            if (window.innerWidth <= 768) {
+                toggleBtn.style.display = 'flex';
+                if (!filtersContainer.classList.contains('expanded')) {
+                    filtersContainer.classList.remove('expanded');
+                }
+            } else {
+                toggleBtn.style.display = 'none';
+                filtersContainer.classList.add('expanded');
+            }
+        }
+    }
+    
+    // Sincronizar actualización de filtros
+    const originalUpdateFilterToggleVisibility = updateFilterToggleVisibility;
+    updateFilterToggleVisibility = function() {
+        originalUpdateFilterToggleVisibility();
+        updateFilterToggleVisibilityDashboard();
+    };
+    
     // Selector de período para gráficas (global - mantener para compatibilidad)
     const chartPeriod = document.getElementById('chartPeriod');
     if (chartPeriod) {
@@ -3071,7 +3118,64 @@ function updateTransactionsTable() {
         });
     }
     
-    if (!tbody) return;
+    // Función auxiliar para renderizar filas
+    const renderTransactionRow = (transaction, targetTbody) => {
+        if (!targetTbody) return;
+        
+        const row = document.createElement('tr');
+        const date = new Date(transaction.date);
+        
+        // Buscar nombre de categoría
+        let categoryName = transaction.categoryGeneral;
+        if (transaction.type === 'expense') {
+            const expenseCat = categories.expense.find(c => c.id === transaction.categoryGeneral);
+            if (expenseCat) {
+                categoryName = expenseCat.name;
+            } else {
+                categoryName = transaction.categoryGeneral;
+            }
+        } else {
+            const incomeCat = categories.income.find(c => c.id === transaction.categoryGeneral);
+            if (incomeCat) {
+                categoryName = incomeCat.name;
+            } else {
+                categoryName = transaction.categoryGeneral;
+            }
+        }
+        
+        // Buscar nombre de cuenta
+        let accountName = '-';
+        if (transaction.account_id) {
+            const account = accounts.find(a => (a._id || a.id) === transaction.account_id);
+            accountName = account ? account.name : '-';
+        }
+        
+        // Buscar nombre de propiedad
+        let propertyName = '-';
+        if (transaction.property_id) {
+            const property = properties.find(p => (p._id || p.id) === transaction.property_id);
+            propertyName = property ? property.name : '-';
+        }
+        
+        // Buscar nombre de sobre
+        let envelopeName = transaction.envelope || '-';
+        
+        row.innerHTML = `
+            <td>${date.toLocaleDateString('es-ES')}</td>
+            <td><span class="badge ${transaction.type === 'income' ? 'badge-success' : 'badge-danger'}">${transaction.type === 'income' ? 'Ingreso' : 'Gasto'}</span></td>
+            <td>${categoryName}</td>
+            <td>${transaction.description || '-'}</td>
+            <td>${accountName}</td>
+            <td>${propertyName}</td>
+            <td>${envelopeName}</td>
+            <td class="${transaction.type === 'income' ? 'amount positive' : 'amount negative'}">${transaction.type === 'income' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)} €</td>
+            <td>
+                <button onclick="editTransaction('${transaction._id || transaction.id}')" class="btn-sm btn-secondary">Editar</button>
+                <button onclick="deleteTransaction('${transaction._id || transaction.id}')" class="btn-sm btn-danger">Eliminar</button>
+            </td>
+        `;
+        targetTbody.appendChild(row);
+    };
     
     // Ordenar transacciones
     filtered.sort((a, b) => {
@@ -13462,102 +13566,404 @@ function updateFormSectionsVisibility() {
     });
 }
 
+// Función para abrir modal de transacción rápida
+function openQuickTransactionModal() {
+    const modal = document.getElementById('quickTransactionModal');
+    if (!modal) return;
+    
+    // Inicializar fecha con hoy
+    const dateInput = document.getElementById('quickTransactionDate');
+    if (dateInput) {
+        const today = new Date();
+        dateInput.value = today.toISOString().split('T')[0];
+    }
+    
+    // Sincronizar selectores con los del formulario principal
+    syncQuickTransactionSelectors();
+    
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+// Función para cerrar modal de transacción rápida
+function closeQuickTransactionModal() {
+    const modal = document.getElementById('quickTransactionModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    // Resetear formulario
+    const form = document.getElementById('quickTransactionForm');
+    if (form) {
+        form.reset();
+        // Resetear fecha a hoy
+        const dateInput = document.getElementById('quickTransactionDate');
+        if (dateInput) {
+            const today = new Date();
+            dateInput.value = today.toISOString().split('T')[0];
+        }
+    }
+}
+
+// Sincronizar selectores del modal con los del formulario principal
+function syncQuickTransactionSelectors() {
+    // Sincronizar categorías generales
+    const mainCategoryGeneral = document.getElementById('categoryGeneral');
+    const quickCategoryGeneral = document.getElementById('quickCategoryGeneral');
+    if (mainCategoryGeneral && quickCategoryGeneral) {
+        quickCategoryGeneral.innerHTML = mainCategoryGeneral.innerHTML;
+    }
+    
+    // Sincronizar sobres
+    const mainEnvelope = document.getElementById('envelope');
+    const quickEnvelope = document.getElementById('quickEnvelope');
+    if (mainEnvelope && quickEnvelope) {
+        quickEnvelope.innerHTML = mainEnvelope.innerHTML;
+    }
+}
+
 // Ejecutar al cargar y al redimensionar
 if (typeof window !== 'undefined') {
     window.addEventListener('resize', () => {
         updateFilterToggleVisibility();
         updateFormSectionsVisibility();
+        updateFloatingButtonVisibility();
     });
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             updateFilterToggleVisibility();
             updateFormSectionsVisibility();
+            updateFloatingButtonVisibility();
+            initializeQuickTransactionModal();
         });
     } else {
         updateFilterToggleVisibility();
         updateFormSectionsVisibility();
+        updateFloatingButtonVisibility();
+        initializeQuickTransactionModal();
     }
 }
 
-// Función para añadir transacción rápidamente
-function quickAddTransaction() {
-    // Cambiar a la pestaña de transacciones
-    if (typeof switchToTab === 'function') {
-        switchToTab('transactions', true);
-    }
+// Inicializar modal de transacción rápida
+function initializeQuickTransactionModal() {
+    const quickCategoryGeneral = document.getElementById('quickCategoryGeneral');
+    const quickCategorySpecific = document.getElementById('quickCategorySpecific');
     
-    // Esperar a que la pestaña se active y luego expandir el formulario
-    setTimeout(() => {
-        const transactionForm = document.getElementById('transactionForm');
-        if (!transactionForm) {
-            console.error('Formulario de transacciones no encontrado');
-            return;
-        }
-        
-        const formSection = transactionForm.closest('.form-section');
-        const toggleBtn = document.getElementById('toggleTransactionFormBtn');
-        
-        if (formSection) {
-            // En móvil: expandir el form-section
-            if (window.innerWidth <= 768) {
-                formSection.classList.add('expanded');
-            }
-            // Mostrar el formulario
-            transactionForm.style.display = 'block';
-            // Actualizar texto del botón
-            const text = document.getElementById('transactionFormText');
-            if (text) text.textContent = 'Cancelar';
+    if (quickCategoryGeneral && quickCategorySpecific) {
+        quickCategoryGeneral.addEventListener('change', () => {
+            const categoryGeneral = quickCategoryGeneral.value;
+            const type = document.getElementById('quickTransactionType')?.value || 'expense';
             
-            // Scroll suave al formulario
-            setTimeout(() => {
-                if (window.innerWidth <= 768) {
-                    formSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                } else {
-                    transactionForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-            }, 200);
-        } else {
-            console.error('form-section no encontrado');
-        }
-    }, 500);
-}
-
-// Exponer función globalmente
-window.quickAddTransaction = quickAddTransaction;
-
-// Actualizar visibilidad de botones según tamaño de pantalla
-function updateQuickAddButtonVisibility() {
-    const desktopBtn = document.getElementById('quickAddTransactionBtn');
-    const mobileBtn = document.getElementById('floatingAddTransactionBtn');
-    
-    if (window.innerWidth <= 768) {
-        if (desktopBtn) desktopBtn.style.display = 'none';
-        if (mobileBtn) mobileBtn.style.display = 'flex';
-    } else {
-        if (desktopBtn) desktopBtn.style.display = 'flex';
-        if (mobileBtn) mobileBtn.style.display = 'none';
-    }
-}
-
-// Ejecutar al cargar y al redimensionar
-if (typeof window !== 'undefined') {
-    window.addEventListener('resize', () => {
-        updateFilterToggleVisibility();
-        updateFormSectionsVisibility();
-        updateQuickAddButtonVisibility();
-    });
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            updateFilterToggleVisibility();
-            updateFormSectionsVisibility();
-            updateQuickAddButtonVisibility();
+            if (!categoryGeneral) {
+                quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
+                return;
+            }
+            
+            // Buscar la categoría en el array de categorías
+            const categoryList = type === 'income' ? categories.income : categories.expense;
+            const selectedCategory = categoryList.find(cat => cat.id === categoryGeneral);
+            
+            quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
+            
+            if (selectedCategory && selectedCategory.subcategories) {
+                selectedCategory.subcategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub.id;
+                    option.textContent = sub.name;
+                    quickCategorySpecific.appendChild(option);
+                });
+            }
         });
-    } else {
-        updateFilterToggleVisibility();
-        updateFormSectionsVisibility();
-        updateQuickAddButtonVisibility();
+        
+        // Manejar cambio de tipo en modal rápido
+        const quickTransactionType = document.getElementById('quickTransactionType');
+        if (quickTransactionType) {
+            quickTransactionType.addEventListener('change', () => {
+                // Actualizar categorías generales
+                const type = quickTransactionType.value;
+                const categoryList = type === 'income' ? categories.income : categories.expense;
+                
+                quickCategoryGeneral.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
+                categoryList.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.name;
+                    quickCategoryGeneral.appendChild(option);
+                });
+                
+                // Resetear categoría específica
+                quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
+            });
+        }
+    }
+    
+    // Manejar envío del formulario rápido
+    const quickTransactionForm = document.getElementById('quickTransactionForm');
+    if (quickTransactionForm) {
+        quickTransactionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Copiar valores del formulario rápido al formulario principal
+            const quickType = document.getElementById('quickTransactionType')?.value;
+            const quickDate = document.getElementById('quickTransactionDate')?.value;
+            const quickAmount = document.getElementById('quickTransactionAmount')?.value;
+            const quickCategoryGeneral = document.getElementById('quickCategoryGeneral')?.value;
+            const quickCategorySpecific = document.getElementById('quickCategorySpecific')?.value;
+            const quickEnvelope = document.getElementById('quickEnvelope')?.value;
+            const quickDescription = document.getElementById('quickTransactionDescription')?.value;
+            
+            // Asignar valores al formulario principal
+            const mainType = document.getElementById('transactionType');
+            const mainDate = document.getElementById('transactionDate');
+            const mainAmount = document.getElementById('transactionAmount');
+            const mainCategoryGeneral = document.getElementById('categoryGeneral');
+            const mainCategorySpecific = document.getElementById('categorySpecific');
+            const mainEnvelope = document.getElementById('envelope');
+            const mainDescription = document.getElementById('transactionDescription');
+            
+            if (mainType) mainType.value = quickType || '';
+            if (mainDate) mainDate.value = quickDate || '';
+            if (mainAmount) mainAmount.value = quickAmount || '';
+            if (mainCategoryGeneral) mainCategoryGeneral.value = quickCategoryGeneral || '';
+            if (mainCategorySpecific) {
+                mainCategorySpecific.value = quickCategorySpecific || '';
+                // Disparar evento change para actualizar subcategorías si es necesario
+                if (mainCategoryGeneral) {
+                    mainCategoryGeneral.dispatchEvent(new Event('change'));
+                    setTimeout(() => {
+                        if (mainCategorySpecific) mainCategorySpecific.value = quickCategorySpecific || '';
+                    }, 100);
+                }
+            }
+            if (mainEnvelope) mainEnvelope.value = quickEnvelope || '';
+            if (mainDescription) mainDescription.value = quickDescription || '';
+            
+            // Enviar usando la función existente
+            await addTransaction();
+            
+            // Cerrar modal
+            closeQuickTransactionModal();
+        });
+    }
+    
+    // Cerrar modal al hacer clic fuera
+    const quickTransactionModal = document.getElementById('quickTransactionModal');
+    if (quickTransactionModal) {
+        quickTransactionModal.addEventListener('click', (e) => {
+            if (e.target === quickTransactionModal) {
+                closeQuickTransactionModal();
+            }
+        });
     }
 }
+
+// Actualizar visibilidad del botón flotante
+function updateFloatingButtonVisibility() {
+    const floatingBtn = document.getElementById('floatingAddTransactionBtn');
+    if (floatingBtn) {
+        if (window.innerWidth <= 768) {
+            floatingBtn.style.display = 'flex';
+        } else {
+            floatingBtn.style.display = 'none';
+        }
+    }
+}
+
+// Exponer funciones globalmente
+window.openQuickTransactionModal = openQuickTransactionModal;
+window.closeQuickTransactionModal = closeQuickTransactionModal;
+
+// Función para abrir modal de transacción rápida
+function openQuickTransactionModal() {
+    const modal = document.getElementById('quickTransactionModal');
+    if (!modal) return;
+    
+    // Inicializar fecha con hoy
+    const dateInput = document.getElementById('quickTransactionDate');
+    if (dateInput) {
+        const today = new Date();
+        dateInput.value = today.toISOString().split('T')[0];
+    }
+    
+    // Sincronizar selectores con los del formulario principal
+    syncQuickTransactionSelectors();
+    
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+// Función para cerrar modal de transacción rápida
+function closeQuickTransactionModal() {
+    const modal = document.getElementById('quickTransactionModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    // Resetear formulario
+    const form = document.getElementById('quickTransactionForm');
+    if (form) {
+        form.reset();
+        // Resetear fecha a hoy
+        const dateInput = document.getElementById('quickTransactionDate');
+        if (dateInput) {
+            const today = new Date();
+            dateInput.value = today.toISOString().split('T')[0];
+        }
+    }
+}
+
+// Sincronizar selectores del modal con los del formulario principal
+function syncQuickTransactionSelectors() {
+    // Sincronizar categorías generales
+    const mainCategoryGeneral = document.getElementById('categoryGeneral');
+    const quickCategoryGeneral = document.getElementById('quickCategoryGeneral');
+    if (mainCategoryGeneral && quickCategoryGeneral) {
+        quickCategoryGeneral.innerHTML = mainCategoryGeneral.innerHTML;
+    }
+    
+    // Sincronizar sobres
+    const mainEnvelope = document.getElementById('envelope');
+    const quickEnvelope = document.getElementById('quickEnvelope');
+    if (mainEnvelope && quickEnvelope) {
+        quickEnvelope.innerHTML = mainEnvelope.innerHTML;
+    }
+}
+
+// Manejar cambio de categoría general en modal rápido
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        const quickCategoryGeneral = document.getElementById('quickCategoryGeneral');
+        const quickCategorySpecific = document.getElementById('quickCategorySpecific');
+        
+        if (quickCategoryGeneral && quickCategorySpecific) {
+            quickCategoryGeneral.addEventListener('change', () => {
+                const categoryGeneral = quickCategoryGeneral.value;
+                const type = document.getElementById('quickTransactionType')?.value || 'expense';
+                
+                if (!categoryGeneral) {
+                    quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
+                    return;
+                }
+                
+                // Buscar la categoría en el array de categorías
+                const categoryList = type === 'income' ? categories.income : categories.expense;
+                const selectedCategory = categoryList.find(cat => cat.id === categoryGeneral);
+                
+                quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
+                
+                if (selectedCategory && selectedCategory.subcategories) {
+                    selectedCategory.subcategories.forEach(sub => {
+                        const option = document.createElement('option');
+                        option.value = sub.id;
+                        option.textContent = sub.name;
+                        quickCategorySpecific.appendChild(option);
+                    });
+                }
+            });
+            
+            // Manejar cambio de tipo en modal rápido
+            const quickTransactionType = document.getElementById('quickTransactionType');
+            if (quickTransactionType) {
+                quickTransactionType.addEventListener('change', () => {
+                    // Actualizar categorías generales
+                    const type = quickTransactionType.value;
+                    const categoryList = type === 'income' ? categories.income : categories.expense;
+                    
+                    quickCategoryGeneral.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
+                    categoryList.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.id;
+                        option.textContent = cat.name;
+                        quickCategoryGeneral.appendChild(option);
+                    });
+                    
+                    // Resetear categoría específica
+                    quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
+                });
+            }
+        }
+        
+        // Manejar envío del formulario rápido
+        const quickTransactionForm = document.getElementById('quickTransactionForm');
+        if (quickTransactionForm) {
+            quickTransactionForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Copiar valores del formulario rápido al formulario principal
+                const quickType = document.getElementById('quickTransactionType')?.value;
+                const quickDate = document.getElementById('quickTransactionDate')?.value;
+                const quickAmount = document.getElementById('quickTransactionAmount')?.value;
+                const quickCategoryGeneral = document.getElementById('quickCategoryGeneral')?.value;
+                const quickCategorySpecific = document.getElementById('quickCategorySpecific')?.value;
+                const quickEnvelope = document.getElementById('quickEnvelope')?.value;
+                const quickDescription = document.getElementById('quickTransactionDescription')?.value;
+                
+                // Asignar valores al formulario principal
+                const mainType = document.getElementById('transactionType');
+                const mainDate = document.getElementById('transactionDate');
+                const mainAmount = document.getElementById('transactionAmount');
+                const mainCategoryGeneral = document.getElementById('categoryGeneral');
+                const mainCategorySpecific = document.getElementById('categorySpecific');
+                const mainEnvelope = document.getElementById('envelope');
+                const mainDescription = document.getElementById('transactionDescription');
+                
+                if (mainType) mainType.value = quickType || '';
+                if (mainDate) mainDate.value = quickDate || '';
+                if (mainAmount) mainAmount.value = quickAmount || '';
+                if (mainCategoryGeneral) mainCategoryGeneral.value = quickCategoryGeneral || '';
+                if (mainCategorySpecific) {
+                    mainCategorySpecific.value = quickCategorySpecific || '';
+                    // Disparar evento change para actualizar subcategorías si es necesario
+                    if (mainCategoryGeneral) {
+                        mainCategoryGeneral.dispatchEvent(new Event('change'));
+                        setTimeout(() => {
+                            if (mainCategorySpecific) mainCategorySpecific.value = quickCategorySpecific || '';
+                        }, 100);
+                    }
+                }
+                if (mainEnvelope) mainEnvelope.value = quickEnvelope || '';
+                if (mainDescription) mainDescription.value = quickDescription || '';
+                
+                // Enviar usando la función existente
+                await addTransaction();
+                
+                // Cerrar modal
+                closeQuickTransactionModal();
+            });
+        }
+        
+        // Cerrar modal al hacer clic fuera
+        const quickTransactionModal = document.getElementById('quickTransactionModal');
+        if (quickTransactionModal) {
+            quickTransactionModal.addEventListener('click', (e) => {
+                if (e.target === quickTransactionModal) {
+                    closeQuickTransactionModal();
+                }
+            });
+        }
+        
+        // Actualizar visibilidad del botón flotante
+        function updateFloatingButtonVisibility() {
+            const floatingBtn = document.getElementById('floatingAddTransactionBtn');
+            if (floatingBtn) {
+                if (window.innerWidth <= 768) {
+                    floatingBtn.style.display = 'flex';
+                } else {
+                    floatingBtn.style.display = 'none';
+                }
+            }
+        }
+        
+        window.addEventListener('resize', updateFloatingButtonVisibility);
+        updateFloatingButtonVisibility();
+    });
+}
+
+// Exponer funciones globalmente
+window.openQuickTransactionModal = openQuickTransactionModal;
+window.closeQuickTransactionModal = closeQuickTransactionModal;
 
 // Cerrar el bloque de protección contra carga múltiple
 } // Cierre del else de window.VEEDOR_LOADED (línea 5)

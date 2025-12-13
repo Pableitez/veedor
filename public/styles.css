@@ -3563,20 +3563,6 @@ tbody tr:last-child td {
     }
     
     /* Cards más compactos */
-    .revolut-cards-grid {
-        grid-template-columns: 1fr !important;
-        gap: clamp(16px, 4vw, 20px) !important;
-        padding: 0 clamp(12px, 3vw, 16px) !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-    
-    .revolut-card {
-        width: 100% !important;
-        min-height: clamp(140px, 35vw, 180px) !important;
-        padding: clamp(20px, 5vw, 24px) !important;
-    }
-    
     .revolut-section {
         margin-bottom: 24px !important;
     }
@@ -4372,58 +4358,36 @@ tbody tr:last-child td {
     }
 }
 
-/* Botón flotante para añadir transacción */
+/* Botón flotante para añadir transacción (solo móvil) */
 .floating-add-btn {
-    /* Sin animación de destello */
+    display: none !important;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    cursor: pointer;
+    z-index: 9999;
+    transition: all 0.3s ease;
+    font-size: 24px;
+    font-weight: 600;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
 }
 
 .floating-add-btn:active {
-    transform: scale(0.95) !important;
-}
-
-.quick-add-btn {
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-}
-
-.quick-add-btn:active {
-    transform: translateY(1px) !important;
-}
-
-/* Clases para mostrar/ocultar según dispositivo */
-.desktop-only {
-    display: none !important;
-}
-
-.mobile-only {
-    display: none !important;
-}
-
-@media (min-width: 769px) {
-    .desktop-only {
-        display: flex !important;
-    }
+    transform: scale(0.95);
 }
 
 @media (max-width: 768px) {
-    .mobile-only {
-        display: flex !important;
-    }
-    
     .floating-add-btn {
         display: flex !important;
-    }
-    
-    /* Cards de resumen ocupando toda la pantalla en móvil */
-    .revolut-cards-grid {
-        grid-template-columns: 1fr !important;
-        gap: clamp(16px, 4vw, 20px) !important;
-        padding: 0 clamp(12px, 3vw, 16px) !important;
-    }
-    
-    .revolut-card {
-        width: 100% !important;
-        min-height: clamp(140px, 35vw, 180px) !important;
-        padding: clamp(20px, 5vw, 24px) !important;
     }
 }
 

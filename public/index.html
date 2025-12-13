@@ -219,10 +219,6 @@
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-                <!-- Botón rápido de transacción (solo desktop) -->
-                <button id="quickAddTransactionBtn" class="quick-add-btn desktop-only" onclick="quickAddTransaction()" style="display: none; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'">
-                    <span style="margin-right: 6px;">+</span> Transacción
-                </button>
                 <!-- Menú de Navegación Desplegable -->
                 <div style="position: relative; flex-shrink: 0;">
                     <button id="mainNavDropdownBtn" onclick="toggleMainNavDropdown()" style="padding: 8px; border-radius: 4px; font-size: 18px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" title="Menú de Navegación">
@@ -339,18 +335,18 @@
                         </div>
                         
                         <!-- Fondo de Emergencia -->
-                        <div class="revolut-card" style="background: linear-gradient(180deg, #1E40AF 0%, #3B82F6 30%, #60A5FA 60%, #93C5FD 100%); color: white; border: none; cursor: pointer; position: relative; overflow: hidden; border-radius: 12px; padding: clamp(18px, 4.5vw, 24px); box-shadow: 0 8px 24px rgba(30, 64, 175, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);" onclick="showSummaryDetails('savings')" title="Haz clic para ver detalles">
+                        <div class="revolut-card" style="background: linear-gradient(180deg, #1E40AF 0%, #3B82F6 30%, #60A5FA 60%, #93C5FD 100%); color: white; border: none; cursor: pointer; position: relative; overflow: hidden; border-radius: 12px; padding: clamp(16px, 4vw, 20px); box-shadow: 0 8px 24px rgba(30, 64, 175, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);" onclick="showSummaryDetails('savings')" title="Haz clic para ver detalles">
                             <div style="position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; background: rgba(255,255,255,0.12); border-radius: 50%;"></div>
                             <div style="position: absolute; bottom: -25px; left: -25px; width: 100px; height: 100px; background: rgba(255,255,255,0.08); border-radius: 50%;"></div>
                             <div style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
                                 <div style="width: 100%; box-sizing: border-box;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: clamp(12px, 3vw, 16px); gap: clamp(8px, 2vw, 12px); flex-wrap: wrap;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: clamp(8px, 2vw, 12px); gap: clamp(8px, 2vw, 12px); flex-wrap: wrap;">
                                         <h3 style="color: rgba(255,255,255,0.9); margin: 0; font-size: clamp(10px, 2.5vw, 11px); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.95; flex: 1; min-width: 0; display: flex; align-items: center;">Tu Fondo de Emergencia</h3>
-                                        <button id="setSavingsGoalBtn" class="btn-secondary" style="font-size: clamp(11px, 2.5vw, 12px); padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px); background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.35); color: white; font-weight: 600; transition: all 0.2s; border-radius: 6px; cursor: pointer; flex-shrink: 0; white-space: nowrap; min-height: clamp(32px, 8vw, 36px); display: flex; align-items: center; justify-content: center; line-height: 1; box-sizing: border-box; margin-left: clamp(8px, 2vw, 12px);" onclick="event.stopPropagation(); showSavingsGoalModal();" onmouseover="this.style.background='rgba(255,255,255,0.35)'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='rgba(255,255,255,0.25)'; this.style.transform='translateY(0)';">Establecer Fondo</button>
+                                        <button id="setSavingsGoalBtn" class="btn-secondary" style="font-size: clamp(11px, 2.5vw, 12px); padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 14px); background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.35); color: white; font-weight: 600; transition: all 0.2s; border-radius: 6px; cursor: pointer; flex-shrink: 0; white-space: nowrap; min-height: clamp(32px, 8vw, 36px); display: flex; align-items: center; justify-content: center; line-height: 1; box-sizing: border-box;" onclick="event.stopPropagation(); showSavingsGoalModal();" onmouseover="this.style.background='rgba(255,255,255,0.35)'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='rgba(255,255,255,0.25)'; this.style.transform='translateY(0)';">Establecer Fondo</button>
                                     </div>
-                                    <p class="amount" id="savingsGoal" style="color: white; font-size: clamp(22px, 5.5vw, 26px); font-weight: 700; margin: clamp(12px, 3vw, 16px) 0; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; word-wrap: break-word;">Sin meta</p>
-                                    <div id="savingsGoalProgress" style="display: none; margin-top: clamp(12px, 3vw, 16px);">
-                                        <div style="background: rgba(255,255,255,0.25); border-radius: 8px; height: clamp(5px, 1.5vw, 6px); overflow: hidden; margin-bottom: clamp(8px, 2vw, 10px);">
+                                    <p class="amount" id="savingsGoal" style="color: white; font-size: clamp(22px, 5.5vw, 26px); font-weight: 700; margin: clamp(8px, 2vw, 12px) 0; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; word-wrap: break-word;">Sin meta</p>
+                                    <div id="savingsGoalProgress" style="display: none; margin-top: clamp(10px, 2.5vw, 14px);">
+                                        <div style="background: rgba(255,255,255,0.25); border-radius: 8px; height: clamp(5px, 1.5vw, 6px); overflow: hidden; margin-bottom: clamp(6px, 1.5vw, 8px);">
                                             <div id="savingsGoalProgressBar" style="background: white; height: 100%; border-radius: 8px; transition: width 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div>
                                         </div>
                                         <small id="savingsGoalProgressText" style="color: rgba(255,255,255,0.95); font-size: clamp(9px, 2.2vw, 10px); font-weight: 600; line-height: 1.2; display: block; word-wrap: break-word;"></small>
@@ -415,6 +411,80 @@
                             <p class="amount" id="periodSavings">0,00 €</p>
                             <small id="periodSavingsSubLabel" data-translate="dashboard.thisMonth">Este mes</small>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Historial de Transacciones (movido aquí desde tab de transacciones) -->
+                <div class="table-section" style="margin-bottom: 32px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
+                        <h2 data-translate="transactions.history" style="margin: 0; flex: 1; min-width: 0;">Historial de Transacciones</h2>
+                        <button id="toggleFiltersBtnDashboard" class="mobile-filter-toggle" onclick="toggleTransactionFilters()" style="display: none; padding: 10px 16px; background: var(--primary); color: white; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; flex-shrink: 0;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">
+                            <span id="toggleFiltersTextDashboard">Mostrar Filtros</span>
+                        </button>
+                    </div>
+                    <div class="table-controls" id="transactionFiltersDashboard">
+                        <input type="text" id="searchInputDashboard" data-translate-placeholder="transactions.search" placeholder="Buscar...">
+                        <select id="filterCategoryDashboard">
+                            <option value="" data-translate="transactions.allCategories">Todas las categorías</option>
+                        </select>
+                        <select id="filterMonthDashboard">
+                            <option value="" data-translate="transactions.allMonths">Todos los meses</option>
+                        </select>
+                        <div class="date-filters-container" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; width: 100%;">
+                            <div style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 0;">
+                                <label style="font-size: 13px; font-weight: 500; color: var(--text-secondary); white-space: nowrap; flex-shrink: 0;">Desde:</label>
+                                <input type="date" id="filterStartDateDashboard" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); min-width: 150px; flex: 1; max-width: 100%; box-sizing: border-box;">
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 0;">
+                                <label style="font-size: 13px; font-weight: 500; color: var(--text-secondary); white-space: nowrap; flex-shrink: 0;">Hasta:</label>
+                                <input type="date" id="filterEndDateDashboard" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); min-width: 150px; flex: 1; max-width: 100%; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap;">
+                            <label style="font-size: 13px; font-weight: 500; color: var(--text-secondary); white-space: nowrap;">Filas por página:</label>
+                            <select id="rowsPerPageDashboard" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); min-width: 120px;">
+                                <option value="10">10</option>
+                                <option value="25" selected>25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="0">Todas</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container" id="transactionsTableContainerDashboard" style="max-height: 600px; overflow-y: auto;">
+                        <table id="transactionsTableDashboard">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="date" data-translate="transactions.date" style="cursor: pointer; user-select: none;">
+                                        Fecha <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="type" data-translate="transactions.type" style="cursor: pointer; user-select: none;">
+                                        Tipo <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="category" data-translate="transactions.category" style="cursor: pointer; user-select: none;">
+                                        Categoría <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="description" data-translate="transactions.description" style="cursor: pointer; user-select: none;">
+                                        Descripción <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="account" data-translate="transactions.account" style="cursor: pointer; user-select: none;">
+                                        Cuenta <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="property" data-translate="transactions.property" style="cursor: pointer; user-select: none;">
+                                        Propiedad <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="envelope" data-translate="transactions.envelope" style="cursor: pointer; user-select: none;">
+                                        Sobre <span class="sort-indicator"></span>
+                                    </th>
+                                    <th class="sortable" data-sort="amount" data-translate="transactions.amount" style="cursor: pointer; user-select: none;">
+                                        Monto <span class="sort-indicator"></span>
+                                    </th>
+                                    <th data-translate="transactions.actions">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsBodyDashboard">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 
@@ -1865,6 +1935,72 @@
         </div>
     </div>
 
+    <!-- Botón flotante para añadir transacción rápida (solo móvil) -->
+    <button id="floatingAddTransactionBtn" class="floating-add-btn" onclick="openQuickTransactionModal()" style="display: none; position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); cursor: pointer; z-index: 9999; transition: all 0.3s ease; font-size: 24px; font-weight: 600; align-items: center; justify-content: center; touch-action: manipulation;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 16px rgba(59, 130, 246, 0.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.4)'">
+        +
+    </button>
+    
+    <!-- Modal para añadir transacción rápidamente -->
+    <div id="quickTransactionModal" class="modal" style="display: none; z-index: 10001;">
+        <div class="modal-content" style="max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
+                <h2 style="margin: 0; font-size: 24px; font-weight: 700; color: var(--text-primary);" data-translate="transactions.newTransaction">Nueva Transacción</h2>
+                <button onclick="closeQuickTransactionModal()" style="background: transparent; border: none; font-size: 28px; color: var(--text-secondary); cursor: pointer; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s;" onmouseover="this.style.background='var(--bg-secondary)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-secondary)'">
+                    ×
+                </button>
+            </div>
+            <form id="quickTransactionForm" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quickTransactionType" data-translate="transactions.type">Tipo</label>
+                        <select id="quickTransactionType" required>
+                            <option value="income" data-translate="transactions.income">Ingreso</option>
+                            <option value="expense" data-translate="transactions.expense">Gasto</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickTransactionDate" data-translate="transactions.date">Fecha</label>
+                        <input type="date" id="quickTransactionDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickTransactionAmount" data-translate="transactions.amount">Monto</label>
+                        <input type="number" id="quickTransactionAmount" step="0.01" min="0" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quickCategoryGeneral" data-translate="transactions.categoryGeneral">Categoría General</label>
+                        <select id="quickCategoryGeneral" required>
+                            <option value="" data-translate="common.select">Seleccionar...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickCategorySpecific" data-translate="transactions.categorySpecific">Categoría Específica</label>
+                        <select id="quickCategorySpecific" required>
+                            <option value="" data-translate="common.select">Seleccionar...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickEnvelope" data-translate="transactions.envelope">Sobre (Opcional)</label>
+                        <select id="quickEnvelope">
+                            <option value="" data-translate="common.none">Ninguno</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="quickTransactionDescription">Descripción</label>
+                        <input type="text" id="quickTransactionDescription" placeholder="Ej: Compra en supermercado">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 8px;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">Agregar Transacción</button>
+                    <button type="button" class="btn-secondary" onclick="closeQuickTransactionModal()" style="flex: 1;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Cargar aplicación JavaScript directamente -->
     <script src="app.js?v=2.25.0"></script>
     
@@ -1936,11 +2072,6 @@
             <p style="margin: 0; color: var(--text-primary); font-size: 14px; font-weight: 500;" id="globalLoaderText">Cargando...</p>
         </div>
     </div>
-    
-    <!-- Botón flotante para añadir transacción rápidamente (solo móvil) -->
-    <button id="floatingAddTransactionBtn" class="floating-add-btn mobile-only" onclick="quickAddTransaction()" style="display: none; position: fixed; bottom: clamp(20px, 5vw, 24px); right: clamp(20px, 5vw, 24px); width: clamp(56px, 14vw, 64px); height: clamp(56px, 14vw, 64px); background: var(--primary); color: white; border: none; border-radius: 50%; font-size: clamp(28px, 7vw, 32px); font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4), 0 2px 8px rgba(0, 0, 0, 0.1); z-index: 999; transition: all 0.2s ease; display: none; align-items: center; justify-content: center; line-height: 1; touch-action: manipulation;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.5), 0 4px 12px rgba(0, 0, 0, 0.15)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(59, 130, 246, 0.4), 0 2px 8px rgba(0, 0, 0, 0.1)'" title="Añadir Transacción Rápida">
-        <span style="line-height: 1; display: flex; align-items: center; justify-content: center;">+</span>
-    </button>
 </body>
 </html>
 
