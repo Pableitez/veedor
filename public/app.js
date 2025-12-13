@@ -2674,11 +2674,12 @@ async function addTransaction() {
 async function addEnvelope() {
     const name = document.getElementById('envelopeName').value;
     const budget = parseFloat(document.getElementById('envelopeBudget').value);
+    const patrimonio_id = document.getElementById('envelopePatrimonio').value || null;
     
     try {
         const envelope = await apiRequest('/envelopes', {
             method: 'POST',
-            body: JSON.stringify({ name, budget })
+            body: JSON.stringify({ name, budget, patrimonio_id })
         });
         
         envelopes.push(envelope);
@@ -3156,10 +3157,17 @@ function updateEnvelopes() {
         const remaining = envelope.budget - spent;
         const percentage = (spent / envelope.budget) * 100;
         
+        // Obtener nombre del patrimonio si está asociado
+        const patrimonioItem = envelope.patrimonio_id ? patrimonio.find(p => (p._id || p.id) === envelope.patrimonio_id) : null;
+        const patrimonioName = patrimonioItem ? patrimonioItem.name : null;
+        
         const card = document.createElement('div');
         card.className = 'envelope-card';
         card.innerHTML = `
-            <h3>${envelope.name}</h3>
+            <div style="margin-bottom: 8px;">
+                <h3 style="margin: 0 0 4px 0;">${envelope.name}</h3>
+                ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500);">Asociado a: ${patrimonioName}</small>` : ''}
+            </div>
             <div class="envelope-budget">${formatCurrency(envelope.budget)}</div>
             <div class="envelope-spent">Gastado: ${formatCurrency(spent)}</div>
             <div class="envelope-remaining ${remaining < 0 ? 'negative' : ''}">
@@ -3239,6 +3247,7 @@ function updatePatrimonioSelect(selectId = 'loanPatrimonio') {
     const select = document.getElementById(selectId);
     if (!select) return;
     
+    const currentValue = select.value;
     select.innerHTML = '<option value="">Ninguna</option>';
     patrimonio.forEach(prop => {
         const option = document.createElement('option');
@@ -3257,19 +3266,51 @@ function updatePatrimonioSelect(selectId = 'loanPatrimonio') {
         option.textContent = `${prop.name} (${typeNames[prop.type] || prop.type})`;
         select.appendChild(option);
     });
+    
+    // Restaurar valor seleccionado si existe
+    if (currentValue) {
+        select.value = currentValue;
+    }
+}
+
+// Función para alternar entre categoría y patrimonio en presupuestos
+function toggleBudgetTarget() {
+    const targetType = document.getElementById('budgetTargetType').value;
+    const categoryGroup = document.getElementById('budgetCategoryGroup');
+    const patrimonioGroup = document.getElementById('budgetPatrimonioGroup');
+    const categorySelect = document.getElementById('budgetCategory');
+    const patrimonioSelect = document.getElementById('budgetPatrimonio');
+    
+    if (targetType === 'category') {
+        categoryGroup.style.display = 'block';
+        patrimonioGroup.style.display = 'none';
+        categorySelect.required = true;
+        patrimonioSelect.required = false;
+        patrimonioSelect.value = '';
+    } else {
+        categoryGroup.style.display = 'none';
+        patrimonioGroup.style.display = 'block';
+        categorySelect.required = false;
+        patrimonioSelect.required = true;
+        categorySelect.value = '';
+        // Actualizar selector de patrimonio
+        updatePatrimonioSelect('budgetPatrimonio');
+    }
 }
 
 // ==================== PRESUPUESTOS ====================
 
 // Agregar presupuesto
 async function addBudget() {
-    const category_id = document.getElementById('budgetCategory').value;
+    const targetType = document.getElementById('budgetTargetType').value;
+    const category_id = targetType === 'category' ? document.getElementById('budgetCategory').value : null;
+    const patrimonio_id = targetType === 'patrimonio' ? document.getElementById('budgetPatrimonio').value : null;
     const amount = parseFloat(document.getElementById('budgetAmount').value);
     const period_type = document.getElementById('budgetPeriodType').value;
     const period_value = document.getElementById('budgetPeriodValue').value;
     const duration = period_type === 'monthly' ? parseInt(document.getElementById('budgetDuration')?.value || '1') : 1;
     
-    if (!category_id || !amount || !period_type || !period_value) {
+    if ((!category_id && !patrimonio_id) || !amount || !period_type || !period_value) {
         alert('Por favor completa todos los campos');
         return;
     }
@@ -3287,7 +3328,8 @@ async function addBudget() {
                 const budget = await apiRequest('/budgets', {
                     method: 'POST',
                     body: JSON.stringify({
-                        category_id,
+                        category_id: category_id || null,
+                        patrimonio_id: patrimonio_id || null,
                         amount,
                         period_type,
                         period_value
@@ -3312,7 +3354,8 @@ async function addBudget() {
                         const budget = await apiRequest('/budgets', {
                             method: 'POST',
                             body: JSON.stringify({
-                                category_id,
+                                category_id: category_id || null,
+                                patrimonio_id: patrimonio_id || null,
                                 amount,
                                 period_type,
                                 period_value: monthValue
@@ -3460,19 +3503,53 @@ function updateBudgets() {
     });
     
     activeBudgets.forEach(budget => {
-        // Determinar si es presupuesto de ingreso o gasto buscando en ambas categorías
-        let category = categories.expense.find(c => c.id === budget.category_id);
+        // Determinar si es presupuesto de categoría o patrimonio
+        let categoryName = '';
+        let patrimonioName = '';
         let isIncome = false;
         
-        if (!category) {
-            category = categories.income.find(c => c.id === budget.category_id);
-            isIncome = true;
+        if (budget.patrimonio_id) {
+            // Presupuesto asociado a patrimonio
+            const patrimonioItem = patrimonio.find(p => (p._id || p.id) === budget.patrimonio_id);
+            patrimonioName = patrimonioItem ? patrimonioItem.name : 'Patrimonio desconocido';
+        } else if (budget.category_id) {
+            // Presupuesto asociado a categoría
+            let category = categories.expense.find(c => c.id === budget.category_id);
+            if (!category) {
+                category = categories.income.find(c => c.id === budget.category_id);
+                isIncome = true;
+            }
+            categoryName = category ? category.name : budget.category_id;
         }
         
-        const categoryName = category ? category.name : budget.category_id;
-        const actual = isIncome ? 
-            (transactionsByCategory[budget.category_id]?.income || 0) : 
-            (transactionsByCategory[budget.category_id]?.expense || 0);
+        const displayName = patrimonioName || categoryName;
+        // Calcular transacciones según tipo de presupuesto
+        let actual = 0;
+        if (budget.patrimonio_id) {
+            // Calcular transacciones asociadas al patrimonio
+            const patrimonioTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                let isInActivePeriod = false;
+                if (budget.period_type === 'monthly') {
+                    const budgetMonth = new Date(budget.period_value + '-01');
+                    isInActivePeriod = tDate.getMonth() === budgetMonth.getMonth() && 
+                                      tDate.getFullYear() === budgetMonth.getFullYear();
+                } else if (budget.period_type === 'yearly') {
+                    isInActivePeriod = tDate.getFullYear() === parseInt(budget.period_value);
+                } else if (budget.period_type === 'weekly') {
+                    const weekStart = new Date(budget.period_value);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    isInActivePeriod = tDate >= weekStart && tDate <= weekEnd;
+                }
+                return isInActivePeriod && (t.property_id === budget.patrimonio_id || t.patrimonio_id === budget.patrimonio_id);
+            });
+            actual = Math.abs(patrimonioTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        } else {
+            actual = isIncome ? 
+                (transactionsByCategory[budget.category_id]?.income || 0) : 
+                (transactionsByCategory[budget.category_id]?.expense || 0);
+        }
         const difference = isIncome ? (actual - budget.amount) : (budget.amount - actual);
         const percentage = budget.amount > 0 ? (actual / budget.amount) * 100 : 0;
         const isOverBudget = isIncome ? (actual < budget.amount) : (actual > budget.amount);
@@ -3492,7 +3569,10 @@ function updateBudgets() {
         card.style.borderLeft = `4px solid ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'}`;
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                <h3 style="margin: 0;">${categoryName}</h3>
+                <div>
+                    <h3 style="margin: 0;">${displayName}</h3>
+                    ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500);">Patrimonio</small>` : ''}
+                </div>
                 <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600;">${periodLabel}</span>
             </div>
             <div style="margin: 12px 0;">

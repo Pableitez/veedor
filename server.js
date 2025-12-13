@@ -87,12 +87,14 @@ const envelopeSchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
     budget: { type: Number, required: true },
+    patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null }, // ID del patrimonio asociado (opcional)
     created_at: { type: Date, default: Date.now }
 });
 
 const budgetSchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    category_id: { type: String, required: true }, // ID de la categoría
+    category_id: { type: String, default: null }, // ID de la categoría (opcional si hay patrimonio_id)
+    patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null }, // ID del patrimonio asociado (opcional)
     amount: { type: Number, required: true }, // Presupuesto
     period_type: { type: String, required: true, enum: ['weekly', 'monthly', 'yearly'] }, // Tipo de período
     period_value: { type: String, required: true }, // Valor del período (YYYY-MM-DD para semanal, YYYY-MM para mensual, YYYY para anual)
@@ -1665,7 +1667,7 @@ app.get('/api/envelopes', authenticateToken, async (req, res) => {
 // Crear sobre
 app.post('/api/envelopes', authenticateToken, async (req, res) => {
     try {
-        const { name, budget } = req.body;
+        const { name, budget, patrimonio_id } = req.body;
 
         if (!name || budget === undefined) {
             return res.status(400).json({ error: 'Nombre y presupuesto requeridos' });
@@ -1674,7 +1676,8 @@ app.post('/api/envelopes', authenticateToken, async (req, res) => {
         const envelope = new Envelope({
             user_id: req.user.userId,
             name,
-            budget
+            budget,
+            patrimonio_id: patrimonio_id || null
         });
 
         await envelope.save();
@@ -1958,30 +1961,43 @@ app.get('/api/budgets', authenticateToken, async (req, res) => {
 // Crear o actualizar presupuesto
 app.post('/api/budgets', authenticateToken, async (req, res) => {
     try {
-        const { category_id, amount, period_type, period_value } = req.body;
+        const { category_id, patrimonio_id, amount, period_type, period_value } = req.body;
 
-        if (!category_id || amount === undefined || !period_type || !period_value) {
-            return res.status(400).json({ error: 'Todos los campos son requeridos' });
+        // Validar que al menos uno de category_id o patrimonio_id esté presente
+        if ((!category_id && !patrimonio_id) || amount === undefined || !period_type || !period_value) {
+            return res.status(400).json({ error: 'Debe especificar una categoría o patrimonio, y todos los campos son requeridos' });
         }
 
-        // Buscar presupuesto existente para esta categoría y período
-        const existingBudget = await Budget.findOne({ 
-            user_id: req.user.userId, 
-            category_id, 
-            period_type, 
-            period_value 
-        });
+        // Construir query de búsqueda
+        const query = {
+            user_id: req.user.userId,
+            period_type,
+            period_value
+        };
+        
+        if (category_id) {
+            query.category_id = category_id;
+        }
+        if (patrimonio_id) {
+            query.patrimonio_id = patrimonio_id;
+        }
+
+        // Buscar presupuesto existente
+        const existingBudget = await Budget.findOne(query);
 
         if (existingBudget) {
             // Actualizar presupuesto existente
             existingBudget.amount = amount;
+            if (category_id !== undefined) existingBudget.category_id = category_id || null;
+            if (patrimonio_id !== undefined) existingBudget.patrimonio_id = patrimonio_id || null;
             await existingBudget.save();
             return res.status(200).json(existingBudget);
         } else {
             // Crear nuevo presupuesto
             const budget = new Budget({
                 user_id: req.user.userId,
-                category_id,
+                category_id: category_id || null,
+                patrimonio_id: patrimonio_id || null,
                 amount,
                 period_type,
                 period_value

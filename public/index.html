@@ -766,11 +766,28 @@
                                         <small>Elige si es un presupuesto de ingreso o gasto</small>
                                     </div>
                                     <div class="form-group">
+                                        <label for="budgetTargetType">Asignar a</label>
+                                        <select id="budgetTargetType" required onchange="toggleBudgetTarget()">
+                                            <option value="category">Categoría</option>
+                                            <option value="patrimonio">Patrimonio</option>
+                                        </select>
+                                        <small>Elige si asignar a categoría o patrimonio</small>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group" id="budgetCategoryGroup">
                                         <label for="budgetCategory">Categoría</label>
-                                        <select id="budgetCategory" required>
+                                        <select id="budgetCategory">
                                             <option value="">Seleccionar categoría...</option>
                                         </select>
                                         <small>Elige la categoría que quieres presupuestar</small>
+                                    </div>
+                                    <div class="form-group" id="budgetPatrimonioGroup" style="display: none;">
+                                        <label for="budgetPatrimonio">Patrimonio</label>
+                                        <select id="budgetPatrimonio">
+                                            <option value="">Seleccionar patrimonio...</option>
+                                        </select>
+                                        <small>Elige el patrimonio (propiedad, coche, etc.)</small>
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -834,6 +851,13 @@
                                         <label for="envelopeBudget">Presupuesto Mensual (€)</label>
                                         <input type="number" id="envelopeBudget" step="0.01" min="0" required placeholder="0.00">
                                         <small>Cuánto planeas ahorrar cada mes en este sobre</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="envelopePatrimonio">Asignar a Patrimonio (Opcional)</label>
+                                        <select id="envelopePatrimonio">
+                                            <option value="">Ninguno</option>
+                                        </select>
+                                        <small>Opcional: asigna este sobre a un patrimonio específico</small>
                                     </div>
                                 </div>
                                 <div style="display: flex; gap: 8px; margin-top: 8px;">
