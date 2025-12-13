@@ -4434,7 +4434,8 @@ async function addLoan() {
     const name = document.getElementById('loanName').value.trim();
     const principal = parseFloat(document.getElementById('loanPrincipal').value);
     const interestRate = parseFloat(document.getElementById('loanInterestRate').value);
-    const tae = document.getElementById('loanTAE').value ? parseFloat(document.getElementById('loanTAE').value) : null;
+    const taeInput = document.getElementById('loanTAE').value;
+    const tae = taeInput !== '' ? parseFloat(taeInput) : null;
     const startDate = document.getElementById('loanStartDate').value;
     const endDate = document.getElementById('loanEndDate').value;
     const monthlyPayment = parseFloat(document.getElementById('loanMonthlyPayment').value);
@@ -4447,8 +4448,8 @@ async function addLoan() {
     const earlyPaymentCommission = parseFloat(document.getElementById('loanEarlyPaymentCommission').value) || 0;
     const paymentDay = parseInt(document.getElementById('loanPaymentDay').value) || 1;
     
-    if (!name || !principal || !interestRate || !startDate || !endDate || !monthlyPayment || !type) {
-        alert('Por favor completa todos los campos requeridos');
+    if (!name || !principal || principal <= 0 || isNaN(interestRate) || interestRate < 0 || !startDate || !endDate || !monthlyPayment || monthlyPayment <= 0 || !type) {
+        alert('Por favor completa todos los campos requeridos correctamente');
         return;
     }
     
