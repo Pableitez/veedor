@@ -2991,6 +2991,11 @@ async function updateSummary() {
     const savingsGoalProgressBar = document.getElementById('savingsGoalProgressBar');
     const savingsGoalProgressText = document.getElementById('savingsGoalProgressText');
     
+    // Mostrar siempre la barra de progreso
+    if (savingsGoalProgress) {
+        savingsGoalProgress.style.display = 'block';
+    }
+    
     if (savingsGoalEl) {
         if (savingsGoal && savingsGoal > 0) {
             savingsGoalEl.textContent = formatCurrency(savingsGoal);
