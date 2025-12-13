@@ -2208,6 +2208,54 @@ function initializeForms() {
         });
     }
     
+    // Inicializar formulario de fondo base
+    const baseFundForm = document.getElementById('baseFundForm');
+    if (baseFundForm) {
+        // Remover listeners anteriores si existen
+        const newForm = baseFundForm.cloneNode(true);
+        baseFundForm.parentNode.replaceChild(newForm, baseFundForm);
+        
+        document.getElementById('baseFundForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('baseFundInput');
+            if (!input) {
+                alert('Error: No se encontró el campo de entrada');
+                return;
+            }
+            
+            const value = input.value.trim();
+            if (!value) {
+                alert('Por favor ingresa una cantidad válida');
+                return;
+            }
+            
+            const numValue = parseFloat(value);
+            if (isNaN(numValue) || numValue < 0) {
+                alert('Por favor ingresa un número válido mayor o igual a 0');
+                return;
+            }
+            
+            try {
+                baseFund = numValue > 0 ? numValue : null;
+                const response = await apiRequest('/user/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify({ baseFund: baseFund })
+                });
+                
+                // Verificar que se guardó correctamente
+                if (response && response.baseFund !== undefined) {
+                    baseFund = response.baseFund;
+                }
+                
+                closeBaseFundModal();
+                showToast('Fondo base guardado correctamente');
+            } catch (error) {
+                console.error('Error al guardar el fondo base:', error);
+                alert('Error al guardar el fondo base: ' + (error.message || 'Error desconocido'));
+            }
+        });
+    }
+    
     // Inicializar formulario de añadir dinero a inversión
     const addMoneyInvestmentForm = document.getElementById('addMoneyInvestmentForm');
     if (addMoneyInvestmentForm) {
