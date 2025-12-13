@@ -12277,6 +12277,7 @@ if (typeof document !== 'undefined') {
             'summaryDetailsModal',
             'categoryDetailsModal',
             'savingsGoalModal',
+            'baseFundModal',
             'addMoneyInvestmentModal',
             'updateInvestmentValueModal',
             'updateAccountBalanceModal',
