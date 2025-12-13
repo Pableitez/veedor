@@ -3069,13 +3069,24 @@ let currentPage = 1;
 let rowsPerPage = 25;
 
 function updateTransactionsTable() {
+    // Actualizar ambas tablas: la de la pestaña y la del dashboard
     const tbody = document.getElementById('transactionsBody');
-    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-    const filterCategory = document.getElementById('filterCategory')?.value || '';
-    const filterMonth = document.getElementById('filterMonth')?.value || '';
-    const filterStartDate = document.getElementById('filterStartDate')?.value || '';
-    const filterEndDate = document.getElementById('filterEndDate')?.value || '';
-    const rowsPerPageSelect = document.getElementById('rowsPerPage');
+    const tbodyDashboard = document.getElementById('transactionsBodyDashboard');
+    
+    // Obtener valores de filtros (priorizar dashboard si existe, sino usar los de la pestaña)
+    const searchInput = document.getElementById('searchInputDashboard') || document.getElementById('searchInput');
+    const filterCategoryEl = document.getElementById('filterCategoryDashboard') || document.getElementById('filterCategory');
+    const filterMonthEl = document.getElementById('filterMonthDashboard') || document.getElementById('filterMonth');
+    const filterStartDateEl = document.getElementById('filterStartDateDashboard') || document.getElementById('filterStartDate');
+    const filterEndDateEl = document.getElementById('filterEndDateDashboard') || document.getElementById('filterEndDate');
+    const rowsPerPageSelect = document.getElementById('rowsPerPageDashboard') || document.getElementById('rowsPerPage');
+    
+    const searchTerm = searchInput?.value.toLowerCase() || '';
+    const filterCategory = filterCategoryEl?.value || '';
+    const filterMonth = filterMonthEl?.value || '';
+    const filterStartDate = filterStartDateEl?.value || '';
+    const filterEndDate = filterEndDateEl?.value || '';
+    
     if (rowsPerPageSelect) {
         rowsPerPage = parseInt(rowsPerPageSelect.value) || 25;
     }
