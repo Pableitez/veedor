@@ -1419,6 +1419,7 @@ body.dark-mode .revolut-card:hover {
 
 .tab-btn:hover {
     color: var(--primary);
+    background: var(--gray-50);
 }
 
 .tab-btn.active {
@@ -2903,12 +2904,8 @@ tbody tr:last-child td {
     }
     
     .form-section {
-        max-height: 0 !important;
-        overflow: hidden !important;
-        opacity: 0 !important;
-        transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease, padding 0.3s ease !important;
-        margin-bottom: 0 !important;
-        padding: 0 !important;
+        padding: 20px 16px !important;
+        padding-top: 20px !important;
         margin-top: 16px !important;
         width: 100% !important;
         max-width: 100% !important;
@@ -2919,30 +2916,28 @@ tbody tr:last-child td {
         border-radius: 16px !important;
     }
     
-    .form-section.expanded {
-        max-height: 5000px !important;
-        opacity: 1 !important;
-        margin-bottom: 16px !important;
-        padding: 20px 16px !important;
-        padding-top: 20px !important;
-    }
-    
     .table-controls {
-        max-height: 0;
-        overflow: hidden;
-        opacity: 0;
-        margin-bottom: 0;
-        padding: 0;
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin-bottom: 16px !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        opacity: 0 !important;
+        transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease !important;
+        padding: 0 !important;
     }
     
     .table-controls.expanded {
-        max-height: 2000px;
-        opacity: 1;
-        margin-bottom: 16px;
-        padding: 16px;
+        max-height: 2000px !important;
+        opacity: 1 !important;
+        padding: 16px !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius) !important;
+        background: var(--bg-secondary) !important;
+        margin-bottom: 16px !important;
     }
     
-    .mobile-filter-toggle {
+    #toggleFiltersBtn {
         display: flex !important;
     }
     
@@ -3966,22 +3961,6 @@ tbody tr:last-child td {
     }
     
     .form-section {
-        max-height: 0 !important;
-        overflow: hidden !important;
-        opacity: 0 !important;
-        transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease, padding 0.3s ease !important;
-        margin-bottom: 0 !important;
-        padding: 0 !important;
-    }
-    
-    .form-section.expanded {
-        max-height: 5000px !important;
-        opacity: 1 !important;
-        margin-bottom: 16px !important;
-        padding: 20px 16px !important;
-    }
-    
-    .form-section {
         padding: 16px 12px !important;
         padding-top: 16px !important;
         margin-top: 12px !important;
@@ -4354,39 +4333,6 @@ tbody tr:last-child td {
     .main-footer img[alt*="Google Play"] {
         image-rendering: -webkit-optimize-contrast;
         image-rendering: crisp-edges;
-    }
-}
-
-/* Botón flotante para añadir transacción (solo móvil) */
-.floating-add-btn {
-    display: none !important;
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--primary);
-    color: white;
-    border: none;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-    cursor: pointer;
-    z-index: 9999;
-    transition: all 0.3s ease;
-    font-size: 24px;
-    font-weight: 600;
-    align-items: center;
-    justify-content: center;
-    touch-action: manipulation;
-}
-
-.floating-add-btn:active {
-    transform: scale(0.95);
-}
-
-@media (max-width: 768px) {
-    .floating-add-btn {
-        display: flex !important;
     }
 }
 

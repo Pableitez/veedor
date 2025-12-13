@@ -478,84 +478,39 @@ function toggleForm(formId, buttonId) {
     
     if (!form || !button) return;
     
-    // Buscar el form-section padre
-    const formSection = form.closest('.form-section');
-    const isMobile = window.innerWidth <= 768;
+    const isVisible = form.style.display !== 'none';
     
-    if (isMobile && formSection) {
-        // En móvil: usar la lógica de expandir/colapsar
-        const isExpanded = formSection.classList.contains('expanded');
-        
-        if (isExpanded) {
-            // Colapsar
-            formSection.classList.remove('expanded');
-            form.style.display = 'none';
-            if (icon) icon.textContent = '➕';
-            if (text) {
-                const formNames = {
-                    'transactionForm': 'Nueva Transacción',
-                    'propertyForm': 'Nueva Propiedad',
-                    'accountForm': 'Nueva Cuenta',
-                    'loanForm': 'Nuevo Préstamo',
-                    'investmentForm': 'Nueva Inversión',
-                    'patrimonioForm': 'Nueva Propiedad',
-                    'budgetForm': 'Nuevo Presupuesto',
-                    'envelopeForm': 'Nuevo Sobre'
-                };
-                text.textContent = formNames[formId] || 'Nuevo';
-            }
-            // Resetear formulario si existe función
-            const resetFunc = window['reset' + formId.charAt(0).toUpperCase() + formId.slice(1).replace('Form', 'Form')];
-            if (resetFunc && typeof resetFunc === 'function') {
-                resetFunc();
-            }
-        } else {
-            // Expandir
-            formSection.classList.add('expanded');
-            form.style.display = 'block';
-            if (icon) icon.textContent = '➖';
-            if (text) text.textContent = 'Cancelar';
-            // Scroll suave al formulario
-            setTimeout(() => {
-                formSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
+    if (isVisible) {
+        // Ocultar formulario
+        form.style.display = 'none';
+        if (icon) icon.textContent = '➕';
+        if (text) {
+            const formNames = {
+                'transactionForm': 'Nueva Transacción',
+                'propertyForm': 'Nueva Propiedad',
+                'accountForm': 'Nueva Cuenta',
+                'loanForm': 'Nuevo Préstamo',
+                'investmentForm': 'Nueva Inversión',
+                'patrimonioForm': 'Nueva Propiedad',
+                'budgetForm': 'Nuevo Presupuesto',
+                'envelopeForm': 'Nuevo Sobre'
+            };
+            text.textContent = formNames[formId] || 'Nuevo';
+        }
+        // Resetear formulario si existe función
+        const resetFunc = window['reset' + formId.charAt(0).toUpperCase() + formId.slice(1).replace('Form', 'Form')];
+        if (resetFunc && typeof resetFunc === 'function') {
+            resetFunc();
         }
     } else {
-        // En desktop: lógica original
-        const isVisible = form.style.display !== 'none';
-        
-        if (isVisible) {
-            // Ocultar formulario
-            form.style.display = 'none';
-            if (icon) icon.textContent = '➕';
-            if (text) {
-                const formNames = {
-                    'transactionForm': 'Nueva Transacción',
-                    'propertyForm': 'Nueva Propiedad',
-                    'accountForm': 'Nueva Cuenta',
-                    'loanForm': 'Nuevo Préstamo',
-                    'investmentForm': 'Nueva Inversión',
-                    'patrimonioForm': 'Nueva Propiedad',
-                    'budgetForm': 'Nuevo Presupuesto',
-                    'envelopeForm': 'Nuevo Sobre'
-                };
-                text.textContent = formNames[formId] || 'Nuevo';
-            }
-            // Resetear formulario si existe función
-            const resetFunc = window['reset' + formId.charAt(0).toUpperCase() + formId.slice(1).replace('Form', 'Form')];
-            if (resetFunc && typeof resetFunc === 'function') {
-                resetFunc();
-            }
-        } else {
-            // Mostrar formulario
-            form.style.display = 'block';
-            if (icon) icon.textContent = '➖';
-            if (text) text.textContent = 'Cancelar';
-            // Scroll suave al formulario
-            setTimeout(() => {
-                form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
-        }
+        // Mostrar formulario
+        form.style.display = 'block';
+        if (icon) icon.textContent = '➖';
+        if (text) text.textContent = 'Cancelar';
+        // Scroll suave al formulario
+        setTimeout(() => {
+            form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
     }
 }
 
@@ -1495,6 +1450,31 @@ function toggleDashboardDropdown() {
     toggleMainNavDropdown(); // Redirigir al menú principal
 }
 
+// Toggle de filtros de transacciones en móvil
+function toggleTransactionFilters() {
+    const filters = document.getElementById('transactionFilters');
+    const toggleBtn = document.getElementById('toggleFiltersBtn');
+    const toggleText = document.getElementById('toggleFiltersText');
+    const toggleIcon = document.getElementById('toggleFiltersIcon');
+    
+    if (filters && toggleBtn && toggleText && toggleIcon) {
+        const isExpanded = filters.classList.contains('expanded');
+        
+        if (isExpanded) {
+            filters.classList.remove('expanded');
+            toggleText.textContent = 'Mostrar Filtros';
+            toggleIcon.style.transform = 'rotate(0deg)';
+        } else {
+            filters.classList.add('expanded');
+            toggleText.textContent = 'Ocultar Filtros';
+            toggleIcon.style.transform = 'rotate(180deg)';
+        }
+    }
+}
+
+// Exponer función globalmente
+window.toggleTransactionFilters = toggleTransactionFilters;
+
 // Cerrar dropdown al hacer clic fuera
 document.addEventListener('click', function(event) {
     const mainDropdown = document.getElementById('mainNavDropdown');
@@ -2027,53 +2007,6 @@ function initializeForms() {
             updateTransactionsTable();
         });
     }
-    
-    // Actualizar toggle de filtros del dashboard
-    function toggleTransactionFiltersDashboard() {
-        const filtersContainer = document.getElementById('transactionFiltersDashboard');
-        const toggleBtn = document.getElementById('toggleFiltersBtnDashboard');
-        const toggleText = document.getElementById('toggleFiltersTextDashboard');
-        
-        if (filtersContainer && toggleBtn && toggleText) {
-            const isExpanded = filtersContainer.classList.contains('expanded');
-            
-            if (isExpanded) {
-                filtersContainer.classList.remove('expanded');
-                toggleText.textContent = 'Mostrar Filtros';
-            } else {
-                filtersContainer.classList.add('expanded');
-                toggleText.textContent = 'Ocultar Filtros';
-            }
-        }
-    }
-    
-    // Exponer función globalmente
-    window.toggleTransactionFiltersDashboard = toggleTransactionFiltersDashboard;
-    
-    // Actualizar visibilidad del botón de filtros del dashboard
-    function updateFilterToggleVisibilityDashboard() {
-        const toggleBtn = document.getElementById('toggleFiltersBtnDashboard');
-        const filtersContainer = document.getElementById('transactionFiltersDashboard');
-        
-        if (toggleBtn && filtersContainer) {
-            if (window.innerWidth <= 768) {
-                toggleBtn.style.display = 'flex';
-                if (!filtersContainer.classList.contains('expanded')) {
-                    filtersContainer.classList.remove('expanded');
-                }
-            } else {
-                toggleBtn.style.display = 'none';
-                filtersContainer.classList.add('expanded');
-            }
-        }
-    }
-    
-    // Sincronizar actualización de filtros
-    const originalUpdateFilterToggleVisibility = updateFilterToggleVisibility;
-    updateFilterToggleVisibility = function() {
-        originalUpdateFilterToggleVisibility();
-        updateFilterToggleVisibilityDashboard();
-    };
     
     // Selector de período para gráficas (global - mantener para compatibilidad)
     const chartPeriod = document.getElementById('chartPeriod');
@@ -3069,24 +3002,13 @@ let currentPage = 1;
 let rowsPerPage = 25;
 
 function updateTransactionsTable() {
-    // Actualizar ambas tablas: la de la pestaña y la del dashboard
     const tbody = document.getElementById('transactionsBody');
-    const tbodyDashboard = document.getElementById('transactionsBodyDashboard');
-    
-    // Obtener valores de filtros (priorizar dashboard si existe, sino usar los de la pestaña)
-    const searchInput = document.getElementById('searchInputDashboard') || document.getElementById('searchInput');
-    const filterCategoryEl = document.getElementById('filterCategoryDashboard') || document.getElementById('filterCategory');
-    const filterMonthEl = document.getElementById('filterMonthDashboard') || document.getElementById('filterMonth');
-    const filterStartDateEl = document.getElementById('filterStartDateDashboard') || document.getElementById('filterStartDate');
-    const filterEndDateEl = document.getElementById('filterEndDateDashboard') || document.getElementById('filterEndDate');
-    const rowsPerPageSelect = document.getElementById('rowsPerPageDashboard') || document.getElementById('rowsPerPage');
-    
-    const searchTerm = searchInput?.value.toLowerCase() || '';
-    const filterCategory = filterCategoryEl?.value || '';
-    const filterMonth = filterMonthEl?.value || '';
-    const filterStartDate = filterStartDateEl?.value || '';
-    const filterEndDate = filterEndDateEl?.value || '';
-    
+    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    const filterCategory = document.getElementById('filterCategory')?.value || '';
+    const filterMonth = document.getElementById('filterMonth')?.value || '';
+    const filterStartDate = document.getElementById('filterStartDate')?.value || '';
+    const filterEndDate = document.getElementById('filterEndDate')?.value || '';
+    const rowsPerPageSelect = document.getElementById('rowsPerPage');
     if (rowsPerPageSelect) {
         rowsPerPage = parseInt(rowsPerPageSelect.value) || 25;
     }
@@ -3129,64 +3051,7 @@ function updateTransactionsTable() {
         });
     }
     
-    // Función auxiliar para renderizar filas
-    const renderTransactionRow = (transaction, targetTbody) => {
-        if (!targetTbody) return;
-        
-        const row = document.createElement('tr');
-        const date = new Date(transaction.date);
-        
-        // Buscar nombre de categoría
-        let categoryName = transaction.categoryGeneral;
-        if (transaction.type === 'expense') {
-            const expenseCat = categories.expense.find(c => c.id === transaction.categoryGeneral);
-            if (expenseCat) {
-                categoryName = expenseCat.name;
-            } else {
-                categoryName = transaction.categoryGeneral;
-            }
-        } else {
-            const incomeCat = categories.income.find(c => c.id === transaction.categoryGeneral);
-            if (incomeCat) {
-                categoryName = incomeCat.name;
-            } else {
-                categoryName = transaction.categoryGeneral;
-            }
-        }
-        
-        // Buscar nombre de cuenta
-        let accountName = '-';
-        if (transaction.account_id) {
-            const account = accounts.find(a => (a._id || a.id) === transaction.account_id);
-            accountName = account ? account.name : '-';
-        }
-        
-        // Buscar nombre de propiedad
-        let propertyName = '-';
-        if (transaction.property_id) {
-            const property = properties.find(p => (p._id || p.id) === transaction.property_id);
-            propertyName = property ? property.name : '-';
-        }
-        
-        // Buscar nombre de sobre
-        let envelopeName = transaction.envelope || '-';
-        
-        row.innerHTML = `
-            <td>${date.toLocaleDateString('es-ES')}</td>
-            <td><span class="badge ${transaction.type === 'income' ? 'badge-success' : 'badge-danger'}">${transaction.type === 'income' ? 'Ingreso' : 'Gasto'}</span></td>
-            <td>${categoryName}</td>
-            <td>${transaction.description || '-'}</td>
-            <td>${accountName}</td>
-            <td>${propertyName}</td>
-            <td>${envelopeName}</td>
-            <td class="${transaction.type === 'income' ? 'amount positive' : 'amount negative'}">${transaction.type === 'income' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)} €</td>
-            <td>
-                <button onclick="editTransaction('${transaction._id || transaction.id}')" class="btn-sm btn-secondary">Editar</button>
-                <button onclick="deleteTransaction('${transaction._id || transaction.id}')" class="btn-sm btn-danger">Eliminar</button>
-            </td>
-        `;
-        targetTbody.appendChild(row);
-    };
+    if (!tbody) return;
     
     // Ordenar transacciones
     filtered.sort((a, b) => {
@@ -3238,14 +3103,10 @@ function updateTransactionsTable() {
         return 0;
     });
     
-    // Limpiar ambas tablas
-    if (tbody) tbody.innerHTML = '';
-    if (tbodyDashboard) tbodyDashboard.innerHTML = '';
+    tbody.innerHTML = '';
     
     if (filtered.length === 0) {
-        const emptyMessage = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">No hay transacciones registradas</td></tr>';
-        if (tbody) tbody.innerHTML = emptyMessage;
-        if (tbodyDashboard) tbodyDashboard.innerHTML = emptyMessage;
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">No hay transacciones registradas</td></tr>';
         return;
     }
     
@@ -3257,10 +3118,57 @@ function updateTransactionsTable() {
         transactionsToShow = filtered.slice(startIndex, endIndex);
     }
     
-    // Renderizar en ambas tablas
     transactionsToShow.forEach(transaction => {
-        renderTransactionRow(transaction, tbody);
-        renderTransactionRow(transaction, tbodyDashboard);
+        const row = document.createElement('tr');
+        const date = new Date(transaction.date);
+        
+        // Buscar nombre de categoría
+        let categoryName = transaction.categoryGeneral;
+        if (transaction.type === 'expense') {
+            const expenseCat = categories.expense.find(c => c.id === transaction.categoryGeneral);
+            if (expenseCat) {
+                categoryName = expenseCat.name;
+            } else {
+                categoryName = transaction.categoryGeneral;
+            }
+        } else {
+            const incomeCat = categories.income.find(c => c.id === transaction.categoryGeneral);
+            if (incomeCat) {
+                categoryName = incomeCat.name;
+            } else {
+                categoryName = transaction.categoryGeneral;
+            }
+        }
+        
+        // Buscar nombre de cuenta
+        let accountName = '-';
+        if (transaction.account_id) {
+            const account = accounts.find(a => (a._id || a.id) === transaction.account_id);
+            accountName = account ? account.name : '-';
+        }
+        
+        // Buscar nombre de propiedad
+        let propertyName = '-';
+        if (transaction.property_id) {
+            const property = properties.find(p => (p._id || p.id) === transaction.property_id);
+            propertyName = property ? property.name : '-';
+        }
+        
+        row.innerHTML = `
+            <td>${formatDate(date)}</td>
+            <td><span class="badge badge-${transaction.type}">${transaction.type === 'income' ? 'Ingreso' : 'Gasto'}</span></td>
+            <td>${categoryName} - ${transaction.categorySpecific}</td>
+            <td>${transaction.description || '-'}</td>
+            <td>${accountName}</td>
+            <td>${propertyName}</td>
+            <td>${transaction.envelope || '-'}</td>
+            <td style="font-weight: 600; color: ${transaction.amount >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(transaction.amount)}</td>
+            <td style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-secondary" onclick="editTransaction('${transaction._id || transaction.id}')" style="flex: 1; min-width: 80px;">Editar</button>
+                <button class="btn-danger" onclick="deleteTransaction('${transaction._id || transaction.id}')" style="flex: 1; min-width: 80px;">Eliminar</button>
+            </td>
+        `;
+        tbody.appendChild(row);
     });
     
     // Mostrar información de paginación si hay más filas que las mostradas
@@ -13472,466 +13380,6 @@ try {
 } catch (error) {
     console.error('❌ Error al exponer openChartModal al final:', error);
 }
-
-// Función para mostrar/ocultar filtros de transacciones en móvil
-function toggleTransactionFilters() {
-    const filtersContainer = document.getElementById('transactionFilters');
-    const toggleBtn = document.getElementById('toggleFiltersBtn');
-    const toggleText = document.getElementById('toggleFiltersText');
-    
-    if (filtersContainer && toggleBtn && toggleText) {
-        const isExpanded = filtersContainer.classList.contains('expanded');
-        
-        if (isExpanded) {
-            filtersContainer.classList.remove('expanded');
-            toggleText.textContent = 'Mostrar Filtros';
-        } else {
-            filtersContainer.classList.add('expanded');
-            toggleText.textContent = 'Ocultar Filtros';
-        }
-    }
-}
-
-// Exponer función globalmente
-window.toggleTransactionFilters = toggleTransactionFilters;
-
-// Detectar tamaño de pantalla y mostrar/ocultar botón
-function updateFilterToggleVisibility() {
-    const toggleBtn = document.getElementById('toggleFiltersBtn');
-    const filtersContainer = document.getElementById('transactionFilters');
-    
-    if (toggleBtn && filtersContainer) {
-        if (window.innerWidth <= 768) {
-            toggleBtn.style.display = 'flex';
-            // Asegurar que esté colapsado en móvil
-            if (!filtersContainer.classList.contains('expanded')) {
-                filtersContainer.classList.remove('expanded');
-            }
-        } else {
-            toggleBtn.style.display = 'none';
-            // Asegurar que esté expandido en desktop
-            filtersContainer.classList.add('expanded');
-        }
-    }
-}
-
-// Función para actualizar visibilidad de formularios en móvil
-function updateFormSectionsVisibility() {
-    const isMobile = window.innerWidth <= 768;
-    const formSections = document.querySelectorAll('.form-section');
-    
-    formSections.forEach(section => {
-        if (isMobile) {
-            // En móvil: mantener estado actual (no forzar colapso si ya está expandido)
-            // Solo asegurar que los colapsados estén correctamente ocultos
-            if (!section.classList.contains('expanded')) {
-                section.classList.remove('expanded');
-            }
-        } else {
-            // En desktop: expandir siempre
-            section.classList.add('expanded');
-        }
-    });
-}
-
-// Función para abrir modal de transacción rápida
-function openQuickTransactionModal() {
-    const modal = document.getElementById('quickTransactionModal');
-    if (!modal) return;
-    
-    // Inicializar fecha con hoy
-    const dateInput = document.getElementById('quickTransactionDate');
-    if (dateInput) {
-        const today = new Date();
-        dateInput.value = today.toISOString().split('T')[0];
-    }
-    
-    // Sincronizar selectores con los del formulario principal
-    syncQuickTransactionSelectors();
-    
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-// Función para cerrar modal de transacción rápida
-function closeQuickTransactionModal() {
-    const modal = document.getElementById('quickTransactionModal');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-    }
-    
-    // Resetear formulario
-    const form = document.getElementById('quickTransactionForm');
-    if (form) {
-        form.reset();
-        // Resetear fecha a hoy
-        const dateInput = document.getElementById('quickTransactionDate');
-        if (dateInput) {
-            const today = new Date();
-            dateInput.value = today.toISOString().split('T')[0];
-        }
-    }
-}
-
-// Sincronizar selectores del modal con los del formulario principal
-function syncQuickTransactionSelectors() {
-    // Sincronizar categorías generales
-    const mainCategoryGeneral = document.getElementById('categoryGeneral');
-    const quickCategoryGeneral = document.getElementById('quickCategoryGeneral');
-    if (mainCategoryGeneral && quickCategoryGeneral) {
-        quickCategoryGeneral.innerHTML = mainCategoryGeneral.innerHTML;
-    }
-    
-    // Sincronizar sobres
-    const mainEnvelope = document.getElementById('envelope');
-    const quickEnvelope = document.getElementById('quickEnvelope');
-    if (mainEnvelope && quickEnvelope) {
-        quickEnvelope.innerHTML = mainEnvelope.innerHTML;
-    }
-}
-
-// Ejecutar al cargar y al redimensionar
-if (typeof window !== 'undefined') {
-    window.addEventListener('resize', () => {
-        updateFilterToggleVisibility();
-        updateFormSectionsVisibility();
-        updateFloatingButtonVisibility();
-    });
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            updateFilterToggleVisibility();
-            updateFormSectionsVisibility();
-            updateFloatingButtonVisibility();
-            initializeQuickTransactionModal();
-        });
-    } else {
-        updateFilterToggleVisibility();
-        updateFormSectionsVisibility();
-        updateFloatingButtonVisibility();
-        initializeQuickTransactionModal();
-    }
-}
-
-// Inicializar modal de transacción rápida
-function initializeQuickTransactionModal() {
-    const quickCategoryGeneral = document.getElementById('quickCategoryGeneral');
-    const quickCategorySpecific = document.getElementById('quickCategorySpecific');
-    
-    if (quickCategoryGeneral && quickCategorySpecific) {
-        quickCategoryGeneral.addEventListener('change', () => {
-            const categoryGeneral = quickCategoryGeneral.value;
-            const type = document.getElementById('quickTransactionType')?.value || 'expense';
-            
-            if (!categoryGeneral) {
-                quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
-                return;
-            }
-            
-            // Buscar la categoría en el array de categorías
-            const categoryList = type === 'income' ? categories.income : categories.expense;
-            const selectedCategory = categoryList.find(cat => cat.id === categoryGeneral);
-            
-            quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
-            
-            if (selectedCategory && selectedCategory.subcategories) {
-                selectedCategory.subcategories.forEach(sub => {
-                    const option = document.createElement('option');
-                    option.value = sub.id;
-                    option.textContent = sub.name;
-                    quickCategorySpecific.appendChild(option);
-                });
-            }
-        });
-        
-        // Manejar cambio de tipo en modal rápido
-        const quickTransactionType = document.getElementById('quickTransactionType');
-        if (quickTransactionType) {
-            quickTransactionType.addEventListener('change', () => {
-                // Actualizar categorías generales
-                const type = quickTransactionType.value;
-                const categoryList = type === 'income' ? categories.income : categories.expense;
-                
-                quickCategoryGeneral.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
-                categoryList.forEach(cat => {
-                    const option = document.createElement('option');
-                    option.value = cat.id;
-                    option.textContent = cat.name;
-                    quickCategoryGeneral.appendChild(option);
-                });
-                
-                // Resetear categoría específica
-                quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
-            });
-        }
-    }
-    
-    // Manejar envío del formulario rápido
-    const quickTransactionForm = document.getElementById('quickTransactionForm');
-    if (quickTransactionForm) {
-        quickTransactionForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Copiar valores del formulario rápido al formulario principal
-            const quickType = document.getElementById('quickTransactionType')?.value;
-            const quickDate = document.getElementById('quickTransactionDate')?.value;
-            const quickAmount = document.getElementById('quickTransactionAmount')?.value;
-            const quickCategoryGeneral = document.getElementById('quickCategoryGeneral')?.value;
-            const quickCategorySpecific = document.getElementById('quickCategorySpecific')?.value;
-            const quickEnvelope = document.getElementById('quickEnvelope')?.value;
-            const quickDescription = document.getElementById('quickTransactionDescription')?.value;
-            
-            // Asignar valores al formulario principal
-            const mainType = document.getElementById('transactionType');
-            const mainDate = document.getElementById('transactionDate');
-            const mainAmount = document.getElementById('transactionAmount');
-            const mainCategoryGeneral = document.getElementById('categoryGeneral');
-            const mainCategorySpecific = document.getElementById('categorySpecific');
-            const mainEnvelope = document.getElementById('envelope');
-            const mainDescription = document.getElementById('transactionDescription');
-            
-            if (mainType) mainType.value = quickType || '';
-            if (mainDate) mainDate.value = quickDate || '';
-            if (mainAmount) mainAmount.value = quickAmount || '';
-            if (mainCategoryGeneral) mainCategoryGeneral.value = quickCategoryGeneral || '';
-            if (mainCategorySpecific) {
-                mainCategorySpecific.value = quickCategorySpecific || '';
-                // Disparar evento change para actualizar subcategorías si es necesario
-                if (mainCategoryGeneral) {
-                    mainCategoryGeneral.dispatchEvent(new Event('change'));
-                    setTimeout(() => {
-                        if (mainCategorySpecific) mainCategorySpecific.value = quickCategorySpecific || '';
-                    }, 100);
-                }
-            }
-            if (mainEnvelope) mainEnvelope.value = quickEnvelope || '';
-            if (mainDescription) mainDescription.value = quickDescription || '';
-            
-            // Enviar usando la función existente
-            await addTransaction();
-            
-            // Cerrar modal
-            closeQuickTransactionModal();
-        });
-    }
-    
-    // Cerrar modal al hacer clic fuera
-    const quickTransactionModal = document.getElementById('quickTransactionModal');
-    if (quickTransactionModal) {
-        quickTransactionModal.addEventListener('click', (e) => {
-            if (e.target === quickTransactionModal) {
-                closeQuickTransactionModal();
-            }
-        });
-    }
-}
-
-// Actualizar visibilidad del botón flotante
-function updateFloatingButtonVisibility() {
-    const floatingBtn = document.getElementById('floatingAddTransactionBtn');
-    if (floatingBtn) {
-        if (window.innerWidth <= 768) {
-            floatingBtn.style.display = 'flex';
-        } else {
-            floatingBtn.style.display = 'none';
-        }
-    }
-}
-
-// Exponer funciones globalmente
-window.openQuickTransactionModal = openQuickTransactionModal;
-window.closeQuickTransactionModal = closeQuickTransactionModal;
-
-// Función para abrir modal de transacción rápida
-function openQuickTransactionModal() {
-    const modal = document.getElementById('quickTransactionModal');
-    if (!modal) return;
-    
-    // Inicializar fecha con hoy
-    const dateInput = document.getElementById('quickTransactionDate');
-    if (dateInput) {
-        const today = new Date();
-        dateInput.value = today.toISOString().split('T')[0];
-    }
-    
-    // Sincronizar selectores con los del formulario principal
-    syncQuickTransactionSelectors();
-    
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-// Función para cerrar modal de transacción rápida
-function closeQuickTransactionModal() {
-    const modal = document.getElementById('quickTransactionModal');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-    }
-    
-    // Resetear formulario
-    const form = document.getElementById('quickTransactionForm');
-    if (form) {
-        form.reset();
-        // Resetear fecha a hoy
-        const dateInput = document.getElementById('quickTransactionDate');
-        if (dateInput) {
-            const today = new Date();
-            dateInput.value = today.toISOString().split('T')[0];
-        }
-    }
-}
-
-// Sincronizar selectores del modal con los del formulario principal
-function syncQuickTransactionSelectors() {
-    // Sincronizar categorías generales
-    const mainCategoryGeneral = document.getElementById('categoryGeneral');
-    const quickCategoryGeneral = document.getElementById('quickCategoryGeneral');
-    if (mainCategoryGeneral && quickCategoryGeneral) {
-        quickCategoryGeneral.innerHTML = mainCategoryGeneral.innerHTML;
-    }
-    
-    // Sincronizar sobres
-    const mainEnvelope = document.getElementById('envelope');
-    const quickEnvelope = document.getElementById('quickEnvelope');
-    if (mainEnvelope && quickEnvelope) {
-        quickEnvelope.innerHTML = mainEnvelope.innerHTML;
-    }
-}
-
-// Manejar cambio de categoría general en modal rápido
-if (typeof document !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', () => {
-        const quickCategoryGeneral = document.getElementById('quickCategoryGeneral');
-        const quickCategorySpecific = document.getElementById('quickCategorySpecific');
-        
-        if (quickCategoryGeneral && quickCategorySpecific) {
-            quickCategoryGeneral.addEventListener('change', () => {
-                const categoryGeneral = quickCategoryGeneral.value;
-                const type = document.getElementById('quickTransactionType')?.value || 'expense';
-                
-                if (!categoryGeneral) {
-                    quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
-                    return;
-                }
-                
-                // Buscar la categoría en el array de categorías
-                const categoryList = type === 'income' ? categories.income : categories.expense;
-                const selectedCategory = categoryList.find(cat => cat.id === categoryGeneral);
-                
-                quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
-                
-                if (selectedCategory && selectedCategory.subcategories) {
-                    selectedCategory.subcategories.forEach(sub => {
-                        const option = document.createElement('option');
-                        option.value = sub.id;
-                        option.textContent = sub.name;
-                        quickCategorySpecific.appendChild(option);
-                    });
-                }
-            });
-            
-            // Manejar cambio de tipo en modal rápido
-            const quickTransactionType = document.getElementById('quickTransactionType');
-            if (quickTransactionType) {
-                quickTransactionType.addEventListener('change', () => {
-                    // Actualizar categorías generales
-                    const type = quickTransactionType.value;
-                    const categoryList = type === 'income' ? categories.income : categories.expense;
-                    
-                    quickCategoryGeneral.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
-                    categoryList.forEach(cat => {
-                        const option = document.createElement('option');
-                        option.value = cat.id;
-                        option.textContent = cat.name;
-                        quickCategoryGeneral.appendChild(option);
-                    });
-                    
-                    // Resetear categoría específica
-                    quickCategorySpecific.innerHTML = '<option value="" data-translate="common.select">Seleccionar...</option>';
-                });
-            }
-        }
-        
-        // Manejar envío del formulario rápido
-        const quickTransactionForm = document.getElementById('quickTransactionForm');
-        if (quickTransactionForm) {
-            quickTransactionForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                // Copiar valores del formulario rápido al formulario principal
-                const quickType = document.getElementById('quickTransactionType')?.value;
-                const quickDate = document.getElementById('quickTransactionDate')?.value;
-                const quickAmount = document.getElementById('quickTransactionAmount')?.value;
-                const quickCategoryGeneral = document.getElementById('quickCategoryGeneral')?.value;
-                const quickCategorySpecific = document.getElementById('quickCategorySpecific')?.value;
-                const quickEnvelope = document.getElementById('quickEnvelope')?.value;
-                const quickDescription = document.getElementById('quickTransactionDescription')?.value;
-                
-                // Asignar valores al formulario principal
-                const mainType = document.getElementById('transactionType');
-                const mainDate = document.getElementById('transactionDate');
-                const mainAmount = document.getElementById('transactionAmount');
-                const mainCategoryGeneral = document.getElementById('categoryGeneral');
-                const mainCategorySpecific = document.getElementById('categorySpecific');
-                const mainEnvelope = document.getElementById('envelope');
-                const mainDescription = document.getElementById('transactionDescription');
-                
-                if (mainType) mainType.value = quickType || '';
-                if (mainDate) mainDate.value = quickDate || '';
-                if (mainAmount) mainAmount.value = quickAmount || '';
-                if (mainCategoryGeneral) mainCategoryGeneral.value = quickCategoryGeneral || '';
-                if (mainCategorySpecific) {
-                    mainCategorySpecific.value = quickCategorySpecific || '';
-                    // Disparar evento change para actualizar subcategorías si es necesario
-                    if (mainCategoryGeneral) {
-                        mainCategoryGeneral.dispatchEvent(new Event('change'));
-                        setTimeout(() => {
-                            if (mainCategorySpecific) mainCategorySpecific.value = quickCategorySpecific || '';
-                        }, 100);
-                    }
-                }
-                if (mainEnvelope) mainEnvelope.value = quickEnvelope || '';
-                if (mainDescription) mainDescription.value = quickDescription || '';
-                
-                // Enviar usando la función existente
-                await addTransaction();
-                
-                // Cerrar modal
-                closeQuickTransactionModal();
-            });
-        }
-        
-        // Cerrar modal al hacer clic fuera
-        const quickTransactionModal = document.getElementById('quickTransactionModal');
-        if (quickTransactionModal) {
-            quickTransactionModal.addEventListener('click', (e) => {
-                if (e.target === quickTransactionModal) {
-                    closeQuickTransactionModal();
-                }
-            });
-        }
-        
-        // Actualizar visibilidad del botón flotante
-        function updateFloatingButtonVisibility() {
-            const floatingBtn = document.getElementById('floatingAddTransactionBtn');
-            if (floatingBtn) {
-                if (window.innerWidth <= 768) {
-                    floatingBtn.style.display = 'flex';
-                } else {
-                    floatingBtn.style.display = 'none';
-                }
-            }
-        }
-        
-        window.addEventListener('resize', updateFloatingButtonVisibility);
-        updateFloatingButtonVisibility();
-    });
-}
-
-// Exponer funciones globalmente
-window.openQuickTransactionModal = openQuickTransactionModal;
-window.closeQuickTransactionModal = closeQuickTransactionModal;
 
 // Cerrar el bloque de protección contra carga múltiple
 } // Cierre del else de window.VEEDOR_LOADED (línea 5)
