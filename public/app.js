@@ -3607,7 +3607,6 @@ function updateBudgets() {
             </div>
             ${isOverBudget ? `
                 <div style="margin-top: 12px; padding: 12px 16px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.15) 100%); border: 1.5px solid rgba(239, 68, 68, 0.3); border-left: 4px solid var(--danger); border-radius: 10px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);">
-                    <span style="font-size: 18px; line-height: 1;">⚠️</span>
                     <span style="color: var(--danger); font-size: 13px; font-weight: 700; flex: 1;">${isIncome ? 'Por debajo del presupuesto' : 'Presupuesto excedido'}</span>
                 </div>
             ` : ''}
