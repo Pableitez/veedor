@@ -10560,10 +10560,10 @@ function updateFinancialHealthMetrics() {
         {
             title: 'Salud Financiera',
             value: healthRatio > 999 ? '∞' : healthRatio < -999 ? '-∞' : healthRatio.toFixed(2),
-            description: `Activos / Deudas`,
+            description: `Cuántas veces tus activos cubren tus deudas (mayor es mejor)`,
             status: healthStatus,
             icon: '',
-            detail: !hasActiveDebts ? (totalAssets > 0 ? 'Sin deudas activas, activos positivos' : (totalAssets < 0 ? 'Sin deudas activas, pero activos negativos' : 'Sin deudas activas ni activos')) : (healthRatio > 3 ? 'Excelente' : healthRatio > 2 ? 'Buena' : healthRatio > 1 ? 'Moderada' : 'Baja')
+            detail: !hasActiveDebts ? (totalAssets > 0 ? 'Sin deudas activas, activos positivos' : (totalAssets < 0 ? 'Sin deudas activas, pero activos negativos' : 'Sin deudas activas ni activos')) : `Activos: ${formatCurrency(totalAssets)} | Deudas: ${formatCurrency(netDebt)} | ${healthRatio > 3 ? 'Excelente (≥3x)' : healthRatio > 2 ? 'Buena (2-3x)' : healthRatio > 1 ? 'Moderada (1-2x)' : 'Baja (<1x)'}`
         },
         {
             title: 'Cobertura de Deuda',
