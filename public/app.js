@@ -80,6 +80,11 @@ if (window.VEEDOR_LOADED) {
         const modal = document.getElementById('savingsGoalModal');
         if (modal) modal.style.display = 'none';
     };
+    window.showBaseFundModal = function() { console.warn('showBaseFundModal aún no está disponible'); };
+    window.closeBaseFundModal = function() { 
+        const modal = document.getElementById('baseFundModal');
+        if (modal) modal.style.display = 'none';
+    };
     window.openChartModal = function(chartType, title) {
         console.log('🔧 Stub openChartModal llamado:', { chartType, title, hasRealFunction: typeof window._openChartModalReal === 'function' });
         // Si la función real ya está disponible, usarla
@@ -218,6 +223,8 @@ let currentUser = null;
 let currentUserEmail = null;
 let authToken = null;
 let summaryPeriod = 'year'; // 'month', 'year', 'all'
+let savingsGoal = null; // Meta de ahorro (Fondo de Emergencia)
+let baseFund = null; // Fondo Base
 
 // Variables para debounce y cache
 let filterDebounceTimeouts = {};
@@ -2141,11 +2148,11 @@ function initializeForms() {
         });
     }
     
-    // Botón para establecer meta de ahorro
-    const setSavingsGoalBtn = document.getElementById('setSavingsGoalBtn');
-    if (setSavingsGoalBtn) {
-        setSavingsGoalBtn.addEventListener('click', () => {
-            showSavingsGoalModal();
+    // Botón para establecer fondo base
+    const setBaseFundBtn = document.getElementById('setBaseFundBtn');
+    if (setBaseFundBtn) {
+        setBaseFundBtn.addEventListener('click', () => {
+            showBaseFundModal();
         });
     }
     
@@ -12682,6 +12689,9 @@ window.closeTermsModal = closeTermsModal;
 window.showSavingsGoalModal = showSavingsGoalModal;
 window.closeSavingsGoalModal = closeSavingsGoalModal;
 window.deleteSavingsGoal = deleteSavingsGoal;
+window.showBaseFundModal = showBaseFundModal;
+window.closeBaseFundModal = closeBaseFundModal;
+window.deleteBaseFund = deleteBaseFund;
 window.showFinancialHealthDetail = showFinancialHealthDetail;
 window.showAddMoneyInvestmentModal = showAddMoneyInvestmentModal;
 window.closeAddMoneyInvestmentModal = closeAddMoneyInvestmentModal;

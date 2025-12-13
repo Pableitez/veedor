@@ -3138,8 +3138,8 @@ tbody tr:last-child td {
         touch-action: manipulation; /* Mejora respuesta táctil */
     }
     
-    /* Botón de Establecer Fondo de Emergencia en móvil */
-    #setSavingsGoalBtn {
+    /* Botón de Establecer Fondo Base en móvil */
+    #setBaseFundBtn {
         width: 100% !important;
         flex: 1 1 100% !important;
         min-height: 44px !important;
@@ -3155,7 +3155,7 @@ tbody tr:last-child td {
         max-width: 100% !important;
     }
     
-    #setSavingsGoalBtn span {
+    #setBaseFundBtn span {
         white-space: normal !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;

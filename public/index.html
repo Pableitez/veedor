@@ -782,8 +782,8 @@
                 <div class="form-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
                         <h2 style="margin: 0; flex: 1 1 auto; min-width: 0;">Gestionar Presupuestos y Sobres</h2>
-                        <button type="button" id="setSavingsGoalBtn" class="btn-primary" onclick="showSavingsGoalModal();" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; flex: 0 0 auto;">
-                            <span style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">Establecer Fondo de Emergencia</span>
+                        <button type="button" id="setBaseFundBtn" class="btn-primary" onclick="showBaseFundModal();" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; flex: 0 0 auto;">
+                            <span style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">Fondo Base</span>
                         </button>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 24px;" class="budgets-form-grid">
@@ -1680,25 +1680,25 @@
         </div>
     </div>
 
-    <!-- Modal para Fondo de Emergencia -->
-    <div id="savingsGoalModal" class="modal" style="display: none;">
+    <!-- Modal para Fondo Base -->
+    <div id="baseFundModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 500px;">
             <div style="background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">🛡️ Fondo de Emergencia</h2>
-                    <button onclick="closeSavingsGoalModal()" style="background: rgba(255,255,255,0.2);  border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Fondo Base</h2>
+                    <button onclick="closeBaseFundModal()" style="background: rgba(255,255,255,0.2);  border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                 </div>
             </div>
             <div style="padding: 32px;">
-                <form id="savingsGoalForm" style="display: flex; flex-direction: column; gap: 20px;">
+                <form id="baseFundForm" style="display: flex; flex-direction: column; gap: 20px;">
                     <div class="form-group">
-                        <label for="savingsGoalInput">Establece tu fondo de emergencia (en euros)</label>
-                        <input type="number" id="savingsGoalInput" min="0" step="0.01" placeholder="Ej: 10000" style="width: 100%; padding: 14px 18px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 15px;">
-                        <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px;">Recomendación: 3-6 meses de gastos</small>
+                        <label for="baseFundInput">Establece tu fondo base (en euros)</label>
+                        <input type="number" id="baseFundInput" min="0" step="0.01" placeholder="Ej: 5000" style="width: 100%; padding: 14px 18px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 15px;">
+                        <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px;">Cantidad base que deseas mantener disponible</small>
                     </div>
                     <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                        <button type="button" class="btn-secondary" onclick="closeSavingsGoalModal()">Cancelar</button>
-                        <button type="button" class="btn-secondary" onclick="deleteSavingsGoal()" style="background: var(--danger); color: white; border-color: var(--danger);">Eliminar Fondo</button>
+                        <button type="button" class="btn-secondary" onclick="closeBaseFundModal()">Cancelar</button>
+                        <button type="button" class="btn-secondary" onclick="deleteBaseFund()" style="background: var(--danger); color: white; border-color: var(--danger);">Eliminar Fondo</button>
                         <button type="submit" class="btn-primary">Guardar</button>
                     </div>
                 </form>

@@ -16,7 +16,7 @@ Si después de crear el perfil dummy ves el mensaje "Sesión expirada", simpleme
 2. **Inicia sesión** con las credenciales de arriba
 3. El usuario dummy está completamente funcional y listo para usar
 
-El mensaje de "sesión expirada" aparece porque puede haber un token antiguo en el navegador. Al hacer login de nuevo con las credenciales del usuario dummy, todo funcionará correctamente.
+El mensaje de "sesión expirada" aparece porque puede haber un token antiguo en el navegador. Al hacer login de nuevo con las credenciales del usuario dummy, todo funcionará correctamente.comm
 
 ## 🚀 Cómo Ejecutar
 
