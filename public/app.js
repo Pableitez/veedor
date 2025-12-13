@@ -2248,6 +2248,7 @@ function initializeForms() {
                 }
                 
                 closeBaseFundModal();
+                updateSummary(); // Actualizar la card del fondo base
                 showToast('Fondo base guardado correctamente');
             } catch (error) {
                 console.error('Error al guardar el fondo base:', error);
