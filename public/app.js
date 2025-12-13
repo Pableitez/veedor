@@ -7547,15 +7547,15 @@ function updateChartFilters() {
         if (currentValue) loanFilter.value = currentValue;
     }
     
-    // Filtros de bienes
+    // Filtros de patrimonio
     const assetFilter = document.querySelector('.chart-asset-filter[data-chart="assetsEvolution"]');
     if (assetFilter) {
         const currentValue = assetFilter.value;
-        assetFilter.innerHTML = '<option value="all">Todos los bienes</option>';
-        assets.forEach(asset => {
+        assetFilter.innerHTML = '<option value="all">Todas las propiedades</option>';
+        patrimonio.forEach(prop => {
             const option = document.createElement('option');
-            option.value = asset._id || asset.id;
-            option.textContent = asset.name || `Bien ${asset._id || asset.id}`;
+            option.value = prop._id || prop.id;
+            option.textContent = prop.name || `Propiedad ${prop._id || prop.id}`;
             assetFilter.appendChild(option);
         });
         if (currentValue) assetFilter.value = currentValue;
@@ -9003,15 +9003,15 @@ function updateAssetsEvolutionChart() {
     const assetFilter = document.querySelector('.chart-asset-filter[data-chart="assetsEvolution"]');
     const selectedAsset = assetFilter ? assetFilter.value : 'all';
     
-    let filteredAssets = assets;
+    let filteredPatrimonio = patrimonio;
     if (selectedAsset !== 'all') {
-        filteredAssets = assets.filter(asset => (asset._id || asset.id) === selectedAsset);
+        filteredPatrimonio = patrimonio.filter(prop => (prop._id || prop.id) === selectedAsset);
     }
     const now = new Date();
     const months = [];
-    const assetsData = [];
+    const patrimonioData = [];
     
-    if (filteredAssets.length === 0) {
+    if (filteredPatrimonio.length === 0) {
         charts.assetsEvolution.data.labels = [];
         charts.assetsEvolution.data.datasets = [];
         charts.assetsEvolution.update();
@@ -9027,17 +9027,17 @@ function updateAssetsEvolutionChart() {
         months.push(monthKey);
         
         // Calcular patrimonio total en ese mes
-        let totalAssets = 0;
-        filteredAssets.forEach(asset => {
-            const purchaseDate = new Date(asset.purchase_date);
-            if (purchaseDate <= date) {
-                // Si el activo fue comprado antes o en ese mes, calcular su valor
-                let assetValue = asset.purchase_price || 0; // Valor inicial
+        let totalPatrimonio = 0;
+        filteredPatrimonio.forEach(prop => {
+            const purchaseDate = prop.purchase_date ? new Date(prop.purchase_date) : null;
+            if (!purchaseDate || purchaseDate <= date) {
+                // Si la propiedad fue comprada antes o en ese mes, calcular su valor
+                let propValue = prop.purchase_price || 0; // Valor inicial
                 
                 // Si hay historial de valores, buscar el más cercano a esa fecha
-                if (asset.value_history && asset.value_history.length > 0) {
+                if (prop.value_history && prop.value_history.length > 0) {
                     // Filtrar valores históricos hasta esa fecha
-                    const historicalValues = asset.value_history
+                    const historicalValues = prop.value_history
                         .filter(v => {
                             const vDate = new Date(v.date);
                             return vDate <= date;
@@ -9046,40 +9046,40 @@ function updateAssetsEvolutionChart() {
                     
                     if (historicalValues.length > 0) {
                         // Usar el valor histórico más reciente hasta esa fecha
-                        assetValue = historicalValues[0].value || asset.purchase_price || 0;
+                        propValue = historicalValues[0].value || prop.purchase_price || 0;
                     } else {
                         // Si no hay valores históricos antes de esa fecha, usar el precio de compra
-                        assetValue = asset.purchase_price || 0;
+                        propValue = prop.purchase_price || 0;
                     }
                 } else {
                     // Si no hay historial, usar el valor actual (asumiendo que es el valor en ese momento)
                     // O mejor, interpolar entre purchase_price y current_value basado en el tiempo
-                    if (asset.current_value && asset.purchase_price) {
+                    if (prop.current_value && prop.purchase_price && purchaseDate) {
                         const daysSincePurchase = (date - purchaseDate) / (1000 * 60 * 60 * 24);
                         const totalDays = (new Date() - purchaseDate) / (1000 * 60 * 60 * 24);
                         if (totalDays > 0) {
                             // Interpolación lineal simple
                             const progress = Math.min(1, daysSincePurchase / totalDays);
-                            assetValue = asset.purchase_price + (asset.current_value - asset.purchase_price) * progress;
+                            propValue = prop.purchase_price + (prop.current_value - prop.purchase_price) * progress;
                         } else {
-                            assetValue = asset.purchase_price;
+                            propValue = prop.purchase_price;
                         }
                     } else {
-                        assetValue = asset.current_value || asset.purchase_price || 0;
+                        propValue = prop.current_value || prop.purchase_price || 0;
                     }
                 }
                 
-                totalAssets += assetValue;
+                totalPatrimonio += propValue;
             }
         });
         
-        assetsData.push(totalAssets);
+        patrimonioData.push(totalPatrimonio);
     }
     
     charts.assetsEvolution.data.labels = months;
     charts.assetsEvolution.data.datasets = [{
         label: 'Patrimonio Total',
-        data: assetsData,
+        data: patrimonioData,
         borderColor: '#10B981',
         backgroundColor: 'rgba(16, 185, 129, 0.15)',
         tension: 0.4,
