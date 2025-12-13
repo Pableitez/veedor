@@ -2685,7 +2685,7 @@ function updateDisplay() {
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
         updateProperties(); // Actualizar propiedades
-        updateAssets(); // Actualizar patrimonio
+        updatePatrimonio(); // Actualizar patrimonio
         updateMonthFilter();
         updateMonthDashboard();
         
