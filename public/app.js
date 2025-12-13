@@ -3522,7 +3522,12 @@ function updateBudgets() {
                     <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%; background: ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'};"></div>
                 </div>
             </div>
-            ${isOverBudget ? `<div style="padding: 8px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 12px; font-weight: 600; margin-top: 8px;">${isIncome ? 'Por debajo del presupuesto' : 'Presupuesto excedido'}</div>` : ''}
+            ${isOverBudget ? `
+                <div style="margin-top: 12px; padding: 12px 16px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.15) 100%); border: 1.5px solid rgba(239, 68, 68, 0.3); border-left: 4px solid var(--danger); border-radius: 10px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);">
+                    <span style="font-size: 18px; line-height: 1;">⚠️</span>
+                    <span style="color: var(--danger); font-size: 13px; font-weight: 700; flex: 1;">${isIncome ? 'Por debajo del presupuesto' : 'Presupuesto excedido'}</span>
+                </div>
+            ` : ''}
             <div style="margin-top: 8px; padding: 6px; background: ${isIncome ? 'var(--success-light)' : 'var(--gray-50)'}; border-radius: var(--radius); font-size: 11px; color: var(--gray-700);">
                 ${isIncome ? 'Ingreso' : 'Gasto'}
             </div>
@@ -9934,7 +9939,12 @@ function updateMonthDashboard() {
                         <small style="font-size: 11px; color: var(--gray-500);">${categoryExpenses.length} transacciones</small>
                         <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}% usado</small>
                     </div>
-                    ${isOverBudget ? '<div style="margin-top: 8px; padding: 6px; background: #FEE2E2; border-radius: var(--radius); color: var(--danger); font-size: 11px; font-weight: 600;">Presupuesto excedido</div>' : ''}
+                    ${isOverBudget ? `
+                        <div style="margin-top: 10px; padding: 10px 12px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.15) 100%); border: 1.5px solid rgba(239, 68, 68, 0.3); border-left: 3px solid var(--danger); border-radius: 8px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.1);">
+                            <span style="font-size: 16px; line-height: 1;">⚠️</span>
+                            <span style="color: var(--danger); font-size: 12px; font-weight: 700;">Presupuesto excedido</span>
+                        </div>
+                    ` : ''}
                 `;
                 budgetsStatusContainer.appendChild(card);
             });
