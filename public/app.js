@@ -3227,62 +3227,6 @@ function updateTransactionsTable() {
         return 0;
     });
     
-    // Función auxiliar para renderizar filas
-    const renderTransactionRow = (transaction, targetTbody) => {
-        if (!targetTbody) return;
-        
-        const row = document.createElement('tr');
-        const date = new Date(transaction.date);
-        
-        // Buscar nombre de categoría
-        let categoryName = transaction.categoryGeneral;
-        if (transaction.type === 'expense') {
-            const expenseCat = categories.expense.find(c => c.id === transaction.categoryGeneral);
-            if (expenseCat) {
-                categoryName = expenseCat.name;
-            } else {
-                categoryName = transaction.categoryGeneral;
-            }
-        } else {
-            const incomeCat = categories.income.find(c => c.id === transaction.categoryGeneral);
-            if (incomeCat) {
-                categoryName = incomeCat.name;
-            } else {
-                categoryName = transaction.categoryGeneral;
-            }
-        }
-        
-        // Buscar nombre de cuenta
-        let accountName = '-';
-        if (transaction.account_id) {
-            const account = accounts.find(a => (a._id || a.id) === transaction.account_id);
-            accountName = account ? account.name : '-';
-        }
-        
-        // Buscar nombre de propiedad
-        let propertyName = '-';
-        if (transaction.property_id) {
-            const property = properties.find(p => (p._id || p.id) === transaction.property_id);
-            propertyName = property ? property.name : '-';
-        }
-        
-        row.innerHTML = `
-            <td>${formatDate(date)}</td>
-            <td><span class="badge badge-${transaction.type}">${transaction.type === 'income' ? 'Ingreso' : 'Gasto'}</span></td>
-            <td>${categoryName} - ${transaction.categorySpecific}</td>
-            <td>${transaction.description || '-'}</td>
-            <td>${accountName}</td>
-            <td>${propertyName}</td>
-            <td>${transaction.envelope || '-'}</td>
-            <td style="font-weight: 600; color: ${transaction.amount >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(transaction.amount)}</td>
-            <td style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="btn-secondary" onclick="editTransaction('${transaction._id || transaction.id}')" style="flex: 1; min-width: 80px;">Editar</button>
-                <button class="btn-danger" onclick="deleteTransaction('${transaction._id || transaction.id}')" style="flex: 1; min-width: 80px;">Eliminar</button>
-            </td>
-        `;
-        targetTbody.appendChild(row);
-    };
-    
     // Limpiar ambas tablas
     if (tbody) tbody.innerHTML = '';
     if (tbodyDashboard) tbodyDashboard.innerHTML = '';

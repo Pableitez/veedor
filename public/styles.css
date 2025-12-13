@@ -1419,7 +1419,6 @@ body.dark-mode .revolut-card:hover {
 
 .tab-btn:hover {
     color: var(--primary);
-    background: var(--gray-50);
 }
 
 .tab-btn.active {
