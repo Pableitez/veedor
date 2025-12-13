@@ -12674,6 +12674,35 @@ async function deleteSavingsGoal() {
     }
 }
 
+// Funciones para modal de fondo base
+function showBaseFundModal() {
+    const modal = document.getElementById('baseFundModal');
+    const input = document.getElementById('baseFundInput');
+    if (modal && input) {
+        input.value = baseFund || '';
+        modal.style.display = 'flex';
+    }
+}
+
+function closeBaseFundModal() {
+    const modal = document.getElementById('baseFundModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function deleteBaseFund() {
+    try {
+        baseFund = null;
+        await apiRequest('/user/profile', {
+            method: 'PUT',
+            body: JSON.stringify({ baseFund: null })
+        });
+        closeBaseFundModal();
+        showToast('Fondo base eliminado correctamente');
+    } catch (error) {
+        alert('Error al eliminar el fondo base: ' + error.message);
+    }
+}
+
 // Exponer funciones globales
 window.showUserProfile = showUserProfile;
 window.closeUserProfile = closeUserProfile;
