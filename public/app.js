@@ -7861,14 +7861,18 @@ function updateDashboardSavingsChart() {
                     const month = parseInt(summaryMonthSelect.value);
                     const year = parseInt(summaryMonthYear.value);
                     if (month && year) {
-                startMonth = month - 1;
-                startYear = year;
-            } else {
-                startMonth = now.getMonth();
-                startYear = now.getFullYear();
-            }
-            endMonth = startMonth;
-            endYear = startYear;
+                        startMonth = month - 1;
+                        startYear = year;
+                    } else {
+                        startMonth = now.getMonth();
+                        startYear = now.getFullYear();
+                    }
+                } else {
+                    startMonth = now.getMonth();
+                    startYear = now.getFullYear();
+                }
+                endMonth = startMonth;
+                endYear = startYear;
         } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
             if (summaryPeriod === 'year-select' && summaryYearInput && summaryYearInput.value) {
                 startYear = parseInt(summaryYearInput.value);
@@ -13345,4 +13349,3 @@ try {
 
 // Cerrar el bloque de protección contra carga múltiple
 } // Cierre del else de window.VEEDOR_LOADED (línea 5)
-} // Cierre del if de window.VEEDOR_LOADED (línea 3)
