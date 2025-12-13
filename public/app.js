@@ -8642,11 +8642,12 @@ function updateLoansOutstandingChart() {
     const loanFilter = document.querySelector('.chart-loan-filter[data-chart="loansPending"]');
     const selectedLoan = loanFilter ? loanFilter.value : 'all';
     
-    let filteredLoans = loans;
+    let filteredLoans = loans.filter(loan => loan.type === 'debt'); // Solo deudas
     if (selectedLoan !== 'all') {
-        filteredLoans = loans.filter(loan => (loan._id || loan.id) === selectedLoan);
+        filteredLoans = filteredLoans.filter(loan => (loan._id || loan.id) === selectedLoan);
     }
     const now = new Date();
+    now.setHours(0, 0, 0, 0);
     const months = [];
     const outstandingData = [];
     
@@ -8658,37 +8659,81 @@ function updateLoansOutstandingChart() {
     }
     
     // Calcular préstamos pendientes por mes
-    const periodMonths = period === 999 ? 12 : period;
+    // Si period es 999 (all), usar 30 años (360 meses)
+    let periodMonths = period === 999 ? 360 : period;
+    // Limitar a máximo 30 años (360 meses) para evitar cálculos excesivos
+    periodMonths = Math.min(periodMonths, 360);
     
-    for (let i = periodMonths - 1; i >= 0; i--) {
+    // Calcular desde el pasado hasta el futuro
+    // Dividir el período: algunos meses pasados y el resto hacia el futuro
+    const pastMonths = Math.min(12, Math.floor(periodMonths / 4)); // Últimos 12 meses como máximo, o 1/4 del período
+    const futureMonths = periodMonths - pastMonths; // Resto hacia el futuro
+    
+    // Meses pasados (desde el pasado hasta hoy)
+    for (let i = pastMonths - 1; i >= 0; i--) {
         const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        date.setHours(23, 59, 59, 999); // Fin del mes
+        date.setHours(23, 59, 59, 999);
         const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
         months.push(monthKey);
         
-        // Calcular préstamos pendientes en ese mes usando calculateAmortizationTable
         let totalOutstanding = 0;
         filteredLoans.forEach(loan => {
             const loanDate = new Date(loan.start_date);
+            loanDate.setHours(0, 0, 0, 0);
             if (loanDate <= date) {
-                // Calcular amortización hasta esa fecha específica
-                // Para cada mes histórico, calcular cuánto se había pagado hasta ese momento
                 const amortization = calculateAmortizationTable(
                     loan.principal,
                     loan.interest_rate,
                     loan.monthly_payment,
                     loan.start_date,
-                    0, // Empezar desde 0 pagos para calcular históricamente
+                    0,
                     loan.early_payments ? loan.early_payments.filter(ep => {
                         const epDate = new Date(ep.date);
+                        epDate.setHours(0, 0, 0, 0);
                         return epDate <= date;
-                    }) : [], // Solo pagos anticipados hasta esa fecha
-                    date // currentDateOverride: calcular hasta esta fecha
+                    }) : [],
+                    date
                 );
-                // El finalBalance es el capital pendiente en esa fecha
                 totalOutstanding += Math.max(0, amortization.finalBalance);
             } else {
-                // Si el préstamo aún no había comenzado, el pendiente es el principal completo
+                totalOutstanding += loan.principal;
+            }
+        });
+        
+        outstandingData.push(totalOutstanding);
+    }
+    
+    // Meses futuros (desde hoy hacia el futuro)
+    for (let i = 1; i <= futureMonths; i++) {
+        const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
+        date.setHours(23, 59, 59, 999);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        let totalOutstanding = 0;
+        filteredLoans.forEach(loan => {
+            const loanDate = new Date(loan.start_date);
+            loanDate.setHours(0, 0, 0, 0);
+            const loanEndDate = new Date(loan.end_date);
+            loanEndDate.setHours(23, 59, 59, 999);
+            
+            if (loanDate <= date && date <= loanEndDate) {
+                // Calcular amortización proyectada hasta esa fecha futura
+                const amortization = calculateAmortizationTable(
+                    loan.principal,
+                    loan.interest_rate,
+                    loan.monthly_payment,
+                    loan.start_date,
+                    0,
+                    loan.early_payments || [],
+                    date
+                );
+                totalOutstanding += Math.max(0, amortization.finalBalance);
+            } else if (date > loanEndDate) {
+                // Si la fecha futura es después del fin del préstamo, no hay deuda pendiente
+                totalOutstanding += 0;
+            } else if (loanDate > date) {
+                // Si el préstamo aún no ha comenzado, el pendiente es el principal completo
                 totalOutstanding += loan.principal;
             }
         });
