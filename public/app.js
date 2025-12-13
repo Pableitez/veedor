@@ -6596,8 +6596,8 @@ async function addAsset() {
     const location = document.getElementById('assetLocation').value.trim();
     const description = document.getElementById('assetDescription').value.trim();
     
-    if (!name || !type || !purchaseDate || isNaN(purchasePrice) || isNaN(currentValue)) {
-        alert('Por favor completa todos los campos requeridos');
+    if (!name || !type || !purchaseDate || isNaN(purchasePrice) || purchasePrice < 0 || isNaN(currentValue) || currentValue < 0) {
+        alert('Por favor completa todos los campos requeridos correctamente');
         return;
     }
     
