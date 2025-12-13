@@ -10735,7 +10735,7 @@ function generateRecommendations() {
                 recommendations.push({
                     type: 'loan_amortization',
                     priority: interestRate > 8 ? 'high' : 'medium',
-                    icon: '💰',
+                    icon: '',
                     title: `Amortizar préstamo "${loan.name}"`,
                     description: `Si ahorras ${formatCurrency(recommendedAmount)} durante ${Math.ceil(recommendedAmount / (monthSavings || 500))} meses y lo amortizas anticipadamente, podrías ahorrar aproximadamente ${formatCurrency(interestSaved)} en intereses y reducir el plazo en ${monthsSaved} meses.`,
                     impact: `Ahorro estimado: ${formatCurrency(interestSaved)}`,
@@ -10754,7 +10754,7 @@ function generateRecommendations() {
             recommendations.push({
                 type: 'loan_refinance',
                 priority: 'medium',
-                icon: '🔄',
+                icon: '',
                 title: `Considera refinanciar "${loan.name}"`,
                 description: `Tu préstamo tiene una tasa del ${interestRate}%. Si encuentras una tasa menor al ${(interestRate * 0.7).toFixed(1)}%, podrías ahorrar significativamente en intereses.`,
                 impact: `Tasa actual: ${interestRate}%`,
@@ -10787,7 +10787,7 @@ function generateRecommendations() {
         recommendations.push({
             type: 'subscriptions_review',
             priority: 'medium',
-            icon: '📱',
+            icon: '',
             title: 'Revisa tus suscripciones',
             description: `Detectamos ${subscriptionCount} suscripciones que suman ${formatCurrency(totalSubscriptions)}/mes. Si cancelas 1-2 que no uses frecuentemente, ahorrarías ${formatCurrency(totalSubscriptions * 0.3)}/mes (${formatCurrency(totalSubscriptions * 0.3 * 12)}/año).`,
             impact: `Ahorro potencial: ${formatCurrency(totalSubscriptions * 0.3 * 12)}/año`,
@@ -10815,7 +10815,7 @@ function generateRecommendations() {
                 recommendations.push({
                     type: 'savings_increase',
                     priority: 'medium',
-                    icon: '🎯',
+                    icon: '',
                     title: 'Aumenta tu tasa de ahorro',
                     description: `Con tu tasa actual (${savingsRate.toFixed(1)}%), alcanzarías tu meta en ${monthsToGoal} meses. Si aumentas al ${targetRate}%, lo lograrías en ${monthsWithTarget} meses.`,
                     impact: `Ahorro adicional: ${formatCurrency(targetSavings - monthSavings)}/mes`,
@@ -10838,7 +10838,7 @@ function generateRecommendations() {
             recommendations.push({
                 type: 'emergency_fund',
                 priority: liquidityRatio < 1 ? 'high' : 'medium',
-                icon: '🛡️',
+                icon: '',
                 title: 'Construye tu fondo de emergencia',
                 description: `Tu liquidez es de ${liquidityRatio.toFixed(1)} meses. Lo ideal es 3-6 meses. Te faltan ${formatCurrency(missing)} para alcanzar 6 meses de gastos (${formatCurrency(targetEmergencyFund)}).`,
                 impact: `Meta: ${formatCurrency(targetEmergencyFund)}`,
@@ -10859,7 +10859,7 @@ function generateRecommendations() {
         recommendations.push({
             type: 'debt_optimization',
             priority: debtToIncomeRatio > 40 ? 'high' : 'medium',
-            icon: '📉',
+            icon: '',
             title: 'Reduce tu ratio de endeudamiento',
             description: `Tu ratio es ${debtToIncomeRatio.toFixed(1)}% (ideal: <20%). Para alcanzarlo, necesitas reducir ${formatCurrency(neededReduction)}/mes en cuotas o aumentar tus ingresos.`,
             impact: `Reducción necesaria: ${formatCurrency(neededReduction)}/mes`,
@@ -10886,7 +10886,7 @@ function generateRecommendations() {
             recommendations.push({
                 type: 'budget_alert',
                 priority: percentage > 100 ? 'high' : 'medium',
-                icon: '⚠️',
+                icon: '',
                 title: `Presupuesto "${budget.category_id}" casi agotado`,
                 description: `Has gastado ${percentage.toFixed(1)}% del presupuesto (${formatCurrency(spent)} de ${formatCurrency(budget.amount)}) y aún quedan ${daysInMonth - daysPassed} días del mes.`,
                 impact: `Exceso: ${formatCurrency(Math.max(0, spent - budget.amount))}`,
@@ -10907,7 +10907,7 @@ function generateRecommendations() {
         recommendations.push({
             type: 'investment_opportunity',
             priority: 'low',
-            icon: '📈',
+            icon: '',
             title: 'Considera invertir el exceso de efectivo',
             description: `Tienes ${formatCurrency(excessCash)} más de lo necesario para tu fondo de emergencia. Considera invertir ${formatCurrency(recommendedInvestment)} para hacer crecer tu patrimonio.`,
             impact: `Oportunidad: ${formatCurrency(recommendedInvestment)}`,
@@ -10934,7 +10934,7 @@ function generateRecommendations() {
             recommendations.push({
                 type: 'category_review',
                 priority: 'low',
-                icon: '🔍',
+                icon: '',
                 title: `Revisa gastos en "${category}"`,
                 description: `Esta categoría representa el ${percentage.toFixed(1)}% de tus gastos (${formatCurrency(amount)}/mes). Considera si todos estos gastos son necesarios.`,
                 impact: `Gasto mensual: ${formatCurrency(amount)}`,
@@ -10957,7 +10957,7 @@ function generateRecommendations() {
                 recommendations.push({
                     type: 'patrimonio_update',
                     priority: 'low',
-                    icon: '🏠',
+                    icon: '',
                     title: `Actualiza el valor de "${prop.name}"`,
                     description: `Han pasado ${Math.floor(monthsSincePurchase)} meses desde la última actualización. Considera actualizar el valor actual para tener un seguimiento preciso.`,
                     impact: 'Mejor seguimiento',
@@ -10991,7 +10991,6 @@ function updateRecommendations() {
     if (recommendations.length === 0) {
         container.innerHTML = `
             <div style="grid-column: 1/-1; padding: 40px; text-align: center; background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color);">
-                <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
                 <h3 style="margin: 0 0 8px 0; color: var(--text-primary); font-size: 18px;">¡Todo está en orden!</h3>
                 <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">No hay recomendaciones específicas en este momento. Sigue así.</p>
             </div>
@@ -11072,7 +11071,7 @@ function updateRecommendations() {
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 24px;">${rec.icon}</span>
+                    ${rec.icon ? `<span style="font-size: 24px;">${rec.icon}</span>` : ''}
                     <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-primary);">${rec.title}</h3>
                 </div>
                 <span style="padding: 4px 10px; background: ${priorityBadge.bg}; color: ${priorityBadge.color}; border-radius: 12px; font-size: 11px; font-weight: 600;">
