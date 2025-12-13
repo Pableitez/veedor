@@ -13443,13 +13443,39 @@ function updateFilterToggleVisibility() {
     }
 }
 
+// Función para actualizar visibilidad de formularios en móvil
+function updateFormSectionsVisibility() {
+    const isMobile = window.innerWidth <= 768;
+    const formSections = document.querySelectorAll('.form-section');
+    
+    formSections.forEach(section => {
+        if (isMobile) {
+            // En móvil: mantener estado actual (no forzar colapso si ya está expandido)
+            // Solo asegurar que los colapsados estén correctamente ocultos
+            if (!section.classList.contains('expanded')) {
+                section.classList.remove('expanded');
+            }
+        } else {
+            // En desktop: expandir siempre
+            section.classList.add('expanded');
+        }
+    });
+}
+
 // Ejecutar al cargar y al redimensionar
 if (typeof window !== 'undefined') {
-    window.addEventListener('resize', updateFilterToggleVisibility);
+    window.addEventListener('resize', () => {
+        updateFilterToggleVisibility();
+        updateFormSectionsVisibility();
+    });
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', updateFilterToggleVisibility);
+        document.addEventListener('DOMContentLoaded', () => {
+            updateFilterToggleVisibility();
+            updateFormSectionsVisibility();
+        });
     } else {
         updateFilterToggleVisibility();
+        updateFormSectionsVisibility();
     }
 }
 
