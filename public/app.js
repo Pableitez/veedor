@@ -12750,6 +12750,7 @@ async function deleteBaseFund() {
             method: 'PUT',
             body: JSON.stringify({ baseFund: null })
         });
+        updateSummary(); // Actualizar la card del fondo base
         closeBaseFundModal();
         showToast('Fondo base eliminado correctamente');
     } catch (error) {
