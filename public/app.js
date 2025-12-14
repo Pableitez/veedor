@@ -3023,12 +3023,6 @@ async function updateSummary() {
     if (totalBalanceEl) totalBalanceEl.textContent = formatCurrency(totalBalance);
     if (totalBalancePeriodEl) totalBalancePeriodEl.textContent = periodLabel;
     
-    // Actualizar card de Balance Total
-    const totalBalanceCardEl = document.getElementById('totalBalanceCard');
-    if (totalBalanceCardEl) {
-        totalBalanceCardEl.textContent = formatCurrency(totalBalance);
-    }
-    
     // Actualizar saldo de cuentas en el resumen
     const totalAccountsBalanceEl = document.getElementById('totalAccountsBalance');
     if (totalAccountsBalanceEl) {
