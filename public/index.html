@@ -278,6 +278,11 @@
                     </div>
                 </div>
                 -->
+                <!-- Botón de Añadir Transacción (Desktop) -->
+                <button id="quickAddTransactionBtn" onclick="switchToTab('transactions', true); setTimeout(() => { const btn = document.getElementById('toggleTransactionFormBtn'); if (btn) btn.click(); }, 100);" class="quick-add-btn-desktop" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; color: white; font-size: 24px; font-weight: 300; cursor: pointer; transition: all 0.2s; flex-shrink: 0; position: relative;" onmouseover="this.style.background='rgba(255,255,255,0.25)'; this.style.borderColor='rgba(255,255,255,0.35)'; this.style.transform='scale(1.1)'; const tooltip = this.querySelector('.quick-add-tooltip'); if (tooltip) { tooltip.style.opacity='1'; tooltip.style.visibility='visible'; }" onmouseout="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.25)'; this.style.transform='scale(1)'; const tooltip = this.querySelector('.quick-add-tooltip'); if (tooltip) { tooltip.style.opacity='0'; tooltip.style.visibility='hidden'; }" title="Nueva Transacción">
+                    <span style="line-height: 1;">+</span>
+                    <span class="quick-add-tooltip" style="position: absolute; right: 50px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.8); color: white; padding: 6px 12px; border-radius: 6px; font-size: 13px; white-space: nowrap; opacity: 0; visibility: hidden; transition: all 0.2s; pointer-events: none; z-index: 1000;">Nueva Transacción</span>
+                </button>
                 <!-- Menú de Configuración (Settings) -->
                 <div style="position: relative; flex-shrink: 0; display: flex !important; visibility: visible !important;">
                     <button id="settingsDropdownBtn" onclick="toggleSettingsDropdown()" style="padding: 8px; border-radius: 4px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex !important; visibility: visible !important; opacity: 1 !important; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" data-translate-title="settings.title" title="Configuración">
