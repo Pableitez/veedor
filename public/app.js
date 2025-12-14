@@ -13700,6 +13700,10 @@ function switchMobileTab(tabName) {
 // Exponer función global INMEDIATAMENTE después de definirla
 window._switchMobileTabReal = switchMobileTab;
 window.switchMobileTab = switchMobileTab;
+// Log para debugging
+if (typeof console !== 'undefined' && console.log) {
+    console.log('✅ switchMobileTab expuesta correctamente');
+}
 
 // Inicializar navegación móvil
 function initializeMobileNav() {
