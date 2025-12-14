@@ -10868,11 +10868,11 @@ function updateFinancialHealthMetrics() {
     // Si no hay deudas = excelente, si hay deudas pero no ingresos = peligro
     const coverageStatus = loansDebt === 0 ? 'excellent' : (debtCoverageRatio > 2 ? 'excellent' : debtCoverageRatio > 1 ? 'good' : debtCoverageRatio > 0.5 ? 'warning' : 'danger');
     
-    // 5. Ratio de Ahorro (Ahorro del período / Ingresos del período)
-    const savingsRatio = periodIncome > 0 ? (periodSavings / periodIncome) * 100 : (periodIncome === 0 && periodExpenses > 0 ? -100 : 0);
+    // 5. Ratio de Ahorro (Ahorro del último mes / Ingresos del último mes)
+    const savingsRatio = lastMonthIncome > 0 ? (lastMonthSavings / lastMonthIncome) * 100 : (lastMonthIncome === 0 && lastMonthExpenses > 0 ? -100 : 0);
     // Lógica corregida: negativo o 0% = bajo/peligro, positivo = bueno
     // Si no hay ingresos y hay gastos = peligro, si no hay ingresos ni gastos = moderado
-    const savingsStatus = periodIncome === 0 && periodExpenses === 0 ? 'warning' : (savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger');
+    const savingsStatus = lastMonthIncome === 0 && lastMonthExpenses === 0 ? 'warning' : (savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger');
     
     // 6. Ratio de Liquidez (Activos líquidos / Gastos mensuales promedio)
     const liquidityRatio = avgMonthlyExpenses > 0 ? (totalTransactionsBalance / avgMonthlyExpenses) : (totalTransactionsBalance > 0 ? 999 : (totalTransactionsBalance < 0 ? -999 : 0));
