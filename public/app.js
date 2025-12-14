@@ -10923,7 +10923,7 @@ function updateFinancialHealthMetrics() {
         {
             title: 'Ratio de Ahorro',
             value: savingsRatio.toFixed(1) + '%',
-            description: `Ahorro del período / Ingresos del período`,
+            description: `Ahorro del último mes / Ingresos del último mes`,
             status: savingsStatus,
             icon: '',
             detail: formatCurrency(lastMonthSavings) + ' de ' + formatCurrency(lastMonthIncome) + (lastMonthIncome === 0 ? ' (sin ingresos)' : ' (último mes)')
