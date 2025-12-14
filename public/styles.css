@@ -3637,6 +3637,41 @@ tbody tr:last-child td {
 }
 
 /* ============================================
+   BOTÓN FLOTANTE DE AÑADIR TRANSACCIÓN
+   ============================================ */
+
+/* Botón flotante en móvil */
+.quick-add-btn-mobile {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .quick-add-btn-mobile {
+        display: flex !important;
+    }
+    
+    .quick-add-btn-desktop {
+        display: none !important;
+    }
+}
+
+/* Ajustes para el botón en modo claro */
+body:not(.dark-mode) .quick-add-btn-desktop {
+    color: rgba(30, 58, 138, 1) !important;
+    border-color: rgba(30, 58, 138, 0.4) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+}
+
+body:not(.dark-mode) .quick-add-btn-desktop:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    border-color: rgba(30, 58, 138, 0.6) !important;
+}
+
+body:not(.dark-mode) .quick-add-tooltip {
+    background: rgba(30, 58, 138, 0.95) !important;
+}
+
+/* ============================================
    RESPONSIVIDAD MÓVIL PEQUEÑO - 480px
    ============================================ */
 @media (max-width: 480px) {

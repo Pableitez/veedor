@@ -196,13 +196,6 @@
     <div id="mainApp" style="display: none; width: 100%; margin: 0; padding: 0; min-height: 100vh;">
         <header style="background: transparent; color: rgba(255,255,255,0.9); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: none; border-bottom: none; width: 100%; box-sizing: border-box; margin: 0; left: 0; right: 0; border-radius: 0;" class="main-header">
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-                <button id="quickAddTransactionBtn" onclick="switchToTab('transactions', true); setTimeout(() => { const btn = document.getElementById('toggleTransactionFormBtn'); if (btn) btn.click(); }, 100);" style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='rgba(255,255,255,0.25)'; this.style.borderColor='rgba(255,255,255,0.35)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.25)'; this.style.transform='scale(1)'" title="Añadir transacción rápida">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
-                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                    </svg>
-                    <span>Nueva</span>
-                </button>
                 <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
                     <svg width="52" height="52" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;" id="headerLogo">
                         <defs>
@@ -327,9 +320,9 @@
                     <h2 style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 0 0 20px 0;">Resumen</h2>
                 </div>
                 
-                <!-- Sección de Saldo - Estilo Revolut -->
+                <!-- Sección de Saldo y Fondo de Emergencia - Estilo Revolut -->
                 <div class="revolut-section" style="margin-bottom: 32px;">
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                         <!-- Saldo en Cuentas -->
                         <div class="revolut-card" style="background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); color: white; border: none; cursor: pointer; position: relative; overflow: hidden; border-radius: 12px; padding: 14px 16px; box-shadow: 0 8px 24px rgba(30, 58, 138, 0.3);" onclick="showSummaryDetails('accounts')" title="Haz clic para ver detalles">
                             <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
@@ -340,7 +333,6 @@
                                 <small style="color: rgba(255,255,255,0.8); font-size: 10px; line-height: 1.2; opacity: 0.9; margin-top: 6px;">Total en todas las cuentas</small>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
                 
