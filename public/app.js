@@ -10977,17 +10977,9 @@ function updateFinancialHealthMetrics() {
             metric.status === 'warning' ? 'var(--warning)' :
             'var(--danger)'
         }`;
-        card.style.cursor = 'pointer';
-        card.style.transition = 'transform 0.2s, box-shadow 0.2s';
-        card.onmouseover = () => {
-            card.style.transform = 'translateY(-2px)';
-            card.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-        };
-        card.onmouseout = () => {
-            card.style.transform = 'translateY(0)';
-            card.style.boxShadow = '';
-        };
-        card.onclick = () => showFinancialHealthDetail(metric, index);
+        card.style.cursor = 'default';
+        card.style.transition = 'none';
+        // Eliminado onclick y efectos hover - los indicadores no son clickeables
         
         // Colores de status adaptados al modo oscuro
         const isDarkMode = document.body.classList.contains('dark-mode');
