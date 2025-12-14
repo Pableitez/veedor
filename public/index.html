@@ -335,35 +335,27 @@
         <div class="main-content" style="margin-top: 0;">
             <div class="tabs">
                 <button class="tab-btn active" data-tab="transactions">
-                    <span class="tab-icon">💳</span>
                     <span class="tab-text" data-translate="nav.transactions">Transacciones</span>
                 </button>
                 <button class="tab-btn" data-tab="summary">
-                    <span class="tab-icon">📊</span>
                     <span class="tab-text">Resumen</span>
                 </button>
                 <button class="tab-btn" data-tab="accounts">
-                    <span class="tab-icon">🏦</span>
                     <span class="tab-text" data-translate="nav.accounts">Cuentas</span>
                 </button>
                 <button class="tab-btn" data-tab="envelopes">
-                    <span class="tab-icon">💰</span>
                     <span class="tab-text" data-translate="nav.budgets">Presupuestos</span>
                 </button>
                 <button class="tab-btn" data-tab="loans">
-                    <span class="tab-icon">📝</span>
                     <span class="tab-text" data-translate="nav.loans">Préstamos</span>
                 </button>
                 <button class="tab-btn" data-tab="investments">
-                    <span class="tab-icon">📈</span>
                     <span class="tab-text" data-translate="nav.investments">Inversiones</span>
                 </button>
                 <button class="tab-btn" data-tab="assets">
-                    <span class="tab-icon">🏠</span>
                     <span class="tab-text" data-translate="nav.assets">Patrimonio</span>
                 </button>
                 <button class="tab-btn" data-tab="charts">
-                    <span class="tab-icon">📉</span>
                     <span class="tab-text" data-translate="nav.analysis">Análisis</span>
                 </button>
             </div>
@@ -490,12 +482,11 @@
 
             <!-- Tab: Transacciones -->
             <div class="tab-content active" id="transactions-tab">
-                <div class="form-section">
-                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
-                        <button type="button" class="btn-primary" id="toggleTransactionFormBtn" onclick="toggleForm('transactionForm', 'toggleTransactionFormBtn')" style="display: flex; align-items: center; gap: 8px;">
-                            <span id="transactionFormText">Nueva Transacción</span>
-                        </button>
-                    </div>
+                <div style="margin-bottom: 16px;">
+                    <button type="button" class="btn-primary" id="toggleTransactionFormBtn" onclick="toggleForm('transactionForm', 'toggleTransactionFormBtn')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                        <span id="transactionFormText">Nueva Transacción</span>
+                    </button>
+                </div>
                     <form id="transactionForm" style="display: none;">
                         <div class="form-row">
                             <div class="form-group">
@@ -703,12 +694,11 @@
 
             <!-- Tab: Cuentas Bancarias -->
             <div class="tab-content" id="accounts-tab">
-                <div class="form-section">
-                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
-                        <button type="button" class="btn-primary" id="toggleAccountFormBtn" onclick="toggleForm('accountForm', 'toggleAccountFormBtn')" style="display: flex; align-items: center; gap: 8px;">
-                            <span id="accountFormText">Nueva Cuenta</span>
-                        </button>
-                    </div>
+                <div style="margin-bottom: 16px;">
+                    <button type="button" class="btn-primary" id="toggleAccountFormBtn" onclick="toggleForm('accountForm', 'toggleAccountFormBtn')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                        <span id="accountFormText">Nueva Cuenta</span>
+                    </button>
+                </div>
                     <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
                         <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus cuentas bancarias para hacer seguimiento de tus saldos en diferentes entidades y tipos de cuenta.</p>
                     </div>
@@ -759,11 +749,6 @@
             <!-- Tab: Presupuestos -->
             <div class="tab-content" id="envelopes-tab">
                 <div class="form-section">
-                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
-                        <button type="button" id="setBaseFundBtn" class="btn-primary" onclick="showBaseFundModal();" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; flex: 0 0 auto;">
-                            <span style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">Fondo Base</span>
-                        </button>
-                    </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 24px;" class="budgets-form-grid">
                         <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); overflow: visible; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box; color: var(--text-primary);">
                             <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
@@ -891,8 +876,8 @@
             <!-- Tab: Préstamos -->
             <div class="tab-content" id="loans-tab">
                 <div class="form-section">
-                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
-                        <button type="button" class="btn-primary" id="toggleLoanFormBtn" onclick="toggleForm('loanForm', 'toggleLoanFormBtn')" style="display: flex; align-items: center; gap: 8px;">
+                    <div style="margin-bottom: 16px;">
+                        <button type="button" class="btn-primary" id="toggleLoanFormBtn" onclick="toggleForm('loanForm', 'toggleLoanFormBtn')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                             <span id="loanFormText">Nuevo Préstamo</span>
                         </button>
                     </div>
@@ -1033,8 +1018,8 @@
             <!-- Tab: Inversiones -->
             <div class="tab-content" id="investments-tab">
                 <div class="form-section">
-                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
-                        <button type="button" class="btn-primary" id="toggleInvestmentFormBtn" onclick="toggleForm('investmentForm', 'toggleInvestmentFormBtn')" style="display: flex; align-items: center; gap: 8px;">
+                    <div style="margin-bottom: 16px;">
+                        <button type="button" class="btn-primary" id="toggleInvestmentFormBtn" onclick="toggleForm('investmentForm', 'toggleInvestmentFormBtn')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                             <span id="investmentFormText">Nueva Inversión</span>
                         </button>
                     </div>
@@ -1128,8 +1113,8 @@
             <!-- Tab: Patrimonio -->
             <div class="tab-content" id="assets-tab">
                 <div class="form-section">
-                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
-                        <button type="button" class="btn-primary" id="togglePatrimonioFormBtn" onclick="toggleForm('patrimonioForm', 'togglePatrimonioFormBtn')" style="display: flex; align-items: center; gap: 8px;">
+                    <div style="margin-bottom: 16px;">
+                        <button type="button" class="btn-primary" id="togglePatrimonioFormBtn" onclick="toggleForm('patrimonioForm', 'togglePatrimonioFormBtn')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                             <span id="patrimonioFormText">Nueva Propiedad</span>
                         </button>
                     </div>
