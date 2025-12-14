@@ -1798,110 +1798,6 @@ function switchToTab(targetTab, doScroll = false) {
     }
 }
 
-// Función para colapsar/expandir secciones
-function toggleSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    const icon = document.getElementById(sectionId + 'Icon');
-    
-    if (section && icon) {
-        section.classList.toggle('expanded');
-        icon.classList.toggle('rotated');
-    }
-}
-
-// Función para cambiar vistas rápidas
-function switchQuickView(view) {
-    // Actualizar botones activos
-    document.querySelectorAll('.quick-view-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    const activeBtn = document.querySelector(`.quick-view-btn[data-view="${view}"]`);
-    if (activeBtn) activeBtn.classList.add('active');
-    
-    // Ocultar todas las secciones
-    const sections = {
-        today: ['revolut-section', 'summary-cards'],
-        planning: ['revolut-section', 'summary-cards', 'envelopesSection'],
-        patrimony: ['revolut-section', 'summary-cards', 'assetsSection'],
-        analysis: ['revolut-section', 'summary-cards', 'chartsSection', 'healthSection']
-    };
-    
-    // Mostrar secciones según la vista
-    const chartsSectionEl = document.getElementById('chartsSection');
-    const healthSectionEl = document.getElementById('healthSection');
-    const recommendationsSectionEl = document.getElementById('recommendationsSection');
-    const chartsParent = chartsSectionEl?.parentElement?.parentElement;
-    
-    if (view === 'today') {
-        // Vista "Hoy": Solo saldo y resumen básico
-        const revolutSection = document.querySelector('.revolut-section');
-        const summaryCards = document.querySelector('.summary-cards');
-        if (revolutSection) revolutSection.style.display = 'block';
-        if (summaryCards?.parentElement) summaryCards.parentElement.style.display = 'block';
-        if (chartsParent) chartsParent.style.display = 'none';
-        if (healthSectionEl?.parentElement) healthSectionEl.parentElement.style.display = 'none';
-        if (recommendationsSectionEl?.parentElement) recommendationsSectionEl.parentElement.style.display = 'none';
-    } else if (view === 'planning') {
-        // Vista "Planificación": Saldo, resumen y presupuestos
-        const revolutSection = document.querySelector('.revolut-section');
-        const summaryCards = document.querySelector('.summary-cards');
-        if (revolutSection) revolutSection.style.display = 'block';
-        if (summaryCards?.parentElement) summaryCards.parentElement.style.display = 'block';
-        if (chartsParent) chartsParent.style.display = 'none';
-        if (healthSectionEl?.parentElement) healthSectionEl.parentElement.style.display = 'none';
-        if (recommendationsSectionEl?.parentElement) recommendationsSectionEl.parentElement.style.display = 'block';
-    } else if (view === 'patrimony') {
-        // Vista "Patrimonio": Saldo, resumen y patrimonio
-        const revolutSection = document.querySelector('.revolut-section');
-        const summaryCards = document.querySelector('.summary-cards');
-        if (revolutSection) revolutSection.style.display = 'block';
-        if (summaryCards?.parentElement) summaryCards.parentElement.style.display = 'block';
-        if (chartsParent) chartsParent.style.display = 'none';
-        if (healthSectionEl?.parentElement) healthSectionEl.parentElement.style.display = 'block';
-        if (recommendationsSectionEl?.parentElement) recommendationsSectionEl.parentElement.style.display = 'none';
-    } else if (view === 'analysis') {
-        // Vista "Análisis": Todo
-        const revolutSection = document.querySelector('.revolut-section');
-        const summaryCards = document.querySelector('.summary-cards');
-        if (revolutSection) revolutSection.style.display = 'block';
-        if (summaryCards?.parentElement) summaryCards.parentElement.style.display = 'block';
-        if (chartsParent) chartsParent.style.display = 'block';
-        if (healthSectionEl?.parentElement) healthSectionEl.parentElement.style.display = 'block';
-        if (recommendationsSectionEl?.parentElement) recommendationsSectionEl.parentElement.style.display = 'block';
-    }
-}
-
-// Función para cambiar de tab en móvil
-function switchMobileTab(tab) {
-    // Actualizar botones de navegación móvil
-    document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    const activeBtn = document.querySelector(`.mobile-nav-btn[data-tab="${tab}"]`);
-    if (activeBtn) activeBtn.classList.add('active');
-    
-    // Si es "summary", hacer scroll al dashboard
-    if (tab === 'summary') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        // Ocultar todos los tabs
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        // Mostrar dashboard
-        document.querySelector('.dashboard').style.display = 'block';
-    } else {
-        // Ocultar dashboard
-        document.querySelector('.dashboard').style.display = 'none';
-        // Cambiar al tab correspondiente
-        switchToTab(tab, false);
-    }
-}
-
-// Exponer funciones globalmente
-window.toggleSection = toggleSection;
-window.switchQuickView = switchQuickView;
-window.switchMobileTab = switchMobileTab;
-
 // Inicializar tabs
 function initializeTabs() {
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -1928,19 +1824,29 @@ function initializeTabs() {
         });
     });
     
-    // Inicializar estado activo del primer tab SIN hacer scroll automático
+    // Inicializar estado activo - Transacciones por defecto
     if (tabButtons.length > 0) {
-        const firstTab = tabButtons[0].getAttribute('data-tab');
-        const firstTabBtn = document.querySelector(`.tab-btn[data-tab="${firstTab}"]`);
-        const firstTabContent = document.getElementById(`${firstTab}-tab`);
+        // Activar tab de Transacciones por defecto
+        const transactionsTabBtn = document.querySelector('.tab-btn[data-tab="transactions"]');
+        const transactionsTabContent = document.getElementById('transactions-tab');
         
-        // Activar el primer tab sin hacer scroll
-        if (firstTabBtn) firstTabBtn.classList.add('active');
-        if (firstTabContent) {
-            firstTabContent.classList.add('active');
+        if (transactionsTabBtn) transactionsTabBtn.classList.add('active');
+        if (transactionsTabContent) {
+            transactionsTabContent.classList.add('active');
         }
         
-        // NO hacer scroll automático - el usuario decidirá dónde quiere ir
+        // Ocultar otros tabs
+        tabButtons.forEach(btn => {
+            if (btn.getAttribute('data-tab') !== 'transactions') {
+                btn.classList.remove('active');
+            }
+        });
+        
+        document.querySelectorAll('.tab-content').forEach(content => {
+            if (content.id !== 'transactions-tab') {
+                content.classList.remove('active');
+            }
+        });
     }
 }
 
