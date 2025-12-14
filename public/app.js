@@ -10853,8 +10853,7 @@ function updateFinancialHealthMetrics() {
     const debtPercentage = totalAssets > 0 ? (netDebt / totalAssets) * 100 : (netDebt > 0 ? 100 : 0);
     const debtStatus = debtPercentage < 30 ? 'excellent' : debtPercentage < 50 ? 'good' : debtPercentage < 70 ? 'warning' : 'danger';
     
-    // 2. Ratio de Endeudamiento (Cuotas mensuales de préstamos / Ingresos mensuales)
-    const avgMonthlyIncome = monthsInPeriod > 0 ? periodIncome / monthsInPeriod : 0;
+    // 2. Ratio de Endeudamiento (Cuotas mensuales de préstamos / Ingresos mensuales promedio)
     const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
     const debtToIncomeRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 999 : 0);
     const debtRatioStatus = avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'danger' : (debtToIncomeRatio >= 40 ? 'danger' : debtToIncomeRatio >= 30 ? 'warning' : debtToIncomeRatio >= 20 ? 'good' : 'excellent');
@@ -10875,8 +10874,7 @@ function updateFinancialHealthMetrics() {
     // Si no hay ingresos y hay gastos = peligro, si no hay ingresos ni gastos = moderado
     const savingsStatus = periodIncome === 0 && periodExpenses === 0 ? 'warning' : (savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger');
     
-    // 6. Ratio de Liquidez (Activos líquidos / Gastos mensuales promedio del período)
-    const avgMonthlyExpenses = monthsInPeriod > 0 ? periodExpenses / monthsInPeriod : periodExpenses;
+    // 6. Ratio de Liquidez (Activos líquidos / Gastos mensuales promedio)
     const liquidityRatio = avgMonthlyExpenses > 0 ? (totalTransactionsBalance / avgMonthlyExpenses) : (totalTransactionsBalance > 0 ? 999 : (totalTransactionsBalance < 0 ? -999 : 0));
     // Si balance negativo = peligro, si no hay gastos y hay balance positivo = excelente
     const liquidityStatus = totalTransactionsBalance < 0 ? 'danger' : (avgMonthlyExpenses === 0 && totalTransactionsBalance > 0 ? 'excellent' : (liquidityRatio >= 6 ? 'excellent' : liquidityRatio >= 3 ? 'good' : liquidityRatio >= 1 ? 'warning' : 'danger'));
