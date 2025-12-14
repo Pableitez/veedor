@@ -3102,6 +3102,61 @@ async function updateSummary() {
     
     // Actualizar gráficas del dashboard
     updateDashboardCharts();
+    
+    // Actualizar transacciones recientes en móvil
+    updateMobileRecentTransactions();
+}
+
+// Actualizar transacciones recientes en móvil
+function updateMobileRecentTransactions() {
+    const container = document.getElementById('mobileRecentTransactionsList');
+    if (!container) return;
+    
+    // Obtener las últimas 10 transacciones ordenadas por fecha
+    const recentTransactions = [...transactions]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 10);
+    
+    container.innerHTML = '';
+    
+    if (recentTransactions.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 24px; color: var(--text-tertiary); font-size: 14px;">No hay transacciones</div>';
+        return;
+    }
+    
+    recentTransactions.forEach(transaction => {
+        const date = new Date(transaction.date);
+        const categoryName = categories[transaction.type]?.find(cat => cat.id === transaction.categoryGeneral)?.name || transaction.categoryGeneral;
+        const categorySpecific = transaction.categorySpecific || '';
+        const fullCategory = categorySpecific ? `${categoryName} - ${categorySpecific}` : categoryName;
+        
+        const item = document.createElement('div');
+        item.className = 'mobile-transaction-item';
+        item.onclick = () => {
+            switchMobileTab('transactions');
+            // Scroll a la transacción si es posible
+            setTimeout(() => {
+                const transactionRow = document.querySelector(`[data-transaction-id="${transaction._id || transaction.id}"]`);
+                if (transactionRow) {
+                    transactionRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 300);
+        };
+        
+        const isIncome = transaction.amount >= 0;
+        const amountColor = isIncome ? 'var(--success)' : 'var(--danger)';
+        const amountSign = isIncome ? '+' : '';
+        
+        item.innerHTML = `
+            <div class="mobile-transaction-left">
+                <div class="mobile-transaction-date">${formatDate(date)}</div>
+                <div class="mobile-transaction-category">${fullCategory}</div>
+            </div>
+            <div class="mobile-transaction-amount" style="color: ${amountColor};">${amountSign}${formatCurrency(Math.abs(transaction.amount))}</div>
+        `;
+        
+        container.appendChild(item);
+    });
 }
 
 // Actualizar tabla de transacciones
