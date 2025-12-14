@@ -13792,6 +13792,7 @@ function initMobileNavOnLoad() {
 initMobileNavOnLoad();
 
 // Exponer función global
+window._switchMobileTabReal = switchMobileTab;
 window.switchMobileTab = switchMobileTab;
 
 // ==================== TOGGLE OPCIONES OPCIONALES TRANSACCIONES ====================
