@@ -18,6 +18,11 @@ if (window.VEEDOR_LOADED) {
         const modal = document.getElementById('userProfileModal');
         if (modal) modal.style.display = 'none';
     };
+    // Stub para switchMobileTab
+    window.switchMobileTab = function(tabName) {
+        console.warn('switchMobileTab llamado antes de inicialización, tab:', tabName);
+        // La función real se asignará más adelante
+    };
     window.showPrivacyModal = function() { 
         const modal = document.getElementById('privacyModal');
         if (modal) {
