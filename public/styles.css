@@ -2989,6 +2989,7 @@ tbody tr:last-child td {
     .main-content {
         padding: 16px 12px !important;
         padding-top: 16px !important;
+        padding-bottom: 90px !important; /* Espacio para tabs fijos en la parte inferior */
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
