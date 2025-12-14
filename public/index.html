@@ -278,11 +278,6 @@
                     </div>
                 </div>
                 -->
-                <!-- Botón de Añadir Transacción (Desktop) -->
-                <button id="quickAddTransactionBtn" onclick="switchToTab('transactions', true); setTimeout(() => { const btn = document.getElementById('toggleTransactionFormBtn'); if (btn) btn.click(); }, 100);" class="quick-add-btn-desktop" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; color: white; font-size: 24px; font-weight: 300; cursor: pointer; transition: all 0.2s; flex-shrink: 0; position: relative;" onmouseover="this.style.background='rgba(255,255,255,0.25)'; this.style.borderColor='rgba(255,255,255,0.35)'; this.style.transform='scale(1.1)'; (function(el){var tip=el.querySelector('.quick-add-tooltip');if(tip){tip.style.opacity='1';tip.style.visibility='visible';}})(this);" onmouseout="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.25)'; this.style.transform='scale(1)'; (function(el){var tip=el.querySelector('.quick-add-tooltip');if(tip){tip.style.opacity='0';tip.style.visibility='hidden';}})(this);" title="Nueva Transacción">
-                    <span style="line-height: 1;">+</span>
-                    <span class="quick-add-tooltip" style="position: absolute; right: 50px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.8); color: white; padding: 6px 12px; border-radius: 6px; font-size: 13px; white-space: nowrap; opacity: 0; visibility: hidden; transition: all 0.2s; pointer-events: none; z-index: 1000;">Nueva Transacción</span>
-                </button>
                 <!-- Menú de Configuración (Settings) -->
                 <div style="position: relative; flex-shrink: 0; display: flex !important; visibility: visible !important;">
                     <button id="settingsDropdownBtn" onclick="toggleSettingsDropdown()" style="padding: 8px; border-radius: 4px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex !important; visibility: visible !important; opacity: 1 !important; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" data-translate-title="settings.title" title="Configuración">
@@ -472,8 +467,7 @@
             <!-- Tab: Transacciones -->
             <div class="tab-content active" id="transactions-tab">
                 <div class="form-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 data-translate="transactions.newTransaction" style="margin: 0;">Nueva Transacción</h2>
+                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
                         <button type="button" class="btn-primary" id="toggleTransactionFormBtn" onclick="toggleForm('transactionForm', 'toggleTransactionFormBtn')" style="display: flex; align-items: center; gap: 8px;">
                             <span id="transactionFormText">Nueva Transacción</span>
                         </button>
@@ -637,8 +631,7 @@
             <!-- Tab: Propiedades/Pisos -->
             <div class="tab-content" id="properties-tab">
                 <div class="form-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 style="margin: 0;">Gestionar Propiedades/Pisos</h2>
+                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
                         <button type="button" class="btn-primary" id="togglePropertyFormBtn" onclick="toggleForm('propertyForm', 'togglePropertyFormBtn')" style="display: flex; align-items: center; gap: 8px;">
                             <span id="propertyFormText">Nueva Propiedad</span>
                         </button>
@@ -687,8 +680,7 @@
             <!-- Tab: Cuentas Bancarias -->
             <div class="tab-content" id="accounts-tab">
                 <div class="form-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 style="margin: 0;">Gestionar Cuentas Bancarias</h2>
+                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
                         <button type="button" class="btn-primary" id="toggleAccountFormBtn" onclick="toggleForm('accountForm', 'toggleAccountFormBtn')" style="display: flex; align-items: center; gap: 8px;">
                             <span id="accountFormText">Nueva Cuenta</span>
                         </button>
@@ -751,10 +743,7 @@
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 24px;" class="budgets-form-grid">
                         <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); overflow: visible; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box; color: var(--text-primary);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <h3 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--text-primary);">Presupuesto por Categoría</h3>
-                                </div>
+                            <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
                                 <button type="button" class="btn-primary" id="toggleBudgetFormBtn" onclick="toggleForm('budgetForm', 'toggleBudgetFormBtn')" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px;">
                                     <span id="budgetFormText">Nuevo Presupuesto</span>
                                 </button>
