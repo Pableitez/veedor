@@ -3699,6 +3699,104 @@ body:not(.dark-mode) .quick-add-tooltip {
 }
 
 /* ============================================
+   SECCIONES COLAPSABLES
+   ============================================ */
+.collapsible-section {
+    transition: all 0.3s ease;
+}
+
+.collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    max-height: 0;
+    opacity: 0;
+}
+
+.collapsible-content.expanded {
+    max-height: 5000px;
+    opacity: 1;
+}
+
+.collapsible-section svg {
+    transition: transform 0.3s ease;
+}
+
+.collapsible-section svg.rotated {
+    transform: rotate(180deg);
+}
+
+/* Botones de Vistas Rápidas */
+.quick-views {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.quick-view-btn {
+    transition: all 0.2s;
+}
+
+.quick-view-btn.active {
+    background: var(--primary) !important;
+    color: white !important;
+    border-color: var(--primary) !important;
+}
+
+.quick-view-btn:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary);
+}
+
+/* ============================================
+   BARRA DE NAVEGACIÓN MÓVIL INFERIOR
+   ============================================ */
+.mobile-bottom-nav {
+    display: none !important;
+}
+
+.mobile-nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 4px;
+    background: none;
+    border: none;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 11px;
+    font-weight: 500;
+    min-width: 0;
+    max-width: 100px;
+}
+
+.mobile-nav-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2;
+}
+
+.mobile-nav-btn.active {
+    color: var(--primary);
+}
+
+.mobile-nav-btn:hover {
+    color: var(--primary);
+}
+
+.mobile-nav-btn span {
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    line-height: 1.2;
+}
+
+/* ============================================
    RESPONSIVIDAD MÓVIL PEQUEÑO - 480px
    ============================================ */
 @media (max-width: 480px) {

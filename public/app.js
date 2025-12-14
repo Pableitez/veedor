@@ -1798,6 +1798,97 @@ function switchToTab(targetTab, doScroll = false) {
     }
 }
 
+// Función para colapsar/expandir secciones
+function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    const icon = document.getElementById(sectionId + 'Icon');
+    
+    if (section && icon) {
+        section.classList.toggle('expanded');
+        icon.classList.toggle('rotated');
+    }
+}
+
+// Función para cambiar vistas rápidas
+function switchQuickView(view) {
+    // Actualizar botones activos
+    document.querySelectorAll('.quick-view-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeBtn = document.querySelector(`.quick-view-btn[data-view="${view}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+    
+    // Ocultar todas las secciones
+    const sections = {
+        today: ['revolut-section', 'summary-cards'],
+        planning: ['revolut-section', 'summary-cards', 'envelopesSection'],
+        patrimony: ['revolut-section', 'summary-cards', 'assetsSection'],
+        analysis: ['revolut-section', 'summary-cards', 'chartsSection', 'healthSection']
+    };
+    
+    // Mostrar secciones según la vista
+    if (view === 'today') {
+        // Vista "Hoy": Solo saldo y resumen básico
+        document.querySelector('.revolut-section').style.display = 'block';
+        document.querySelector('.summary-cards').parentElement.style.display = 'block';
+        document.getElementById('chartsSection')?.parentElement.parentElement.style.display = 'none';
+        document.getElementById('healthSection')?.parentElement.style.display = 'none';
+        document.getElementById('recommendationsSection')?.parentElement.style.display = 'none';
+    } else if (view === 'planning') {
+        // Vista "Planificación": Saldo, resumen y presupuestos
+        document.querySelector('.revolut-section').style.display = 'block';
+        document.querySelector('.summary-cards').parentElement.style.display = 'block';
+        document.getElementById('chartsSection')?.parentElement.parentElement.style.display = 'none';
+        document.getElementById('healthSection')?.parentElement.style.display = 'none';
+        document.getElementById('recommendationsSection')?.parentElement.style.display = 'block';
+    } else if (view === 'patrimony') {
+        // Vista "Patrimonio": Saldo, resumen y patrimonio
+        document.querySelector('.revolut-section').style.display = 'block';
+        document.querySelector('.summary-cards').parentElement.style.display = 'block';
+        document.getElementById('chartsSection')?.parentElement.parentElement.style.display = 'none';
+        document.getElementById('healthSection')?.parentElement.style.display = 'block';
+        document.getElementById('recommendationsSection')?.parentElement.style.display = 'none';
+    } else if (view === 'analysis') {
+        // Vista "Análisis": Todo
+        document.querySelector('.revolut-section').style.display = 'block';
+        document.querySelector('.summary-cards').parentElement.style.display = 'block';
+        document.getElementById('chartsSection')?.parentElement.parentElement.style.display = 'block';
+        document.getElementById('healthSection')?.parentElement.style.display = 'block';
+        document.getElementById('recommendationsSection')?.parentElement.style.display = 'block';
+    }
+}
+
+// Función para cambiar de tab en móvil
+function switchMobileTab(tab) {
+    // Actualizar botones de navegación móvil
+    document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeBtn = document.querySelector(`.mobile-nav-btn[data-tab="${tab}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+    
+    // Si es "summary", hacer scroll al dashboard
+    if (tab === 'summary') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Ocultar todos los tabs
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        // Mostrar dashboard
+        document.querySelector('.dashboard').style.display = 'block';
+    } else {
+        // Ocultar dashboard
+        document.querySelector('.dashboard').style.display = 'none';
+        // Cambiar al tab correspondiente
+        switchToTab(tab, false);
+    }
+}
+
+// Exponer funciones globalmente
+window.toggleSection = toggleSection;
+window.switchQuickView = switchQuickView;
+window.switchMobileTab = switchMobileTab;
+
 // Inicializar tabs
 function initializeTabs() {
     const tabButtons = document.querySelectorAll('.tab-btn');
