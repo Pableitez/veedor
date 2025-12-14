@@ -13661,10 +13661,21 @@ function initializeMobileNav() {
             content.style.display = 'none';
         });
         
+        // Mostrar transacciones recientes en móvil
+        const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
+        if (mobileRecentTransactions) {
+            mobileRecentTransactions.style.display = 'block';
+        }
+        
         // Activar el botón de resumen por defecto
         const summaryBtn = document.querySelector('.mobile-nav-btn[data-tab="summary"]');
         if (summaryBtn) {
             summaryBtn.classList.add('active');
+        }
+        
+        // Actualizar transacciones recientes
+        if (typeof updateMobileRecentTransactions === 'function') {
+            updateMobileRecentTransactions();
         }
     } else if (mobileBottomNav) {
         // Ocultar navegación móvil en desktop
