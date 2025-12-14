@@ -2877,6 +2877,15 @@ function updateDisplay() {
         
         // Actualizar gráficas siempre (no solo cuando el tab está activo)
         updateCharts();
+        
+        // Inicializar navegación móvil después de actualizar
+        if (window.innerWidth <= 768) {
+            setTimeout(() => {
+                if (typeof initializeMobileNav === 'function') {
+                    initializeMobileNav();
+                }
+            }, 100);
+        }
     } catch (error) {
         console.error('Error en updateDisplay:', error);
     }

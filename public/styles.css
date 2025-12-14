@@ -3672,6 +3672,19 @@ tbody tr:last-child td {
         display: none !important;
     }
     
+    #quickAddTransactionBtn {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        position: absolute !important;
+        left: -9999px !important;
+        width: 0 !important;
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
     /* Ajustar posición del botón flotante en móvil */
     .quick-add-btn-mobile {
         bottom: 24px !important;
