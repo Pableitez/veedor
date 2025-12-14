@@ -13686,6 +13686,10 @@ function switchMobileTab(tabName) {
     }
 }
 
+// Exponer función global INMEDIATAMENTE después de definirla
+window._switchMobileTabReal = switchMobileTab;
+window.switchMobileTab = switchMobileTab;
+
 // Inicializar navegación móvil
 function initializeMobileNav() {
     // Verificar si estamos en móvil
