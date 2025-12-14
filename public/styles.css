@@ -1251,6 +1251,19 @@ body.dark-mode .savings-card:hover {
 /* Ajustes para modo claro */
 body:not(.dark-mode) .revolut-card {
     box-shadow: 0 8px 24px rgba(30, 58, 138, 0.25);
+    color: #111827 !important;
+}
+
+body:not(.dark-mode) .revolut-card h3 {
+    color: #374151 !important;
+}
+
+body:not(.dark-mode) .revolut-card .amount {
+    color: #111827 !important;
+}
+
+body:not(.dark-mode) .revolut-card small {
+    color: #6B7280 !important;
 }
 
 body:not(.dark-mode) .revolut-card:hover {
@@ -1523,6 +1536,14 @@ body.dark-mode .savings-card:hover {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.tab-icon {
+    display: none;
+}
+
+.tab-text {
+    display: inline;
 }
 
 .tab-btn:hover {
