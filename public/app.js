@@ -13717,14 +13717,29 @@ function initializeMobileNav() {
 }
 
 // Escuchar cambios de tamaño de ventana
-window.addEventListener('resize', initializeMobileNav);
+window.addEventListener('resize', () => {
+    setTimeout(() => {
+        initializeMobileNav();
+    }, 100);
+});
 
 // Inicializar al cargar
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeMobileNav);
-} else {
-    initializeMobileNav();
+function initMobileNavOnLoad() {
+    // Esperar a que el DOM esté completamente cargado
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                initializeMobileNav();
+            }, 300);
+        });
+    } else {
+        setTimeout(() => {
+            initializeMobileNav();
+        }, 300);
+    }
 }
+
+initMobileNavOnLoad();
 
 // Exponer función global
 window.switchMobileTab = switchMobileTab;
