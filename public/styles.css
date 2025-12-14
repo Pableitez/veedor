@@ -3666,19 +3666,39 @@ tbody tr:last-child td {
 @media (max-width: 768px) {
     .quick-add-btn-mobile {
         display: flex !important;
+        bottom: 80px !important;
+        right: 24px !important;
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 32px !important;
     }
     
     .quick-add-btn-desktop {
         display: none !important;
     }
     
-    /* Ajustar posición del botón flotante en móvil */
-    .quick-add-btn-mobile {
-        bottom: 24px !important;
-        right: 24px !important;
-        width: 56px !important;
-        height: 56px !important;
-        font-size: 32px !important;
+    /* Mostrar barra de navegación móvil */
+    .mobile-bottom-nav {
+        display: flex !important;
+    }
+    
+    /* Ocultar tabs superiores en móvil */
+    .tabs {
+        display: none !important;
+    }
+    
+    /* Ajustar padding del contenido para la barra inferior */
+    .main-content {
+        padding-bottom: 80px !important;
+    }
+    
+    .dashboard {
+        padding-bottom: 80px !important;
+    }
+    
+    /* Ocultar vistas rápidas en móvil */
+    .quick-views {
+        display: none !important;
     }
 }
 
