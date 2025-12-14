@@ -13669,10 +13669,12 @@ function initializeMobileNav() {
             tabs.style.display = 'none';
         }
         
-        // Ocultar contenido del dashboard excepto las cards
-        const dashboardSections = document.querySelectorAll('.dashboard > div:not(.revolut-section)');
+        // Ocultar contenido del dashboard excepto las cards Y las transacciones recientes
+        const dashboardSections = document.querySelectorAll('.dashboard > div:not(.revolut-section):not(#mobileRecentTransactions)');
         dashboardSections.forEach(section => {
-            section.style.display = 'none';
+            if (section.id !== 'mobileRecentTransactions') {
+                section.style.display = 'none';
+            }
         });
         
         // Ocultar todos los tab-content inicialmente
@@ -13682,20 +13684,29 @@ function initializeMobileNav() {
             content.style.display = 'none';
         });
         
-        // Mostrar transacciones recientes en móvil
+        // Mostrar transacciones recientes en móvil (solo si estamos en summary)
         const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
+        const activeTab = document.querySelector('.mobile-nav-btn.active');
+        const currentTab = activeTab ? activeTab.getAttribute('data-tab') : 'summary';
+        
         if (mobileRecentTransactions) {
-            mobileRecentTransactions.style.display = 'block';
+            if (currentTab === 'summary') {
+                mobileRecentTransactions.style.display = 'block';
+            } else {
+                mobileRecentTransactions.style.display = 'none';
+            }
         }
         
-        // Activar el botón de resumen por defecto
-        const summaryBtn = document.querySelector('.mobile-nav-btn[data-tab="summary"]');
-        if (summaryBtn) {
-            summaryBtn.classList.add('active');
+        // Activar el botón de resumen por defecto si no hay uno activo
+        if (!activeTab) {
+            const summaryBtn = document.querySelector('.mobile-nav-btn[data-tab="summary"]');
+            if (summaryBtn) {
+                summaryBtn.classList.add('active');
+            }
         }
         
-        // Actualizar transacciones recientes
-        if (typeof updateMobileRecentTransactions === 'function') {
+        // Actualizar transacciones recientes si estamos en summary
+        if (currentTab === 'summary' && typeof updateMobileRecentTransactions === 'function') {
             updateMobileRecentTransactions();
         }
     } else if (mobileBottomNav) {
@@ -13713,6 +13724,12 @@ function initializeMobileNav() {
         dashboardSections.forEach(section => {
             section.style.display = 'block';
         });
+        
+        // Ocultar transacciones recientes en desktop
+        const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
+        if (mobileRecentTransactions) {
+            mobileRecentTransactions.style.display = 'none';
+        }
     }
 }
 
