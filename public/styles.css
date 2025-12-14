@@ -3653,6 +3653,15 @@ tbody tr:last-child td {
     .quick-add-btn-desktop {
         display: none !important;
     }
+    
+    /* Ajustar posición del botón flotante en móvil */
+    .quick-add-btn-mobile {
+        bottom: 24px !important;
+        right: 24px !important;
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 32px !important;
+    }
 }
 
 /* Ajustes para el botón en modo claro */
