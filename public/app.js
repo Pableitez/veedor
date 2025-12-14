@@ -12042,7 +12042,7 @@ function updateAnalysisTables() {
     const expenses = periodTransactions.filter(t => t.type === 'expense');
     const income = periodTransactions.filter(t => t.type === 'income');
     
-    // Top Gastos
+    // Top Gastos - Limitar a 10 registros
     const topExpenses = [...expenses]
         .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount))
         .slice(0, 10);
