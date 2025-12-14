@@ -1831,16 +1831,38 @@ function switchToTab(targetTab, doScroll = false) {
     }
 }
 
+// Toggle del menú "Más" tabs
+function toggleMoreTabs() {
+    const dropdown = document.getElementById('moreTabsDropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Cerrar menú "Más" al hacer clic fuera
+document.addEventListener('click', (e) => {
+    const moreBtn = document.getElementById('moreTabsBtn');
+    const dropdown = document.getElementById('moreTabsDropdown');
+    if (moreBtn && dropdown && !moreBtn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = 'none';
+    }
+});
+
+// Exponer función global
+window.toggleMoreTabs = toggleMoreTabs;
+
 // Inicializar tabs
 function initializeTabs() {
-    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabButtons = document.querySelectorAll('.tab-btn:not(.tab-more-btn)');
     const navItems = document.querySelectorAll('.nav-item');
     
-    // Event listeners para tabs principales
+    // Event listeners para tabs principales (excluyendo el botón "Más")
     tabButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetTab = btn.getAttribute('data-tab');
-            switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
+            if (targetTab) {
+                switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
+            }
         });
     });
     

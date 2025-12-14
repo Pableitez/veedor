@@ -1534,13 +1534,17 @@ body.dark-mode .savings-card:hover {
     margin-bottom: -2px;
     white-space: nowrap;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 4px;
     flex: 0 0 auto;
 }
 
 .tab-icon {
-    display: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tab-icon svg {
@@ -1550,7 +1554,46 @@ body.dark-mode .savings-card:hover {
 }
 
 .tab-text {
-    display: inline;
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+/* Estilos para el menú desplegable "Más" */
+.more-tabs-dropdown {
+    display: none;
+}
+
+.more-tab-item {
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+}
+
+.more-tab-item:hover {
+    background: var(--gray-50);
+}
+
+body.dark-mode .more-tab-item:hover {
+    background: var(--gray-800);
+}
+
+.more-tab-item svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    flex-shrink: 0;
 }
 
 /* Cuando la ventana se estrecha, mostrar iconos y texto vertical */
