@@ -4844,8 +4844,8 @@ body:not(.dark-mode) .quick-add-btn-desktop:hover {
         display: none !important;
     }
     
-    /* Ocultar todo el contenido del dashboard excepto las cards de saldo */
-    .dashboard > div:not(.revolut-section) {
+    /* Ocultar todo el contenido del dashboard excepto las cards de saldo Y las transacciones recientes */
+    .dashboard > div:not(.revolut-section):not(#mobileRecentTransactions) {
         display: none !important;
     }
     

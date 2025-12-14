@@ -13589,10 +13589,12 @@ function switchMobileTab(tabName) {
         content.style.display = 'none';
     });
     
-    // Ocultar todo el dashboard excepto las cards de saldo
-    const dashboardSections = document.querySelectorAll('.dashboard > div:not(.revolut-section)');
+    // Ocultar todo el dashboard excepto las cards de saldo Y las transacciones recientes
+    const dashboardSections = document.querySelectorAll('.dashboard > div:not(.revolut-section):not(#mobileRecentTransactions)');
     dashboardSections.forEach(section => {
-        section.style.display = 'none';
+        if (section.id !== 'mobileRecentTransactions') {
+            section.style.display = 'none';
+        }
     });
     
     // Actualizar botones de navegación móvil
