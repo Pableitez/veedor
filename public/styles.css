@@ -3060,6 +3060,7 @@ tbody tr:last-child td {
     
     .tab-text {
         display: inline !important;
+        font-size: 11px;
     }
     
     .tab-btn.active {
