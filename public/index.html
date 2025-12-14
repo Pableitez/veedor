@@ -323,9 +323,9 @@
                         <div class="revolut-card" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); color: white; cursor: pointer; position: relative; overflow: hidden; border-radius: 16px; padding: 20px 24px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);" onclick="showSummaryDetails('accounts')" title="Haz clic para ver detalles">
                             <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
                             <div style="position: absolute; bottom: -30px; left: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.08); border-radius: 50%;"></div>
-                            <div style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; justify-content: space-between; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
+                            <div style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; justify-content: center; align-items: center; text-align: center; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
                                 <h3 style="color: rgba(255,255,255,0.9); font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; opacity: 0.95; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">Saldo en Cuentas</h3>
-                                <p class="amount" id="totalAccountsBalance" style="color: white; font-size: 32px; font-weight: 700; margin: 0; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">0,00 €</p>
+                                <p class="amount" id="totalAccountsBalance" style="color: white; font-size: 32px; font-weight: 700; margin: 0; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">0,00 €</p>
                                 <small style="color: rgba(255,255,255,0.8); font-size: 10px; line-height: 1.2; opacity: 0.9; margin-top: 6px; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">Total en todas las cuentas</small>
                             </div>
                         </div>
@@ -334,14 +334,38 @@
 
         <div class="main-content" style="margin-top: 0;">
             <div class="tabs">
-                <button class="tab-btn active" data-tab="transactions"><span data-translate="nav.transactions">Transacciones</span></button>
-                <button class="tab-btn" data-tab="summary"><span>Resumen</span></button>
-                <button class="tab-btn" data-tab="accounts"><span data-translate="nav.accounts">Cuentas</span></button>
-                <button class="tab-btn" data-tab="envelopes"><span data-translate="nav.budgets">Presupuestos</span></button>
-                <button class="tab-btn" data-tab="loans"><span data-translate="nav.loans">Préstamos</span></button>
-                <button class="tab-btn" data-tab="investments"><span data-translate="nav.investments">Inversiones</span></button>
-                <button class="tab-btn" data-tab="assets"><span data-translate="nav.assets">Patrimonio</span></button>
-                <button class="tab-btn" data-tab="charts"><span data-translate="nav.analysis">Análisis</span></button>
+                <button class="tab-btn active" data-tab="transactions">
+                    <span class="tab-icon">💳</span>
+                    <span class="tab-text" data-translate="nav.transactions">Transacciones</span>
+                </button>
+                <button class="tab-btn" data-tab="summary">
+                    <span class="tab-icon">📊</span>
+                    <span class="tab-text">Resumen</span>
+                </button>
+                <button class="tab-btn" data-tab="accounts">
+                    <span class="tab-icon">🏦</span>
+                    <span class="tab-text" data-translate="nav.accounts">Cuentas</span>
+                </button>
+                <button class="tab-btn" data-tab="envelopes">
+                    <span class="tab-icon">💰</span>
+                    <span class="tab-text" data-translate="nav.budgets">Presupuestos</span>
+                </button>
+                <button class="tab-btn" data-tab="loans">
+                    <span class="tab-icon">📝</span>
+                    <span class="tab-text" data-translate="nav.loans">Préstamos</span>
+                </button>
+                <button class="tab-btn" data-tab="investments">
+                    <span class="tab-icon">📈</span>
+                    <span class="tab-text" data-translate="nav.investments">Inversiones</span>
+                </button>
+                <button class="tab-btn" data-tab="assets">
+                    <span class="tab-icon">🏠</span>
+                    <span class="tab-text" data-translate="nav.assets">Patrimonio</span>
+                </button>
+                <button class="tab-btn" data-tab="charts">
+                    <span class="tab-icon">📉</span>
+                    <span class="tab-text" data-translate="nav.analysis">Análisis</span>
+                </button>
             </div>
 
             <!-- Tab: Resumen -->
