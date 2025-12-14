@@ -1536,6 +1536,7 @@ body.dark-mode .savings-card:hover {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: 0 0 auto;
 }
 
 .tab-icon {
@@ -1550,6 +1551,54 @@ body.dark-mode .savings-card:hover {
 
 .tab-text {
     display: inline;
+}
+
+/* Cuando la ventana se estrecha, mostrar iconos y texto vertical */
+@media (max-width: 1200px) {
+    .tabs {
+        border-bottom: none;
+        border-top: 1px solid var(--border-color);
+        margin-bottom: 0;
+        padding: 8px 0;
+    }
+    
+    .tab-btn {
+        flex-direction: column;
+        padding: 8px 6px;
+        gap: 4px;
+        border-bottom: none;
+        border-top: 2px solid transparent;
+        margin-bottom: 0;
+        margin-top: -2px;
+        min-width: 70px;
+        max-width: 90px;
+    }
+    
+    .tab-icon {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+    
+    .tab-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .tab-text {
+        display: block !important;
+        font-size: 11px;
+        line-height: 1.1;
+        text-align: center;
+    }
+    
+    .tab-btn.active {
+        border-top-color: var(--primary);
+        border-bottom: none;
+    }
 }
 
 .tab-btn:hover {
