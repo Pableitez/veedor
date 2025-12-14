@@ -4885,6 +4885,11 @@ body:not(.dark-mode) .quick-add-btn-desktop:hover {
         min-height: 130px !important;
         padding: 14px 16px !important;
     }
+    
+    /* Mostrar transacciones recientes solo en móvil */
+    .mobile-recent-transactions {
+        display: block !important;
+    }
 }
 
 @media (min-width: 769px) {
@@ -4898,5 +4903,10 @@ body:not(.dark-mode) .quick-add-btn-desktop:hover {
     
     .dashboard > div {
         display: block !important;
+    }
+    
+    /* Ocultar transacciones recientes en desktop */
+    .mobile-recent-transactions {
+        display: none !important;
     }
 }
