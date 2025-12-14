@@ -13562,6 +13562,8 @@ window.switchToTab = switchToTab;
 
 // ==================== NAVEGACIÓN MÓVIL ====================
 function switchMobileTab(tabName) {
+    console.log('switchMobileTab llamado con:', tabName);
+    
     // Ocultar todos los tab-content
     const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(content => {
@@ -13604,6 +13606,10 @@ function switchMobileTab(tabName) {
                 content.style.display = 'none';
             }
         });
+        // Actualizar transacciones recientes
+        if (typeof updateMobileRecentTransactions === 'function') {
+            updateMobileRecentTransactions();
+        }
         return;
     }
     
@@ -13626,10 +13632,16 @@ function switchMobileTab(tabName) {
         if (window.innerWidth <= 768) {
             targetTabContent.style.display = 'block';
         }
+        // Scroll suave al contenido
+        setTimeout(() => {
+            targetTabContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     }
     
     // Llamar a switchToTab para mantener la lógica existente
-    switchToTab(tabName, false);
+    if (typeof switchToTab === 'function') {
+        switchToTab(tabName, false);
+    }
 }
 
 // Inicializar navegación móvil

@@ -3694,16 +3694,34 @@ body:not(.dark-mode) .quick-add-btn-desktop:hover {
     border-color: rgba(30, 58, 138, 0.6) !important;
 }
 
+.quick-add-tooltip {
+    position: absolute;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
 body:not(.dark-mode) .quick-add-tooltip {
     background: rgba(30, 58, 138, 1) !important;
     color: white !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
 body.dark-mode .quick-add-tooltip {
-    background: rgba(255, 255, 255, 0.95) !important;
-    color: rgba(0, 0, 0, 0.9) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+    background: rgba(255, 255, 255, 1) !important;
+    color: rgba(0, 0, 0, 0.95) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* ============================================
