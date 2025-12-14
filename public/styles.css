@@ -3057,11 +3057,11 @@ tbody tr:last-child td {
     .tab-icon {
         font-size: 20px;
         line-height: 1;
-        display: block;
+        display: block !important;
     }
     
     .tab-text {
-        display: none;
+        display: none !important;
     }
     
     .tab-btn.active {
