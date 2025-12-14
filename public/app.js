@@ -13505,6 +13505,155 @@ switchToTab = function(tabName, doScroll) {
 // Exponer función global
 window.switchToTab = switchToTab;
 
+// ==================== NAVEGACIÓN MÓVIL ====================
+function switchMobileTab(tabName) {
+    // Ocultar todos los tab-content
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => {
+        content.classList.remove('active');
+        if (window.innerWidth <= 768) {
+            content.style.display = 'none';
+        }
+    });
+    
+    // Ocultar todo el dashboard excepto las cards de saldo
+    const dashboardSections = document.querySelectorAll('.dashboard > div:not(.revolut-section)');
+    dashboardSections.forEach(section => {
+        if (window.innerWidth <= 768) {
+            section.style.display = 'none';
+        }
+    });
+    
+    // Actualizar botones de navegación móvil
+    const mobileNavBtns = document.querySelectorAll('.mobile-nav-btn');
+    mobileNavBtns.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-tab') === tabName) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Si es "summary", mostrar solo las cards de saldo
+    if (tabName === 'summary') {
+        const revolutSection = document.querySelector('.revolut-section');
+        if (revolutSection && window.innerWidth <= 768) {
+            revolutSection.style.display = 'block';
+        }
+        // Ocultar todos los tab-content
+        tabContents.forEach(content => {
+            if (window.innerWidth <= 768) {
+                content.style.display = 'none';
+            }
+        });
+        return;
+    }
+    
+    // Para otros tabs, ocultar las cards de saldo y mostrar el contenido del tab
+    const revolutSection = document.querySelector('.revolut-section');
+    if (revolutSection && window.innerWidth <= 768) {
+        revolutSection.style.display = 'none';
+    }
+    
+    // Mostrar el tab-content correspondiente
+    const targetTabContent = document.getElementById(`${tabName}-tab`);
+    if (targetTabContent) {
+        targetTabContent.classList.add('active');
+        if (window.innerWidth <= 768) {
+            targetTabContent.style.display = 'block';
+        }
+    }
+    
+    // Llamar a switchToTab para mantener la lógica existente
+    switchToTab(tabName, false);
+}
+
+// Inicializar navegación móvil
+function initializeMobileNav() {
+    // Verificar si estamos en móvil
+    const isMobile = window.innerWidth <= 768;
+    const mobileBottomNav = document.getElementById('mobileBottomNav');
+    
+    if (isMobile && mobileBottomNav) {
+        // Mostrar navegación móvil
+        mobileBottomNav.style.display = 'flex';
+        
+        // Ocultar tabs superiores
+        const tabs = document.querySelector('.tabs');
+        if (tabs) {
+            tabs.style.display = 'none';
+        }
+        
+        // Ocultar contenido del dashboard excepto las cards
+        const dashboardSections = document.querySelectorAll('.dashboard > div:not(.revolut-section)');
+        dashboardSections.forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        // Ocultar todos los tab-content inicialmente
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+            content.style.display = 'none';
+        });
+        
+        // Activar el botón de resumen por defecto
+        const summaryBtn = document.querySelector('.mobile-nav-btn[data-tab="summary"]');
+        if (summaryBtn) {
+            summaryBtn.classList.add('active');
+        }
+    } else if (mobileBottomNav) {
+        // Ocultar navegación móvil en desktop
+        mobileBottomNav.style.display = 'none';
+        
+        // Mostrar tabs superiores
+        const tabs = document.querySelector('.tabs');
+        if (tabs) {
+            tabs.style.display = 'flex';
+        }
+        
+        // Mostrar contenido del dashboard
+        const dashboardSections = document.querySelectorAll('.dashboard > div');
+        dashboardSections.forEach(section => {
+            section.style.display = 'block';
+        });
+    }
+}
+
+// Escuchar cambios de tamaño de ventana
+window.addEventListener('resize', initializeMobileNav);
+
+// Inicializar al cargar
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeMobileNav);
+} else {
+    initializeMobileNav();
+}
+
+// Exponer función global
+window.switchMobileTab = switchMobileTab;
+
+// ==================== TOGGLE OPCIONES OPCIONALES TRANSACCIONES ====================
+function toggleTransactionOptional() {
+    const toggle = document.querySelector('.transaction-optional-toggle');
+    const content = document.getElementById('transactionOptionalContent');
+    const icon = document.getElementById('transactionOptionalIcon');
+    
+    if (!toggle || !content) return;
+    
+    const isExpanded = content.style.display !== 'none';
+    
+    if (isExpanded) {
+        content.style.display = 'none';
+        toggle.classList.remove('active');
+    } else {
+        content.style.display = 'block';
+        toggle.classList.add('active');
+    }
+}
+
+// Exponer función global
+window.toggleTransactionOptional = toggleTransactionOptional;
+
 // ==================== DEBOUNCE UTILITY ====================
 function debounce(func, wait) {
     let timeout;
