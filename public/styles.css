@@ -1622,19 +1622,8 @@ body.dark-mode .more-tab-item:hover {
     flex-shrink: 0;
 }
 
-/* Ocultar tabs en móvil (ya están en menú hamburguesa) */
-@media (max-width: 768px) {
-    .tabs {
-        display: none !important;
-    }
-    
-    .main-content {
-        padding-bottom: 16px !important;
-    }
-}
-
-/* Cuando la ventana se estrecha pero no es móvil, mantener tabs centradas */
-@media (min-width: 769px) and (max-width: 1200px) {
+/* Tabs centradas en todas las pantallas */
+@media (max-width: 1200px) {
     .tabs {
         justify-content: center;
         align-items: center;
