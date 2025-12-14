@@ -13562,23 +13562,28 @@ window.switchToTab = switchToTab;
 
 // ==================== NAVEGACIÓN MÓVIL ====================
 function switchMobileTab(tabName) {
-    console.log('switchMobileTab llamado con:', tabName);
+    console.log('🔵 switchMobileTab llamado con:', tabName, 'Ancho:', window.innerWidth);
+    
+    const isMobile = window.innerWidth <= 768;
+    if (!isMobile) {
+        // Si no es móvil, usar la función normal
+        if (typeof switchToTab === 'function') {
+            switchToTab(tabName, true);
+        }
+        return;
+    }
     
     // Ocultar todos los tab-content
     const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(content => {
         content.classList.remove('active');
-        if (window.innerWidth <= 768) {
-            content.style.display = 'none';
-        }
+        content.style.display = 'none';
     });
     
     // Ocultar todo el dashboard excepto las cards de saldo
     const dashboardSections = document.querySelectorAll('.dashboard > div:not(.revolut-section)');
     dashboardSections.forEach(section => {
-        if (window.innerWidth <= 768) {
-            section.style.display = 'none';
-        }
+        section.style.display = 'none';
     });
     
     // Actualizar botones de navegación móvil
@@ -13593,19 +13598,13 @@ function switchMobileTab(tabName) {
     // Si es "summary", mostrar solo las cards de saldo y transacciones recientes
     if (tabName === 'summary') {
         const revolutSection = document.querySelector('.revolut-section');
-        if (revolutSection && window.innerWidth <= 768) {
+        if (revolutSection) {
             revolutSection.style.display = 'block';
         }
         const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
-        if (mobileRecentTransactions && window.innerWidth <= 768) {
+        if (mobileRecentTransactions) {
             mobileRecentTransactions.style.display = 'block';
         }
-        // Ocultar todos los tab-content
-        tabContents.forEach(content => {
-            if (window.innerWidth <= 768) {
-                content.style.display = 'none';
-            }
-        });
         // Actualizar transacciones recientes
         if (typeof updateMobileRecentTransactions === 'function') {
             updateMobileRecentTransactions();
@@ -13615,13 +13614,13 @@ function switchMobileTab(tabName) {
     
     // Ocultar transacciones recientes cuando se cambia a otro tab
     const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
-    if (mobileRecentTransactions && window.innerWidth <= 768) {
+    if (mobileRecentTransactions) {
         mobileRecentTransactions.style.display = 'none';
     }
     
     // Para otros tabs, ocultar las cards de saldo y mostrar el contenido del tab
     const revolutSection = document.querySelector('.revolut-section');
-    if (revolutSection && window.innerWidth <= 768) {
+    if (revolutSection) {
         revolutSection.style.display = 'none';
     }
     
@@ -13629,16 +13628,17 @@ function switchMobileTab(tabName) {
     const targetTabContent = document.getElementById(`${tabName}-tab`);
     if (targetTabContent) {
         targetTabContent.classList.add('active');
-        if (window.innerWidth <= 768) {
-            targetTabContent.style.display = 'block';
-        }
+        targetTabContent.style.display = 'block';
+        console.log('✅ Mostrando tab:', tabName, targetTabContent);
         // Scroll suave al contenido
         setTimeout(() => {
             targetTabContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
+    } else {
+        console.error('❌ No se encontró el tab-content:', `${tabName}-tab`);
     }
     
-    // Llamar a switchToTab para mantener la lógica existente
+    // Llamar a switchToTab para mantener la lógica existente (actualizaciones, etc.)
     if (typeof switchToTab === 'function') {
         switchToTab(tabName, false);
     }

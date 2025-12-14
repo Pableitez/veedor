@@ -3728,50 +3728,6 @@ body:not(.dark-mode) .quick-add-btn-desktop:hover {
 }
 
 /* ============================================
-   TOOLTIP DE NUEVA TRANSACCIÓN
-   ============================================ */
-.quick-add-tooltip {
-    position: absolute !important;
-    right: calc(100% + 12px) !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    padding: 10px 16px !important;
-    border-radius: 8px !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    white-space: nowrap !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease !important;
-    pointer-events: none !important;
-    z-index: 10000 !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
-    line-height: 1.4 !important;
-    letter-spacing: 0.3px !important;
-}
-
-/* Modo oscuro - tooltip */
-body.dark-mode .quick-add-tooltip {
-    background: #FFFFFF !important;
-    color: #1F2937 !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
-}
-
-/* Modo claro - tooltip */
-body:not(.dark-mode) .quick-add-tooltip {
-    background: #1E3A8A !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 4px 16px rgba(30, 58, 138, 0.4) !important;
-}
-
-/* Mostrar tooltip al hacer hover */
-.quick-add-btn-desktop:hover .quick-add-tooltip {
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: translateY(-50%) translateX(-4px) !important;
-}
-
-/* ============================================
    RESPONSIVIDAD MÓVIL PEQUEÑO - 480px
    ============================================ */
 @media (max-width: 480px) {
