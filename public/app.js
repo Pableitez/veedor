@@ -1692,6 +1692,7 @@ function initializeCategories() {
 
 // Función para cambiar de tab (reutilizable)
 function switchToTab(targetTab, doScroll = false) {
+    const isMobile = window.innerWidth <= 768;
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     const navItems = document.querySelectorAll('.nav-item');
@@ -1706,6 +1707,12 @@ function switchToTab(targetTab, doScroll = false) {
     if (targetTabBtn) targetTabBtn.classList.add('active');
     if (targetTabContent) {
         targetTabContent.classList.add('active');
+        // En móvil, NO cambiar el display porque switchMobileTab ya lo maneja
+        if (!isMobile) {
+            // Solo en desktop, cambiar el display normalmente
+            tabContents.forEach(c => c.style.display = 'none');
+            targetTabContent.style.display = 'block';
+        }
         // Solo hacer scroll si se solicita explícitamente (doScroll = true)
         if (doScroll) {
         // Scroll suave a la sección - esperar a que el DOM se actualice y el tab esté visible
