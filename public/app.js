@@ -13533,11 +13533,15 @@ function switchMobileTab(tabName) {
         }
     });
     
-    // Si es "summary", mostrar solo las cards de saldo
+    // Si es "summary", mostrar solo las cards de saldo y transacciones recientes
     if (tabName === 'summary') {
         const revolutSection = document.querySelector('.revolut-section');
         if (revolutSection && window.innerWidth <= 768) {
             revolutSection.style.display = 'block';
+        }
+        const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
+        if (mobileRecentTransactions && window.innerWidth <= 768) {
+            mobileRecentTransactions.style.display = 'block';
         }
         // Ocultar todos los tab-content
         tabContents.forEach(content => {
@@ -13546,6 +13550,12 @@ function switchMobileTab(tabName) {
             }
         });
         return;
+    }
+    
+    // Ocultar transacciones recientes cuando se cambia a otro tab
+    const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
+    if (mobileRecentTransactions && window.innerWidth <= 768) {
+        mobileRecentTransactions.style.display = 'none';
     }
     
     // Para otros tabs, ocultar las cards de saldo y mostrar el contenido del tab

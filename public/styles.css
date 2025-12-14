@@ -3695,8 +3695,9 @@ body:not(.dark-mode) .quick-add-btn-desktop:hover {
 }
 
 body:not(.dark-mode) .quick-add-tooltip {
-    background: rgba(30, 58, 138, 0.95) !important;
+    background: rgba(30, 58, 138, 1) !important;
     color: white !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 body.dark-mode .quick-add-tooltip {
@@ -4721,8 +4722,8 @@ body.dark-mode .quick-add-tooltip {
 }
 
 .mobile-nav-btn svg {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     stroke-width: 2;
 }
 
@@ -4740,6 +4741,66 @@ body.dark-mode .quick-add-tooltip {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+    line-height: 1.2;
+}
+
+/* Tabla compacta de transacciones en móvil */
+.mobile-recent-transactions {
+    margin-top: 24px;
+}
+
+.mobile-transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mobile-transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.mobile-transaction-item:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary);
+}
+
+.mobile-transaction-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.mobile-transaction-date {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mobile-transaction-category {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mobile-transaction-amount {
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+    margin-left: 12px;
 }
 
 /* Ocultar tabs superiores en móvil */
@@ -4776,7 +4837,18 @@ body.dark-mode .quick-add-tooltip {
     
     /* Ajustar el botón flotante para que no se solape con la navegación */
     .quick-add-btn-mobile {
-        bottom: 90px !important;
+        bottom: 100px !important;
+    }
+    
+    /* Mostrar transacciones recientes en móvil */
+    .mobile-recent-transactions {
+        display: block !important;
+    }
+    
+    /* Asegurar que la card de patrimonio tenga los mismos estilos que Saldo en Cuentas */
+    .revolut-card {
+        min-height: 130px !important;
+        padding: 14px 16px !important;
     }
 }
 
