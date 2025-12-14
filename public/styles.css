@@ -4230,15 +4230,7 @@ body:not(.dark-mode) .quick-add-tooltip {
     }
     
     /* Tabs más compactos */
-    .tabs {
-        padding: 0 8px !important;
-    }
-    
-    .tab-btn {
-        padding: 10px 12px !important;
-        font-size: 13px !important;
-        min-height: 44px !important;
-    }
+    /* Tabs ocultas en móvil - no aplicar estilos */
     
     /* Footer más compacto */
     footer {
