@@ -337,15 +337,136 @@
                     </div>
                 </div>
 
-        <div class="main-content">
+        <div class="main-content" style="margin-top: 0;">
             <div class="tabs">
                 <button class="tab-btn active" data-tab="transactions"><span data-translate="nav.transactions">Transacciones</span></button>
+                <button class="tab-btn" data-tab="summary"><span>Resumen</span></button>
                 <button class="tab-btn" data-tab="accounts"><span data-translate="nav.accounts">Cuentas</span></button>
                 <button class="tab-btn" data-tab="envelopes"><span data-translate="nav.budgets">Presupuestos</span></button>
                 <button class="tab-btn" data-tab="loans"><span data-translate="nav.loans">Préstamos</span></button>
                 <button class="tab-btn" data-tab="investments"><span data-translate="nav.investments">Inversiones</span></button>
                 <button class="tab-btn" data-tab="assets"><span data-translate="nav.assets">Patrimonio</span></button>
                 <button class="tab-btn" data-tab="charts"><span data-translate="nav.analysis">Análisis</span></button>
+            </div>
+
+            <!-- Tab: Resumen -->
+            <div class="tab-content" id="summary-tab">
+                <div style="margin-bottom: 32px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: clamp(12px, 3vw, 16px);">
+                        <h3 style="font-size: clamp(16px, 4vw, 18px); font-weight: 700; color: var(--text-primary); margin: 0; flex: 1; min-width: 0;">Vista de Resumen</h3>
+                        <div style="flex: 1; max-width: 100%; min-width: min(100%, 200px); width: 100%; box-sizing: border-box;" class="summary-period-container">
+                            <select id="summaryPeriod" style="width: 100%; padding: clamp(10px, 2.5vw, 12px); border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: clamp(14px, 3.5vw, 16px); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; box-sizing: border-box; min-height: clamp(40px, 10vw, 44px);">
+                                <option value="month" data-translate="dashboard.thisMonth">Este Mes</option>
+                                <option value="month-select" data-translate="dashboard.specificMonth">Mes Específico</option>
+                                <option value="year" selected data-translate="dashboard.thisYear">Este Año</option>
+                                <option value="year-select" data-translate="dashboard.specificYear">Año Específico</option>
+                                <option value="all" data-translate="dashboard.allTime">Historial Completo</option>
+                            </select>
+                            <div id="summaryMonthContainer" style="display: none; width: 100%; gap: clamp(8px, 2vw, 12px); flex-wrap: wrap;">
+                                <select id="summaryMonthSelect" style="flex: 1; min-width: 120px; padding: clamp(10px, 2.5vw, 12px); border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: clamp(14px, 3.5vw, 16px); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; box-sizing: border-box; min-height: clamp(40px, 10vw, 44px);">
+                                    <option value="1">Ene</option>
+                                    <option value="2">Feb</option>
+                                    <option value="3">Mar</option>
+                                    <option value="4">Abr</option>
+                                    <option value="5">May</option>
+                                    <option value="6">Jun</option>
+                                    <option value="7">Jul</option>
+                                    <option value="8">Ago</option>
+                                    <option value="9">Sep</option>
+                                    <option value="10">Oct</option>
+                                    <option value="11">Nov</option>
+                                    <option value="12">Dic</option>
+                                </select>
+                                <input type="number" id="summaryMonthYear" min="2000" max="2100" style="flex: 1; min-width: 100px; padding: clamp(10px, 2.5vw, 12px); border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: clamp(14px, 3.5vw, 16px); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; box-sizing: border-box; min-height: clamp(40px, 10vw, 44px);" placeholder="Año">
+                            </div>
+                            <input type="number" id="summaryYear" min="2000" max="2100" style="width: 100%; padding: clamp(10px, 2.5vw, 12px); border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: clamp(14px, 3.5vw, 16px); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: none; visibility: hidden; margin-top: 0; margin-bottom: 0; height: 0; padding-top: 0; padding-bottom: 0; box-sizing: border-box; min-height: clamp(40px, 10vw, 44px);" data-translate-placeholder="dashboard.selectYear" placeholder="Selecciona el año">
+                        </div>
+                    </div>
+                    
+                    <div class="summary-cards">
+                        <div class="card" style="cursor: pointer;" onclick="showSummaryDetails('balance')" title="Haz clic para ver detalles">
+                            <h3>Balance Total</h3>
+                            <p class="amount" id="totalBalance">0,00 €</p>
+                            <small id="totalBalancePeriod">Historial completo</small>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="showSummaryDetails('income')" data-translate-title="dashboard.clickForDetails" title="Haz clic para ver detalles">
+                            <h3 id="periodIncomeLabel" data-translate="dashboard.income">Ingresos</h3>
+                            <p class="amount positive" id="periodIncome">0,00 €</p>
+                            <small id="periodIncomeSubLabel" data-translate="dashboard.thisMonth">Este mes</small>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="showSummaryDetails('expenses')" data-translate-title="dashboard.clickForDetails" title="Haz clic para ver detalles">
+                            <h3 id="periodExpensesLabel" data-translate="dashboard.expenses">Gastos</h3>
+                            <p class="amount negative" id="periodExpenses">0,00 €</p>
+                            <small id="periodExpensesSubLabel" data-translate="dashboard.thisMonth">Este mes</small>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="showSummaryDetails('savings')" data-translate-title="dashboard.clickForDetails" title="Haz clic para ver detalles">
+                            <h3 id="periodSavingsLabel" data-translate="dashboard.savings">Ahorro</h3>
+                            <p class="amount" id="periodSavings">0,00 €</p>
+                            <small id="periodSavingsSubLabel" data-translate="dashboard.thisMonth">Este mes</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Indicadores de Salud Financiera -->
+                <div style="margin-bottom: 32px;">
+                    <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 24px; color: var(--text-primary);">Indicadores de Salud Financiera</h2>
+                    <div id="financialHealthMetrics" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 32px;">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+                
+                <!-- Recomendaciones Económicas -->
+                <div style="margin-bottom: 32px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                        <h2 style="font-size: clamp(18px, 4vw, 20px); font-weight: 700; margin: 0; color: var(--text-primary);">Recomendaciones Personalizadas</h2>
+                        <button id="refreshRecommendationsBtn" onclick="updateRecommendations()" style="padding: clamp(6px, 1.5vw, 8px) clamp(12px, 3vw, 16px); background: var(--primary); color: white; border: none; border-radius: 8px; font-size: clamp(11px, 2.5vw, 13px); font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">Actualizar</button>
+                    </div>
+                    <div id="recommendationsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 16px;">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+                
+                <!-- Selector de Análisis del Mes -->
+                <div id="monthAnalysisSelector" style="background: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-top: 32px; margin-bottom: 20px; display: none; width: 100%; box-sizing: border-box;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;" data-translate="dashboard.monthAnalysis">Análisis del Mes</label>
+                    <div style="position: relative; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; box-sizing: border-box;" onclick="document.getElementById('dashboardMonth').showPicker ? document.getElementById('dashboardMonth').showPicker() : document.getElementById('dashboardMonth').focus();">
+                        <input type="month" id="dashboardMonth" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; pointer-events: auto; text-align: center; box-sizing: border-box;">
+                    </div>
+                    <small style="display: block; margin-top: 6px; font-size: 11px; color: var(--text-tertiary);" data-translate="dashboard.monthAnalysisHint">Selecciona un mes para ver el análisis detallado</small>
+                </div>
+                
+                <!-- Análisis del Mes Seleccionado -->
+                <div id="monthDashboard" style="margin-top: 0; display: none;">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--text-primary);" data-translate="dashboard.selectedMonthAnalysis">Análisis del Mes Seleccionado</h3>
+                    
+                    <!-- Gastos por Categoría -->
+                    <div style="margin-bottom: 32px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);" data-translate="dashboard.expensesByCategory">Gastos por Categoría</h4>
+                        <div id="monthExpensesByCategory" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Ingresos por Categoría -->
+                    <div style="margin-bottom: 32px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);" data-translate="dashboard.incomeByCategory">Ingresos por Categoría</h4>
+                        <div id="monthIncomeByCategory" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Estado de Presupuestos del Mes -->
+                    <div style="margin-bottom: 32px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);" data-translate="dashboard.budgetsStatus">Estado de Presupuestos</h4>
+                        <div id="monthBudgetsStatus" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Estado de Sobres del Mes -->
+                    <div style="margin-bottom: 32px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);" data-translate="dashboard.envelopesStatus">Estado de Sobres</h4>
+                        <div id="monthEnvelopesStatus" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Tab: Transacciones -->
