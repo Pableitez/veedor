@@ -1515,6 +1515,8 @@ body.dark-mode .savings-card:hover {
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
+    justify-content: center;
+    align-items: center;
 }
 
 .tabs::-webkit-scrollbar {
