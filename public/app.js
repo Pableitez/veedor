@@ -1827,34 +1827,47 @@ function switchQuickView(view) {
     };
     
     // Mostrar secciones según la vista
+    const chartsSectionEl = document.getElementById('chartsSection');
+    const healthSectionEl = document.getElementById('healthSection');
+    const recommendationsSectionEl = document.getElementById('recommendationsSection');
+    const chartsParent = chartsSectionEl?.parentElement?.parentElement;
+    
     if (view === 'today') {
         // Vista "Hoy": Solo saldo y resumen básico
-        document.querySelector('.revolut-section').style.display = 'block';
-        document.querySelector('.summary-cards').parentElement.style.display = 'block';
-        document.getElementById('chartsSection')?.parentElement.parentElement.style.display = 'none';
-        document.getElementById('healthSection')?.parentElement.style.display = 'none';
-        document.getElementById('recommendationsSection')?.parentElement.style.display = 'none';
+        const revolutSection = document.querySelector('.revolut-section');
+        const summaryCards = document.querySelector('.summary-cards');
+        if (revolutSection) revolutSection.style.display = 'block';
+        if (summaryCards?.parentElement) summaryCards.parentElement.style.display = 'block';
+        if (chartsParent) chartsParent.style.display = 'none';
+        if (healthSectionEl?.parentElement) healthSectionEl.parentElement.style.display = 'none';
+        if (recommendationsSectionEl?.parentElement) recommendationsSectionEl.parentElement.style.display = 'none';
     } else if (view === 'planning') {
         // Vista "Planificación": Saldo, resumen y presupuestos
-        document.querySelector('.revolut-section').style.display = 'block';
-        document.querySelector('.summary-cards').parentElement.style.display = 'block';
-        document.getElementById('chartsSection')?.parentElement.parentElement.style.display = 'none';
-        document.getElementById('healthSection')?.parentElement.style.display = 'none';
-        document.getElementById('recommendationsSection')?.parentElement.style.display = 'block';
+        const revolutSection = document.querySelector('.revolut-section');
+        const summaryCards = document.querySelector('.summary-cards');
+        if (revolutSection) revolutSection.style.display = 'block';
+        if (summaryCards?.parentElement) summaryCards.parentElement.style.display = 'block';
+        if (chartsParent) chartsParent.style.display = 'none';
+        if (healthSectionEl?.parentElement) healthSectionEl.parentElement.style.display = 'none';
+        if (recommendationsSectionEl?.parentElement) recommendationsSectionEl.parentElement.style.display = 'block';
     } else if (view === 'patrimony') {
         // Vista "Patrimonio": Saldo, resumen y patrimonio
-        document.querySelector('.revolut-section').style.display = 'block';
-        document.querySelector('.summary-cards').parentElement.style.display = 'block';
-        document.getElementById('chartsSection')?.parentElement.parentElement.style.display = 'none';
-        document.getElementById('healthSection')?.parentElement.style.display = 'block';
-        document.getElementById('recommendationsSection')?.parentElement.style.display = 'none';
+        const revolutSection = document.querySelector('.revolut-section');
+        const summaryCards = document.querySelector('.summary-cards');
+        if (revolutSection) revolutSection.style.display = 'block';
+        if (summaryCards?.parentElement) summaryCards.parentElement.style.display = 'block';
+        if (chartsParent) chartsParent.style.display = 'none';
+        if (healthSectionEl?.parentElement) healthSectionEl.parentElement.style.display = 'block';
+        if (recommendationsSectionEl?.parentElement) recommendationsSectionEl.parentElement.style.display = 'none';
     } else if (view === 'analysis') {
         // Vista "Análisis": Todo
-        document.querySelector('.revolut-section').style.display = 'block';
-        document.querySelector('.summary-cards').parentElement.style.display = 'block';
-        document.getElementById('chartsSection')?.parentElement.parentElement.style.display = 'block';
-        document.getElementById('healthSection')?.parentElement.style.display = 'block';
-        document.getElementById('recommendationsSection')?.parentElement.style.display = 'block';
+        const revolutSection = document.querySelector('.revolut-section');
+        const summaryCards = document.querySelector('.summary-cards');
+        if (revolutSection) revolutSection.style.display = 'block';
+        if (summaryCards?.parentElement) summaryCards.parentElement.style.display = 'block';
+        if (chartsParent) chartsParent.style.display = 'block';
+        if (healthSectionEl?.parentElement) healthSectionEl.parentElement.style.display = 'block';
+        if (recommendationsSectionEl?.parentElement) recommendationsSectionEl.parentElement.style.display = 'block';
     }
 }
 
