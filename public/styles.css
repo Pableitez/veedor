@@ -1622,83 +1622,22 @@ body.dark-mode .more-tab-item:hover {
     flex-shrink: 0;
 }
 
-/* Tabs centradas en todas las pantallas */
-@media (max-width: 1200px) {
+/* Ocultar tabs en móvil (ya están en menú hamburguesa) */
+@media (max-width: 768px) {
+    .tabs {
+        display: none !important;
+    }
+    
+    .main-content {
+        padding-bottom: 16px !important;
+    }
+}
+
+/* Tabs centradas en pantallas medianas pero no móvil */
+@media (min-width: 769px) and (max-width: 1200px) {
     .tabs {
         justify-content: center;
         align-items: center;
-    }
-}
-    
-    .tabs::-webkit-scrollbar {
-        height: 4px;
-        display: block;
-    }
-    
-    .tabs::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    
-    .tabs::-webkit-scrollbar-thumb {
-        background: var(--gray-300);
-        border-radius: 2px;
-    }
-    
-    .tab-btn {
-        flex: 0 0 auto !important;
-        flex-shrink: 0 !important;
-        flex-grow: 0 !important;
-        flex-direction: column !important;
-        padding: 6px 4px !important;
-        gap: 3px !important;
-        border-bottom: none !important;
-        border-top: 2px solid transparent !important;
-        margin-bottom: 0 !important;
-        margin-top: -2px !important;
-        min-width: 70px !important;
-        max-width: 90px !important;
-        box-sizing: border-box !important;
-        width: auto !important;
-    }
-    
-    .tab-icon {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
-        flex-shrink: 0;
-    }
-    
-    .tab-icon svg {
-        width: 24px;
-        height: 24px;
-        stroke: currentColor;
-        flex-shrink: 0;
-    }
-    
-    .tab-text {
-        display: block !important;
-        font-size: 11px;
-        font-weight: 500;
-        line-height: 1.1;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-    
-    .tab-btn.active {
-        border-top-color: var(--primary);
-        border-bottom: none;
-        color: var(--primary);
-    }
-    
-    .tab-btn.active .tab-icon svg {
-        stroke: var(--primary);
     }
 }
 
