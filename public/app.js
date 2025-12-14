@@ -13791,10 +13791,6 @@ function initMobileNavOnLoad() {
 
 initMobileNavOnLoad();
 
-// Exponer función global
-window._switchMobileTabReal = switchMobileTab;
-window.switchMobileTab = switchMobileTab;
-
 // ==================== TOGGLE OPCIONES OPCIONALES TRANSACCIONES ====================
 function toggleTransactionOptional() {
     const toggle = document.querySelector('.transaction-optional-toggle');

@@ -2116,6 +2116,22 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     max-height: 600px;
     overflow-y: auto;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Asegurar que la tabla de transacciones tenga scroll en todas las vistas */
+.table-container {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+/* En móvil, altura máxima más pequeña */
+@media (max-width: 768px) {
+    #transactionsTableContainer,
+    .table-container {
+        max-height: 500px;
+    }
 }
 
 /* Scrollbars globales mejorados */
@@ -4732,7 +4748,8 @@ body:not(.dark-mode) .quick-add-btn-desktop:hover {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 10px 4px max(16px, env(safe-area-inset-bottom)) 4px;
+    padding: 12px 4px max(20px, calc(env(safe-area-inset-bottom) + 8px)) 4px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     z-index: 998;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     min-height: 70px;
