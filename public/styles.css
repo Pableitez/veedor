@@ -1637,18 +1637,22 @@ body.dark-mode .more-tab-item:hover {
         padding-bottom: 16px !important;
     }
     
-    /* Ocultar sección de Nueva Transacción en móvil (ya está en botón flotante) */
-    #toggleTransactionFormBtn {
+    /* Ocultar sección completa de Nueva Transacción en móvil (ya está en botón flotante) */
+    #transactions-tab > .form-section:first-child {
         display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
     }
     
-    /* Ocultar el div del texto descriptivo que está después del botón */
-    #transactions-tab .form-section > div:first-child {
+    /* Asegurar que el botón y todos sus elementos estén ocultos */
+    #toggleTransactionFormBtn,
+    #toggleTransactionFormBtn + *,
+    #transactions-tab .form-section:first-child > * {
         display: none !important;
-    }
-    
-    #transactions-tab .form-section > div:nth-child(2) {
-        display: none !important;
+        visibility: hidden !important;
     }
     
     /* Mostrar solo 3 columnas en la tabla de transacciones en móvil: Fecha, Categoría, Monto */
