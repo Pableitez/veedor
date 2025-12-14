@@ -13646,7 +13646,8 @@ function switchMobileTab(tabName) {
     const targetTabContent = document.getElementById(`${tabName}-tab`);
     if (targetTabContent) {
         targetTabContent.classList.add('active');
-        targetTabContent.style.display = 'block';
+        // Forzar display block con !important para sobrescribir CSS
+        targetTabContent.style.setProperty('display', 'block', 'important');
         console.log('✅ Mostrando tab:', tabName, targetTabContent);
         // Scroll suave al contenido
         setTimeout(() => {
@@ -13657,8 +13658,15 @@ function switchMobileTab(tabName) {
     }
     
     // Llamar a switchToTab para mantener la lógica existente (actualizaciones, etc.)
+    // PERO solo para actualizar datos, no para cambiar display
     if (typeof switchToTab === 'function') {
+        // Guardar el display actual antes de llamar a switchToTab
+        const savedDisplay = targetTabContent ? targetTabContent.style.display : 'block';
         switchToTab(tabName, false);
+        // Restaurar el display después
+        if (targetTabContent) {
+            targetTabContent.style.setProperty('display', savedDisplay || 'block', 'important');
+        }
     }
 }
 
