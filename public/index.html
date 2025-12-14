@@ -645,15 +645,13 @@
 
             <!-- Tab: Propiedades/Pisos -->
             <div class="tab-content" id="properties-tab">
-                <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                    <h2 style="font-size: 20px; font-weight: 700; margin: 0; color: var(--text-primary);">Propiedades</h2>
                     <button type="button" class="btn-primary" id="togglePropertyFormBtn" onclick="toggleForm('propertyForm', 'togglePropertyFormBtn')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                         <span id="propertyFormText">Nueva Propiedad</span>
                     </button>
                 </div>
-                    <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
-                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus propiedades o pisos para asociar gastos específicos a cada una (agua, luz, comunidad, etc.).</p>
-                    </div>
-                    <form id="propertyForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                <form id="propertyForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary); margin-bottom: 24px;">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="propertyName">Nombre de la Propiedad</label>
@@ -693,15 +691,13 @@
 
             <!-- Tab: Cuentas Bancarias -->
             <div class="tab-content" id="accounts-tab">
-                <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                    <h2 style="font-size: 20px; font-weight: 700; margin: 0; color: var(--text-primary);">Cuentas</h2>
                     <button type="button" class="btn-primary" id="toggleAccountFormBtn" onclick="toggleForm('accountForm', 'toggleAccountFormBtn')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                         <span id="accountFormText">Nueva Cuenta</span>
                     </button>
                 </div>
-                    <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
-                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus cuentas bancarias para hacer seguimiento de tus saldos en diferentes entidades y tipos de cuenta.</p>
-                    </div>
-                    <form id="accountForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                <form id="accountForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary); margin-bottom: 24px;">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="accountName">Nombre de la Cuenta</label>
@@ -923,10 +919,7 @@
                             </div>
                         </div>
                     </div>
-                    <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
-                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus préstamos e hipotecas para hacer un seguimiento del capital restante, intereses y realizar simulaciones de amortización anticipada.</p>
-                    </div>
-                    <form id="loanForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                    <form id="loanForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary); margin-bottom: 24px;">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="loanName">Nombre del Préstamo</label>
@@ -1015,15 +1008,13 @@
 
             <!-- Tab: Inversiones -->
             <div class="tab-content" id="investments-tab">
-                <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                    <h2 style="font-size: 20px; font-weight: 700; margin: 0; color: var(--text-primary);">Inversiones</h2>
                     <button type="button" class="btn-primary" id="toggleInvestmentFormBtn" onclick="toggleForm('investmentForm', 'toggleInvestmentFormBtn')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                         <span id="investmentFormText">Nueva Inversión</span>
                     </button>
                 </div>
-                    <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
-                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus inversiones para hacer seguimiento de su rendimiento, ganancias/pérdidas y rentabilidad total.</p>
-                    </div>
-                    <form id="investmentForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                <form id="investmentForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary); margin-bottom: 24px;">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="investmentName">Nombre de la Inversión</label>
@@ -1109,15 +1100,13 @@
 
             <!-- Tab: Patrimonio -->
             <div class="tab-content" id="assets-tab">
-                <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                    <h2 style="font-size: 20px; font-weight: 700; margin: 0; color: var(--text-primary);">Patrimonio</h2>
                     <button type="button" class="btn-primary" id="togglePatrimonioFormBtn" onclick="toggleForm('patrimonioForm', 'togglePatrimonioFormBtn')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
                         <span id="patrimonioFormText">Nueva Propiedad</span>
                     </button>
                 </div>
-                    <div style="background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); margin-bottom: 24px; color: var(--text-primary);">
-                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Registra tus propiedades (viviendas, vehículos, oficinas, etc.) y asócialas con préstamos. Haz seguimiento de la evolución de su valor a lo largo del tiempo.</p>
-                    </div>
-                    <form id="patrimonioForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                <form id="patrimonioForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary); margin-bottom: 24px;">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="patrimonioName">Nombre de la Propiedad</label>
@@ -1397,24 +1386,6 @@
                         <option value="24">Últimos 2 años</option>
                         <option value="all">Todo el historial</option>
                     </select>
-                </div>
-                
-                <div style="margin-bottom: 32px;">
-                    <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 24px; color: var(--text-primary);">Indicadores de Salud Financiera</h2>
-                    <div id="financialHealthMetrics" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 32px;">
-                        <!-- Se llenará dinámicamente -->
-                    </div>
-                </div>
-                
-                <!-- Recomendaciones Económicas -->
-                <div style="margin-bottom: 32px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
-                        <h2 style="font-size: clamp(18px, 4vw, 20px); font-weight: 700; margin: 0; color: var(--text-primary);">Recomendaciones Personalizadas</h2>
-                        <button id="refreshRecommendationsBtn" onclick="updateRecommendations()" style="padding: clamp(6px, 1.5vw, 8px) clamp(12px, 3vw, 16px); background: var(--primary); color: white; border: none; border-radius: 8px; font-size: clamp(11px, 2.5vw, 13px); font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">Actualizar</button>
-                    </div>
-                    <div id="recommendationsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 16px;">
-                        <!-- Se llenará dinámicamente -->
-                    </div>
                 </div>
                 
                 <!-- Tablas de Análisis -->
