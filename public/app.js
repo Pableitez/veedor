@@ -10746,29 +10746,40 @@ function updateFinancialHealthMetrics() {
     console.log('📊 Actualizando métricas de salud financiera...');
     container.innerHTML = '';
     
-    // Usar el mismo período que el análisis detallado
-    const periodTransactions = getTransactionsByPeriod();
-    const period = getSelectedPeriod();
     const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
     
-    // Calcular meses en el período para proyecciones
-    let monthsInPeriod = 1;
-    if (period === 999) { // "all"
-        const dates = periodTransactions.map(t => new Date(t.date));
-        if (dates.length > 0) {
-            const minDate = new Date(Math.min(...dates));
-            const maxDate = new Date(Math.max(...dates));
-            const diffTime = Math.abs(maxDate - minDate);
-            monthsInPeriod = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44)));
-        }
-    } else {
-        monthsInPeriod = period;
-    }
+    // Calcular ingresos y gastos del último mes para ratios mensuales
+    const lastMonthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+    });
     
-    // Calcular balance del período (no total acumulado)
-    const periodBalance = periodTransactions.reduce((sum, t) => sum + t.amount, 0);
+    const lastMonthIncome = lastMonthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const lastMonthExpenses = Math.abs(lastMonthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    const lastMonthSavings = lastMonthIncome - lastMonthExpenses;
     
-    // Activos totales (histórico acumulado para contexto)
+    // Calcular promedio de últimos 12 meses para proyecciones anuales
+    const last12MonthsTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        const monthsDiff = (currentYear - tDate.getFullYear()) * 12 + (currentMonth - tDate.getMonth());
+        return monthsDiff >= 0 && monthsDiff < 12;
+    });
+    
+    const last12MonthsIncome = last12MonthsTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const last12MonthsExpenses = Math.abs(last12MonthsTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    
+    // Promedio mensual de últimos 12 meses
+    const avgMonthlyIncome = last12MonthsIncome / 12;
+    const avgMonthlyExpenses = last12MonthsExpenses / 12;
+    
+    // Proyectar a anual
+    const annualIncome = avgMonthlyIncome * 12;
+    const annualExpenses = avgMonthlyExpenses * 12;
+    const annualSavings = annualIncome - annualExpenses;
+    
+    // Activos totales (histórico acumulado)
     const totalTransactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
     const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
     const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
@@ -10838,16 +10849,6 @@ function updateFinancialHealthMetrics() {
     // También verificar si hay préstamos activos aunque el capital restante sea bajo
     const hasActiveDebts = activeDebtLoans.length > 0;
     
-    // Calcular ingresos y gastos del período seleccionado
-    const periodIncome = periodTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-    const periodExpenses = Math.abs(periodTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
-    const periodSavings = periodIncome - periodExpenses;
-    
-    // Proyectar a anual para comparaciones
-    const annualIncome = monthsInPeriod > 0 ? (periodIncome / monthsInPeriod) * 12 : 0;
-    const annualExpenses = monthsInPeriod > 0 ? (periodExpenses / monthsInPeriod) * 12 : 0;
-    const annualSavings = annualIncome - annualExpenses;
-    
     // 1. Porcentaje de Deuda Pendiente (usando deuda neta después de considerar propiedades)
     const debtPercentage = totalAssets > 0 ? (netDebt / totalAssets) * 100 : (netDebt > 0 ? 100 : 0);
     const debtStatus = debtPercentage < 30 ? 'excellent' : debtPercentage < 50 ? 'good' : debtPercentage < 70 ? 'warning' : 'danger';
@@ -10903,7 +10904,7 @@ function updateFinancialHealthMetrics() {
             description: `Cuotas mensuales de préstamos / Ingresos mensuales`,
             status: debtRatioStatus,
             icon: '',
-            detail: avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'Sin ingresos pero hay cuotas' : (debtToIncomeRatio >= 40 ? 'Alto (≥40%)' : debtToIncomeRatio >= 30 ? 'Moderado (30-40%)' : debtToIncomeRatio >= 20 ? 'Bueno (20-30%)' : 'Excelente (<20%)') + ` | Cuotas: ${formatCurrency(monthlyLoanPayments)} / Ingresos: ${formatCurrency(avgMonthlyIncome)}`
+            detail: avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'Sin ingresos pero hay cuotas' : (debtToIncomeRatio >= 40 ? 'Alto (≥40%)' : debtToIncomeRatio >= 30 ? 'Moderado (30-40%)' : debtToIncomeRatio >= 20 ? 'Bueno (20-30%)' : 'Excelente (<20%)') + ` | Cuotas: ${formatCurrency(monthlyLoanPayments)} / Ingresos promedio: ${formatCurrency(avgMonthlyIncome)}`
         },
         {
             title: 'Salud Financiera',
@@ -10927,7 +10928,7 @@ function updateFinancialHealthMetrics() {
             description: `Ahorro del período / Ingresos del período`,
             status: savingsStatus,
             icon: '',
-            detail: formatCurrency(periodSavings) + ' de ' + formatCurrency(periodIncome) + (periodIncome === 0 ? ' (sin ingresos)' : '')
+            detail: formatCurrency(lastMonthSavings) + ' de ' + formatCurrency(lastMonthIncome) + (lastMonthIncome === 0 ? ' (sin ingresos)' : ' (último mes)')
         },
         {
             title: 'Liquidez',
