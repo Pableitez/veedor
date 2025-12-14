@@ -1622,40 +1622,24 @@ body.dark-mode .more-tab-item:hover {
     flex-shrink: 0;
 }
 
-/* Cuando la ventana se estrecha, mostrar iconos y texto vertical */
-@media (max-width: 1200px) {
-    .main-content {
-        padding-bottom: 90px !important; /* Espacio para tabs fijos */
+/* Ocultar tabs en móvil (ya están en menú hamburguesa) */
+@media (max-width: 768px) {
+    .tabs {
+        display: none !important;
     }
     
-    .tabs {
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        background: var(--bg-primary) !important;
-        border-bottom: none !important;
-        border-top: 1px solid var(--border-color) !important;
-        margin-bottom: 0 !important;
-        padding: 6px 0 max(env(safe-area-inset-bottom), 6px) 0 !important;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
-        z-index: 998 !important;
-        gap: 0 !important;
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
-        -webkit-overflow-scrolling: touch !important;
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        align-items: stretch !important;
-        justify-content: flex-start !important;
-        scrollbar-width: thin !important;
-        scrollbar-color: var(--gray-300) transparent !important;
-        min-height: 60px !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
+    .main-content {
+        padding-bottom: 16px !important;
     }
+}
+
+/* Cuando la ventana se estrecha pero no es móvil, mantener tabs centradas */
+@media (min-width: 769px) and (max-width: 1200px) {
+    .tabs {
+        justify-content: center;
+        align-items: center;
+    }
+}
     
     .tabs::-webkit-scrollbar {
         height: 4px;
