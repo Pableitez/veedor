@@ -20,19 +20,30 @@ if (window.VEEDOR_LOADED) {
     };
     // Stub para switchMobileTab - se reemplazará con la función real más adelante
     window.switchMobileTab = function(tabName) {
-        // Si la función real ya está disponible, usarla
+        // Si la función real ya está disponible, usarla inmediatamente
         if (typeof window._switchMobileTabReal === 'function') {
             return window._switchMobileTabReal(tabName);
         }
-        // Si no, esperar un poco y reintentar
-        console.warn('switchMobileTab llamado antes de inicialización, tab:', tabName, '- Reintentando...');
-        setTimeout(() => {
+        // Si no, intentar múltiples veces con delays progresivos
+        let attempts = 0;
+        const maxAttempts = 10;
+        const checkFunction = () => {
+            attempts++;
             if (typeof window._switchMobileTabReal === 'function') {
                 window._switchMobileTabReal(tabName);
+            } else if (attempts < maxAttempts) {
+                // Reintentar con delay progresivo
+                setTimeout(checkFunction, 50 * attempts);
             } else {
-                console.error('switchMobileTab no disponible después del delay');
+                // Si después de todos los intentos no está disponible, usar switchToTab como fallback
+                console.warn('switchMobileTab no disponible después de múltiples intentos, usando switchToTab como fallback');
+                if (typeof switchToTab === 'function') {
+                    switchToTab(tabName, true);
+                }
             }
-        }, 100);
+        };
+        // Primer intento después de un pequeño delay
+        setTimeout(checkFunction, 50);
     };
     window.showPrivacyModal = function() { 
         const modal = document.getElementById('privacyModal');
