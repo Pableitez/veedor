@@ -1650,6 +1650,39 @@ body.dark-mode .more-tab-item:hover {
     #transactions-tab .form-section > div:nth-child(2) {
         display: none !important;
     }
+    
+    /* Mostrar solo 3 columnas en la tabla de transacciones en móvil: Fecha, Categoría, Monto */
+    #transactionsTable thead th:nth-child(2),
+    #transactionsTable thead th:nth-child(4),
+    #transactionsTable thead th:nth-child(5),
+    #transactionsTable thead th:nth-child(6),
+    #transactionsTable thead th:nth-child(7),
+    #transactionsTable thead th:nth-child(9),
+    #transactionsTable tbody td:nth-child(2),
+    #transactionsTable tbody td:nth-child(4),
+    #transactionsTable tbody td:nth-child(5),
+    #transactionsTable tbody td:nth-child(6),
+    #transactionsTable tbody td:nth-child(7),
+    #transactionsTable tbody td:nth-child(9) {
+        display: none !important;
+    }
+    
+    /* Ajustar ancho de las columnas visibles */
+    #transactionsTable thead th:nth-child(1),
+    #transactionsTable tbody td:nth-child(1) {
+        width: 30% !important;
+    }
+    
+    #transactionsTable thead th:nth-child(3),
+    #transactionsTable tbody td:nth-child(3) {
+        width: 40% !important;
+    }
+    
+    #transactionsTable thead th:nth-child(8),
+    #transactionsTable tbody td:nth-child(8) {
+        width: 30% !important;
+        text-align: right !important;
+    }
 }
 
 /* Tabs centradas en pantallas medianas pero no móvil */
