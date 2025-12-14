@@ -7305,7 +7305,7 @@ function updatePatrimonio() {
     summaryCard.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h3 style="margin: 0; color: white; font-size: 18px;">🏠 Valor Total del Patrimonio</h3>
+                <h3 style="margin: 0; color: white; font-size: 18px;">Valor Total del Patrimonio</h3>
                 <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${patrimonio.length} propiedad${patrimonio.length !== 1 ? 'es' : ''}</p>
             </div>
             <div style="text-align: right;">
