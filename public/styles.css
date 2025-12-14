@@ -2116,22 +2116,6 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     max-height: 600px;
     overflow-y: auto;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Asegurar que la tabla de transacciones tenga scroll en todas las vistas */
-.table-container {
-    max-height: 600px;
-    overflow-y: auto;
-    overflow-x: auto;
-}
-
-/* En móvil, altura máxima más pequeña */
-@media (max-width: 768px) {
-    #transactionsTableContainer,
-    .table-container {
-        max-height: 500px;
-    }
 }
 
 /* Scrollbars globales mejorados */
@@ -3688,19 +3672,6 @@ tbody tr:last-child td {
         display: none !important;
     }
     
-    #quickAddTransactionBtn {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        position: absolute !important;
-        left: -9999px !important;
-        width: 0 !important;
-        height: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    
     /* Ajustar posición del botón flotante en móvil */
     .quick-add-btn-mobile {
         bottom: 24px !important;
@@ -3711,49 +3682,20 @@ tbody tr:last-child td {
     }
 }
 
-/* ============================================
-   BOTÓN RÁPIDO DE NUEVA TRANSACCIÓN (DESKTOP)
-   ============================================ */
-.quick-add-btn-desktop {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 40px !important;
-    height: 40px !important;
-    padding: 0 !important;
-    border-radius: 50% !important;
-    font-size: 24px !important;
-    font-weight: 300 !important;
-    cursor: pointer !important;
-    transition: all 0.2s !important;
-    flex-shrink: 0 !important;
-    position: relative !important;
-    border: 1px solid !important;
-}
-
-/* Modo oscuro (default) */
-.quick-add-btn-desktop {
-    background: rgba(255, 255, 255, 0.15) !important;
-    border-color: rgba(255, 255, 255, 0.25) !important;
-    color: white !important;
-}
-
-.quick-add-btn-desktop:hover {
-    background: rgba(255, 255, 255, 0.25) !important;
-    border-color: rgba(255, 255, 255, 0.35) !important;
-    transform: scale(1.1) !important;
-}
-
-/* Modo claro */
+/* Ajustes para el botón en modo claro */
 body:not(.dark-mode) .quick-add-btn-desktop {
-    background: rgba(30, 58, 138, 0.1) !important;
-    border-color: rgba(30, 58, 138, 0.3) !important;
     color: rgba(30, 58, 138, 1) !important;
+    border-color: rgba(30, 58, 138, 0.4) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
 }
 
 body:not(.dark-mode) .quick-add-btn-desktop:hover {
-    background: rgba(30, 58, 138, 0.2) !important;
-    border-color: rgba(30, 58, 138, 0.5) !important;
+    background: rgba(255, 255, 255, 1) !important;
+    border-color: rgba(30, 58, 138, 0.6) !important;
+}
+
+body:not(.dark-mode) .quick-add-tooltip {
+    background: rgba(30, 58, 138, 0.95) !important;
 }
 
 /* ============================================
@@ -4647,282 +4589,3 @@ body:not(.dark-mode) .quick-add-btn-desktop:hover {
 .mb-1 { margin-bottom: 8px; }
 .mb-2 { margin-bottom: 16px; }
 .mb-3 { margin-bottom: 24px; }
-
-/* ============================================
-   OPCIONES OPCIONALES DEL FORMULARIO DE TRANSACCIONES (MÓVIL)
-   ============================================ */
-.transaction-optional-section {
-    margin: 16px 0;
-}
-
-.transaction-optional-toggle {
-    width: 100%;
-    padding: 14px 18px;
-    background: var(--bg-secondary);
-    border: 1.5px solid var(--border-color);
-    border-radius: 10px;
-    color: var(--text-primary);
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.2s;
-}
-
-.transaction-optional-toggle:hover {
-    background: var(--gray-50);
-    border-color: var(--primary);
-}
-
-.transaction-optional-toggle svg {
-    transition: transform 0.3s ease;
-}
-
-.transaction-optional-toggle.active svg {
-    transform: rotate(180deg);
-}
-
-.transaction-optional-content {
-    margin-top: 12px;
-    padding: 16px;
-    background: var(--bg-secondary);
-    border: 1.5px solid var(--border-color);
-    border-radius: 10px;
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Ocultar opciones opcionales en desktop, mostrar desplegable en móvil */
-@media (min-width: 769px) {
-    .transaction-optional-section {
-        display: none;
-    }
-    
-    /* En desktop, mostrar las opciones opcionales normalmente */
-    #transactionForm .transaction-optional-content {
-        display: block !important;
-    }
-    
-    #transactionForm .transaction-optional-content .form-row {
-        display: flex !important;
-    }
-}
-
-@media (max-width: 768px) {
-    .transaction-optional-section {
-        display: block;
-    }
-    
-    /* En móvil, ocultar el contenido del desplegable por defecto */
-    .transaction-optional-content {
-        display: none !important;
-    }
-    
-    .transaction-optional-content.active {
-        display: block !important;
-    }
-}
-
-/* ============================================
-   NAVEGACIÓN MÓVIL INFERIOR
-   ============================================ */
-.mobile-bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--bg-primary);
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 12px 4px max(20px, calc(env(safe-area-inset-bottom) + 8px)) 4px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 998;
-    min-height: 70px;
-}
-
-.mobile-nav-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 6px 4px;
-    background: none;
-    border: none;
-    color: var(--gray-600);
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 11px;
-    font-weight: 500;
-    min-width: 0;
-}
-
-.mobile-nav-btn svg {
-    width: 24px;
-    height: 24px;
-    stroke-width: 2;
-}
-
-.mobile-nav-btn.active {
-    color: var(--primary);
-}
-
-.mobile-nav-btn:hover {
-    color: var(--primary);
-}
-
-.mobile-nav-btn span {
-    font-size: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    line-height: 1.2;
-}
-
-/* Tabla compacta de transacciones en móvil */
-.mobile-recent-transactions {
-    margin-top: 24px;
-}
-
-.mobile-transactions-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.mobile-transaction-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    transition: all 0.2s;
-}
-
-.mobile-transaction-item:hover {
-    background: var(--bg-secondary);
-    border-color: var(--primary);
-}
-
-.mobile-transaction-left {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex: 1;
-    min-width: 0;
-}
-
-.mobile-transaction-date {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.mobile-transaction-category {
-    font-size: 14px;
-    color: var(--text-primary);
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.mobile-transaction-amount {
-    font-size: 16px;
-    font-weight: 700;
-    white-space: nowrap;
-    margin-left: 12px;
-}
-
-/* Ocultar tabs superiores en móvil */
-@media (max-width: 768px) {
-    .tabs {
-        display: none !important;
-    }
-    
-    /* Ocultar todo el contenido del dashboard excepto las cards de saldo Y las transacciones recientes */
-    .dashboard > div:not(.revolut-section):not(#mobileRecentTransactions) {
-        display: none !important;
-    }
-    
-    /* Mostrar solo las cards de saldo y patrimonio */
-    .revolut-section {
-        display: block !important;
-        margin-bottom: 80px !important; /* Espacio para la navegación inferior */
-    }
-    
-    /* Ocultar todos los tab-content por defecto */
-    .tab-content {
-        display: none !important;
-    }
-    
-    /* Mostrar la navegación móvil */
-    .mobile-bottom-nav {
-        display: flex !important;
-    }
-    
-    /* Ajustar padding del main-content para la navegación inferior */
-    .main-content {
-        padding-bottom: 80px !important;
-    }
-    
-    /* Ajustar el botón flotante para que no se solape con la navegación */
-    .quick-add-btn-mobile {
-        bottom: 100px !important;
-    }
-    
-    /* Mostrar transacciones recientes en móvil */
-    .mobile-recent-transactions {
-        display: block !important;
-    }
-    
-    /* Asegurar que la card de patrimonio tenga los mismos estilos que Saldo en Cuentas */
-    .revolut-card {
-        min-height: 130px !important;
-        padding: 14px 16px !important;
-    }
-    
-    /* Mostrar transacciones recientes solo en móvil */
-    .mobile-recent-transactions {
-        display: block !important;
-    }
-}
-
-@media (min-width: 769px) {
-    .mobile-bottom-nav {
-        display: none !important;
-    }
-    
-    .tabs {
-        display: flex !important;
-    }
-    
-    .dashboard > div {
-        display: block !important;
-    }
-    
-    /* Ocultar transacciones recientes en desktop */
-    .mobile-recent-transactions {
-        display: none !important;
-    }
-}

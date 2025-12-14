@@ -18,33 +18,6 @@ if (window.VEEDOR_LOADED) {
         const modal = document.getElementById('userProfileModal');
         if (modal) modal.style.display = 'none';
     };
-    // Stub para switchMobileTab - se reemplazará con la función real más adelante
-    window.switchMobileTab = function(tabName) {
-        // Si la función real ya está disponible, usarla inmediatamente
-        if (typeof window._switchMobileTabReal === 'function') {
-            return window._switchMobileTabReal(tabName);
-        }
-        // Si no, intentar múltiples veces con delays progresivos
-        let attempts = 0;
-        const maxAttempts = 10;
-        const checkFunction = () => {
-            attempts++;
-            if (typeof window._switchMobileTabReal === 'function') {
-                window._switchMobileTabReal(tabName);
-            } else if (attempts < maxAttempts) {
-                // Reintentar con delay progresivo
-                setTimeout(checkFunction, 50 * attempts);
-            } else {
-                // Si después de todos los intentos no está disponible, usar switchToTab como fallback
-                console.warn('switchMobileTab no disponible después de múltiples intentos, usando switchToTab como fallback');
-                if (typeof switchToTab === 'function') {
-                    switchToTab(tabName, true);
-                }
-            }
-        };
-        // Primer intento después de un pequeño delay
-        setTimeout(checkFunction, 50);
-    };
     window.showPrivacyModal = function() { 
         const modal = document.getElementById('privacyModal');
         if (modal) {
@@ -1719,7 +1692,6 @@ function initializeCategories() {
 
 // Función para cambiar de tab (reutilizable)
 function switchToTab(targetTab, doScroll = false) {
-    const isMobile = window.innerWidth <= 768;
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     const navItems = document.querySelectorAll('.nav-item');
@@ -1734,12 +1706,6 @@ function switchToTab(targetTab, doScroll = false) {
     if (targetTabBtn) targetTabBtn.classList.add('active');
     if (targetTabContent) {
         targetTabContent.classList.add('active');
-        // En móvil, NO cambiar el display porque switchMobileTab ya lo maneja
-        if (!isMobile) {
-            // Solo en desktop, cambiar el display normalmente
-            tabContents.forEach(c => c.style.display = 'none');
-            targetTabContent.style.display = 'block';
-        }
         // Solo hacer scroll si se solicita explícitamente (doScroll = true)
         if (doScroll) {
         // Scroll suave a la sección - esperar a que el DOM se actualice y el tab esté visible
@@ -2911,15 +2877,6 @@ function updateDisplay() {
         
         // Actualizar gráficas siempre (no solo cuando el tab está activo)
         updateCharts();
-        
-        // Inicializar navegación móvil después de actualizar
-        if (window.innerWidth <= 768) {
-            setTimeout(() => {
-                if (typeof initializeMobileNav === 'function') {
-                    initializeMobileNav();
-                }
-            }, 100);
-        }
     } catch (error) {
         console.error('Error en updateDisplay:', error);
     }
@@ -3066,16 +3023,16 @@ async function updateSummary() {
     if (totalBalanceEl) totalBalanceEl.textContent = formatCurrency(totalBalance);
     if (totalBalancePeriodEl) totalBalancePeriodEl.textContent = periodLabel;
     
+    // Actualizar card de Balance Total
+    const totalBalanceCardEl = document.getElementById('totalBalanceCard');
+    if (totalBalanceCardEl) {
+        totalBalanceCardEl.textContent = formatCurrency(totalBalance);
+    }
+    
     // Actualizar saldo de cuentas en el resumen
     const totalAccountsBalanceEl = document.getElementById('totalAccountsBalance');
     if (totalAccountsBalanceEl) {
         totalAccountsBalanceEl.textContent = formatCurrency(totalAccountsBalance);
-    }
-    
-    // Actualizar balance total en la card
-    const totalBalanceCardEl = document.getElementById('totalBalanceCard');
-    if (totalBalanceCardEl) {
-        totalBalanceCardEl.textContent = formatCurrency(totalBalance);
     }
     
     if (periodIncomeEl) periodIncomeEl.textContent = formatCurrency(periodIncome);
@@ -3145,61 +3102,6 @@ async function updateSummary() {
     
     // Actualizar gráficas del dashboard
     updateDashboardCharts();
-    
-    // Actualizar transacciones recientes en móvil
-    updateMobileRecentTransactions();
-}
-
-// Actualizar transacciones recientes en móvil
-function updateMobileRecentTransactions() {
-    const container = document.getElementById('mobileRecentTransactionsList');
-    if (!container) return;
-    
-    // Obtener las últimas 10 transacciones ordenadas por fecha
-    const recentTransactions = [...transactions]
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 10);
-    
-    container.innerHTML = '';
-    
-    if (recentTransactions.length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 24px; color: var(--text-tertiary); font-size: 14px;">No hay transacciones</div>';
-        return;
-    }
-    
-    recentTransactions.forEach(transaction => {
-        const date = new Date(transaction.date);
-        const categoryName = categories[transaction.type]?.find(cat => cat.id === transaction.categoryGeneral)?.name || transaction.categoryGeneral;
-        const categorySpecific = transaction.categorySpecific || '';
-        const fullCategory = categorySpecific ? `${categoryName} - ${categorySpecific}` : categoryName;
-        
-        const item = document.createElement('div');
-        item.className = 'mobile-transaction-item';
-        item.onclick = () => {
-            switchMobileTab('transactions');
-            // Scroll a la transacción si es posible
-            setTimeout(() => {
-                const transactionRow = document.querySelector(`[data-transaction-id="${transaction._id || transaction.id}"]`);
-                if (transactionRow) {
-                    transactionRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 300);
-        };
-        
-        const isIncome = transaction.amount >= 0;
-        const amountColor = isIncome ? 'var(--success)' : 'var(--danger)';
-        const amountSign = isIncome ? '+' : '';
-        
-        item.innerHTML = `
-            <div class="mobile-transaction-left">
-                <div class="mobile-transaction-date">${formatDate(date)}</div>
-                <div class="mobile-transaction-category">${fullCategory}</div>
-            </div>
-            <div class="mobile-transaction-amount" style="color: ${amountColor};">${amountSign}${formatCurrency(Math.abs(transaction.amount))}</div>
-        `;
-        
-        container.appendChild(item);
-    });
 }
 
 // Actualizar tabla de transacciones
@@ -13602,235 +13504,6 @@ switchToTab = function(tabName, doScroll) {
 
 // Exponer función global
 window.switchToTab = switchToTab;
-
-// ==================== NAVEGACIÓN MÓVIL ====================
-function switchMobileTab(tabName) {
-    console.log('🔵 switchMobileTab llamado con:', tabName, 'Ancho:', window.innerWidth);
-    
-    const isMobile = window.innerWidth <= 768;
-    if (!isMobile) {
-        // Si no es móvil, usar la función normal
-        if (typeof switchToTab === 'function') {
-            switchToTab(tabName, true);
-        }
-        return;
-    }
-    
-    // Ocultar todos los tab-content
-    const tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach(content => {
-        content.classList.remove('active');
-        content.style.display = 'none';
-    });
-    
-    // Ocultar todo el dashboard excepto las cards de saldo Y las transacciones recientes
-    const dashboardSections = document.querySelectorAll('.dashboard > div:not(.revolut-section):not(#mobileRecentTransactions)');
-    dashboardSections.forEach(section => {
-        if (section.id !== 'mobileRecentTransactions') {
-            section.style.display = 'none';
-        }
-    });
-    
-    // Actualizar botones de navegación móvil
-    const mobileNavBtns = document.querySelectorAll('.mobile-nav-btn');
-    mobileNavBtns.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('data-tab') === tabName) {
-            btn.classList.add('active');
-        }
-    });
-    
-    // Si es "summary", mostrar solo las cards de saldo y transacciones recientes
-    if (tabName === 'summary') {
-        const revolutSection = document.querySelector('.revolut-section');
-        if (revolutSection) {
-            revolutSection.style.display = 'block';
-        }
-        const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
-        if (mobileRecentTransactions) {
-            mobileRecentTransactions.style.display = 'block';
-        }
-        // Actualizar transacciones recientes
-        if (typeof updateMobileRecentTransactions === 'function') {
-            updateMobileRecentTransactions();
-        }
-        return;
-    }
-    
-    // Ocultar transacciones recientes cuando se cambia a otro tab
-    const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
-    if (mobileRecentTransactions) {
-        mobileRecentTransactions.style.display = 'none';
-    }
-    
-    // Para otros tabs, ocultar las cards de saldo y mostrar el contenido del tab
-    const revolutSection = document.querySelector('.revolut-section');
-    if (revolutSection) {
-        revolutSection.style.display = 'none';
-    }
-    
-    // Mostrar el tab-content correspondiente
-    const targetTabContent = document.getElementById(`${tabName}-tab`);
-    if (targetTabContent) {
-        targetTabContent.classList.add('active');
-        // Forzar display block con !important para sobrescribir CSS
-        targetTabContent.style.setProperty('display', 'block', 'important');
-        console.log('✅ Mostrando tab:', tabName, targetTabContent);
-        // Scroll suave al contenido
-        setTimeout(() => {
-            targetTabContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-    } else {
-        console.error('❌ No se encontró el tab-content:', `${tabName}-tab`);
-    }
-    
-    // Llamar a switchToTab para mantener la lógica existente (actualizaciones, etc.)
-    // PERO solo para actualizar datos, no para cambiar display
-    if (typeof switchToTab === 'function') {
-        // Guardar el display actual antes de llamar a switchToTab
-        const savedDisplay = targetTabContent ? targetTabContent.style.display : 'block';
-        switchToTab(tabName, false);
-        // Restaurar el display después
-        if (targetTabContent) {
-            targetTabContent.style.setProperty('display', savedDisplay || 'block', 'important');
-        }
-    }
-}
-
-// Exponer función global INMEDIATAMENTE después de definirla
-window._switchMobileTabReal = switchMobileTab;
-window.switchMobileTab = switchMobileTab;
-// Log para debugging
-if (typeof console !== 'undefined' && console.log) {
-    console.log('✅ switchMobileTab expuesta correctamente');
-}
-
-// Inicializar navegación móvil
-function initializeMobileNav() {
-    // Verificar si estamos en móvil
-    const isMobile = window.innerWidth <= 768;
-    const mobileBottomNav = document.getElementById('mobileBottomNav');
-    
-    if (isMobile && mobileBottomNav) {
-        // Mostrar navegación móvil
-        mobileBottomNav.style.display = 'flex';
-        
-        // Ocultar tabs superiores
-        const tabs = document.querySelector('.tabs');
-        if (tabs) {
-            tabs.style.display = 'none';
-        }
-        
-        // Ocultar contenido del dashboard excepto las cards Y las transacciones recientes
-        const dashboardSections = document.querySelectorAll('.dashboard > div:not(.revolut-section):not(#mobileRecentTransactions)');
-        dashboardSections.forEach(section => {
-            if (section.id !== 'mobileRecentTransactions') {
-                section.style.display = 'none';
-            }
-        });
-        
-        // Ocultar todos los tab-content inicialmente
-        const tabContents = document.querySelectorAll('.tab-content');
-        tabContents.forEach(content => {
-            content.classList.remove('active');
-            content.style.display = 'none';
-        });
-        
-        // Mostrar transacciones recientes en móvil (solo si estamos en summary)
-        const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
-        const activeTab = document.querySelector('.mobile-nav-btn.active');
-        const currentTab = activeTab ? activeTab.getAttribute('data-tab') : 'summary';
-        
-        if (mobileRecentTransactions) {
-            if (currentTab === 'summary') {
-                mobileRecentTransactions.style.display = 'block';
-            } else {
-                mobileRecentTransactions.style.display = 'none';
-            }
-        }
-        
-        // Activar el botón de resumen por defecto si no hay uno activo
-        if (!activeTab) {
-            const summaryBtn = document.querySelector('.mobile-nav-btn[data-tab="summary"]');
-            if (summaryBtn) {
-                summaryBtn.classList.add('active');
-            }
-        }
-        
-        // Actualizar transacciones recientes si estamos en summary
-        if (currentTab === 'summary' && typeof updateMobileRecentTransactions === 'function') {
-            updateMobileRecentTransactions();
-        }
-    } else if (mobileBottomNav) {
-        // Ocultar navegación móvil en desktop
-        mobileBottomNav.style.display = 'none';
-        
-        // Mostrar tabs superiores
-        const tabs = document.querySelector('.tabs');
-        if (tabs) {
-            tabs.style.display = 'flex';
-        }
-        
-        // Mostrar contenido del dashboard
-        const dashboardSections = document.querySelectorAll('.dashboard > div');
-        dashboardSections.forEach(section => {
-            section.style.display = 'block';
-        });
-        
-        // Ocultar transacciones recientes en desktop
-        const mobileRecentTransactions = document.getElementById('mobileRecentTransactions');
-        if (mobileRecentTransactions) {
-            mobileRecentTransactions.style.display = 'none';
-        }
-    }
-}
-
-// Escuchar cambios de tamaño de ventana
-window.addEventListener('resize', () => {
-    setTimeout(() => {
-        initializeMobileNav();
-    }, 100);
-});
-
-// Inicializar al cargar
-function initMobileNavOnLoad() {
-    // Esperar a que el DOM esté completamente cargado
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                initializeMobileNav();
-            }, 300);
-        });
-    } else {
-        setTimeout(() => {
-            initializeMobileNav();
-        }, 300);
-    }
-}
-
-initMobileNavOnLoad();
-
-// ==================== TOGGLE OPCIONES OPCIONALES TRANSACCIONES ====================
-function toggleTransactionOptional() {
-    const toggle = document.querySelector('.transaction-optional-toggle');
-    const content = document.getElementById('transactionOptionalContent');
-    const icon = document.getElementById('transactionOptionalIcon');
-    
-    if (!toggle || !content) return;
-    
-    const isExpanded = content.style.display !== 'none';
-    
-    if (isExpanded) {
-        content.style.display = 'none';
-        toggle.classList.remove('active');
-    } else {
-        content.style.display = 'block';
-        toggle.classList.add('active');
-    }
-}
-
-// Exponer función global
-window.toggleTransactionOptional = toggleTransactionOptional;
 
 // ==================== DEBOUNCE UTILITY ====================
 function debounce(func, wait) {

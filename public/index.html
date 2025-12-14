@@ -279,8 +279,9 @@
                 </div>
                 -->
                 <!-- Botón de Añadir Transacción (Desktop) -->
-                <button id="quickAddTransactionBtn" onclick="switchToTab('transactions', true); setTimeout(() => { const btn = document.getElementById('toggleTransactionFormBtn'); if (btn) btn.click(); }, 100);" class="quick-add-btn-desktop" title="Nueva Transacción">
+                <button id="quickAddTransactionBtn" onclick="switchToTab('transactions', true); setTimeout(() => { const btn = document.getElementById('toggleTransactionFormBtn'); if (btn) btn.click(); }, 100);" class="quick-add-btn-desktop" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; color: white; font-size: 24px; font-weight: 300; cursor: pointer; transition: all 0.2s; flex-shrink: 0; position: relative;" onmouseover="this.style.background='rgba(255,255,255,0.25)'; this.style.borderColor='rgba(255,255,255,0.35)'; this.style.transform='scale(1.1)'; (function(el){var tip=el.querySelector('.quick-add-tooltip');if(tip){tip.style.opacity='1';tip.style.visibility='visible';}})(this);" onmouseout="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.25)'; this.style.transform='scale(1)'; (function(el){var tip=el.querySelector('.quick-add-tooltip');if(tip){tip.style.opacity='0';tip.style.visibility='hidden';}})(this);" title="Nueva Transacción">
                     <span style="line-height: 1;">+</span>
+                    <span class="quick-add-tooltip" style="position: absolute; right: 50px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.8); color: white; padding: 6px 12px; border-radius: 6px; font-size: 13px; white-space: nowrap; opacity: 0; visibility: hidden; transition: all 0.2s; pointer-events: none; z-index: 1000;">Nueva Transacción</span>
                 </button>
                 <!-- Menú de Configuración (Settings) -->
                 <div style="position: relative; flex-shrink: 0; display: flex !important; visibility: visible !important;">
@@ -331,10 +332,10 @@
                         <div class="revolut-card" style="background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); color: white; border: none; cursor: pointer; position: relative; overflow: hidden; border-radius: 12px; padding: 14px 16px; box-shadow: 0 8px 24px rgba(30, 58, 138, 0.3);" onclick="showSummaryDetails('accounts')" title="Haz clic para ver detalles">
                             <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
                             <div style="position: absolute; bottom: -30px; left: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.08); border-radius: 50%;"></div>
-                            <div style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
-                                <h3 style="color: rgba(255,255,255,0.95); font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; opacity: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">Saldo en Cuentas</h3>
-                                <p class="amount" id="totalAccountsBalance" style="color: white; font-size: 26px; font-weight: 700; margin: 0; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; text-shadow: 0 1px 3px rgba(0,0,0,0.15); word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">0,00 €</p>
-                                <small style="color: rgba(255,255,255,0.95); font-size: 10px; line-height: 1.2; opacity: 1; margin-top: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">Total en todas las cuentas</small>
+                            <div style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; justify-content: space-between; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
+                                <h3 style="color: rgba(255,255,255,0.9); font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; opacity: 0.95; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">Saldo en Cuentas</h3>
+                                <p class="amount" id="totalAccountsBalance" style="color: white; font-size: 26px; font-weight: 700; margin: 0; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">0,00 €</p>
+                                <small style="color: rgba(255,255,255,0.8); font-size: 10px; line-height: 1.2; opacity: 0.9; margin-top: 6px; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">Total en todas las cuentas</small>
                             </div>
                         </div>
                         
@@ -342,20 +343,12 @@
                         <div class="revolut-card" style="background: linear-gradient(180deg, #059669 0%, #10B981 50%, #34D399 100%); color: white; border: none; cursor: pointer; position: relative; overflow: hidden; border-radius: 12px; padding: 14px 16px; box-shadow: 0 8px 24px rgba(5, 150, 105, 0.3);" onclick="showSummaryDetails('balance')" title="Haz clic para ver detalles">
                             <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
                             <div style="position: absolute; bottom: -30px; left: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.08); border-radius: 50%;"></div>
-                            <div style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; justify-content: space-between; padding: 0; margin: 0; box-sizing: border-box;">
-                                <h3 style="color: rgba(255,255,255,0.95); font-size: 11px; margin: 0 0 8px 0; padding: 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; opacity: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; overflow-wrap: break-word; max-width: 100%; box-sizing: border-box;">Balance Total</h3>
-                                <p class="amount" id="totalBalanceCard" style="color: white; font-size: 26px; font-weight: 700; margin: 0; padding: 0; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; text-shadow: 0 1px 3px rgba(0,0,0,0.15); word-wrap: break-word; overflow-wrap: break-word; max-width: 100%; box-sizing: border-box;">0,00 €</p>
-                                <small style="color: rgba(255,255,255,0.95); font-size: 10px; line-height: 1.2; opacity: 1; margin: 6px 0 0 0; padding: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; overflow-wrap: break-word; max-width: 100%; box-sizing: border-box;">Patrimonio neto total</small>
+                            <div style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; justify-content: space-between; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;">
+                                <h3 style="color: rgba(255,255,255,0.9); font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; opacity: 0.95; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">Balance Total</h3>
+                                <p class="amount" id="totalBalanceCard" style="color: white; font-size: 26px; font-weight: 700; margin: 0; line-height: 1.1; letter-spacing: -0.5px; display: flex; align-items: center; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">0,00 €</p>
+                                <small style="color: rgba(255,255,255,0.8); font-size: 10px; line-height: 1.2; opacity: 0.9; margin-top: 6px; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">Patrimonio neto total</small>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Transacciones Recientes (Móvil) -->
-                <div id="mobileRecentTransactions" class="mobile-recent-transactions" style="display: none; margin-bottom: 32px;">
-                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">Transacciones Recientes</h3>
-                    <div id="mobileRecentTransactionsList" class="mobile-transactions-list">
-                        <!-- Las transacciones se cargarán aquí -->
                     </div>
                 </div>
                 
@@ -560,45 +553,34 @@
                                 </select>
                             </div>
                         </div>
-                        <!-- Opciones Opcionales - Desplegable en móvil -->
-                        <div class="transaction-optional-section">
-                            <button type="button" class="transaction-optional-toggle" onclick="toggleTransactionOptional()">
-                                <span>Opciones Opcionales</span>
-                                <svg id="transactionOptionalIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="transition: transform 0.3s ease;">
-                                    <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <div class="transaction-optional-content" id="transactionOptionalContent" style="display: none;">
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="transactionAccount" data-translate="transactions.account">Cuenta Bancaria (Opcional)</label>
-                                        <select id="transactionAccount">
-                                            <option value="" data-translate="common.none">Ninguna</option>
-                                        </select>
-                                        <small>Selecciona la cuenta desde/hacia la que se realiza la transacción</small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="transactionInvestment">Inversión (Opcional)</label>
-                                        <select id="transactionInvestment">
-                                            <option value="">Ninguna</option>
-                                        </select>
-                                        <small>Si este gasto/ingreso es para una inversión, selecciónala</small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="transactionLoan">Préstamo (Opcional)</label>
-                                        <select id="transactionLoan">
-                                            <option value="">Ninguno</option>
-                                        </select>
-                                        <small>Asocia este gasto a un préstamo específico</small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="transactionProperty">Propiedad/Piso (Opcional)</label>
-                                        <select id="transactionProperty">
-                                            <option value="">Ninguna</option>
-                                        </select>
-                                        <small>Asocia este gasto a una propiedad específica</small>
-                                    </div>
-                                </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="transactionAccount" data-translate="transactions.account">Cuenta Bancaria (Opcional)</label>
+                                <select id="transactionAccount">
+                                    <option value="" data-translate="common.none">Ninguna</option>
+                                </select>
+                                <small>Selecciona la cuenta desde/hacia la que se realiza la transacción</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="transactionInvestment">Inversión (Opcional)</label>
+                                <select id="transactionInvestment">
+                                    <option value="">Ninguna</option>
+                                </select>
+                                <small>Si este gasto/ingreso es para una inversión, selecciónala</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="transactionLoan">Préstamo (Opcional)</label>
+                                <select id="transactionLoan">
+                                    <option value="">Ninguno</option>
+                                </select>
+                                <small>Asocia este gasto a un préstamo específico</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="transactionProperty">Propiedad/Piso (Opcional)</label>
+                                <select id="transactionProperty">
+                                    <option value="">Ninguna</option>
+                                </select>
+                                <small>Asocia este gasto a una propiedad específica</small>
                             </div>
                         </div>
                         <div class="form-row">
@@ -1955,72 +1937,9 @@
     </div>
     
     <!-- Botón Flotante de Añadir Transacción (Móvil) -->
-    <button id="quickAddTransactionBtnMobile" onclick="switchToTab('transactions', true); setTimeout(() => { const btn = document.getElementById('toggleTransactionFormBtn'); if (btn) btn.click(); }, 100);" class="quick-add-btn-mobile" style="display: none; position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; padding: 0; background: linear-gradient(180deg, #3B82F6 0%, #1E3A8A 100%); border: none; border-radius: 50%; color: white; font-size: 32px; font-weight: 300; cursor: pointer; transition: all 0.3s; box-shadow: none; z-index: 999; align-items: center; justify-content: center; box-sizing: border-box;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';" title="Nueva Transacción">
+    <button id="quickAddTransactionBtnMobile" onclick="switchToTab('transactions', true); setTimeout(() => { const btn = document.getElementById('toggleTransactionFormBtn'); if (btn) btn.click(); }, 100);" class="quick-add-btn-mobile" style="display: none; position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; padding: 0; background: linear-gradient(180deg, #3B82F6 0%, #1E3A8A 100%); border: none; border-radius: 50%; color: white; font-size: 32px; font-weight: 300; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); z-index: 999; align-items: center; justify-content: center; box-sizing: border-box;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 16px rgba(59, 130, 246, 0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.4)';" title="Nueva Transacción">
         <span style="line-height: 1;">+</span>
     </button>
-    
-    <!-- Navegación Móvil Inferior -->
-    <div class="mobile-bottom-nav" id="mobileBottomNav" style="display: none;">
-        <button class="mobile-nav-btn" data-tab="summary" onclick="switchMobileTab('summary')" title="Resumen">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Resumen</span>
-        </button>
-        <button class="mobile-nav-btn" data-tab="transactions" onclick="switchMobileTab('transactions')" title="Transacciones">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2V22M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6312 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6312 13.6815 18 14.5717 18 15.5C18 16.4283 17.6312 17.3185 16.9749 17.9749C16.3185 18.6312 15.4283 19 14.5 19H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Transacciones</span>
-        </button>
-        <button class="mobile-nav-btn" data-tab="accounts" onclick="switchMobileTab('accounts')" title="Cuentas">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 4H3C1.89543 4 1 4.89543 1 6V18C1 19.1046 1.89543 20 3 20H21C22.1046 20 23 19.1046 23 18V6C23 4.89543 22.1046 4 21 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M1 10H23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Cuentas</span>
-        </button>
-        <button class="mobile-nav-btn" data-tab="envelopes" onclick="switchMobileTab('envelopes')" title="Presupuestos">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 7H5C3.89543 7 3 7.89543 3 9V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V9C21 7.89543 20.1046 7 19 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M16 21V17C16 15.8954 15.1046 15 14 15H10C8.89543 15 8 15.8954 8 17V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M7 7V5C7 3.89543 7.89543 3 9 3H15C16.1046 3 17 3.89543 17 5V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Presupuestos</span>
-        </button>
-        <button class="mobile-nav-btn" data-tab="loans" onclick="switchMobileTab('loans')" title="Préstamos">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Préstamos</span>
-        </button>
-        <button class="mobile-nav-btn" data-tab="assets" onclick="switchMobileTab('assets')" title="Patrimonio">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Patrimonio</span>
-        </button>
-        <button class="mobile-nav-btn" data-tab="investments" onclick="switchMobileTab('investments')" title="Inversiones">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Inversiones</span>
-        </button>
-        <button class="mobile-nav-btn" data-tab="charts" onclick="switchMobileTab('charts')" title="Análisis">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 3V21H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M7 16L12 11L16 15L21 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M21 10V3H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Análisis</span>
-        </button>
-    </div>
 </body>
 </html>
 
