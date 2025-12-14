@@ -1560,28 +1560,32 @@ body.dark-mode .savings-card:hover {
     }
     
     .tabs {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: var(--bg-primary);
-        border-bottom: none;
-        border-top: 1px solid var(--border-color);
-        margin-bottom: 0;
-        padding: 6px 0 max(env(safe-area-inset-bottom), 6px) 0;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-        z-index: 998;
-        gap: 0;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        display: flex;
-        flex-direction: row;
-        align-items: stretch;
-        justify-content: flex-start;
-        scrollbar-width: thin;
-        scrollbar-color: var(--gray-300) transparent;
-        min-height: 60px;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: var(--bg-primary) !important;
+        border-bottom: none !important;
+        border-top: 1px solid var(--border-color) !important;
+        margin-bottom: 0 !important;
+        padding: 6px 0 max(env(safe-area-inset-bottom), 6px) 0 !important;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
+        z-index: 998 !important;
+        gap: 0 !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: var(--gray-300) transparent !important;
+        min-height: 60px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     .tabs::-webkit-scrollbar {
@@ -1599,17 +1603,20 @@ body.dark-mode .savings-card:hover {
     }
     
     .tab-btn {
-        flex: 0 0 auto;
-        flex-direction: column;
-        padding: 6px 4px;
-        gap: 3px;
-        border-bottom: none;
-        border-top: 2px solid transparent;
-        margin-bottom: 0;
-        margin-top: -2px;
-        min-width: 70px;
-        max-width: 90px;
-        box-sizing: border-box;
+        flex: 0 0 auto !important;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
+        flex-direction: column !important;
+        padding: 6px 4px !important;
+        gap: 3px !important;
+        border-bottom: none !important;
+        border-top: 2px solid transparent !important;
+        margin-bottom: 0 !important;
+        margin-top: -2px !important;
+        min-width: 70px !important;
+        max-width: 90px !important;
+        box-sizing: border-box !important;
+        width: auto !important;
     }
     
     .tab-icon {
@@ -3127,30 +3134,32 @@ tbody tr:last-child td {
     }
     
     .tabs {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: var(--bg-primary);
-        border-top: 1px solid var(--border-color);
-        border-bottom: none;
-        margin-bottom: 0;
-        padding: 6px 0 max(env(safe-area-inset-bottom), 6px) 0;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-        z-index: 998;
-        gap: 0;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: var(--bg-primary) !important;
+        border-top: 1px solid var(--border-color) !important;
+        border-bottom: none !important;
+        margin-bottom: 0 !important;
+        padding: 6px 0 max(env(safe-area-inset-bottom), 6px) 0 !important;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
+        z-index: 998 !important;
+        gap: 0 !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        align-items: stretch;
-        justify-content: flex-start;
-        scrollbar-width: thin;
-        scrollbar-color: var(--gray-300) transparent;
-        min-height: 60px;
-        width: 100%;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: var(--gray-300) transparent !important;
+        min-height: 60px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     .tabs::-webkit-scrollbar {
@@ -3169,24 +3178,26 @@ tbody tr:last-child td {
     
     .tab-btn {
         flex: 0 0 auto !important;
-        min-width: 70px;
-        max-width: 90px;
-        padding: 6px 4px;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
+        min-width: 70px !important;
+        max-width: 90px !important;
+        padding: 6px 4px !important;
         display: flex !important;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        border-bottom: none;
-        border-top: 2px solid transparent;
-        margin-bottom: 0;
-        margin-top: -2px;
-        background: none;
-        color: var(--gray-600);
-        transition: all 0.2s;
-        white-space: nowrap;
-        box-sizing: border-box;
-        flex-shrink: 0;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 3px !important;
+        border-bottom: none !important;
+        border-top: 2px solid transparent !important;
+        margin-bottom: 0 !important;
+        margin-top: -2px !important;
+        background: none !important;
+        color: var(--gray-600) !important;
+        transition: all 0.2s !important;
+        white-space: nowrap !important;
+        box-sizing: border-box !important;
+        width: auto !important;
     }
     
     .tab-icon {
