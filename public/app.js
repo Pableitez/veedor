@@ -18,10 +18,21 @@ if (window.VEEDOR_LOADED) {
         const modal = document.getElementById('userProfileModal');
         if (modal) modal.style.display = 'none';
     };
-    // Stub para switchMobileTab
+    // Stub para switchMobileTab - se reemplazará con la función real más adelante
     window.switchMobileTab = function(tabName) {
-        console.warn('switchMobileTab llamado antes de inicialización, tab:', tabName);
-        // La función real se asignará más adelante
+        // Si la función real ya está disponible, usarla
+        if (typeof window._switchMobileTabReal === 'function') {
+            return window._switchMobileTabReal(tabName);
+        }
+        // Si no, esperar un poco y reintentar
+        console.warn('switchMobileTab llamado antes de inicialización, tab:', tabName, '- Reintentando...');
+        setTimeout(() => {
+            if (typeof window._switchMobileTabReal === 'function') {
+                window._switchMobileTabReal(tabName);
+            } else {
+                console.error('switchMobileTab no disponible después del delay');
+            }
+        }, 100);
     };
     window.showPrivacyModal = function() { 
         const modal = document.getElementById('privacyModal');
