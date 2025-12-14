@@ -3029,6 +3029,12 @@ async function updateSummary() {
         totalAccountsBalanceEl.textContent = formatCurrency(totalAccountsBalance);
     }
     
+    // Actualizar balance total en la card
+    const totalBalanceCardEl = document.getElementById('totalBalanceCard');
+    if (totalBalanceCardEl) {
+        totalBalanceCardEl.textContent = formatCurrency(totalBalance);
+    }
+    
     if (periodIncomeEl) periodIncomeEl.textContent = formatCurrency(periodIncome);
     if (periodIncomeLabelEl) periodIncomeLabelEl.textContent = `Ingresos ${periodLabel}`;
     if (periodIncomeSubLabelEl) periodIncomeSubLabelEl.textContent = periodLabel;
