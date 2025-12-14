@@ -1647,6 +1647,11 @@ body.dark-mode .more-tab-item:hover {
         display: none !important;
     }
     
+    /* Ocultar también el div con el texto descriptivo usando selector más específico */
+    #transactions-tab .form-section > div:nth-child(2) {
+        display: none !important;
+    }
+    
     /* Permitir que el formulario se muestre cuando se abre desde el botón flotante */
     #transactionForm[style*="display: block"],
     #transactionForm[style*="display:flex"] {
