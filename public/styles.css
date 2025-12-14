@@ -859,6 +859,7 @@ body:not(.dark-mode) .main-header h1 {
 
 body:not(.dark-mode) header button,
 body:not(.dark-mode) .main-header button,
+body:not(.dark-mode) #mainNavDropdownBtn,
 body:not(.dark-mode) #settingsDropdownBtn {
     color: rgba(30, 58, 138, 1) !important;
     border-color: rgba(30, 58, 138, 0.4) !important;
@@ -870,35 +871,13 @@ body:not(.dark-mode) #settingsDropdownBtn {
     height: 36px !important;
 }
 
-body:not(.dark-mode) #mainNavDropdownBtn {
-    color: rgba(30, 58, 138, 1) !important;
-    border-color: rgba(30, 58, 138, 0.4) !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    border-radius: 4px !important;
-    border-width: 1.5px !important;
-    padding: 8px !important;
-    width: 36px !important;
-    height: 36px !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
 body:not(.dark-mode) header button:hover,
 body:not(.dark-mode) .main-header button:hover,
+body:not(.dark-mode) #mainNavDropdownBtn:hover,
 body:not(.dark-mode) #settingsDropdownBtn:hover {
     background: rgba(255, 255, 255, 1) !important;
     border-color: rgba(30, 58, 138, 0.6) !important;
     color: rgba(30, 58, 138, 1) !important;
-}
-
-body:not(.dark-mode) #mainNavDropdownBtn:hover {
-    background: rgba(255, 255, 255, 1) !important;
-    border-color: rgba(30, 58, 138, 0.6) !important;
-    color: rgba(30, 58, 138, 1) !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
 }
 
 body:not(.dark-mode) header button span,
@@ -963,6 +942,7 @@ body:not(.dark-mode) #settingsDropdownBtn svg path {
 /* Estilos unificados para botones del header en modo oscuro */
 body.dark-mode header button,
 body.dark-mode .main-header button,
+body.dark-mode #mainNavDropdownBtn,
 body.dark-mode #settingsDropdownBtn {
     color: rgba(255, 255, 255, 0.95) !important;
     border-color: rgba(255, 255, 255, 0.2) !important;
@@ -974,35 +954,13 @@ body.dark-mode #settingsDropdownBtn {
     height: 36px !important;
 }
 
-body.dark-mode #mainNavDropdownBtn {
-    color: rgba(255, 255, 255, 0.95) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    border-radius: 4px !important;
-    border-width: 1.5px !important;
-    padding: 8px !important;
-    width: 36px !important;
-    height: 36px !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
 body.dark-mode header button:hover,
 body.dark-mode .main-header button:hover,
+body.dark-mode #mainNavDropdownBtn:hover,
 body.dark-mode #settingsDropdownBtn:hover {
     background: rgba(255, 255, 255, 0.2) !important;
     border-color: rgba(255, 255, 255, 0.3) !important;
     color: rgba(255, 255, 255, 1) !important;
-}
-
-body.dark-mode #mainNavDropdownBtn:hover {
-    background: rgba(255, 255, 255, 0.2) !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
-    color: rgba(255, 255, 255, 1) !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
 }
 
 body.dark-mode header button span,
@@ -1677,6 +1635,20 @@ body.dark-mode .more-tab-item:hover {
     
     .main-content {
         padding-bottom: 16px !important;
+    }
+    
+    /* Ocultar sección de Nueva Transacción en móvil (ya está en botón flotante) */
+    #toggleTransactionFormBtn {
+        display: none !important;
+    }
+    
+    /* Ocultar el div del texto descriptivo que está después del botón */
+    #transactions-tab .form-section > div:first-child {
+        display: none !important;
+    }
+    
+    #transactions-tab .form-section > div:nth-child(2) {
+        display: none !important;
     }
 }
 
