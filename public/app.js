@@ -1316,6 +1316,7 @@ async function loadUserData() {
                     
                     // Actualizar selectores
                     updateAccountSelect();
+                    updatePropertySelect();
                     updatePatrimonioSelect();
                     updateLoanSelect();
                     updateInvestmentSelect();
@@ -1407,6 +1408,7 @@ async function loadUserDataFresh() {
         
         // Actualizar selectores después de cargar datos
         updateAccountSelect();
+        updatePropertySelect();
         updatePatrimonioSelect();
         updateLoanSelect();
         updateInvestmentSelect();
@@ -2863,10 +2865,37 @@ async function addTransaction() {
             // Ocultar formulario después de agregar exitosamente
             toggleForm('transactionForm', 'toggleTransactionFormBtn');
         }
+        // Actualizar saldo de cuenta si la transacción está asociada a una cuenta
+        if (normalizedAccountId) {
+            try {
+                console.log('💰 Actualizando saldo de cuenta...');
+                const account = accounts.find(acc => (acc._id || acc.id) === normalizedAccountId);
+                if (account) {
+                    // Calcular nuevo saldo: si es ingreso suma, si es gasto resta
+                    const amountChange = type === 'income' ? Math.abs(amount) : -Math.abs(amount);
+                    const newBalance = (account.balance || 0) + amountChange;
+                    
+                    // Actualizar saldo en el servidor
+                    await apiRequest(`/accounts/${normalizedAccountId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ balance: newBalance })
+                    });
+                    
+                    // Actualizar saldo localmente
+                    account.balance = newBalance;
+                    console.log('✅ Saldo de cuenta actualizado:', newBalance);
+                }
+            } catch (error) {
+                console.error('❌ Error al actualizar saldo de cuenta:', error);
+                // No fallar la transacción si falla la actualización del saldo
+            }
+        }
+        
         initializeDate();
         initializeCategories();
         updateEnvelopeSelect();
         updateAccountSelect();
+        updatePropertySelect();
         
         console.log('✅ ========================================');
         console.log('✅ Proceso completado exitosamente');
@@ -2928,7 +2957,8 @@ function updateDisplay() {
         updateEnvelopeSelect();
         updateAccountSelect(); // Actualizar selector de cuentas
         updateInvestmentSelect(); // Actualizar selector de inversiones
-        updatePatrimonioSelect(); // Actualizar selector de patrimonio
+        updatePropertySelect(); // Actualizar selector de propiedades en transacciones
+        updatePatrimonioSelect(); // Actualizar selector de patrimonio (para préstamos)
         updateLoanSelect(); // Actualizar selector de préstamos
         updateLoans();
         updateInvestments();
@@ -3464,7 +3494,37 @@ function updateInvestmentSelect(selectId = 'transactionInvestment') {
     });
 }
 
-// Actualizar selector de propiedades
+// Actualizar selector de propiedades/patrimonio en transacciones
+function updatePropertySelect(selectId = 'transactionProperty') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Ninguna</option>';
+    patrimonio.forEach(prop => {
+        const option = document.createElement('option');
+        option.value = prop._id || prop.id;
+        const typeNames = {
+            apartment: 'Apartamento',
+            house: 'Casa',
+            office: 'Oficina',
+            commercial: 'Comercial',
+            vehicle: 'Vehículo',
+            jewelry: 'Joyas',
+            art: 'Arte',
+            electronics: 'Electrónica',
+            other: 'Otro'
+        };
+        option.textContent = `${prop.name} (${typeNames[prop.type] || prop.type})`;
+        select.appendChild(option);
+    });
+    
+    // Restaurar valor seleccionado si existe
+    if (currentValue) {
+        select.value = currentValue;
+    }
+}
+
 // Actualizar selector de préstamos
 function updateLoanSelect(selectId = 'transactionLoan') {
     const select = document.getElementById(selectId);
@@ -4037,8 +4097,36 @@ async function deleteTransaction(id) {
     if (!confirmed) return;
     
     try {
+        // Obtener transacción antes de eliminarla para revertir cambio en saldo
+        const transaction = transactions.find(t => (t._id || t.id) === id);
+        
         showLoader('Eliminando transacción...');
         await apiRequest(`/transactions/${id}`, { method: 'DELETE' });
+        
+        // Revertir cambio en saldo de cuenta si la transacción estaba asociada a una cuenta
+        if (transaction && transaction.account_id) {
+            try {
+                const account = accounts.find(acc => (acc._id || acc.id) === transaction.account_id);
+                if (account) {
+                    // Revertir: si era ingreso resta, si era gasto suma
+                    const amountChange = transaction.type === 'income' ? -Math.abs(transaction.amount) : Math.abs(transaction.amount);
+                    const newBalance = (account.balance || 0) + amountChange;
+                    
+                    // Actualizar saldo en el servidor
+                    await apiRequest(`/accounts/${transaction.account_id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ balance: newBalance })
+                    });
+                    
+                    // Actualizar saldo localmente
+                    account.balance = newBalance;
+                }
+            } catch (error) {
+                console.error('Error al revertir saldo de cuenta:', error);
+                // No fallar la eliminación si falla la actualización del saldo
+            }
+        }
+        
         await loadUserData();
         updateDisplay();
         hideLoader();
@@ -4333,6 +4421,10 @@ async function updateTransactionFromModal() {
         
         showLoader('Actualizando transacción...');
         
+        // Obtener transacción original para revertir cambios en saldo de cuenta
+        const originalTransaction = transactions.find(t => (t._id || t.id) === currentEditingTransactionId);
+        
+        // Actualizar transacción en el servidor
         await apiRequest(`/transactions/${currentEditingTransactionId}`, {
             method: 'PUT',
             body: JSON.stringify({
@@ -4348,6 +4440,56 @@ async function updateTransactionFromModal() {
                 description: description || null
             })
         });
+        
+        // Actualizar saldo de cuenta si cambió la cuenta o el monto
+        if (originalTransaction) {
+            const oldAccountId = originalTransaction.account_id;
+            const oldAmount = originalTransaction.amount;
+            const oldType = originalTransaction.type;
+            
+            // Revertir cambio en cuenta antigua si existía
+            if (oldAccountId && oldAccountId !== accountId) {
+                try {
+                    const oldAccount = accounts.find(acc => (acc._id || acc.id) === oldAccountId);
+                    if (oldAccount) {
+                        const oldAmountChange = oldType === 'income' ? -Math.abs(oldAmount) : Math.abs(oldAmount);
+                        const oldNewBalance = (oldAccount.balance || 0) + oldAmountChange;
+                        await apiRequest(`/accounts/${oldAccountId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({ balance: oldNewBalance })
+                        });
+                        oldAccount.balance = oldNewBalance;
+                    }
+                } catch (error) {
+                    console.error('Error al revertir saldo de cuenta antigua:', error);
+                }
+            }
+            
+            // Aplicar cambio en cuenta nueva o actualizada
+            if (accountId) {
+                try {
+                    const account = accounts.find(acc => (acc._id || acc.id) === accountId);
+                    if (account) {
+                        // Si es la misma cuenta, revertir el cambio anterior primero
+                        if (oldAccountId === accountId) {
+                            const oldAmountChange = oldType === 'income' ? -Math.abs(oldAmount) : Math.abs(oldAmount);
+                            account.balance = (account.balance || 0) + oldAmountChange;
+                        }
+                        
+                        // Aplicar nuevo cambio
+                        const newAmountChange = type === 'income' ? Math.abs(amount) : -Math.abs(amount);
+                        const newBalance = (account.balance || 0) + newAmountChange;
+                        await apiRequest(`/accounts/${accountId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({ balance: newBalance })
+                        });
+                        account.balance = newBalance;
+                    }
+                } catch (error) {
+                    console.error('Error al actualizar saldo de cuenta:', error);
+                }
+            }
+        }
         
         await loadUserData();
         updateDisplay();
@@ -4408,6 +4550,10 @@ async function updateTransaction() {
         
         showLoader('Actualizando transacción...');
         
+        // Obtener transacción original para revertir cambios en saldo de cuenta
+        const originalTransaction = transactions.find(t => (t._id || t.id) === currentEditingTransactionId);
+        
+        // Actualizar transacción en el servidor
         await apiRequest(`/transactions/${currentEditingTransactionId}`, {
             method: 'PUT',
             body: JSON.stringify({
@@ -4424,6 +4570,56 @@ async function updateTransaction() {
                 description: description || null
             })
         });
+        
+        // Actualizar saldo de cuenta si cambió la cuenta o el monto
+        if (originalTransaction) {
+            const oldAccountId = originalTransaction.account_id;
+            const oldAmount = originalTransaction.amount;
+            const oldType = originalTransaction.type;
+            
+            // Revertir cambio en cuenta antigua si existía y cambió
+            if (oldAccountId && oldAccountId !== accountId) {
+                try {
+                    const oldAccount = accounts.find(acc => (acc._id || acc.id) === oldAccountId);
+                    if (oldAccount) {
+                        const oldAmountChange = oldType === 'income' ? -Math.abs(oldAmount) : Math.abs(oldAmount);
+                        const oldNewBalance = (oldAccount.balance || 0) + oldAmountChange;
+                        await apiRequest(`/accounts/${oldAccountId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({ balance: oldNewBalance })
+                        });
+                        oldAccount.balance = oldNewBalance;
+                    }
+                } catch (error) {
+                    console.error('Error al revertir saldo de cuenta antigua:', error);
+                }
+            }
+            
+            // Aplicar cambio en cuenta nueva o actualizada
+            if (accountId) {
+                try {
+                    const account = accounts.find(acc => (acc._id || acc.id) === accountId);
+                    if (account) {
+                        // Si es la misma cuenta, revertir el cambio anterior primero
+                        if (oldAccountId === accountId) {
+                            const oldAmountChange = oldType === 'income' ? -Math.abs(oldAmount) : Math.abs(oldAmount);
+                            account.balance = (account.balance || 0) + oldAmountChange;
+                        }
+                        
+                        // Aplicar nuevo cambio
+                        const newAmountChange = type === 'income' ? Math.abs(amount) : -Math.abs(amount);
+                        const newBalance = (account.balance || 0) + newAmountChange;
+                        await apiRequest(`/accounts/${accountId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({ balance: newBalance })
+                        });
+                        account.balance = newBalance;
+                    }
+                } catch (error) {
+                    console.error('Error al actualizar saldo de cuenta:', error);
+                }
+            }
+        }
         
         await loadUserData();
         updateDisplay();
