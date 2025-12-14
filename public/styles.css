@@ -1622,10 +1622,15 @@ body.dark-mode .more-tab-item:hover {
     flex-shrink: 0;
 }
 
-/* Ocultar tabs en móvil (ya están en menú hamburguesa) */
+/* Ocultar tabs en móvil (ya están en menú hamburguesa) - DEBE IR AL FINAL PARA SOBRESCRIBIR TODO */
 @media (max-width: 768px) {
     .tabs {
         display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
     }
     
     .main-content {
