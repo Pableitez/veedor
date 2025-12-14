@@ -4304,6 +4304,7 @@ async function editTransaction(id) {
         updateEnvelopeSelect('editTransactionEnvelope');
         updateAccountSelect('editTransactionAccount');
         updateInvestmentSelect('editTransactionInvestment');
+        updatePropertySelect('editTransactionProperty');
         updateLoanSelect('editTransactionLoan');
         
         setTimeout(() => {
