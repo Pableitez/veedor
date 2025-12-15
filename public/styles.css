@@ -96,14 +96,14 @@ html {
 
 html.dark-mode {
     background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 8%, #1E2F5F 10%, #1A2540 13%, #16202D 16%, #121B26 20%, #0F1A2E 25%, #0E1620 30%, #0C1525 35%, #0A1223 40%, #080E1A 45%, #060A12 50%, #040610 60%, #020408 70%, #010204 80%, #000102 90%, #000000 100%);
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 8%, #1B2F5A 10%, #182A4F 13%, #152545 16%, #12203B 20%, #0F1B31 25%, #0D1728 30%, #0B1424 35%, #091120 40%, #070E1C 45%, #050B18 50%, #040914 55%, #030712 60%, #020510 65%, #01040E 70%, #01030C 75%, #000208 80%, #000106 85%, #000104 90%, #000002 95%, #000000 100%);
     background-attachment: fixed;
     min-height: 100vh;
 }
 
 html.dark-mode body {
     background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 8%, #1E2F5F 10%, #1A2540 13%, #16202D 16%, #121B26 20%, #0F1A2E 25%, #0E1620 30%, #0C1525 35%, #0A1223 40%, #080E1A 45%, #060A12 50%, #040610 60%, #020408 70%, #010204 80%, #000102 90%, #000000 100%);
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 8%, #1B2F5A 10%, #182A4F 13%, #152545 16%, #12203B 20%, #0F1B31 25%, #0D1728 30%, #0B1424 35%, #091120 40%, #070E1C 45%, #050B18 50%, #040914 55%, #030712 60%, #020510 65%, #01040E 70%, #01030C 75%, #000208 80%, #000106 85%, #000104 90%, #000002 95%, #000000 100%);
     background-attachment: fixed;
     color: #F9FAFB;
     min-height: 100vh;
@@ -1247,10 +1247,14 @@ body:not(.dark-mode) .revolut-card .amount {
     color: #111827 !important;
 }
 
-/* Sin resplandor en el saldo en modo oscuro */
+/* Resplandor debajo del saldo para efecto de flotación */
 body.dark-mode #totalAccountsBalance,
 body.dark-mode .revolut-card .amount {
-    text-shadow: none;
+    text-shadow: 0 4px 12px rgba(255, 255, 255, 0.15),
+                 0 8px 24px rgba(255, 255, 255, 0.1),
+                 0 12px 36px rgba(255, 255, 255, 0.08),
+                 0 16px 48px rgba(255, 255, 255, 0.05);
+    position: relative;
 }
 
 body:not(.dark-mode) .revolut-card small {
