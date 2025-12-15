@@ -95,15 +95,15 @@ html {
 }
 
 html.dark-mode {
-    background: #0F1A2E;
-    background-image: linear-gradient(180deg, #1E2F4A 0%, #18283F 12%, #132135 25%, #0F1A2E 40%, #0C1525 55%, #09101C 70%, #060B14 85%, #040710 100%);
+    background: #0D1B2A;
+    background-image: linear-gradient(180deg, #1A2F4A 0%, #16273D 8%, #132035 16%, #0F1A2E 25%, #0D1B2A 35%, #0A1625 50%, #081220 65%, #060E1A 80%, #040A12 100%);
     background-attachment: fixed;
     min-height: 100vh;
 }
 
 html.dark-mode body {
-    background: #0F1A2E;
-    background-image: linear-gradient(180deg, #1E2F4A 0%, #18283F 12%, #132135 25%, #0F1A2E 40%, #0C1525 55%, #09101C 70%, #060B14 85%, #040710 100%);
+    background: #0D1B2A;
+    background-image: linear-gradient(180deg, #1A2F4A 0%, #16273D 8%, #132035 16%, #0F1A2E 25%, #0D1B2A 35%, #0A1625 50%, #081220 65%, #060E1A 80%, #040A12 100%);
     background-attachment: fixed;
     color: #F9FAFB;
     min-height: 100vh;
