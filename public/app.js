@@ -453,8 +453,8 @@ function toggleDarkMode() {
 function updateAuthDarkModeIcon() {
     const authIcon = document.getElementById('authDarkModeIcon');
     if (authIcon) {
-        // Sin emoji, solo el icono SVG
-        authIcon.textContent = '';
+        const isDark = document.body.classList.contains('dark-mode');
+        authIcon.textContent = isDark ? '☀' : '🌙';
     }
 }
 

@@ -96,14 +96,14 @@ html {
 
 html.dark-mode {
     background: #1E3A8A;
-    background-image: radial-gradient(ellipse 100% 50% at 50% 8%, #1E3A8A 0%, #1E3A8A 8%, #1D395E 12%, #1C365A 16%, #1B3256 20%, #1A2E52 24%, #192A4E 28%, #18264A 32%, #172246 36%, #161E42 40%, #151A3E 42%, #14163A 44%, #131236 46%, #120E32 48%, #110A2E 50%, #10062A 52%, #0F0226 54%, #0E0022 56%, #0D001E 58%, #0C001A 60%, #0B0016 62%, #0A0012 64%, #09000E 66%, #08000A 68%, #070006 70%, #060004 72%, #050002 74%, #040001 76%, #030000 78%, #020000 80%, #010000 82%, #000000 84%, #000000 100%);
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 12%, #1D385F 15%, #1C345A 18%, #1A3055 22%, #182C50 26%, #16284B 30%, #142446 34%, #122041 38%, #101C3C 42%, #0E1837 46%, #0C1432 50%, #0A102D 54%, #080C28 58%, #060823 62%, #05041E 66%, #040019 70%, #030014 74%, #020010 78%, #01000C 82%, #000008 86%, #000006 90%, #000004 94%, #000002 97%, #000000 100%);
     background-attachment: fixed;
     min-height: 100vh;
 }
 
 html.dark-mode body {
     background: #1E3A8A;
-    background-image: radial-gradient(ellipse 100% 50% at 50% 8%, #1E3A8A 0%, #1E3A8A 8%, #1D395E 12%, #1C365A 16%, #1B3256 20%, #1A2E52 24%, #192A4E 28%, #18264A 32%, #172246 36%, #161E42 40%, #151A3E 42%, #14163A 44%, #131236 46%, #120E32 48%, #110A2E 50%, #10062A 52%, #0F0226 54%, #0E0022 56%, #0D001E 58%, #0C001A 60%, #0B0016 62%, #0A0012 64%, #09000E 66%, #08000A 68%, #070006 70%, #060004 72%, #050002 74%, #040001 76%, #030000 78%, #020000 80%, #010000 82%, #000000 84%, #000000 100%);
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 12%, #1D385F 15%, #1C345A 18%, #1A3055 22%, #182C50 26%, #16284B 30%, #142446 34%, #122041 38%, #101C3C 42%, #0E1837 46%, #0C1432 50%, #0A102D 54%, #080C28 58%, #060823 62%, #05041E 66%, #040019 70%, #030014 74%, #020010 78%, #01000C 82%, #000008 86%, #000006 90%, #000004 94%, #000002 97%, #000000 100%);
     background-attachment: fixed;
     color: #F9FAFB;
     min-height: 100vh;
@@ -1827,13 +1827,10 @@ body.dark-mode .more-tab-item:hover {
     
     #transactionsTable thead th:nth-child(3),
     #transactionsTable tbody td:nth-child(3) {
-        min-width: 70px !important;
-        max-width: 70px !important;
+        min-width: 100px !important;
         font-size: 11px !important;
-        padding: 8px 4px !important;
+        padding: 8px 6px !important;
         word-break: break-word !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
     }
     
     #transactionsTable thead th:nth-child(8),
@@ -3116,7 +3113,7 @@ tbody tr:last-child td {
     }
     
     header h1 {
-        font-size: 28px !important;
+        font-size: 14px !important;
         margin: 0 !important;
         white-space: nowrap;
         overflow: hidden;
@@ -3244,11 +3241,6 @@ tbody tr:last-child td {
 }
 
 @media (max-width: 768px) {
-    /* Fondo en móvil que coincide con el background en modo oscuro */
-    body.dark-mode {
-        background: #1E3A8A !important;
-    }
-    
     .auth-container {
         padding: 24px 20px !important;
         max-height: calc(100vh - 20px) !important;
@@ -4318,7 +4310,7 @@ body:not(.dark-mode) .quick-add-tooltip {
     }
     
     .auth-header h1 {
-        font-size: 40px !important;
+        font-size: 24px !important;
     }
     
     .auth-header p {
