@@ -1727,7 +1727,7 @@ body.dark-mode .more-tab-item:hover {
         display: none !important;
     }
     
-    /* Ocultar todos los divs con texto descriptivo en móvil */
+    /* Ocultar todos los divs con texto descriptivo en móvil - todas las secciones */
     #transactions-tab .form-section > div:nth-child(2),
     #accounts-tab .form-section > div:nth-child(2),
     #loans-tab .form-section > div:nth-child(2),
@@ -1738,8 +1738,7 @@ body.dark-mode .more-tab-item:hover {
     
     /* Ocultar texto descriptivo en presupuestos - estructura diferente */
     #envelopes-tab .form-section > div > div > div > p,
-    #envelopes-tab .form-section > div > div > div:has(#toggleBudgetFormBtn) + p,
-    #envelopes-tab .form-section > div > div > div:has(#toggleEnvelopeFormBtn) + p {
+    #envelopes-tab .form-section > div > div > div[style*="background: var(--bg-primary)"] > p {
         display: none !important;
     }
     
@@ -1748,8 +1747,13 @@ body.dark-mode .more-tab-item:hover {
         display: none !important;
     }
     
-    /* Ocultar cualquier div con texto descriptivo que tenga padding y background */
+    /* Ocultar cualquier div con texto descriptivo que tenga padding y background - regla general */
     .form-section > div[style*="background: var(--bg-primary)"][style*="padding: 24px"] {
+        display: none !important;
+    }
+    
+    /* Ocultar párrafos descriptivos dentro de divs con background */
+    .form-section div[style*="background: var(--bg-primary)"] p {
         display: none !important;
     }
     
