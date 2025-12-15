@@ -1953,6 +1953,18 @@ body.dark-mode .more-tab-item:hover {
     }
 }
 
+/* Ocultar barra móvil en pantallas grandes (web) */
+@media (min-width: 769px) {
+    .mobile-bottom-tabs {
+        display: none !important;
+    }
+    
+    /* Eliminar padding inferior del contenido en web */
+    .main-content {
+        padding-bottom: 16px !important;
+    }
+}
+
 /* Tabs centradas en pantallas medianas pero no móvil */
 @media (min-width: 769px) and (max-width: 1200px) {
     .tabs {
