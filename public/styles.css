@@ -4183,8 +4183,21 @@ tbody tr:last-child td {
         right: 24px !important;
         width: 56px !important;
         height: 56px !important;
-        font-size: 32px !important;
+        font-size: 28px !important;
+        font-weight: 400 !important;
+        background: var(--bg-primary) !important;
+        border: 2px solid var(--border-color) !important;
+        color: var(--text-primary) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
         z-index: 1001 !important;
+    }
+    
+    .quick-add-btn-mobile:hover,
+    .quick-add-btn-mobile:active {
+        transform: scale(1.05) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15) !important;
     }
 }
 
