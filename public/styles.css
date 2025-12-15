@@ -1722,13 +1722,13 @@ body.dark-mode .more-tab-item:hover {
     }
     
     .mobile-bottom-tabs .tab-btn.active {
-        color: var(--primary) !important;
-        background: var(--primary-light) !important;
+        color: var(--text-primary) !important;
+        background: rgba(107, 114, 128, 0.15) !important;
     }
     
     .mobile-bottom-tabs .tab-btn:active {
         transform: scale(0.95) !important;
-        background: var(--primary-light) !important;
+        background: rgba(107, 114, 128, 0.2) !important;
     }
     
     /* Añadir padding inferior al contenido principal para que no quede oculto por la barra */
@@ -2000,8 +2000,9 @@ body.dark-mode .more-tab-item:hover {
 }
 
 .tab-btn.active {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
+    color: var(--text-primary);
+    border-bottom-color: var(--gray-500);
+    background: rgba(107, 114, 128, 0.1);
     font-weight: 600;
 }
 
