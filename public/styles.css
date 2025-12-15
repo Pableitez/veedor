@@ -2052,11 +2052,19 @@ body.dark-mode .more-tab-item:hover {
 
 /* Hacer transparentes y sin bordes los contenedores de presupuesto y sobre */
 .budgets-form-grid > div,
-#envelopes-tab .form-section > div > div {
+#envelopes-tab .form-section > div > div,
+#envelopes-tab .form-section .budgets-form-grid > div {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     padding: 24px 0 !important;
+}
+
+/* Asegurar que los divs con estilos inline también sean transparentes */
+#envelopes-tab div[style*="background: var(--bg-primary)"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .form-section form {
