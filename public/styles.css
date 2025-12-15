@@ -90,8 +90,9 @@ html {
     width: 100%;
     overflow-x: hidden;
     box-sizing: border-box;
-    background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
-    background-attachment: fixed;
+    background: #F8FAFC;
+    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
+    background-attachment: scroll;
 }
 
 html.dark-mode {
