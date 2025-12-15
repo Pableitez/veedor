@@ -343,6 +343,7 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     overflow-x: hidden;
     position: relative;
     z-index: 1;
+    background: transparent !important;
 }
 
 #mainApp > header {
@@ -1162,7 +1163,7 @@ body:not(.dark-mode) header h1 {
 .dashboard {
     padding: 32px 48px;
     padding-top: 24px;
-    background: transparent;
+    background: transparent !important;
     transition: background-color 0.3s;
     max-width: 1400px;
     margin: 0 auto;
