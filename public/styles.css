@@ -95,15 +95,15 @@ html {
 }
 
 html.dark-mode {
-    background: #0A1628;
-    background-image: linear-gradient(180deg, #0A1628 0%, #0D1B2A 20%, #0F1E35 40%, #0C1929 60%, #0E1C30 80%, #0A1628 100%);
+    background: #0F1E35;
+    background-image: linear-gradient(180deg, #0F1E35 0%, #0D1B2A 25%, #0C1929 50%, #0A1628 75%, #080F1A 100%);
     background-attachment: fixed;
     min-height: 100vh;
 }
 
 html.dark-mode body {
-    background: #0A1628;
-    background-image: linear-gradient(180deg, #0A1628 0%, #0D1B2A 20%, #0F1E35 40%, #0C1929 60%, #0E1C30 80%, #0A1628 100%);
+    background: #0F1E35;
+    background-image: linear-gradient(180deg, #0F1E35 0%, #0D1B2A 25%, #0C1929 50%, #0A1628 75%, #080F1A 100%);
     background-attachment: fixed;
     color: #F9FAFB;
     min-height: 100vh;
