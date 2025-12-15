@@ -1833,6 +1833,15 @@ body.dark-mode .more-tab-item:hover {
         word-break: break-word !important;
     }
     
+    /* Mostrar versión corta de "Categoría" en móvil */
+    #transactionsTable .category-label-full {
+        display: none !important;
+    }
+    
+    #transactionsTable .category-label-short {
+        display: inline !important;
+    }
+    
     #transactionsTable thead th:nth-child(8),
     #transactionsTable tbody td:nth-child(8) {
         min-width: 120px !important;
