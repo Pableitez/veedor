@@ -1716,8 +1716,38 @@ body.dark-mode .more-tab-item:hover {
         padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
     }
     
-    /* Los botones de "Nueva X" deben ser visibles en todas las secciones, igual que en transacciones */
-    /* No ocultar los botones de formulario en móvil - deben estar visibles */
+    /* Ocultar botones "Nueva X" en móvil (ya están disponibles en el botón flotante +) */
+    #toggleTransactionFormBtn,
+    #toggleAccountFormBtn,
+    #toggleLoanFormBtn,
+    #toggleInvestmentFormBtn,
+    #togglePatrimonioFormBtn,
+    #toggleBudgetFormBtn,
+    #toggleEnvelopeFormBtn {
+        display: none !important;
+    }
+    
+    /* Ocultar el texto descriptivo que está después de cada botón en móvil */
+    #toggleTransactionFormBtn + div,
+    #toggleAccountFormBtn + div,
+    #toggleLoanFormBtn + div,
+    #toggleInvestmentFormBtn + div,
+    #togglePatrimonioFormBtn + div,
+    #toggleBudgetFormBtn + div,
+    #toggleEnvelopeFormBtn + div {
+        display: none !important;
+    }
+    
+    /* Ocultar también el texto descriptivo en presupuestos (tiene estructura diferente) */
+    #envelopes-tab .form-section > div > div > div:has(#toggleBudgetFormBtn) + p,
+    #envelopes-tab .form-section > div > div > div:has(#toggleEnvelopeFormBtn) + p {
+        display: none !important;
+    }
+    
+    /* Ocultar texto descriptivo en transacciones */
+    #transactions-tab .form-section > div:nth-child(2) {
+        display: none !important;
+    }
     
     /* Permitir que el formulario se muestre cuando se abre desde el botón flotante */
     #transactionForm[style*="display: block"],
