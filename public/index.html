@@ -598,14 +598,14 @@
                         <select id="filterMonth">
                             <option value="" data-translate="transactions.allMonths">Todos los meses</option>
                         </select>
-                        <div class="date-filters-container" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; width: 100%;">
-                            <div style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 0;">
-                                <label style="font-size: 13px; font-weight: 500; color: var(--text-secondary); white-space: nowrap; flex-shrink: 0;">Desde:</label>
-                                <input type="date" id="filterStartDate" style="padding: 8px 8px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); min-width: 0; flex: 0 1 auto; max-width: 100%; box-sizing: border-box;">
+                        <div class="date-filters-container">
+                            <div class="date-filter-item">
+                                <label>Desde:</label>
+                                <input type="date" id="filterStartDate">
                             </div>
-                            <div style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 0;">
-                                <label style="font-size: 13px; font-weight: 500; color: var(--text-secondary); white-space: nowrap; flex-shrink: 0;">Hasta:</label>
-                                <input type="date" id="filterEndDate" style="padding: 8px 8px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); min-width: 0; flex: 0 1 auto; max-width: 100%; box-sizing: border-box;">
+                            <div class="date-filter-item">
+                                <label>Hasta:</label>
+                                <input type="date" id="filterEndDate">
                             </div>
                         </div>
                         <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap;">
@@ -1886,6 +1886,92 @@
     <button id="quickAddTransactionBtnMobile" onclick="switchToTab('transactions', true); setTimeout(() => { const btn = document.getElementById('toggleTransactionFormBtn'); if (btn) btn.click(); }, 100);" class="quick-add-btn-mobile" style="display: none; position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; padding: 0; background: linear-gradient(180deg, #3B82F6 0%, #1E3A8A 100%); border: none; border-radius: 50%; color: white; font-size: 32px; font-weight: 300; cursor: pointer; transition: all 0.3s; box-shadow: none; z-index: 999; align-items: center; justify-content: center; box-sizing: border-box;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';" title="Nueva Transacción">
         <span style="line-height: 1;">+</span>
     </button>
+    
+    <!-- Barra de secciones fija en la parte inferior para móvil -->
+    <div class="mobile-bottom-tabs" id="mobileBottomTabs">
+        <button class="tab-btn" data-tab="transactions">
+            <span class="tab-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+            </span>
+            <span class="tab-text" data-translate="nav.transactions">Transacciones</span>
+        </button>
+        <button class="tab-btn" data-tab="summary">
+            <span class="tab-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 3v18h18"></path>
+                    <path d="M18 7l-5 5-4-4-3 3"></path>
+                </svg>
+            </span>
+            <span class="tab-text">Resumen</span>
+        </button>
+        <button class="tab-btn" data-tab="accounts">
+            <span class="tab-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+            </span>
+            <span class="tab-text" data-translate="nav.accounts">Cuentas</span>
+        </button>
+        <button class="tab-btn" data-tab="envelopes">
+            <span class="tab-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="8" width="18" height="12" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                    <path d="M7 15h.01"></path>
+                    <path d="M7 18h.01"></path>
+                    <path d="M12 15h.01"></path>
+                    <path d="M12 18h.01"></path>
+                    <path d="M17 15h.01"></path>
+                    <path d="M17 18h.01"></path>
+                </svg>
+            </span>
+            <span class="tab-text" data-translate="nav.budgets">Presupuestos</span>
+        </button>
+        <button class="tab-btn" data-tab="loans">
+            <span class="tab-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </span>
+            <span class="tab-text" data-translate="nav.loans">Préstamos</span>
+        </button>
+        <button class="tab-btn" data-tab="investments">
+            <span class="tab-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+            </span>
+            <span class="tab-text" data-translate="nav.investments">Inversiones</span>
+        </button>
+        <button class="tab-btn" data-tab="assets">
+            <span class="tab-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </span>
+            <span class="tab-text" data-translate="nav.assets">Patrimonio</span>
+        </button>
+        <button class="tab-btn" data-tab="charts">
+            <span class="tab-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+            </span>
+            <span class="tab-text" data-translate="nav.analysis">Análisis</span>
+        </button>
+    </div>
 </body>
 </html>
 

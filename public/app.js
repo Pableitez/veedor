@@ -1739,6 +1739,15 @@ function switchToTab(targetTab, doScroll = false) {
     const targetTabContent = document.getElementById(`${targetTab}-tab`);
     
     if (targetTabBtn) targetTabBtn.classList.add('active');
+    
+    // Actualizar también la barra inferior móvil
+    const mobileBottomTabs = document.getElementById('mobileBottomTabs');
+    if (mobileBottomTabs) {
+        const mobileTabButtons = mobileBottomTabs.querySelectorAll('.tab-btn');
+        mobileTabButtons.forEach(b => b.classList.remove('active'));
+        const targetMobileTabBtn = mobileBottomTabs.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
+        if (targetMobileTabBtn) targetMobileTabBtn.classList.add('active');
+    }
     if (targetTabContent) {
         targetTabContent.classList.add('active');
         // Solo hacer scroll si se solicita explícitamente (doScroll = true)
@@ -1867,6 +1876,20 @@ function initializeTabs() {
             }
         });
     });
+    
+    // Event listeners para la barra inferior móvil
+    const mobileBottomTabs = document.getElementById('mobileBottomTabs');
+    if (mobileBottomTabs) {
+        const mobileTabButtons = mobileBottomTabs.querySelectorAll('.tab-btn');
+        mobileTabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.getAttribute('data-tab');
+                if (targetTab) {
+                    switchToTab(targetTab, true);
+                }
+            });
+        });
+    }
     
     // Event listeners para navegación del header
     navItems.forEach(item => {
