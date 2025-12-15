@@ -2065,7 +2065,17 @@ body.dark-mode .more-tab-item:hover {
 #envelopes-tab div[style*="background"],
 #envelopes-tab div[style*="var(--bg-primary)"],
 .budgets-form-grid div[style*="background"],
-.budgets-form-grid div[style*="var(--bg-primary)"] {
+.budgets-form-grid div[style*="var(--bg-primary)"],
+#envelopes-tab .budgets-form-grid > div[style],
+.budgets-form-grid > div[style] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Regla universal para cualquier div dentro de budgets-form-grid o envelopes-tab con background */
+#envelopes-tab .budgets-form-grid div,
+#envelopes-tab .form-section div {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
