@@ -96,14 +96,14 @@ html {
 
 html.dark-mode {
     background: #2563EB;
-    background-image: linear-gradient(180deg, #2563EB 0%, #2563EB 22%, #1E4ED8 25%, #1E40AF 30%, #1E3A8A 35%, #1E2F5F 40%, #1A2540 45%, #16202D 50%, #121B26 55%, #0E1620 60%, #0A1118 70%, #060A12 85%, #040610 100%);
+    background-image: linear-gradient(180deg, #2563EB 0%, #2563EB 15%, #1E4ED8 18%, #1E40AF 22%, #1E3A8A 28%, #1E2F5F 35%, #1A2540 42%, #16202D 50%, #121B26 58%, #0E1620 65%, #0A1118 75%, #060A12 85%, #040610 95%, #020408 100%);
     background-attachment: fixed;
     min-height: 100vh;
 }
 
 html.dark-mode body {
     background: #2563EB;
-    background-image: linear-gradient(180deg, #2563EB 0%, #2563EB 22%, #1E4ED8 25%, #1E40AF 30%, #1E3A8A 35%, #1E2F5F 40%, #1A2540 45%, #16202D 50%, #121B26 55%, #0E1620 60%, #0A1118 70%, #060A12 85%, #040610 100%);
+    background-image: linear-gradient(180deg, #2563EB 0%, #2563EB 15%, #1E4ED8 18%, #1E40AF 22%, #1E3A8A 28%, #1E2F5F 35%, #1A2540 42%, #16202D 50%, #121B26 58%, #0E1620 65%, #0A1118 75%, #060A12 85%, #040610 95%, #020408 100%);
     background-attachment: fixed;
     color: #F9FAFB;
     min-height: 100vh;
@@ -1247,14 +1247,12 @@ body:not(.dark-mode) .revolut-card .amount {
     color: #111827 !important;
 }
 
-/* Efecto de resplandor en el saldo en modo oscuro */
+/* Sombreado blanquecino en el saldo en modo oscuro */
 body.dark-mode #totalAccountsBalance,
 body.dark-mode .revolut-card .amount {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
-                 0 0 20px rgba(255, 255, 255, 0.3),
-                 0 0 30px rgba(255, 255, 255, 0.2),
-                 0 0 40px rgba(37, 99, 235, 0.4),
-                 0 0 60px rgba(37, 99, 235, 0.2);
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.3),
+                 0 4px 8px rgba(255, 255, 255, 0.2),
+                 0 6px 12px rgba(255, 255, 255, 0.15);
 }
 
 body:not(.dark-mode) .revolut-card small {
