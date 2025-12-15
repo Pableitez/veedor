@@ -87,30 +87,72 @@ body.dark-mode {
 }
 
 html {
-    width: 100%;
-    overflow-x: hidden;
-    box-sizing: border-box;
-    background: #F8FAFC;
-    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
-    background-attachment: fixed;
-    background-position: center top;
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 100%;
+    width: 100% !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+    background: #F8FAFC !important;
+    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%) !important;
+    background-attachment: fixed !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    height: 100% !important;
+    min-height: 100vh !important;
 }
 
 html.dark-mode {
-    background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 5%, #1D385F 8%, #1C355A 12%, #1B3255 16%, #1A2F50 20%, #192C4B 24%, #182946 28%, #172641 32%, #16233C 35%, #152037 38%, #141D32 42%, #131A2D 46%, #121728 50%, #111423 54%, #10111E 58%, #0F0E19 62%, #0E0B14 66%, #0D0810 70%, #0C050C 74%, #0B0208 78%, #0A0005 82%, #090003 86%, #080001 90%, #070000 94%, #060000 98%, #050000 100%);
-    background-attachment: fixed;
-    background-position: center top;
-    background-repeat: no-repeat;
-    background-size: cover;
-    min-height: 100vh;
-    height: 100%;
+    background: #1E3A8A !important;
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 5%, #1D385F 8%, #1C355A 12%, #1B3255 16%, #1A2F50 20%, #192C4B 24%, #182946 28%, #172641 32%, #16233C 35%, #152037 38%, #141D32 42%, #131A2D 46%, #121728 50%, #111423 54%, #10111E 58%, #0F0E19 62%, #0E0B14 66%, #0D0810 70%, #0C050C 74%, #0B0208 78%, #0A0005 82%, #090003 86%, #080001 90%, #070000 94%, #060000 98%, #050000 100%) !important;
+    background-attachment: fixed !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    min-height: 100vh !important;
+    height: 100% !important;
 }
 
-/* Móvil usa el mismo degradado que desktop (sin radial-gradient) */
+/* Forzar degradado en móvil - ultra forzado */
+@media (max-width: 768px) {
+    html {
+        background: #F8FAFC !important;
+        background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%) !important;
+        background-attachment: fixed !important;
+        background-position: center top !important;
+        background-repeat: no-repeat !important;
+        background-size: cover !important;
+        height: 100% !important;
+        min-height: 100vh !important;
+    }
+    
+    html.dark-mode {
+        background: #1E3A8A !important;
+        background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 5%, #1D385F 8%, #1C355A 12%, #1B3255 16%, #1A2F50 20%, #192C4B 24%, #182946 28%, #172641 32%, #16233C 35%, #152037 38%, #141D32 42%, #131A2D 46%, #121728 50%, #111423 54%, #10111E 58%, #0F0E19 62%, #0E0B14 66%, #0D0810 70%, #0C050C 74%, #0B0208 78%, #0A0005 82%, #090003 86%, #080001 90%, #070000 94%, #060000 98%, #050000 100%) !important;
+        background-attachment: fixed !important;
+        background-position: center top !important;
+        background-repeat: no-repeat !important;
+        background-size: cover !important;
+        min-height: 100vh !important;
+        height: 100% !important;
+    }
+    
+    body {
+        background: transparent !important;
+        background-image: none !important;
+        background-color: transparent !important;
+    }
+    
+    body.dark-mode {
+        background: transparent !important;
+        background-image: none !important;
+        background-color: transparent !important;
+    }
+    
+    body:not(.dark-mode) {
+        background: transparent !important;
+        background-image: none !important;
+        background-color: transparent !important;
+    }
+}
 
 body {
     font-family: var(--font-sans);
