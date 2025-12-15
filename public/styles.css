@@ -112,18 +112,18 @@ html.dark-mode body {
 /* Degradado más oscuro y radial hacia arriba en móvil para modo oscuro */
 @media (max-width: 768px) {
     html.dark-mode {
-        background: #162240;
+        background: #131934;
         background-image: 
-            radial-gradient(ellipse 120% 80% at 50% 0%, #1E3A8A 0%, #1C3458 15%, #1A2E50 30%, #182848 45%, #162240 60%, #151F3C 75%, #141C38 90%, #131934 100%),
-            linear-gradient(180deg, #131934 0%, #121630 20%, #11132C 40%, #101028 60%, #0F0D24 80%, #0E0A20 100%);
+            radial-gradient(ellipse 120% 80% at 50% 0%, #162240 0%, #151F3C 15%, #141C38 30%, #131934 45%, #121630 60%, #11132C 75%, #101028 90%, #0F0D24 100%),
+            linear-gradient(180deg, #0F0D24 0%, #0E0A20 20%, #0D071C 40%, #0C0518 60%, #0B0314 80%, #0A0110 100%);
         background-attachment: fixed;
     }
     
     html.dark-mode body {
-        background: #162240;
+        background: #131934;
         background-image: 
-            radial-gradient(ellipse 120% 80% at 50% 0%, #1E3A8A 0%, #1C3458 15%, #1A2E50 30%, #182848 45%, #162240 60%, #151F3C 75%, #141C38 90%, #131934 100%),
-            linear-gradient(180deg, #131934 0%, #121630 20%, #11132C 40%, #101028 60%, #0F0D24 80%, #0E0A20 100%);
+            radial-gradient(ellipse 120% 80% at 50% 0%, #162240 0%, #151F3C 15%, #141C38 30%, #131934 45%, #121630 60%, #11132C 75%, #101028 90%, #0F0D24 100%),
+            linear-gradient(180deg, #0F0D24 0%, #0E0A20 20%, #0D071C 40%, #0C0518 60%, #0B0314 80%, #0A0110 100%);
         background-attachment: fixed;
     }
 }
