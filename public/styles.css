@@ -1727,25 +1727,29 @@ body.dark-mode .more-tab-item:hover {
         display: none !important;
     }
     
-    /* Ocultar el texto descriptivo que está después de cada botón en móvil */
-    #toggleTransactionFormBtn + div,
-    #toggleAccountFormBtn + div,
-    #toggleLoanFormBtn + div,
-    #toggleInvestmentFormBtn + div,
-    #togglePatrimonioFormBtn + div,
-    #toggleBudgetFormBtn + div,
-    #toggleEnvelopeFormBtn + div {
+    /* Ocultar todos los divs con texto descriptivo en móvil */
+    #transactions-tab .form-section > div:nth-child(2),
+    #accounts-tab .form-section > div:nth-child(2),
+    #loans-tab .form-section > div:nth-child(2),
+    #investments-tab .form-section > div:nth-child(2),
+    #assets-tab .form-section > div:nth-child(2) {
         display: none !important;
     }
     
-    /* Ocultar también el texto descriptivo en presupuestos (tiene estructura diferente) */
+    /* Ocultar texto descriptivo en presupuestos - estructura diferente */
+    #envelopes-tab .form-section > div > div > div > p,
     #envelopes-tab .form-section > div > div > div:has(#toggleBudgetFormBtn) + p,
     #envelopes-tab .form-section > div > div > div:has(#toggleEnvelopeFormBtn) + p {
         display: none !important;
     }
     
-    /* Ocultar texto descriptivo en transacciones */
-    #transactions-tab .form-section > div:nth-child(2) {
+    /* Ocultar título "Sobre (Presupuesto Flexible)" en presupuestos */
+    #envelopes-tab h3 {
+        display: none !important;
+    }
+    
+    /* Ocultar cualquier div con texto descriptivo que tenga padding y background */
+    .form-section > div[style*="background: var(--bg-primary)"][style*="padding: 24px"] {
         display: none !important;
     }
     
