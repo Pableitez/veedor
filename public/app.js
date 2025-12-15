@@ -4400,7 +4400,7 @@ async function editTransaction(id) {
                         <button onclick="closeEditTransactionModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                     </div>
                 </div>
-                <form id="editTransactionForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; max-height: calc(90vh - 100px); overflow-y: auto;">
+                <form id="editTransactionForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch;">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="editTransactionType">Tipo</label>
