@@ -110,20 +110,7 @@ html.dark-mode {
     height: 100%;
 }
 
-/* Degradado ultra pro fluorescente y radial hacia arriba en móvil para modo oscuro */
-@media (max-width: 768px) {
-    html.dark-mode {
-        background: #1E3A8A;
-        background-image: 
-            radial-gradient(ellipse 140% 90% at 50% 0%, #1E3A8A 0%, #1C3458 8%, #1A2E50 16%, #182848 24%, #162240 32%, #151F3C 40%, #141C38 48%, #131934 56%, #121630 64%, #11132C 72%, #101028 80%, #0F0D24 88%, #0E0A20 96%, #0D071C 100%),
-            linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 5%, #1D385F 8%, #1C355A 12%, #1B3255 16%, #1A2F50 20%, #192C4B 24%, #182946 28%, #172641 32%, #16233C 35%, #152037 38%, #141D32 42%, #131A2D 46%, #121728 50%, #111423 54%, #10111E 58%, #0F0E19 62%, #0E0B14 66%, #0D0810 70%, #0C050C 74%, #0B0208 78%, #0A0005 82%, #090003 86%, #080001 90%, #070000 94%, #060000 98%, #050000 100%);
-        background-attachment: fixed;
-        background-position: center top;
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
-    
-}
+/* Móvil usa el mismo degradado que desktop (sin radial-gradient) */
 
 body {
     font-family: var(--font-sans);
