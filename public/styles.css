@@ -2902,6 +2902,7 @@ tbody tr:last-child td {
     word-wrap: break-word;
     overflow-wrap: break-word;
     box-sizing: border-box;
+    background: transparent;
 }
 
 /* ============================================
