@@ -1827,10 +1827,13 @@ body.dark-mode .more-tab-item:hover {
     
     #transactionsTable thead th:nth-child(3),
     #transactionsTable tbody td:nth-child(3) {
-        min-width: 100px !important;
+        min-width: 70px !important;
+        max-width: 70px !important;
         font-size: 11px !important;
-        padding: 8px 6px !important;
+        padding: 8px 4px !important;
         word-break: break-word !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
     
     #transactionsTable thead th:nth-child(8),
