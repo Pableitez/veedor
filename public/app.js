@@ -1466,33 +1466,16 @@ function updateCurrentDateDisplay() {
 }
 
 // Toggle del menú desplegable principal de navegación
-function toggleMainNavDropdown() {
-    const dropdown = document.getElementById('mainNavDropdown');
-    const settingsDropdown = document.getElementById('settingsDropdown');
-    if (dropdown) {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    }
-    // Cerrar settings dropdown si está abierto
-    if (settingsDropdown && settingsDropdown.style.display === 'block') {
-        settingsDropdown.style.display = 'none';
-    }
-}
-
 function toggleSettingsDropdown() {
     const dropdown = document.getElementById('settingsDropdown');
-    const mainNavDropdown = document.getElementById('mainNavDropdown');
     if (dropdown) {
         dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
     }
-    // Cerrar navegación dropdown si está abierto
-    if (mainNavDropdown && mainNavDropdown.style.display === 'block') {
-        mainNavDropdown.style.display = 'none';
-    }
 }
 
-// Toggle del menú desplegable de Resumen (mantener para compatibilidad)
+// Toggle del menú desplegable de Resumen (ya no necesario, pero mantener para compatibilidad)
 function toggleDashboardDropdown() {
-    toggleMainNavDropdown(); // Redirigir al menú principal
+    // Función vacía - menú hamburguesa eliminado
 }
 
 // Toggle de filtros de transacciones en móvil
