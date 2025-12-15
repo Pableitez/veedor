@@ -155,7 +155,7 @@ body {
 /* Asegurar que body.dark-mode tenga el mismo fondo que auth-screen */
 body.dark-mode {
     background: #1E3A8A !important;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1D375C 3%, #1C3458 6%, #1B3154 9%, #1A2E50 12%, #192B4C 15%, #182848 18%, #172544 21%, #162240 24%, #151F3C 27%, #141C38 30%, #131934 33%, #121630 36%, #11132C 39%, #101028 42%, #0F0D24 45%, #0E0A20 48%, #0D071C 52%, #0C0518 56%, #0B0314 60%, #0A0110 65%, #09000C 70%, #08000A 75%, #080008 80%, #070006 85%, #060004 90%, #050002 95%, #040001 100%) !important;
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 5%, #1D385F 8%, #1C355A 12%, #1B3255 16%, #1A2F50 20%, #192C4B 24%, #182946 28%, #172641 32%, #16233C 35%, #152037 38%, #141D32 42%, #131A2D 46%, #121728 50%, #111423 54%, #10111E 58%, #0F0E19 62%, #0E0B14 66%, #0D0810 70%, #0C050C 74%, #0B0208 78%, #0A0005 82%, #090003 86%, #080001 90%, #070000 94%, #060000 98%, #050000 100%) !important;
     background-attachment: fixed !important;
 }
 
@@ -366,7 +366,7 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
 
 body.dark-mode .auth-screen {
     background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1D375C 3%, #1C3458 6%, #1B3154 9%, #1A2E50 12%, #192B4C 15%, #182848 18%, #172544 21%, #162240 24%, #151F3C 27%, #141C38 30%, #131934 33%, #121630 36%, #11132C 39%, #101028 42%, #0F0D24 45%, #0E0A20 48%, #0D071C 52%, #0C0518 56%, #0B0314 60%, #0A0110 65%, #09000C 70%, #08000A 75%, #080008 80%, #070006 85%, #060004 90%, #050002 95%, #040001 100%);
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 5%, #1D385F 8%, #1C355A 12%, #1B3255 16%, #1A2F50 20%, #192C4B 24%, #182946 28%, #172641 32%, #16233C 35%, #152037 38%, #141D32 42%, #131A2D 46%, #121728 50%, #111423 54%, #10111E 58%, #0F0E19 62%, #0E0B14 66%, #0D0810 70%, #0C050C 74%, #0B0208 78%, #0A0005 82%, #090003 86%, #080001 90%, #070000 94%, #060000 98%, #050000 100%);
     background-attachment: fixed;
 }
 
@@ -2722,7 +2722,7 @@ tbody tr:last-child td {
 }
 
 .envelope-card {
-    background: var(--bg-primary);
+    background: transparent;
     border: 1.5px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 28px;
