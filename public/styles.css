@@ -1761,7 +1761,7 @@ body.dark-mode .more-tab-item:hover {
         box-sizing: border-box !important;
     }
     
-    /* Ajustar selector de fecha en formulario de transacciones en móvil - ancho completo */
+    /* Ajustar selector de fecha en formulario de transacciones en móvil - ancho completo y formato */
     #transactionDate,
     #editTransactionDate {
         width: 100% !important;
@@ -1771,6 +1771,16 @@ body.dark-mode .more-tab-item:hover {
         font-size: 16px !important; /* Evitar zoom en iOS */
         padding: 12px 14px !important;
         min-height: 48px !important;
+        /* Asegurar que el texto de la fecha no se corte */
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+    
+    /* Ajustar el ancho mínimo del form-group de fecha para que no se corte */
+    #transactionForm .form-row .form-group:has(#transactionDate),
+    #editTransactionForm .form-row .form-group:has(#editTransactionDate) {
+        min-width: 180px !important;
     }
     
     /* Asegurar que el form-group del date tenga ancho completo */
