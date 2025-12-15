@@ -1920,13 +1920,11 @@ function updateQuickAddButton(activeTab) {
         }
     };
     
-    const config = tabConfig[activeTab];
-    
     // Lista de secciones sin formulario donde NO debe aparecer el botón
     const sectionsWithoutForms = ['summary', 'charts'];
     
     if (sectionsWithoutForms.includes(activeTab)) {
-        // Sección sin formulario - ocultar botón de forma explícita
+        // Sección sin formulario - ocultar botón completamente
         quickAddBtn.style.display = 'none';
         quickAddBtn.style.visibility = 'hidden';
         quickAddBtn.style.opacity = '0';
@@ -1935,6 +1933,8 @@ function updateQuickAddButton(activeTab) {
         closeQuickAddMenu();
         return;
     }
+    
+    const config = tabConfig[activeTab];
     
     if (config) {
         // Sección con formulario - mostrar botón

@@ -1716,20 +1716,8 @@ body.dark-mode .more-tab-item:hover {
         padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
     }
     
-    /* Ocultar solo el botón y texto descriptivo de Nueva Transacción en móvil (ya está en botón flotante) */
-    #toggleTransactionFormBtn {
-        display: none !important;
-    }
-    
-    /* Ocultar el div del texto descriptivo que está después del botón */
-    #toggleTransactionFormBtn + div {
-        display: none !important;
-    }
-    
-    /* Ocultar también el div con el texto descriptivo usando selector más específico */
-    #transactions-tab .form-section > div:nth-child(2) {
-        display: none !important;
-    }
+    /* Los botones de "Nueva X" deben ser visibles en todas las secciones, igual que en transacciones */
+    /* No ocultar los botones de formulario en móvil - deben estar visibles */
     
     /* Permitir que el formulario se muestre cuando se abre desde el botón flotante */
     #transactionForm[style*="display: block"],
