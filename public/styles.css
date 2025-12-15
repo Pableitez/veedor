@@ -95,15 +95,15 @@ html {
 }
 
 html.dark-mode {
-    background: #2563EB;
-    background-image: linear-gradient(180deg, #2563EB 0%, #2563EB 15%, #1E4ED8 18%, #1E40AF 22%, #1E3A8A 28%, #1E2F5F 35%, #1A2540 42%, #16202D 50%, #121B26 58%, #0E1620 65%, #0A1118 75%, #060A12 85%, #040610 95%, #020408 100%);
+    background: #1E3A8A;
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 15%, #1E2F5F 18%, #1A2540 22%, #16202D 28%, #121B26 35%, #0E1620 42%, #0C1525 50%, #0A1223 58%, #080E1A 65%, #060A12 75%, #040610 85%, #020408 95%, #010204 100%);
     background-attachment: fixed;
     min-height: 100vh;
 }
 
 html.dark-mode body {
-    background: #2563EB;
-    background-image: linear-gradient(180deg, #2563EB 0%, #2563EB 15%, #1E4ED8 18%, #1E40AF 22%, #1E3A8A 28%, #1E2F5F 35%, #1A2540 42%, #16202D 50%, #121B26 58%, #0E1620 65%, #0A1118 75%, #060A12 85%, #040610 95%, #020408 100%);
+    background: #1E3A8A;
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 15%, #1E2F5F 18%, #1A2540 22%, #16202D 28%, #121B26 35%, #0E1620 42%, #0C1525 50%, #0A1223 58%, #080E1A 65%, #060A12 75%, #040610 85%, #020408 95%, #010204 100%);
     background-attachment: fixed;
     color: #F9FAFB;
     min-height: 100vh;
