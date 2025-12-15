@@ -96,14 +96,14 @@ html {
 
 html.dark-mode {
     background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 8%, #1E2F5F 10%, #1A2540 13%, #16202D 17%, #121B26 22%, #0E1620 28%, #0C1525 35%, #0A1223 45%, #080E1A 55%, #060A12 65%, #040610 75%, #020408 85%, #010204 100%);
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 8%, #121B26 10%, #0E1620 13%, #0C1525 17%, #0A1223 22%, #080E1A 28%, #060A12 35%, #040610 45%, #020408 55%, #010204 65%, #000102 75%, #000000 85%, #000000 100%);
     background-attachment: fixed;
     min-height: 100vh;
 }
 
 html.dark-mode body {
     background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 8%, #1E2F5F 10%, #1A2540 13%, #16202D 17%, #121B26 22%, #0E1620 28%, #0C1525 35%, #0A1223 45%, #080E1A 55%, #060A12 65%, #040610 75%, #020408 85%, #010204 100%);
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 8%, #121B26 10%, #0E1620 13%, #0C1525 17%, #0A1223 22%, #080E1A 28%, #060A12 35%, #040610 45%, #020408 55%, #010204 65%, #000102 75%, #000000 85%, #000000 100%);
     background-attachment: fixed;
     color: #F9FAFB;
     min-height: 100vh;
@@ -1247,12 +1247,10 @@ body:not(.dark-mode) .revolut-card .amount {
     color: #111827 !important;
 }
 
-/* Sombreado blanquecino en el saldo en modo oscuro */
+/* Sin resplandor en el saldo en modo oscuro */
 body.dark-mode #totalAccountsBalance,
 body.dark-mode .revolut-card .amount {
-    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.3),
-                 0 4px 8px rgba(255, 255, 255, 0.2),
-                 0 6px 12px rgba(255, 255, 255, 0.15);
+    text-shadow: none;
 }
 
 body:not(.dark-mode) .revolut-card small {
@@ -1704,21 +1702,6 @@ body.dark-mode .more-tab-item:hover {
     .mobile-bottom-tabs .tab-btn:active {
         transform: scale(0.95) !important;
         background: var(--primary-light) !important;
-    }
-    
-    /* Sombreado blanquecino en la barra de secciones móvil */
-    body.dark-mode .mobile-bottom-tabs {
-        box-shadow: 0 -2px 8px rgba(255, 255, 255, 0.1),
-                    0 -4px 16px rgba(255, 255, 255, 0.05) !important;
-    }
-    
-    body.dark-mode .mobile-bottom-tabs .tab-btn {
-        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.2) !important;
-    }
-    
-    body.dark-mode .mobile-bottom-tabs .tab-btn.active {
-        text-shadow: 0 1px 3px rgba(255, 255, 255, 0.3),
-                     0 2px 6px rgba(255, 255, 255, 0.2) !important;
     }
     
     /* Añadir padding inferior al contenido principal para que no quede oculto por la barra */
