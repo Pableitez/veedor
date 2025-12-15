@@ -1751,7 +1751,7 @@ body.dark-mode .more-tab-item:hover {
         -webkit-overflow-scrolling: touch !important;
     }
     
-    /* Ajustar selector de fecha en formulario de transacciones en móvil - más compacto */
+    /* Ajustar selector de fecha en formulario de transacciones en móvil - más estrecho */
     #transactionDate,
     #editTransactionDate {
         width: 100% !important;
@@ -1759,35 +1759,59 @@ body.dark-mode .more-tab-item:hover {
         max-width: 100% !important;
         box-sizing: border-box !important;
         font-size: 14px !important;
-        padding: 8px 10px !important;
-        flex: 1 1 auto !important;
+        padding: 8px 8px !important;
+        flex: 0 1 auto !important;
     }
     
-    /* Asegurar que el form-group del date no se corte y sea más compacto */
+    /* Asegurar que el form-group del date sea más estrecho */
     #transactionForm .form-row .form-group:has(#transactionDate),
     #editTransactionForm .form-row .form-group:has(#editTransactionDate) {
         min-width: 0 !important;
-        flex: 1 1 140px !important;
+        flex: 0 1 120px !important;
         max-width: 100% !important;
+        overflow: hidden !important;
     }
     
-    /* Ajustar selectores de fecha en filtros de transacciones */
+    /* Ajustar form-row en móvil para que los campos no se desborden */
+    #transactionForm .form-row,
+    #editTransactionForm .form-row {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Ajustar selectores de fecha en filtros de transacciones - más estrechos */
     #filterStartDate,
     #filterEndDate {
         min-width: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
         font-size: 14px !important;
-        padding: 8px 10px !important;
+        padding: 8px 8px !important;
         box-sizing: border-box !important;
-        flex: 1 1 auto !important;
+        flex: 0 1 auto !important;
     }
     
-    /* Asegurar que los contenedores de fecha en filtros no se corten */
+    /* Asegurar que los contenedores de fecha en filtros sean más estrechos */
+    .date-filters-container {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    
     .date-filters-container > div {
         min-width: 0 !important;
-        flex: 1 1 140px !important;
+        flex: 0 1 120px !important;
         max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    /* Ajustar labels en filtros para que no ocupen mucho espacio */
+    .date-filters-container label {
+        font-size: 12px !important;
+        padding-right: 4px !important;
     }
 }
 
