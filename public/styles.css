@@ -1761,27 +1761,6 @@ body.dark-mode .more-tab-item:hover {
         box-sizing: border-box !important;
     }
     
-    /* Ajustar selector de fecha en formulario de transacciones en móvil - más estrecho */
-    #transactionDate,
-    #editTransactionDate {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        font-size: 14px !important;
-        padding: 10px 8px !important;
-        min-height: 44px !important;
-    }
-    
-    /* Asegurar que el form-group del date no se desborde */
-    #transactionForm .form-row .form-group:has(#transactionDate),
-    #editTransactionForm .form-row .form-group:has(#editTransactionDate) {
-        min-width: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        overflow: hidden !important;
-    }
-    
     /* Asegurar que el form-row no se desborde */
     #transactionForm .form-row,
     #editTransactionForm .form-row {
@@ -1798,7 +1777,6 @@ body.dark-mode .more-tab-item:hover {
         box-sizing: border-box !important;
     }
     
-    
     /* Todos los form-groups en móvil con ancho completo */
     #transactionForm .form-group,
     #editTransactionForm .form-group {
@@ -1806,7 +1784,7 @@ body.dark-mode .more-tab-item:hover {
         max-width: 100% !important;
     }
     
-    /* Inputs y selects en formulario de transacciones */
+    /* Inputs y selects en formulario de transacciones - usar estilos generales como en préstamos */
     #transactionForm .form-group input,
     #transactionForm .form-group select,
     #editTransactionForm .form-group input,
