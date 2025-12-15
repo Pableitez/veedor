@@ -110,13 +110,6 @@ html.dark-mode {
     height: 100%;
 }
 
-html.dark-mode body {
-    background: transparent;
-    background-image: none;
-    color: #F9FAFB;
-    min-height: 100vh;
-}
-
 /* Degradado ultra pro fluorescente y radial hacia arriba en móvil para modo oscuro */
 @media (max-width: 768px) {
     html.dark-mode {
@@ -130,21 +123,17 @@ html.dark-mode body {
         background-size: cover;
     }
     
-    html.dark-mode body {
-        background: transparent;
-        background-image: none;
-    }
 }
 
 body {
     font-family: var(--font-sans);
-    background: transparent;
-    background-image: none;
+    background: transparent !important;
+    background-image: none !important;
     color: var(--text-primary);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: color 0.3s ease;
     margin: 0;
     padding: 0;
     padding-top: env(safe-area-inset-top);
@@ -159,18 +148,6 @@ body {
     min-height: 100vh;
 }
 
-/* Asegurar que body en modo claro sea transparente (el fondo está en html) */
-body:not(.dark-mode) {
-    background: transparent !important;
-    background-image: none !important;
-}
-
-/* Asegurar que body.dark-mode sea transparente (el fondo está en html) */
-body.dark-mode {
-    background: transparent !important;
-    background-image: none !important;
-}
-
 /* Asegurar que el contenido respete safe-area en iOS */
 #mainApp {
     padding-top: env(safe-area-inset-top);
@@ -180,7 +157,7 @@ body.dark-mode {
 header,
 .main-header {
     padding-top: max(16px, env(safe-area-inset-top));
-    background: var(--bg-primary);
+    background: transparent !important;
 }
 
 /* Viewport fix para iOS - evitar barra blanca arriba */
