@@ -1725,6 +1725,25 @@ body.dark-mode .more-tab-item:hover {
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
     }
+    
+    /* Ajustar selector de fecha en formulario de transacciones en móvil */
+    #transactionDate,
+    #editTransactionDate {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important; /* Evita zoom en iOS */
+        padding: 10px 12px !important;
+    }
+    
+    /* Asegurar que el form-group del date no se corte */
+    #transactionForm .form-row .form-group:has(#transactionDate),
+    #editTransactionForm .form-row .form-group:has(#editTransactionDate) {
+        width: 100% !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+    }
 }
 
 /* Tabs centradas en pantallas medianas pero no móvil */
