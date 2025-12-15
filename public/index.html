@@ -219,44 +219,6 @@
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0; margin-left: auto;">
-                <!-- Menú Hamburguesa de Navegación -->
-                <div style="position: relative; flex-shrink: 0;">
-                    <button id="mainNavDropdownBtn" onclick="toggleMainNavDropdown();" style="padding: 8px; border-radius: 4px; font-size: 18px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" title="Menú">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
-                        </svg>
-                    </button>
-                    <div id="mainNavDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-primary); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-width: 240px; max-width: calc(100vw - 24px); z-index: 1000; overflow: hidden; border: 1px solid var(--border-color); color: var(--text-primary);">
-                        <a href="javascript:void(0);" onclick="scrollToDashboard(); toggleMainNavDropdown();" class="nav-dropdown-item" id="nav-dashboard" style="font-weight: 600; background: var(--primary-light); color: var(--primary); border-bottom: 1px solid var(--border-color);">
-                            <span data-translate="nav.dashboard">Resumen</span>
-                        </a>
-                        <div style="border-top: 1px solid var(--border-color); margin-top: 4px; padding-top: 4px;">
-                            <a href="javascript:void(0);" onclick="switchToTab('transactions', true); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="transactions" id="nav-transactions">
-                                <span data-translate="nav.transactions">Transacciones</span>
-                            </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('accounts', true); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="accounts" id="nav-accounts">
-                                <span data-translate="nav.accounts">Cuentas</span>
-                            </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('envelopes', true); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="envelopes" id="nav-budgets">
-                                <span data-translate="nav.budgets">Presupuestos</span>
-                            </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('loans', true); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="loans" id="nav-loans">
-                                <span data-translate="nav.loans">Préstamos</span>
-                            </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('investments', true); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="investments" id="nav-investments">
-                                <span data-translate="nav.investments">Inversiones</span>
-                            </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('assets', true); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="assets" id="nav-assets">
-                                <span data-translate="nav.assets">Patrimonio</span>
-                            </a>
-                            <a href="javascript:void(0);" onclick="switchToTab('charts', true); toggleMainNavDropdown();" class="nav-dropdown-item" data-tab="charts" id="nav-analysis">
-                                <span data-translate="nav.analysis">Análisis</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
                 <!-- Toggle Modo Oscuro/Claro -->
                 <div style="position: relative; flex-shrink: 0; display: flex !important; visibility: visible !important;">
                     <button id="darkModeToggleBtn" onclick="toggleDarkMode(); updateNavDarkModeIcon();" style="padding: 8px; border-radius: 4px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex !important; visibility: visible !important; opacity: 1 !important; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" title="Cambiar modo oscuro/claro">

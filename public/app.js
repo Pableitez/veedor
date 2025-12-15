@@ -1656,11 +1656,12 @@ function scrollToDashboard() {
 }
 
 // Exponer funciones globalmente
-window.toggleMainNavDropdown = toggleMainNavDropdown;
 window.toggleDashboardDropdown = toggleDashboardDropdown;
 window.showMonthDashboard = showMonthDashboard;
 window.scrollToDashboard = scrollToDashboard;
 window.switchToTab = switchToTab;
+window.updateQuickAddButton = updateQuickAddButton;
+window.closeQuickAddMenu = closeQuickAddMenu;
 
 // Inicializar categorías
 function initializeCategories() {
@@ -1887,14 +1888,30 @@ function updateQuickAddButton(activeTab) {
         },
         'envelopes': {
             formButtonId: 'toggleEnvelopeFormBtn',
-            title: 'Nuevo Sobre',
-            action: () => {
-                switchToTab('envelopes', true);
-                setTimeout(() => {
-                    const btn = document.getElementById('toggleEnvelopeFormBtn');
-                    if (btn) btn.click();
-                }, 100);
-            }
+            title: 'Presupuestos',
+            hasMultipleOptions: true,
+            options: [
+                {
+                    title: 'Nuevo Presupuesto',
+                    action: () => {
+                        switchToTab('envelopes', true);
+                        setTimeout(() => {
+                            const btn = document.getElementById('toggleBudgetFormBtn');
+                            if (btn) btn.click();
+                        }, 100);
+                    }
+                },
+                {
+                    title: 'Nuevo Sobre',
+                    action: () => {
+                        switchToTab('envelopes', true);
+                        setTimeout(() => {
+                            const btn = document.getElementById('toggleEnvelopeFormBtn');
+                            if (btn) btn.click();
+                        }, 100);
+                    }
+                }
+            ]
         },
         'accounts': {
             formButtonId: 'toggleAccountFormBtn',
@@ -1923,13 +1940,114 @@ function updateQuickAddButton(activeTab) {
     const config = tabConfig[activeTab];
     
     if (config) {
-        // Sección con formulario - mostrar botón y actualizar acción
+        // Sección con formulario - mostrar botón
         quickAddBtn.style.display = 'flex';
         quickAddBtn.setAttribute('title', config.title);
-        quickAddBtn.onclick = config.action;
+        
+        // Si tiene múltiples opciones (presupuestos), mostrar menú desplegable
+        if (config.hasMultipleOptions && config.options) {
+            quickAddBtn.onclick = () => toggleQuickAddMenu(config.options);
+        } else {
+            // Opción única - acción directa
+            quickAddBtn.onclick = config.action;
+        }
     } else {
         // Sección sin formulario (summary, charts) - ocultar botón
         quickAddBtn.style.display = 'none';
+    }
+    
+    // Cerrar menú desplegable si existe
+    closeQuickAddMenu();
+}
+
+// Función para mostrar/ocultar el menú desplegable del botón flotante
+function toggleQuickAddMenu(options) {
+    let menu = document.getElementById('quickAddMenu');
+    
+    if (menu && menu.style.display === 'flex') {
+        // Si el menú está visible, cerrarlo
+        closeQuickAddMenu();
+        return;
+    }
+    
+    // Si no existe, crearlo
+    if (!menu) {
+        menu = document.createElement('div');
+        menu.id = 'quickAddMenu';
+        menu.style.cssText = `
+            position: fixed;
+            bottom: calc(100px + env(safe-area-inset-bottom));
+            right: 24px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1002 !important;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+            gap: 4px;
+        `;
+        document.body.appendChild(menu);
+    }
+    
+    // Limpiar opciones anteriores
+    menu.innerHTML = '';
+    
+    // Añadir opciones
+    options.forEach((option, index) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.textContent = option.title;
+        optionBtn.style.cssText = `
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        `;
+        optionBtn.onmouseover = () => {
+            optionBtn.style.background = 'var(--primary-light)';
+            optionBtn.style.color = 'var(--primary)';
+        };
+        optionBtn.onmouseout = () => {
+            optionBtn.style.background = 'transparent';
+            optionBtn.style.color = 'var(--text-primary)';
+        };
+        optionBtn.onclick = () => {
+            closeQuickAddMenu();
+            option.action();
+        };
+        menu.appendChild(optionBtn);
+    });
+    
+    // Mostrar menú
+    menu.style.display = 'flex';
+    
+    // Cerrar al hacer clic fuera
+    setTimeout(() => {
+        document.addEventListener('click', closeQuickAddMenuOnClick, { once: true });
+    }, 100);
+}
+
+function closeQuickAddMenuOnClick(e) {
+    const menu = document.getElementById('quickAddMenu');
+    const btn = document.getElementById('quickAddTransactionBtnMobile');
+    if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+        closeQuickAddMenu();
+    }
+}
+
+function closeQuickAddMenu() {
+    const menu = document.getElementById('quickAddMenu');
+    if (menu) {
+        menu.style.display = 'none';
     }
 }
 
