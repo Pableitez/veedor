@@ -3602,6 +3602,40 @@ tbody tr:last-child td {
         padding: 8px 10px !important;
     }
     
+    /* Selectores de fecha en modales de préstamos y amortización - asegurar que no se salgan */
+    #earlyPaymentModal input[type="date"],
+    #editEarlyPaymentModal input[type="date"],
+    #editLoanModal input[type="date"],
+    #loanForm input[type="date"],
+    .modal input[type="date"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important;
+        padding: 10px 12px !important;
+        min-height: 44px !important;
+    }
+    
+    /* Asegurar que los form-group en modales no se salgan */
+    .modal .form-group {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+    
+    .modal .form-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+    
+    .modal .form-row .form-group {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+    
     .table-container {
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
