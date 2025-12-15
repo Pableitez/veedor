@@ -87,113 +87,57 @@ body.dark-mode {
 }
 
 html {
-    width: 100% !important;
-    overflow-x: hidden !important;
-    box-sizing: border-box !important;
-    background: #F8FAFC !important;
-    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%) !important;
-    background-attachment: fixed !important;
-    background-position: center top !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
-    height: 100% !important;
-    min-height: 100vh !important;
+    width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
+    background-attachment: fixed;
 }
 
 html.dark-mode {
-    background: #1E3A8A !important;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 5%, #1D385F 8%, #1C355A 12%, #1B3255 16%, #1A2F50 20%, #192C4B 24%, #182946 28%, #172641 32%, #16233C 35%, #152037 38%, #141D32 42%, #131A2D 46%, #121728 50%, #111423 54%, #10111E 58%, #0F0E19 62%, #0E0B14 66%, #0D0810 70%, #0C050C 74%, #0B0208 78%, #0A0005 82%, #090003 86%, #080001 90%, #070000 94%, #060000 98%, #050000 100%) !important;
-    background-attachment: fixed !important;
-    background-position: center top !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
-    min-height: 100vh !important;
-    height: 100% !important;
+    background: #1E3A8A;
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 25%, #1D375C 30%, #1C3458 33%, #1B3154 36%, #1A2E50 39%, #192B4C 42%, #182848 45%, #172544 48%, #162240 51%, #151F3C 54%, #141C38 57%, #131934 60%, #121630 63%, #11132C 66%, #101028 69%, #0F0D24 72%, #0E0A20 75%, #0D071C 78%, #0C0518 81%, #0B0314 84%, #0A0110 87%, #09000C 90%, #08000A 93%, #080008 96%, #070006 98%, #060004 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
 }
 
-/* Forzar degradado en móvil - ultra forzado */
+html.dark-mode body {
+    background: #1E3A8A;
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 25%, #1D375C 30%, #1C3458 33%, #1B3154 36%, #1A2E50 39%, #192B4C 42%, #182848 45%, #172544 48%, #162240 51%, #151F3C 54%, #141C38 57%, #131934 60%, #121630 63%, #11132C 66%, #101028 69%, #0F0D24 72%, #0E0A20 75%, #0D071C 78%, #0C0518 81%, #0B0314 84%, #0A0110 87%, #09000C 90%, #08000A 93%, #080008 96%, #070006 98%, #060004 100%);
+    background-attachment: fixed;
+    color: #F9FAFB;
+    min-height: 100vh;
+}
+
+/* Degradado ultra pro fluorescente y radial hacia arriba en móvil para modo oscuro */
 @media (max-width: 768px) {
-    html {
-        background: #F8FAFC !important;
-        background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%) !important;
-        background-attachment: fixed !important;
-        background-position: center top !important;
-        background-repeat: no-repeat !important;
-        background-size: cover !important;
-        height: 100% !important;
-        min-height: 100vh !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100% !important;
-        z-index: -9999 !important;
-    }
-    
     html.dark-mode {
-        background: #1E3A8A !important;
-        background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 5%, #1D385F 8%, #1C355A 12%, #1B3255 16%, #1A2F50 20%, #192C4B 24%, #182946 28%, #172641 32%, #16233C 35%, #152037 38%, #141D32 42%, #131A2D 46%, #121728 50%, #111423 54%, #10111E 58%, #0F0E19 62%, #0E0B14 66%, #0D0810 70%, #0C050C 74%, #0B0208 78%, #0A0005 82%, #090003 86%, #080001 90%, #070000 94%, #060000 98%, #050000 100%) !important;
-        background-attachment: fixed !important;
-        background-position: center top !important;
-        background-repeat: no-repeat !important;
-        background-size: cover !important;
-        min-height: 100vh !important;
-        height: 100% !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100% !important;
-        z-index: -9999 !important;
+        background: #1E3A8A;
+        background-image: 
+            radial-gradient(ellipse 140% 90% at 50% 0%, #1E3A8A 0%, #1C3458 8%, #1A2E50 16%, #182848 24%, #162240 32%, #151F3C 40%, #141C38 48%, #131934 56%, #121630 64%, #11132C 72%, #101028 80%, #0F0D24 88%, #0E0A20 96%, #0D071C 100%),
+            linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%);
+        background-attachment: fixed;
     }
     
-    body {
-        background: transparent !important;
-        background-image: none !important;
-        background-color: transparent !important;
-        position: relative !important;
-        z-index: 1 !important;
-    }
-    
-    body.dark-mode {
-        background: transparent !important;
-        background-image: none !important;
-        background-color: transparent !important;
-        position: relative !important;
-        z-index: 1 !important;
-    }
-    
-    body:not(.dark-mode) {
-        background: transparent !important;
-        background-image: none !important;
-        background-color: transparent !important;
-        position: relative !important;
-        z-index: 1 !important;
-    }
-    
-    /* Forzar todos los contenedores principales a transparente */
-    .container,
-    #mainApp,
-    .dashboard,
-    .tab-content,
-    .content-wrapper {
-        background: transparent !important;
-        background-image: none !important;
-        background-color: transparent !important;
+    html.dark-mode body {
+        background: #1E3A8A;
+        background-image: 
+            radial-gradient(ellipse 140% 90% at 50% 0%, #1E3A8A 0%, #1C3458 8%, #1A2E50 16%, #182848 24%, #162240 32%, #151F3C 40%, #141C38 48%, #131934 56%, #121630 64%, #11132C 72%, #101028 80%, #0F0D24 88%, #0E0A20 96%, #0D071C 100%),
+            linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%);
+        background-attachment: fixed;
     }
 }
 
 body {
     font-family: var(--font-sans);
-    background: transparent !important;
-    background-image: none !important;
+    background: #F8FAFC;
+    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
     margin: 0;
     padding: 0;
     padding-top: env(safe-area-inset-top);
@@ -208,6 +152,13 @@ body {
     min-height: 100vh;
 }
 
+/* Asegurar que body.dark-mode tenga el mismo fondo que auth-screen */
+body.dark-mode {
+    background: #1E3A8A !important;
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 5%, #1D385F 8%, #1C355A 12%, #1B3255 16%, #1A2F50 20%, #192C4B 24%, #182946 28%, #172641 32%, #16233C 35%, #152037 38%, #141D32 42%, #131A2D 46%, #121728 50%, #111423 54%, #10111E 58%, #0F0E19 62%, #0E0B14 66%, #0D0810 70%, #0C050C 74%, #0B0208 78%, #0A0005 82%, #090003 86%, #080001 90%, #070000 94%, #060000 98%, #050000 100%) !important;
+    background-attachment: fixed !important;
+}
+
 /* Asegurar que el contenido respete safe-area en iOS */
 #mainApp {
     padding-top: env(safe-area-inset-top);
@@ -217,7 +168,7 @@ body {
 header,
 .main-header {
     padding-top: max(16px, env(safe-area-inset-top));
-    background: transparent !important;
+    background: var(--bg-primary);
 }
 
 /* Viewport fix para iOS - evitar barra blanca arriba */
@@ -384,7 +335,6 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     overflow-x: hidden;
     position: relative;
     z-index: 1;
-    background: transparent !important;
 }
 
 #mainApp > header {
@@ -404,8 +354,8 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background: transparent;
-    background-image: none;
+    background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
+    background-attachment: fixed;
     position: relative;
     overflow: hidden;
     overflow-x: hidden; /* Eliminar scroll horizontal */
@@ -414,15 +364,10 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     box-sizing: border-box;
 }
 
-/* Asegurar que auth-screen sea transparente (el fondo está en html) */
-body:not(.dark-mode) .auth-screen {
-    background: transparent !important;
-    background-image: none !important;
-}
-
 body.dark-mode .auth-screen {
-    background: transparent;
-    background-image: none;
+    background: #1E3A8A;
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 5%, #1D385F 8%, #1C355A 12%, #1B3255 16%, #1A2F50 20%, #192C4B 24%, #182946 28%, #172641 32%, #16233C 35%, #152037 38%, #141D32 42%, #131A2D 46%, #121728 50%, #111423 54%, #10111E 58%, #0F0E19 62%, #0E0B14 66%, #0D0810 70%, #0C050C 74%, #0B0208 78%, #0A0005 82%, #090003 86%, #080001 90%, #070000 94%, #060000 98%, #050000 100%);
+    background-attachment: fixed;
 }
 
 /* Patrón de puntos para página de inicio - modo claro */
@@ -876,7 +821,7 @@ body.dark-mode .auth-screen::before {
 .container {
     max-width: 1440px;
     margin: 0 auto;
-    background: transparent !important;
+    background: var(--bg-primary);
     min-height: 100vh;
     transition: background-color 0.3s;
 }
@@ -1201,7 +1146,7 @@ body:not(.dark-mode) header h1 {
 .dashboard {
     padding: 32px 48px;
     padding-top: 24px;
-    background: transparent !important;
+    background: transparent;
     transition: background-color 0.3s;
     max-width: 1400px;
     margin: 0 auto;
@@ -2087,23 +2032,6 @@ body.dark-mode .more-tab-item:hover {
     box-shadow: none;
     color: var(--text-primary);
     overflow: hidden;
-}
-
-/* Hacer transparentes y sin bordes los contenedores de presupuesto y sobre */
-.budgets-form-grid > div,
-#envelopes-tab .form-section > div > div,
-#envelopes-tab .form-section .budgets-form-grid > div {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 24px 0 !important;
-}
-
-/* Asegurar que los divs con estilos inline también sean transparentes */
-#envelopes-tab div[style*="background: var(--bg-primary)"] {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
 }
 
 .form-section form {
