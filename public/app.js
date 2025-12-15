@@ -1922,9 +1922,26 @@ function updateQuickAddButton(activeTab) {
     
     const config = tabConfig[activeTab];
     
+    // Lista de secciones sin formulario donde NO debe aparecer el botón
+    const sectionsWithoutForms = ['summary', 'charts'];
+    
+    if (sectionsWithoutForms.includes(activeTab)) {
+        // Sección sin formulario - ocultar botón de forma explícita
+        quickAddBtn.style.display = 'none';
+        quickAddBtn.style.visibility = 'hidden';
+        quickAddBtn.style.opacity = '0';
+        quickAddBtn.style.pointerEvents = 'none';
+        // Cerrar menú desplegable si existe
+        closeQuickAddMenu();
+        return;
+    }
+    
     if (config) {
         // Sección con formulario - mostrar botón
         quickAddBtn.style.display = 'flex';
+        quickAddBtn.style.visibility = 'visible';
+        quickAddBtn.style.opacity = '1';
+        quickAddBtn.style.pointerEvents = 'auto';
         quickAddBtn.setAttribute('title', config.title);
         
         // Si tiene múltiples opciones (presupuestos), mostrar menú desplegable
@@ -1935,8 +1952,11 @@ function updateQuickAddButton(activeTab) {
             quickAddBtn.onclick = config.action;
         }
     } else {
-        // Sección sin formulario (summary, charts) - ocultar botón
+        // Sección no reconocida - ocultar botón por seguridad
         quickAddBtn.style.display = 'none';
+        quickAddBtn.style.visibility = 'hidden';
+        quickAddBtn.style.opacity = '0';
+        quickAddBtn.style.pointerEvents = 'none';
     }
     
     // Cerrar menú desplegable si existe
