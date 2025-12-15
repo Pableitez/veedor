@@ -1247,14 +1247,10 @@ body:not(.dark-mode) .revolut-card .amount {
     color: #111827 !important;
 }
 
-/* Resplandor debajo del saldo para efecto de flotación */
+/* Sin resplandor en el saldo */
 body.dark-mode #totalAccountsBalance,
 body.dark-mode .revolut-card .amount {
-    text-shadow: 0 4px 12px rgba(255, 255, 255, 0.15),
-                 0 8px 24px rgba(255, 255, 255, 0.1),
-                 0 12px 36px rgba(255, 255, 255, 0.08),
-                 0 16px 48px rgba(255, 255, 255, 0.05);
-    position: relative;
+    text-shadow: none;
 }
 
 body:not(.dark-mode) .revolut-card small {
