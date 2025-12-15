@@ -1781,6 +1781,22 @@ body.dark-mode .more-tab-item:hover {
         max-width: 100% !important;
     }
     
+    /* Cambiar label "Fecha" a "Date" en móvil para ahorrar espacio */
+    #transactionForm .date-label-mobile,
+    #editTransactionForm label[for="editTransactionDate"] {
+        font-size: 0 !important;
+    }
+    
+    #transactionForm .date-label-mobile::before,
+    #editTransactionForm label[for="editTransactionDate"]::before {
+        content: "Date" !important;
+        font-size: 14px !important;
+        display: block !important;
+        font-weight: 500 !important;
+        color: var(--text-secondary) !important;
+        margin-bottom: 8px !important;
+    }
+    
     /* Todos los form-groups en móvil con ancho completo */
     #transactionForm .form-group,
     #editTransactionForm .form-group {
