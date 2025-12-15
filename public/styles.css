@@ -95,15 +95,15 @@ html {
 }
 
 html.dark-mode {
-    background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 15%, #1D375C 20%, #1C3458 25%, #1B3154 30%, #1A2E50 35%, #192B4C 40%, #182848 45%, #172544 50%, #162240 55%, #151F3C 60%, #141C38 65%, #131934 70%, #121630 75%, #11132C 80%, #101028 85%, #0F0D24 90%, #0E0A20 95%, #0D071C 100%);
+    background: #0D071C;
+    background-image: linear-gradient(180deg, #162240 0%, #151F3C 8%, #141C38 15%, #131934 22%, #121630 30%, #11132C 38%, #101028 45%, #0F0D24 52%, #0E0A20 60%, #0D071C 68%, #0C0518 75%, #0B0314 82%, #0A0110 88%, #09000C 94%, #080008 100%);
     background-attachment: fixed;
     min-height: 100vh;
 }
 
 html.dark-mode body {
-    background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 15%, #1D375C 20%, #1C3458 25%, #1B3154 30%, #1A2E50 35%, #192B4C 40%, #182848 45%, #172544 50%, #162240 55%, #151F3C 60%, #141C38 65%, #131934 70%, #121630 75%, #11132C 80%, #101028 85%, #0F0D24 90%, #0E0A20 95%, #0D071C 100%);
+    background: #0D071C;
+    background-image: linear-gradient(180deg, #162240 0%, #151F3C 8%, #141C38 15%, #131934 22%, #121630 30%, #11132C 38%, #101028 45%, #0F0D24 52%, #0E0A20 60%, #0D071C 68%, #0C0518 75%, #0B0314 82%, #0A0110 88%, #09000C 94%, #080008 100%);
     background-attachment: fixed;
     color: #F9FAFB;
     min-height: 100vh;
@@ -112,18 +112,18 @@ html.dark-mode body {
 /* Degradado más oscuro y radial hacia arriba en móvil para modo oscuro */
 @media (max-width: 768px) {
     html.dark-mode {
-        background: #131934;
+        background: #0D071C;
         background-image: 
-            radial-gradient(ellipse 120% 80% at 50% 0%, #162240 0%, #151F3C 15%, #141C38 30%, #131934 45%, #121630 60%, #11132C 75%, #101028 90%, #0F0D24 100%),
-            linear-gradient(180deg, #0F0D24 0%, #0E0A20 20%, #0D071C 40%, #0C0518 60%, #0B0314 80%, #0A0110 100%);
+            radial-gradient(ellipse 120% 80% at 50% 0%, #141C38 0%, #131934 15%, #121630 30%, #11132C 45%, #101028 60%, #0F0D24 75%, #0E0A20 90%, #0D071C 100%),
+            linear-gradient(180deg, #0D071C 0%, #0C0518 20%, #0B0314 40%, #0A0110 60%, #09000C 80%, #080008 100%);
         background-attachment: fixed;
     }
     
     html.dark-mode body {
-        background: #131934;
+        background: #0D071C;
         background-image: 
-            radial-gradient(ellipse 120% 80% at 50% 0%, #162240 0%, #151F3C 15%, #141C38 30%, #131934 45%, #121630 60%, #11132C 75%, #101028 90%, #0F0D24 100%),
-            linear-gradient(180deg, #0F0D24 0%, #0E0A20 20%, #0D071C 40%, #0C0518 60%, #0B0314 80%, #0A0110 100%);
+            radial-gradient(ellipse 120% 80% at 50% 0%, #141C38 0%, #131934 15%, #121630 30%, #11132C 45%, #101028 60%, #0F0D24 75%, #0E0A20 90%, #0D071C 100%),
+            linear-gradient(180deg, #0D071C 0%, #0C0518 20%, #0B0314 40%, #0A0110 60%, #09000C 80%, #080008 100%);
         background-attachment: fixed;
     }
 }
