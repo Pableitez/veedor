@@ -1840,6 +1840,97 @@ function switchToTab(targetTab, doScroll = false) {
             updateAccountSelect('contributionAccount');
         }, 100);
     }
+    
+    // Actualizar botón flotante según la sección activa
+    updateQuickAddButton(targetTab);
+}
+
+// Función para actualizar el botón flotante según la sección activa
+function updateQuickAddButton(activeTab) {
+    const quickAddBtn = document.getElementById('quickAddTransactionBtnMobile');
+    if (!quickAddBtn) return;
+    
+    // Mapeo de secciones a sus formularios y títulos
+    const tabConfig = {
+        'transactions': {
+            formButtonId: 'toggleTransactionFormBtn',
+            title: 'Nueva Transacción',
+            action: () => {
+                switchToTab('transactions', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('toggleTransactionFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        },
+        'investments': {
+            formButtonId: 'toggleInvestmentFormBtn',
+            title: 'Nueva Inversión',
+            action: () => {
+                switchToTab('investments', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('toggleInvestmentFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        },
+        'loans': {
+            formButtonId: 'toggleLoanFormBtn',
+            title: 'Nuevo Préstamo',
+            action: () => {
+                switchToTab('loans', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('toggleLoanFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        },
+        'envelopes': {
+            formButtonId: 'toggleEnvelopeFormBtn',
+            title: 'Nuevo Sobre',
+            action: () => {
+                switchToTab('envelopes', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('toggleEnvelopeFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        },
+        'accounts': {
+            formButtonId: 'toggleAccountFormBtn',
+            title: 'Nueva Cuenta',
+            action: () => {
+                switchToTab('accounts', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('toggleAccountFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        },
+        'assets': {
+            formButtonId: 'togglePatrimonioFormBtn',
+            title: 'Nueva Propiedad',
+            action: () => {
+                switchToTab('assets', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('togglePatrimonioFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        }
+    };
+    
+    const config = tabConfig[activeTab];
+    
+    if (config) {
+        // Sección con formulario - mostrar botón y actualizar acción
+        quickAddBtn.style.display = 'flex';
+        quickAddBtn.setAttribute('title', config.title);
+        quickAddBtn.onclick = config.action;
+    } else {
+        // Sección sin formulario (summary, charts) - ocultar botón
+        quickAddBtn.style.display = 'none';
+    }
 }
 
 // Toggle del menú "Más" tabs
@@ -1889,6 +1980,18 @@ function initializeTabs() {
                 }
             });
         });
+    }
+    
+    // Inicializar botón flotante según la sección activa por defecto
+    const activeTab = document.querySelector('.tab-btn.active');
+    if (activeTab) {
+        const defaultTab = activeTab.getAttribute('data-tab');
+        if (defaultTab) {
+            updateQuickAddButton(defaultTab);
+        }
+    } else {
+        // Si no hay tab activo, usar 'transactions' por defecto
+        updateQuickAddButton('transactions');
     }
     
     // Event listeners para navegación del header

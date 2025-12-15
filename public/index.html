@@ -1882,8 +1882,8 @@
         </div>
     </div>
     
-    <!-- Botón Flotante de Añadir Transacción (Móvil) -->
-    <button id="quickAddTransactionBtnMobile" onclick="switchToTab('transactions', true); setTimeout(() => { const btn = document.getElementById('toggleTransactionFormBtn'); if (btn) btn.click(); }, 100);" class="quick-add-btn-mobile" style="display: none; position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; padding: 0; background: linear-gradient(180deg, #3B82F6 0%, #1E3A8A 100%); border: none; border-radius: 50%; color: white; font-size: 32px; font-weight: 300; cursor: pointer; transition: all 0.3s; box-shadow: none; z-index: 999; align-items: center; justify-content: center; box-sizing: border-box;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';" title="Nueva Transacción">
+    <!-- Botón Flotante Contextual (Móvil) - Se actualiza según la sección activa -->
+    <button id="quickAddTransactionBtnMobile" class="quick-add-btn-mobile" style="display: none; position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; padding: 0; background: linear-gradient(180deg, #3B82F6 0%, #1E3A8A 100%); border: none; border-radius: 50%; color: white; font-size: 32px; font-weight: 300; cursor: pointer; transition: all 0.3s; box-shadow: none; z-index: 999; align-items: center; justify-content: center; box-sizing: border-box;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';" title="Nueva Transacción">
         <span style="line-height: 1;">+</span>
     </button>
     
