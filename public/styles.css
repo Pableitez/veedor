@@ -96,17 +96,36 @@ html {
 
 html.dark-mode {
     background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 12%, #1D385F 15%, #1C345A 18%, #1A3055 22%, #182C50 26%, #16284B 30%, #142446 34%, #122041 38%, #101C3C 42%, #0E1837 46%, #0C1432 50%, #0A102D 54%, #080C28 58%, #060823 62%, #05041E 66%, #040019 70%, #030014 74%, #020010 78%, #01000C 82%, #000008 86%, #000006 90%, #000004 94%, #000002 97%, #000000 100%);
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 15%, #1D375C 20%, #1C3458 25%, #1B3154 30%, #1A2E50 35%, #192B4C 40%, #182848 45%, #172544 50%, #162240 55%, #151F3C 60%, #141C38 65%, #131934 70%, #121630 75%, #11132C 80%, #101028 85%, #0F0D24 90%, #0E0A20 95%, #0D071C 100%);
     background-attachment: fixed;
     min-height: 100vh;
 }
 
 html.dark-mode body {
     background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 12%, #1D385F 15%, #1C345A 18%, #1A3055 22%, #182C50 26%, #16284B 30%, #142446 34%, #122041 38%, #101C3C 42%, #0E1837 46%, #0C1432 50%, #0A102D 54%, #080C28 58%, #060823 62%, #05041E 66%, #040019 70%, #030014 74%, #020010 78%, #01000C 82%, #000008 86%, #000006 90%, #000004 94%, #000002 97%, #000000 100%);
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 15%, #1D375C 20%, #1C3458 25%, #1B3154 30%, #1A2E50 35%, #192B4C 40%, #182848 45%, #172544 50%, #162240 55%, #151F3C 60%, #141C38 65%, #131934 70%, #121630 75%, #11132C 80%, #101028 85%, #0F0D24 90%, #0E0A20 95%, #0D071C 100%);
     background-attachment: fixed;
     color: #F9FAFB;
     min-height: 100vh;
+}
+
+/* Degradado más oscuro y radial hacia arriba en móvil para modo oscuro */
+@media (max-width: 768px) {
+    html.dark-mode {
+        background: #162240;
+        background-image: 
+            radial-gradient(ellipse 120% 80% at 50% 0%, #1E3A8A 0%, #1C3458 15%, #1A2E50 30%, #182848 45%, #162240 60%, #151F3C 75%, #141C38 90%, #131934 100%),
+            linear-gradient(180deg, #131934 0%, #121630 20%, #11132C 40%, #101028 60%, #0F0D24 80%, #0E0A20 100%);
+        background-attachment: fixed;
+    }
+    
+    html.dark-mode body {
+        background: #162240;
+        background-image: 
+            radial-gradient(ellipse 120% 80% at 50% 0%, #1E3A8A 0%, #1C3458 15%, #1A2E50 30%, #182848 45%, #162240 60%, #151F3C 75%, #141C38 90%, #131934 100%),
+            linear-gradient(180deg, #131934 0%, #121630 20%, #11132C 40%, #101028 60%, #0F0D24 80%, #0E0A20 100%);
+        background-attachment: fixed;
+    }
 }
 
 body {
