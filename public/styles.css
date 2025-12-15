@@ -1751,35 +1751,54 @@ body.dark-mode .more-tab-item:hover {
         -webkit-overflow-scrolling: touch !important;
     }
     
-    /* Ajustar selector de fecha en formulario de transacciones en móvil - más estrecho */
+    /* Ajustar form-row en móvil - apilar verticalmente */
+    #transactionForm .form-row,
+    #editTransactionForm .form-row {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Ajustar selector de fecha en formulario de transacciones en móvil - ancho completo */
     #transactionDate,
     #editTransactionDate {
         width: 100% !important;
         min-width: 0 !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
-        font-size: 14px !important;
-        padding: 8px 6px !important;
-        flex: 0 1 110px !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        padding: 12px 14px !important;
+        min-height: 48px !important;
     }
     
-    /* Asegurar que el form-group del date sea más estrecho */
+    /* Asegurar que el form-group del date tenga ancho completo */
     #transactionForm .form-row .form-group:has(#transactionDate),
     #editTransactionForm .form-row .form-group:has(#editTransactionDate) {
         min-width: 0 !important;
-        flex: 0 1 110px !important;
-        max-width: 110px !important;
-        overflow: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
     
-    /* Ajustar form-row en móvil para que los campos no se desborden */
-    #transactionForm .form-row,
-    #editTransactionForm .form-row {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        gap: 8px !important;
+    /* Todos los form-groups en móvil con ancho completo */
+    #transactionForm .form-group,
+    #editTransactionForm .form-group {
         width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Inputs y selects en formulario de transacciones */
+    #transactionForm .form-group input,
+    #transactionForm .form-group select,
+    #editTransactionForm .form-group input,
+    #editTransactionForm .form-group select {
+        width: 100% !important;
+        max-width: 100% !important;
         box-sizing: border-box !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        padding: 12px 14px !important;
+        min-height: 48px !important;
     }
     
     /* Ajustar selectores de fecha en filtros de transacciones - más estrechos */
