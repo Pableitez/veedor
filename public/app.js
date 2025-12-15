@@ -177,6 +177,7 @@ const categories = {
         { id: 'debt', name: 'Deudas y Préstamos', subcategories: ['Pago de préstamo', 'Tarjeta de crédito', 'Hipoteca', 'Intereses', 'Comisiones bancarias', 'Refinanciación', 'Préstamo personal', 'Préstamo de coche', 'Préstamo estudiantil', 'Microcréditos', 'Préstamos rápidos'] },
         { id: 'pets', name: 'Mascotas', subcategories: ['Veterinario', 'Comida', 'Juguetes', 'Accesorios', 'Peluquería', 'Seguro de mascota', 'Medicinas', 'Vacunas', 'Guardería', 'Adiestramiento', 'Pensión', 'Cuidados especiales'] },
         { id: 'children', name: 'Niños', subcategories: ['Guardería', 'Colegio', 'Actividades extraescolares', 'Juguetes', 'Ropa', 'Material escolar', 'Cumpleaños', 'Regalos', 'Cuidados', 'Medicinas', 'Vacunas', 'Deportes', 'Música', 'Arte'] },
+        { id: 'investment', name: 'Inversiones', subcategories: ['Aporte', 'Compra de acciones', 'Compra de bonos', 'Compra de fondos', 'Compra de criptomonedas', 'Inversión inmobiliaria', 'Inversión en negocio', 'Comisiones de inversión', 'Gastos de gestión', 'Impuestos de inversión', 'Pérdidas de inversión', 'Retiro de inversión'] },
         { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Gastos no categorizados', 'Transferencias', 'Comisiones', 'Pérdidas', 'Gastos varios', 'Emergencias', 'Reparaciones varias'] }
     ],
     income: [
@@ -1348,9 +1349,9 @@ async function loadUserDataFresh() {
         // Procesar transacciones
         transactions = transactionsData.status === 'fulfilled' 
             ? transactionsData.value.map(t => ({
-                ...t,
-                categoryGeneral: t.category_general,
-                categorySpecific: t.category_specific
+            ...t,
+            categoryGeneral: t.category_general,
+            categorySpecific: t.category_specific
             }))
             : [];
         
@@ -1410,7 +1411,7 @@ async function loadUserDataFresh() {
             data: cacheData,
             timestamp: Date.now()
         }));
-    } catch (error) {
+        } catch (error) {
         console.error('Error cargando datos frescos:', error);
     }
 }
@@ -2066,7 +2067,7 @@ function initializeTabs() {
         btn.addEventListener('click', () => {
             const targetTab = btn.getAttribute('data-tab');
             if (targetTab) {
-                switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
+            switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
             }
         });
     });
@@ -3234,8 +3235,8 @@ async function updateSummary() {
             const month = parseInt(summaryMonthSelect.value);
             const year = parseInt(summaryMonthYear.value);
             if (month && year) {
-                selectedYear = year;
-                selectedMonth = month - 1; // Los meses en JS son 0-indexed
+            selectedYear = year;
+            selectedMonth = month - 1; // Los meses en JS son 0-indexed
             }
         }
     }
@@ -3397,7 +3398,7 @@ async function updateSummary() {
                     if (isAchieved) {
                         baseFundProgressText.textContent = `Fondo base alcanzado`;
                         baseFundProgressText.style.color = 'rgba(255,255,255,1)';
-                    } else {
+            } else {
                         const remaining = baseFund - totalAccountsBalance;
                         baseFundProgressText.textContent = `${progress.toFixed(1)}% - Faltan ${formatCurrency(remaining)}`;
                         baseFundProgressText.style.color = 'rgba(255,255,255,0.9)';
@@ -4053,9 +4054,9 @@ function updateBudgets() {
         } else if (budget.category_id) {
             // Presupuesto asociado a categoría
             let category = categories.expense.find(c => c.id === budget.category_id);
-            if (!category) {
-                category = categories.income.find(c => c.id === budget.category_id);
-                isIncome = true;
+        if (!category) {
+            category = categories.income.find(c => c.id === budget.category_id);
+            isIncome = true;
             }
             categoryName = category ? category.name : budget.category_id;
         }
@@ -4085,8 +4086,8 @@ function updateBudgets() {
             actual = Math.abs(patrimonioTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
         } else {
             actual = isIncome ? 
-                (transactionsByCategory[budget.category_id]?.income || 0) : 
-                (transactionsByCategory[budget.category_id]?.expense || 0);
+            (transactionsByCategory[budget.category_id]?.income || 0) : 
+            (transactionsByCategory[budget.category_id]?.expense || 0);
         }
         const difference = isIncome ? (actual - budget.amount) : (budget.amount - actual);
         const percentage = budget.amount > 0 ? (actual / budget.amount) * 100 : 0;
@@ -5506,7 +5507,7 @@ function updateLoans() {
                 <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
                     <button onclick="showLoanDetails('${loan._id || loan.id}')" class="btn-secondary" style="flex: 1; min-width: 100px; font-size: 13px; padding: 8px;">
                         Ver Cuadro
-                    </button>
+                </button>
                 </div>
             </div>
             
@@ -7504,8 +7505,8 @@ function updatePatrimonio() {
                         ${appreciationPercent >= 0 ? '+' : ''}${appreciationPercent.toFixed(2)}%
                     </div>
                     ${daysOwned !== null ? `
-                        <div><strong>Días:</strong></div>
-                        <div style="text-align: right; color: var(--gray-600);">${daysOwned}</div>
+                    <div><strong>Días:</strong></div>
+                    <div style="text-align: right; color: var(--gray-600);">${daysOwned}</div>
                     ` : ''}
                 </div>
             </div>
@@ -8398,8 +8399,8 @@ function getTransactionsBySummaryPeriod() {
             const month = parseInt(summaryMonthSelect.value);
             const year = parseInt(summaryMonthYear.value);
             if (month && year) {
-                selectedYear = year;
-                selectedMonth = month - 1;
+            selectedYear = year;
+            selectedMonth = month - 1;
             }
         }
     }
@@ -8507,18 +8508,18 @@ function updateDashboardSavingsChart() {
                     const month = parseInt(summaryMonthSelect.value);
                     const year = parseInt(summaryMonthYear.value);
                     if (month && year) {
-                        startMonth = month - 1;
-                        startYear = year;
+                startMonth = month - 1;
+                startYear = year;
                     } else {
                         startMonth = now.getMonth();
                         startYear = now.getFullYear();
                     }
-                } else {
-                    startMonth = now.getMonth();
-                    startYear = now.getFullYear();
-                }
-                endMonth = startMonth;
-                endYear = startYear;
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+            }
+            endMonth = startMonth;
+            endYear = startYear;
             } else {
                 startMonth = now.getMonth();
                 startYear = now.getFullYear();
@@ -8606,8 +8607,8 @@ function updateDashboardIncomeExpenseChart() {
                 const month = parseInt(summaryMonthSelect.value);
                 const year = parseInt(summaryMonthYear.value);
                 if (month && year) {
-                    startMonth = month - 1;
-                    startYear = year;
+            startMonth = month - 1;
+            startYear = year;
                 } else {
                     startMonth = now.getMonth();
                     startYear = now.getFullYear();
@@ -8784,8 +8785,8 @@ function updateDashboardIncomeEvolutionChart() {
                 const month = parseInt(summaryMonthSelect.value);
                 const year = parseInt(summaryMonthYear.value);
                 if (month && year) {
-                    startMonth = month - 1;
-                    startYear = year;
+            startMonth = month - 1;
+            startYear = year;
                 } else {
                     startMonth = now.getMonth();
                     startYear = now.getFullYear();
@@ -8887,8 +8888,8 @@ function updateDashboardExpensesEvolutionChart() {
                 const month = parseInt(summaryMonthSelect.value);
                 const year = parseInt(summaryMonthYear.value);
                 if (month && year) {
-                    startMonth = month - 1;
-                    startYear = year;
+            startMonth = month - 1;
+            startYear = year;
                 } else {
                     startMonth = now.getMonth();
                     startYear = now.getFullYear();
