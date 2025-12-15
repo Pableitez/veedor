@@ -1676,15 +1676,43 @@ body.dark-mode .more-tab-item:hover {
     #transactionsTable thead th:nth-child(9),
     #transactionsTable tbody td:nth-child(9) {
         display: table-cell !important;
-        min-width: 100px !important;
-        padding: 8px 4px !important;
+        min-width: 80px !important;
+        padding: 8px 2px !important;
+        vertical-align: middle !important;
     }
     
-    /* Hacer botones de acciones más pequeños en móvil */
+    /* Hacer botones de acciones más integrados en móvil - iconos compactos */
+    #transactionsTable tbody td:nth-child(9) {
+        display: flex !important;
+        gap: 4px !important;
+        flex-wrap: nowrap !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    
     #transactionsTable tbody td:nth-child(9) button {
-        font-size: 11px !important;
-        padding: 6px 8px !important;
-        min-width: 60px !important;
+        font-size: 0 !important;
+        padding: 6px !important;
+        min-width: 32px !important;
+        width: 32px !important;
+        height: 32px !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
+        flex: 0 0 auto !important;
+    }
+    
+    /* Agregar iconos a los botones */
+    #transactionsTable tbody td:nth-child(9) .btn-secondary::before {
+        content: '✏️' !important;
+        font-size: 14px !important;
+    }
+    
+    #transactionsTable tbody td:nth-child(9) .btn-danger::before {
+        content: '🗑️' !important;
+        font-size: 14px !important;
     }
     
     /* Ajustar ancho de las columnas visibles con scroll horizontal para ver el importe */
@@ -1726,23 +1754,43 @@ body.dark-mode .more-tab-item:hover {
         -webkit-overflow-scrolling: touch !important;
     }
     
-    /* Ajustar selector de fecha en formulario de transacciones en móvil */
+    /* Ajustar selector de fecha en formulario de transacciones en móvil - más compacto */
     #transactionDate,
     #editTransactionDate {
         width: 100% !important;
-        min-width: 100% !important;
+        min-width: 0 !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
-        font-size: 16px !important; /* Evita zoom en iOS */
-        padding: 10px 12px !important;
+        font-size: 14px !important;
+        padding: 8px 10px !important;
+        flex: 1 1 auto !important;
     }
     
-    /* Asegurar que el form-group del date no se corte */
+    /* Asegurar que el form-group del date no se corte y sea más compacto */
     #transactionForm .form-row .form-group:has(#transactionDate),
     #editTransactionForm .form-row .form-group:has(#editTransactionDate) {
-        width: 100% !important;
         min-width: 0 !important;
+        flex: 1 1 140px !important;
+        max-width: 100% !important;
+    }
+    
+    /* Ajustar selectores de fecha en filtros de transacciones */
+    #filterStartDate,
+    #filterEndDate {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 14px !important;
+        padding: 8px 10px !important;
+        box-sizing: border-box !important;
         flex: 1 1 auto !important;
+    }
+    
+    /* Asegurar que los contenedores de fecha en filtros no se corten */
+    .date-filters-container > div {
+        min-width: 0 !important;
+        flex: 1 1 140px !important;
+        max-width: 100% !important;
     }
 }
 
