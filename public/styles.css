@@ -1644,12 +1644,15 @@ body.dark-mode .more-tab-item:hover {
         border-top: 2px solid var(--border-color) !important;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1) !important;
         z-index: 1000 !important;
-        padding: 12px 4px !important;
-        padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+        padding-top: 12px !important;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
         justify-content: space-around !important;
         align-items: center !important;
+        min-height: calc(60px + env(safe-area-inset-bottom)) !important;
     }
     
     .mobile-bottom-tabs .tab-btn {
@@ -1658,7 +1661,7 @@ body.dark-mode .more-tab-item:hover {
         align-items: center !important;
         justify-content: center !important;
         gap: 4px !important;
-        padding: 8px 4px !important;
+        padding: 8px 4px 12px 4px !important;
         min-width: 60px !important;
         max-width: 80px !important;
         flex: 1 !important;
@@ -1672,6 +1675,7 @@ body.dark-mode .more-tab-item:hover {
         cursor: pointer !important;
         transition: all 0.2s ease !important;
         position: relative !important;
+        margin-bottom: 0 !important;
     }
     
     .mobile-bottom-tabs .tab-btn .tab-icon {
@@ -4085,9 +4089,9 @@ tbody tr:last-child td {
         display: none !important;
     }
     
-    /* Ajustar posición del botón flotante en móvil */
+    /* Ajustar posición del botón flotante en móvil - subirlo más para que no choque con la barra */
     .quick-add-btn-mobile {
-        bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+        bottom: calc(100px + env(safe-area-inset-bottom)) !important;
         right: 24px !important;
         width: 56px !important;
         height: 56px !important;
