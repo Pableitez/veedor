@@ -1658,20 +1658,33 @@ body.dark-mode .more-tab-item:hover {
         display: block !important;
     }
     
-    /* Mostrar solo 3 columnas en la tabla de transacciones en móvil: Fecha, Categoría, Monto */
+    /* Mostrar solo 4 columnas en la tabla de transacciones en móvil: Fecha, Categoría, Monto, Acciones */
     #transactionsTable thead th:nth-child(2),
     #transactionsTable thead th:nth-child(4),
     #transactionsTable thead th:nth-child(5),
     #transactionsTable thead th:nth-child(6),
     #transactionsTable thead th:nth-child(7),
-    #transactionsTable thead th:nth-child(9),
     #transactionsTable tbody td:nth-child(2),
     #transactionsTable tbody td:nth-child(4),
     #transactionsTable tbody td:nth-child(5),
     #transactionsTable tbody td:nth-child(6),
-    #transactionsTable tbody td:nth-child(7),
-    #transactionsTable tbody td:nth-child(9) {
+    #transactionsTable tbody td:nth-child(7) {
         display: none !important;
+    }
+    
+    /* Ajustar columna de acciones en móvil */
+    #transactionsTable thead th:nth-child(9),
+    #transactionsTable tbody td:nth-child(9) {
+        display: table-cell !important;
+        min-width: 100px !important;
+        padding: 8px 4px !important;
+    }
+    
+    /* Hacer botones de acciones más pequeños en móvil */
+    #transactionsTable tbody td:nth-child(9) button {
+        font-size: 11px !important;
+        padding: 6px 8px !important;
+        min-width: 60px !important;
     }
     
     /* Ajustar ancho de las columnas visibles con scroll horizontal para ver el importe */
