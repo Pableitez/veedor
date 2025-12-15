@@ -1759,16 +1759,16 @@ body.dark-mode .more-tab-item:hover {
         max-width: 100% !important;
         box-sizing: border-box !important;
         font-size: 14px !important;
-        padding: 8px 8px !important;
-        flex: 0 1 auto !important;
+        padding: 8px 6px !important;
+        flex: 0 1 110px !important;
     }
     
     /* Asegurar que el form-group del date sea más estrecho */
     #transactionForm .form-row .form-group:has(#transactionDate),
     #editTransactionForm .form-row .form-group:has(#editTransactionDate) {
         min-width: 0 !important;
-        flex: 0 1 120px !important;
-        max-width: 100% !important;
+        flex: 0 1 110px !important;
+        max-width: 110px !important;
         overflow: hidden !important;
     }
     
@@ -1787,11 +1787,11 @@ body.dark-mode .more-tab-item:hover {
     #filterEndDate {
         min-width: 0 !important;
         width: 100% !important;
-        max-width: 100% !important;
+        max-width: 110px !important;
         font-size: 14px !important;
-        padding: 8px 8px !important;
+        padding: 8px 6px !important;
         box-sizing: border-box !important;
-        flex: 0 1 auto !important;
+        flex: 0 1 110px !important;
     }
     
     /* Asegurar que los contenedores de fecha en filtros sean más estrechos */
@@ -1803,8 +1803,8 @@ body.dark-mode .more-tab-item:hover {
     
     .date-filters-container > div {
         min-width: 0 !important;
-        flex: 0 1 120px !important;
-        max-width: 100% !important;
+        flex: 0 1 110px !important;
+        max-width: 110px !important;
         overflow: hidden !important;
     }
     
