@@ -40,12 +40,17 @@
         (function() {
             const savedMode = localStorage.getItem('veedor_darkMode');
             const themeColorMeta = document.getElementById('themeColorMeta');
+            const statusBarStyle = document.getElementById('statusBarStyle');
             
             if (savedMode === null || savedMode === 'true') {
                 document.documentElement.classList.add('dark-mode');
                 // Actualizar theme-color para status bar (modo oscuro)
                 if (themeColorMeta) {
                     themeColorMeta.setAttribute('content', '#1E3A8A');
+                }
+                // Actualizar status bar style (modo oscuro - contenido claro)
+                if (statusBarStyle) {
+                    statusBarStyle.setAttribute('content', 'black-translucent');
                 }
                 // Verificar que body existe antes de acceder a classList
                 if (document.body) {
@@ -59,9 +64,12 @@
                     });
                 }
             } else {
-                // Modo claro - actualizar theme-color
+                // Modo claro - actualizar theme-color y status bar style
                 if (themeColorMeta) {
                     themeColorMeta.setAttribute('content', '#F8FAFC');
+                }
+                if (statusBarStyle) {
+                    statusBarStyle.setAttribute('content', 'default');
                 }
             }
         })();
