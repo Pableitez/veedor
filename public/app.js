@@ -7635,7 +7635,7 @@ async function processUpdatePatrimonioValue() {
     
     const input = document.getElementById('updateAssetValueInput');
     if (!input || !input.value || isNaN(input.value)) {
-        alert('Por favor ingresa un número válido');
+        showToast('Por favor ingresa un número válido', 'warning');
         return;
     }
     
@@ -7654,10 +7654,23 @@ async function processUpdatePatrimonioValue() {
         await loadUserData();
         updateDisplay();
         closeUpdateAssetValueModal();
+        showToast('Valor actualizado exitosamente', 'success');
     } catch (error) {
-        alert('Error al actualizar propiedad: ' + error.message);
+        console.error('Error actualizando valor de patrimonio:', error);
+        showToast('Error al actualizar valor: ' + error.message, 'error');
     }
 }
+
+// Cerrar modal de actualizar valor de patrimonio
+function closeUpdateAssetValueModal() {
+    const modal = document.getElementById('updateAssetValueModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentPatrimonioId = null;
+    }
+}
+
+window.closeUpdateAssetValueModal = closeUpdateAssetValueModal;
 
 // Eliminar propiedad del patrimonio
 async function deletePatrimonio(id) {
