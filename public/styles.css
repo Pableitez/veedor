@@ -125,6 +125,13 @@ html.dark-mode body {
         background-attachment: scroll !important;
     }
     
+    /* Asegurar que auth-screen también tenga el fondo correcto en móvil - modo claro */
+    body:not(.dark-mode) .auth-screen {
+        background: #F8FAFC !important;
+        background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%) !important;
+        background-attachment: scroll !important;
+    }
+    
     /* Asegurar que html base también tenga el fondo correcto en móvil - modo oscuro */
     html.dark-mode {
         background: #1E3A8A !important;
@@ -144,6 +151,15 @@ html.dark-mode body {
     
     body.dark-mode {
         background: #1E3A8A !important;
+    }
+    
+    /* Asegurar que auth-screen también tenga el fondo correcto en móvil - modo oscuro */
+    body.dark-mode .auth-screen {
+        background: #1E3A8A !important;
+        background-image: 
+            radial-gradient(ellipse 140% 90% at 50% 0%, #1E3A8A 0%, #1C3458 8%, #1A2E50 16%, #182848 24%, #162240 32%, #151F3C 40%, #141C38 48%, #131934 56%, #121630 64%, #11132C 72%, #101028 80%, #0F0D24 88%, #0E0A20 96%, #0D071C 100%),
+            linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%) !important;
+        background-attachment: scroll !important;
     }
 }
 
