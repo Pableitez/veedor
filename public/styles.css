@@ -1836,12 +1836,14 @@ body.dark-mode .more-tab-item:hover {
     }
     
     /* Mostrar solo 4 columnas en la tabla de transacciones en móvil: Fecha, Categoría, Monto, Acciones */
-    /* En móvil, ocultar columnas adicionales pero mantener Descripción */
+    /* En móvil, ocultar columnas adicionales incluyendo Descripción */
     #transactionsTable thead th:nth-child(2),
+    #transactionsTable thead th:nth-child(4),
     #transactionsTable thead th:nth-child(5),
     #transactionsTable thead th:nth-child(6),
     #transactionsTable thead th:nth-child(7),
     #transactionsTable tbody td:nth-child(2),
+    #transactionsTable tbody td:nth-child(4),
     #transactionsTable tbody td:nth-child(5),
     #transactionsTable tbody td:nth-child(6),
     #transactionsTable tbody td:nth-child(7) {
