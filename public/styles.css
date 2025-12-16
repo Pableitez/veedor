@@ -2749,17 +2749,7 @@ table {
     width: 20%; /* Monto */
 }
 
-/* Ocultar columnas no esenciales en desktop */
-#transactionsTable thead th:nth-child(2),
-#transactionsTable thead th:nth-child(5),
-#transactionsTable thead th:nth-child(6),
-#transactionsTable thead th:nth-child(7),
-#transactionsTable tbody td:nth-child(2),
-#transactionsTable tbody td:nth-child(5),
-#transactionsTable tbody td:nth-child(6),
-#transactionsTable tbody td:nth-child(7) {
-    display: none;
-}
+/* En desktop, mostrar todas las columnas - no ocultar ninguna */
 
 /* Estilo uniforme para header de tabla de transacciones */
 #transactionsTable thead th {
