@@ -3550,8 +3550,8 @@ function updateTransactionsTable() {
                 bValue = accountB ? accountB.name.toLowerCase() : '';
                 break;
             case 'property':
-                const propertyA = properties.find(prop => (prop._id || prop.id) === a.property_id);
-                const propertyB = properties.find(prop => (prop._id || prop.id) === b.property_id);
+                const propertyA = patrimonio.find(prop => (prop._id || prop.id) === a.property_id);
+                const propertyB = patrimonio.find(prop => (prop._id || prop.id) === b.property_id);
                 aValue = propertyA ? propertyA.name.toLowerCase() : '';
                 bValue = propertyB ? propertyB.name.toLowerCase() : '';
                 break;
@@ -3616,10 +3616,10 @@ function updateTransactionsTable() {
             accountName = account ? account.name : '-';
         }
         
-        // Buscar nombre de propiedad
+        // Buscar nombre de propiedad en patrimonio
         let propertyName = '-';
         if (transaction.property_id) {
-            const property = properties.find(p => (p._id || p.id) === transaction.property_id);
+            const property = patrimonio.find(p => (p._id || p.id) === transaction.property_id);
             propertyName = property ? property.name : '-';
         }
         
