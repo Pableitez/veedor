@@ -436,18 +436,30 @@ function toggleDarkMode() {
         localStorage.setItem('veedor_darkMode', 'false');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = 'Modo Oscuro';
+        // Actualizar theme-color para status bar (modo claro)
+        updateThemeColor('#F8FAFC');
     } else {
         html.classList.add('dark-mode');
         body.classList.add('dark-mode');
         localStorage.setItem('veedor_darkMode', 'true');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = 'Modo Claro';
+        // Actualizar theme-color para status bar (modo oscuro)
+        updateThemeColor('#1E3A8A');
     }
     
     // Actualizar icono en welcome page
     updateAuthDarkModeIcon();
     // Actualizar icono SVG del botón de navegación
     updateNavDarkModeIcon();
+}
+
+// Actualizar theme-color para que coincida con el background (status bar en iPhone)
+function updateThemeColor(color) {
+    const themeColorMeta = document.getElementById('themeColorMeta');
+    if (themeColorMeta) {
+        themeColorMeta.setAttribute('content', color);
+    }
 }
 
 // Actualizar icono del botón de modo oscuro en welcome page
