@@ -457,8 +457,23 @@ function toggleDarkMode() {
 // Actualizar theme-color para que coincida con el background (status bar en iPhone)
 function updateThemeColor(color) {
     const themeColorMeta = document.getElementById('themeColorMeta');
+    const statusBarStyle = document.getElementById('statusBarStyle');
+    
     if (themeColorMeta) {
         themeColorMeta.setAttribute('content', color);
+    }
+    
+    // Actualizar status bar style según el modo
+    if (statusBarStyle) {
+        // Modo claro: status bar con contenido oscuro (default)
+        // Modo oscuro: status bar con contenido claro (black-translucent o light-content)
+        if (color === '#F8FAFC') {
+            // Modo claro - status bar con contenido oscuro
+            statusBarStyle.setAttribute('content', 'default');
+        } else {
+            // Modo oscuro - status bar con contenido claro
+            statusBarStyle.setAttribute('content', 'black-translucent');
+        }
     }
 }
 

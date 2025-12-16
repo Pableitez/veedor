@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#F8FAFC" id="themeColorMeta">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" id="statusBarStyle">
     <meta name="apple-mobile-web-app-title" content="Veedor">
     <title>Veedor - Control de Finanzas Personales</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Cdefs%3E%3ClinearGradient id='vGradient' x1='0' y1='0' x2='192' y2='192' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%23FF6B6B'/%3E%3Cstop offset='15%25' stop-color='%234ECDC4'/%3E%3Cstop offset='30%25' stop-color='%2345B7D1'/%3E%3Cstop offset='45%25' stop-color='%2396CEB4'/%3E%3Cstop offset='60%25' stop-color='%23FFEAA7'/%3E%3Cstop offset='75%25' stop-color='%23FDCB6E'/%3E%3Cstop offset='90%25' stop-color='%23E17055'/%3E%3Cstop offset='100%25' stop-color='%23FF6B6B'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='192' height='192' rx='40' fill='white'/%3E%3Ctext x='96' y='140' font-family='-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif' font-size='140' font-weight='800' text-anchor='middle' fill='url(%23vGradient)' letter-spacing='-4'%3EV%3C/text%3E%3C/svg%3E">
@@ -205,7 +205,7 @@
                     <button id="darkModeToggleBtn" onclick="toggleDarkMode(); updateNavDarkModeIcon();" style="padding: 8px; border-radius: 4px; font-size: 18px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex !important; visibility: visible !important; opacity: 1 !important; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0; filter: grayscale(100%);" title="Cambiar modo oscuro/claro">
                         <span id="darkModeToggleIcon">🌙</span>
                     </button>
-                </div>
+                        </div>
                 <!-- Menú de Usuario -->
                 <div style="position: relative; flex-shrink: 0;">
                     <button id="settingsDropdownBtn" onclick="toggleSettingsDropdown();" style="padding: 8px; border-radius: 4px; font-size: 18px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;" title="Usuario">
@@ -249,8 +249,8 @@
                                 <small style="color: rgba(255,255,255,0.8); font-size: 10px; line-height: 1.2; opacity: 0.9; margin-top: 6px; word-wrap: break-word; overflow-wrap: break-word; max-width: 100%;">Total en todas las cuentas</small>
                             </div>
                         </div>
-                    </div>
-                </div>
+                                    </div>
+                                        </div>
 
         <div class="main-content" style="margin-top: 0;">
             <div class="tabs">
@@ -336,8 +336,8 @@
                     </span>
                     <span class="tab-text" data-translate="nav.analysis">Análisis</span>
                 </button>
-            </div>
-
+                </div>
+                
             <!-- Tab: Resumen -->
             <div class="tab-content" id="summary-tab">
                 <div style="margin-bottom: 32px;">
@@ -405,10 +405,10 @@
                     <div style="margin-bottom: 32px;">
                         <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);" data-translate="dashboard.envelopesStatus">Estado de Sobres</h4>
                         <div id="monthEnvelopesStatus" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
-                        </div>
-                    </div>
                 </div>
-                
+            </div>
+        </div>
+
                 <!-- Top Gastos del Período -->
                 <div class="table-section" style="margin-top: 32px;">
                     <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">Top Gastos del Período</h3>
@@ -1114,7 +1114,7 @@
                             <div class="form-group">
                                 <label for="patrimonioPurchasePrice">Precio de Compra (€)</label>
                                 <input type="number" id="patrimonioPurchasePrice" step="0.01" min="0" value="0">
-                            </div>
+                        </div>
                             <div class="form-group">
                                 <label for="patrimonioCurrentValue">Valor Actual (€) *</label>
                                 <input type="number" id="patrimonioCurrentValue" step="0.01" min="0" required>
@@ -1365,8 +1365,8 @@
                     </div>
                     <div id="recommendationsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 16px;">
                         <!-- Se llenará dinámicamente -->
+                        </div>
                     </div>
-                </div>
                 
                 <!-- Tablas de Análisis -->
                 <div style="margin-bottom: 32px;">
