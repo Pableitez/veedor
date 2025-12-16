@@ -115,7 +115,7 @@ html.dark-mode {
     margin-top: 0 !important;
     padding: 0 !important;
     background-color: #0A0A1A;
-    background-image: linear-gradient(175deg, #0A0A1A 0%, #0A0A1A 5%, #0B0B1C 10%, #0C0C1E 15%, #0D0D20 20%, #0E0E22 25%, #0F0F24 30%, #101026 35%, #111128 40%, #1A1A3A 45%, #1E3A8A 50%, #1E3A8A 55%, #1D375C 60%, #1C3458 65%, #1B3154 70%, #1A2E50 75%, #192B4C 80%, #182848 85%, #172544 90%, #162240 95%, #151F3C 100%);
+    background-image: linear-gradient(175deg, #0A0A1A 0%, #0B0B1C 5%, #0C0C1E 10%, #0D0D20 15%, #0E0E22 20%, #0F0F24 25%, #101026 30%, #111128 35%, #12122A 40%, #1A1A3A 45%, #1E1E42 50%, #22224A 55%, #262652 60%, #2A2A5A 65%, #2E2E62 70%, #32326A 75%, #363672 80%, #3A3A7A 85%, #3E3E82 90%, #42428A 95%, #1E3A8A 100%);
     background-attachment: scroll;
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -145,13 +145,15 @@ html.dark-mode body {
         background-image: none;
     }
     
-    /* Modo oscuro móvil - degradado desviado a la izquierda */
+    /* Modo oscuro móvil - degradado radial */
     html.dark-mode {
         margin: 0 !important;
         margin-top: 0 !important;
         padding: 0 !important;
-        background-color: #0A0A1A;
-        background-image: linear-gradient(175deg, #0A0A1A 0%, #0A0A1A 5%, #0B0B1C 10%, #0C0C1E 15%, #0D0D20 20%, #0E0E22 25%, #0F0F24 30%, #101026 35%, #111128 40%, #1A1A3A 45%, #1E3A8A 50%, #1E3A8A 55%, #1D375C 60%, #1C3458 65%, #1B3154 70%, #1A2E50 75%, #192B4C 80%, #182848 85%, #172544 90%, #162240 95%, #151F3C 100%);
+        background-color: #1E3A8A;
+        background-image: 
+            radial-gradient(ellipse 140% 90% at 50% 0%, #1E3A8A 0%, #1C3458 8%, #1A2E50 16%, #182848 24%, #162240 32%, #151F3C 40%, #141C38 48%, #131934 56%, #121630 64%, #11132C 72%, #101028 80%, #0F0D24 88%, #0E0A20 96%, #0D071C 100%),
+            linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%);
         background-attachment: scroll;
         background-repeat: no-repeat;
         background-size: 100% 100%;
