@@ -109,13 +109,15 @@ html:not(.dark-mode) {
     background-size: 100% 100%;
 }
 
-/* Modo oscuro - fondo base */
+/* Modo oscuro - fondo base con destello estilo Stranger Things */
 html.dark-mode {
     margin: 0 !important;
     margin-top: 0 !important;
     padding: 0 !important;
     background-color: #050510;
-    background-image: linear-gradient(175deg, #050510 0%, #050510 30%, #060612 35%, #070714 40%, #0A0A1A 45%, #0D0D22 50%, #10102A 55%, #141432 60%, #18183A 65%, #1C1C42 70%, #20204A 75%, #242452 80%, #28285A 85%, #2C2C62 90%, #30306A 95%, #2563EB 100%);
+    background-image: 
+        radial-gradient(ellipse 80% 50% at 50% 20%, rgba(30, 58, 138, 0.4) 0%, rgba(30, 58, 138, 0.2) 20%, rgba(30, 58, 138, 0.1) 40%, transparent 60%),
+        linear-gradient(175deg, #050510 0%, #050510 30%, #060612 35%, #070714 40%, #0A0A1A 45%, #0D0D22 50%, #10102A 55%, #141432 60%, #18183A 65%, #1C1C42 70%, #20204A 75%, #242452 80%, #28285A 85%, #2C2C62 90%, #30306A 95%, #1E3A8A 100%);
     background-attachment: scroll;
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -145,15 +147,16 @@ html.dark-mode body {
         background-image: none;
     }
     
-    /* Modo oscuro móvil - degradado radial desviado a la derecha */
+    /* Modo oscuro móvil - degradado radial desviado a la derecha con destello Stranger Things */
     html.dark-mode {
         margin: 0 !important;
         margin-top: 0 !important;
         padding: 0 !important;
         background-color: #050510;
         background-image: 
-            radial-gradient(ellipse 140% 90% at 60% 0%, #050510 0%, #050510 30%, #060612 35%, #070714 40%, #0A0A1A 45%, #0D0D22 50%, #10102A 55%, #141432 60%, #18183A 65%, #1C1C42 70%, #20204A 75%, #242452 80%, #28285A 85%, #2C2C62 90%, #30306A 95%, #2563EB 100%),
-            linear-gradient(175deg, #050510 0%, #050510 30%, #060612 35%, #070714 40%, #0A0A1A 45%, #0D0D22 50%, #10102A 55%, #141432 60%, #18183A 65%, #1C1C42 70%, #20204A 75%, #242452 80%, #28285A 85%, #2C2C62 90%, #30306A 95%, #2563EB 100%);
+            radial-gradient(ellipse 100% 60% at 60% 15%, rgba(30, 58, 138, 0.5) 0%, rgba(30, 58, 138, 0.3) 25%, rgba(30, 58, 138, 0.15) 50%, transparent 70%),
+            radial-gradient(ellipse 140% 90% at 60% 0%, #050510 0%, #050510 30%, #060612 35%, #070714 40%, #0A0A1A 45%, #0D0D22 50%, #10102A 55%, #141432 60%, #18183A 65%, #1C1C42 70%, #20204A 75%, #242452 80%, #28285A 85%, #2C2C62 90%, #30306A 95%, #1E3A8A 100%),
+            linear-gradient(175deg, #050510 0%, #050510 30%, #060612 35%, #070714 40%, #0A0A1A 45%, #0D0D22 50%, #10102A 55%, #141432 60%, #18183A 65%, #1C1C42 70%, #20204A 75%, #242452 80%, #28285A 85%, #2C2C62 90%, #30306A 95%, #1E3A8A 100%);
         background-attachment: scroll;
         background-repeat: no-repeat;
         background-size: 100% 100%;
