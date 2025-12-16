@@ -117,7 +117,7 @@ html.dark-mode {
     background-color: #050510;
     background-image: 
         radial-gradient(ellipse 80% 50% at 50% 80%, rgba(30, 58, 138, 0.4) 0%, rgba(30, 58, 138, 0.2) 20%, rgba(30, 58, 138, 0.1) 40%, transparent 60%),
-        linear-gradient(175deg, #050510 0%, #050510 35%, #060612 40%, #070714 45%, #0A0A1A 50%, #0D0D22 55%, #10102A 60%, #141432 65%, #18183A 70%, #1C1C42 75%, #20204A 80%, #242452 85%, #28285A 90%, #2C2C62 95%, #0F0F1F 100%);
+        linear-gradient(175deg, #050510 0%, #050510 40%, #060612 50%, #070714 60%, #0A0A1A 70%, #0D0D22 80%, #10102A 85%, #141432 90%, #18183A 95%, #0F0F1F 100%);
     background-attachment: scroll;
     background-repeat: no-repeat;
     background-size: 100% 100%;
