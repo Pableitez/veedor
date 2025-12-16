@@ -2693,6 +2693,88 @@ table {
     color: var(--text-primary);
 }
 
+/* Tabla de transacciones - 4 columnas sin scroll */
+#transactionsTable {
+    table-layout: fixed;
+    width: 100%;
+}
+
+/* Anchos de columnas para 4 columnas visibles */
+#transactionsTable thead th:nth-child(1),
+#transactionsTable tbody td:nth-child(1) {
+    width: 20%; /* Fecha */
+}
+
+#transactionsTable thead th:nth-child(3),
+#transactionsTable tbody td:nth-child(3) {
+    width: 25%; /* Categoría - ajustada */
+}
+
+#transactionsTable thead th:nth-child(4),
+#transactionsTable tbody td:nth-child(4) {
+    width: 35%; /* Descripción */
+}
+
+#transactionsTable thead th:nth-child(8),
+#transactionsTable tbody td:nth-child(8) {
+    width: 20%; /* Monto */
+}
+
+/* Ocultar columnas no esenciales en desktop */
+#transactionsTable thead th:nth-child(2),
+#transactionsTable thead th:nth-child(5),
+#transactionsTable thead th:nth-child(6),
+#transactionsTable thead th:nth-child(7),
+#transactionsTable tbody td:nth-child(2),
+#transactionsTable tbody td:nth-child(5),
+#transactionsTable tbody td:nth-child(6),
+#transactionsTable tbody td:nth-child(7) {
+    display: none;
+}
+
+/* Estilo uniforme para header de tabla de transacciones */
+#transactionsTable thead th {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px;
+    text-align: left;
+    background: var(--bg-tertiary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+#transactionsTable thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+#transactionsTable thead th.sortable:hover {
+    background: var(--bg-secondary);
+}
+
+/* Ajustar texto de categoría para que no se corte */
+#transactionsTable tbody td:nth-child(3) {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+/* Ajustar texto de descripción */
+#transactionsTable tbody td:nth-child(4) {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 0;
+}
+
+/* Monto alineado a la derecha */
+#transactionsTable thead th:nth-child(8),
+#transactionsTable tbody td:nth-child(8) {
+    text-align: right;
+}
+
 thead {
     background: var(--bg-tertiary);
     border-bottom: 2px solid var(--border-color);
