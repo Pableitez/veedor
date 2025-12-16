@@ -444,8 +444,8 @@ function toggleDarkMode() {
         localStorage.setItem('veedor_darkMode', 'true');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = 'Modo Claro';
-        // Actualizar theme-color para status bar (modo oscuro)
-        updateThemeColor('#1E3A8A');
+        // Actualizar theme-color para status bar (modo oscuro - color muy oscuro del inicio)
+        updateThemeColor('#0A0A1A');
     }
     
     // Actualizar icono en welcome page
@@ -503,7 +503,7 @@ function initDarkMode() {
     if (savedMode === null || savedMode === 'true') {
         document.documentElement.classList.add('dark-mode');
         document.body.classList.add('dark-mode');
-        updateThemeColor('#1E3A8A');
+        updateThemeColor('#0A0A1A');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = 'Modo Claro';
         if (savedMode === null) {

@@ -44,9 +44,9 @@
             
             if (savedMode === null || savedMode === 'true') {
                 document.documentElement.classList.add('dark-mode');
-                // Actualizar theme-color para status bar (modo oscuro)
+                // Actualizar theme-color para status bar (modo oscuro - color muy oscuro del inicio)
                 if (themeColorMeta) {
-                    themeColorMeta.setAttribute('content', '#1E3A8A');
+                    themeColorMeta.setAttribute('content', '#0A0A1A');
                 }
                 // Actualizar status bar style (modo oscuro - contenido claro)
                 if (statusBarStyle) {
