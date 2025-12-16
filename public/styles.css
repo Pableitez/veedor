@@ -112,11 +112,20 @@ html.dark-mode body {
 
 /* Degradado ultra pro fluorescente y radial hacia arriba en móvil para modo oscuro */
 @media (max-width: 768px) {
-    /* Asegurar que html base también tenga el fondo correcto en móvil */
-    html {
-        background: #1E3A8A !important;
+    /* Asegurar que html base también tenga el fondo correcto en móvil - modo claro */
+    html:not(.dark-mode) {
+        background: #F8FAFC !important;
+        background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%) !important;
+        background-attachment: scroll !important;
     }
     
+    body:not(.dark-mode) {
+        background: #F8FAFC !important;
+        background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%) !important;
+        background-attachment: scroll !important;
+    }
+    
+    /* Asegurar que html base también tenga el fondo correcto en móvil - modo oscuro */
     html.dark-mode {
         background: #1E3A8A !important;
         background-image: 
