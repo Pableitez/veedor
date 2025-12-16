@@ -86,110 +86,90 @@ body.dark-mode {
     --primary-light: #1E3A8A;
 }
 
+/* ============================================
+   SISTEMA DE FONDO LIMPIO - DESDE CERO
+   ============================================ */
+
 html {
     width: 100%;
     overflow-x: hidden;
     box-sizing: border-box;
     margin: 0 !important;
     margin-top: 0 !important;
-    /* Fondo base para modo claro - será sobrescrito por dark-mode */
-    background: #F8FAFC;
-    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
-    background-attachment: scroll;
+    padding: 0 !important;
+    min-height: 100vh;
 }
 
+/* Modo claro - fondo base */
+html:not(.dark-mode) {
+    background-color: #F8FAFC;
+    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+/* Modo oscuro - fondo base */
 html.dark-mode {
     margin: 0 !important;
     margin-top: 0 !important;
-    background: #1E3A8A !important;
-    background-color: #1E3A8A !important;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 25%, #1D375C 30%, #1C3458 33%, #1B3154 36%, #1A2E50 39%, #192B4C 42%, #182848 45%, #172544 48%, #162240 51%, #151F3C 54%, #141C38 57%, #131934 60%, #121630 63%, #11132C 66%, #101028 69%, #0F0D24 72%, #0E0A20 75%, #0D071C 78%, #0C0518 81%, #0B0314 84%, #0A0110 87%, #09000C 90%, #08000A 93%, #080008 96%, #070006 98%, #060004 100%) !important;
-    background-attachment: scroll !important;
+    padding: 0 !important;
+    background-color: #1E3A8A;
+    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 25%, #1D375C 30%, #1C3458 33%, #1B3154 36%, #1A2E50 39%, #192B4C 42%, #182848 45%, #172544 48%, #162240 51%, #151F3C 54%, #141C38 57%, #131934 60%, #121630 63%, #11132C 66%, #101028 69%, #0F0D24 72%, #0E0A20 75%, #0D071C 78%, #0C0518 81%, #0B0314 84%, #0A0110 87%, #09000C 90%, #08000A 93%, #080008 96%, #070006 98%, #060004 100%);
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
     min-height: 100vh;
 }
 
 html.dark-mode body {
-    background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 25%, #1D375C 30%, #1C3458 33%, #1B3154 36%, #1A2E50 39%, #192B4C 42%, #182848 45%, #172544 48%, #162240 51%, #151F3C 54%, #141C38 57%, #131934 60%, #121630 63%, #11132C 66%, #101028 69%, #0F0D24 72%, #0E0A20 75%, #0D071C 78%, #0C0518 81%, #0B0314 84%, #0A0110 87%, #09000C 90%, #08000A 93%, #080008 96%, #070006 98%, #060004 100%);
-    background-attachment: scroll;
+    background-color: transparent;
+    background-image: none;
     color: #F9FAFB;
     min-height: 100vh;
 }
 
-/* Degradado ultra pro fluorescente y radial hacia arriba en móvil para modo oscuro */
+/* Móvil - degradado radial para modo oscuro */
 @media (max-width: 768px) {
-    /* Asegurar que html base también tenga el fondo correcto en móvil - modo claro */
+    /* Modo claro móvil */
     html:not(.dark-mode) {
-        background: #F8FAFC !important;
-        background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%) !important;
-        background-attachment: scroll !important;
+        background-color: #F8FAFC;
+        background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
+        background-attachment: scroll;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
     }
     
     body:not(.dark-mode) {
-        background: #F8FAFC !important;
-        background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%) !important;
-        background-attachment: scroll !important;
+        background-color: transparent;
+        background-image: none;
     }
     
-    /* Asegurar que auth-screen también tenga el fondo correcto en móvil - modo claro */
-    body:not(.dark-mode) .auth-screen {
-        background: #F8FAFC !important;
-        background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%) !important;
-        background-attachment: scroll !important;
-    }
-    
-    /* Asegurar que html base también tenga el fondo correcto en móvil - modo oscuro */
-    /* IMPORTANTE: Sobrescribir completamente el fondo base para evitar azul claro */
+    /* Modo oscuro móvil - degradado radial */
     html.dark-mode {
         margin: 0 !important;
         margin-top: 0 !important;
-        background: #1E3A8A !important;
-        background-color: #1E3A8A !important;
+        padding: 0 !important;
+        background-color: #1E3A8A;
         background-image: 
             radial-gradient(ellipse 140% 90% at 50% 0%, #1E3A8A 0%, #1C3458 8%, #1A2E50 16%, #182848 24%, #162240 32%, #151F3C 40%, #141C38 48%, #131934 56%, #121630 64%, #11132C 72%, #101028 80%, #0F0D24 88%, #0E0A20 96%, #0D071C 100%),
-            linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%) !important;
-        background-attachment: scroll !important;
-        background-repeat: no-repeat !important;
-        background-size: 100% 100% !important;
+            linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%);
+        background-attachment: scroll;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
     }
     
     html.dark-mode body {
-        margin: 0 !important;
-        margin-top: 0 !important;
-        background: #1E3A8A !important;
-        background-color: #1E3A8A !important;
-        background-image: 
-            radial-gradient(ellipse 140% 90% at 50% 0%, #1E3A8A 0%, #1C3458 8%, #1A2E50 16%, #182848 24%, #162240 32%, #151F3C 40%, #141C38 48%, #131934 56%, #121630 64%, #11132C 72%, #101028 80%, #0F0D24 88%, #0E0A20 96%, #0D071C 100%),
-            linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%) !important;
-        background-attachment: scroll !important;
-        background-repeat: no-repeat !important;
-        background-size: 100% 100% !important;
+        background-color: transparent;
+        background-image: none;
     }
     
-    /* Asegurar que body.dark-mode también tenga el fondo correcto en móvil - modo oscuro */
     body.dark-mode {
-        margin: 0 !important;
-        margin-top: 0 !important;
-        background: #1E3A8A !important;
-        background-color: #1E3A8A !important;
-        background-image: 
-            radial-gradient(ellipse 140% 90% at 50% 0%, #1E3A8A 0%, #1C3458 8%, #1A2E50 16%, #182848 24%, #162240 32%, #151F3C 40%, #141C38 48%, #131934 56%, #121630 64%, #11132C 72%, #101028 80%, #0F0D24 88%, #0E0A20 96%, #0D071C 100%),
-            linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%) !important;
-        background-attachment: scroll !important;
-        background-repeat: no-repeat !important;
-        background-size: 100% 100% !important;
+        background-color: transparent;
+        background-image: none;
     }
     
-    /* Asegurar que auth-screen también tenga el fondo correcto en móvil - modo oscuro */
-    body.dark-mode .auth-screen {
-        background: #1E3A8A !important;
-        background-image: 
-            radial-gradient(ellipse 140% 90% at 50% 0%, #1E3A8A 0%, #1C3458 8%, #1A2E50 16%, #182848 24%, #162240 32%, #151F3C 40%, #141C38 48%, #131934 56%, #121630 64%, #11132C 72%, #101028 80%, #0F0D24 88%, #0E0A20 96%, #0D071C 100%),
-            linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%) !important;
-        background-attachment: scroll !important;
-    }
-    
-    /* Asegurar que header y mainApp sean transparentes en móvil para que se vea el fondo */
+    /* Header y mainApp transparentes en móvil */
     header,
     .main-header {
         background: transparent !important;
@@ -202,14 +182,13 @@ html.dark-mode body {
 
 body {
     font-family: var(--font-sans);
-    background: #F8FAFC;
-    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
-    background-attachment: scroll;
+    background-color: transparent;
+    background-image: none;
     color: var(--text-primary);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: color 0.3s ease;
     margin: 0 !important;
     margin-top: 0 !important;
     padding: 0;
@@ -225,11 +204,9 @@ body {
     min-height: 100vh;
 }
 
-/* Asegurar que body.dark-mode tenga el mismo fondo que auth-screen (desktop) */
 body.dark-mode {
-    background: #1E3A8A !important;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 25%, #1D375C 30%, #1C3458 33%, #1B3154 36%, #1A2E50 39%, #192B4C 42%, #182848 45%, #172544 48%, #162240 51%, #151F3C 54%, #141C38 57%, #131934 60%, #121630 63%, #11132C 66%, #101028 69%, #0F0D24 72%, #0E0A20 75%, #0D071C 78%, #0C0518 81%, #0B0314 84%, #0A0110 87%, #09000C 90%, #08000A 93%, #080008 96%, #070006 98%, #060004 100%) !important;
-    background-attachment: scroll !important;
+    background-color: transparent;
+    background-image: none;
 }
 
 /* Asegurar que el contenido respete safe-area en iOS */
@@ -427,21 +404,14 @@ div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background: #F8FAFC;
-    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
-    background-attachment: scroll;
+    background-color: transparent;
+    background-image: none;
     position: relative;
     overflow: hidden;
-    overflow-x: hidden; /* Eliminar scroll horizontal */
+    overflow-x: hidden;
     width: 100%;
     max-width: 100vw;
     box-sizing: border-box;
-}
-
-body.dark-mode .auth-screen {
-    background: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 25%, #1D375C 30%, #1C3458 33%, #1B3154 36%, #1A2E50 39%, #192B4C 42%, #182848 45%, #172544 48%, #162240 51%, #151F3C 54%, #141C38 57%, #131934 60%, #121630 63%, #11132C 66%, #101028 69%, #0F0D24 72%, #0E0A20 75%, #0D071C 78%, #0C0518 81%, #0B0314 84%, #0A0110 87%, #09000C 90%, #08000A 93%, #080008 96%, #070006 98%, #060004 100%);
-    background-attachment: scroll;
 }
 
 /* Patrón de puntos para página de inicio - modo claro */

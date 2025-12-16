@@ -436,30 +436,18 @@ function toggleDarkMode() {
         localStorage.setItem('veedor_darkMode', 'false');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = 'Modo Oscuro';
-        // Actualizar theme-color para modo claro
-        updateThemeColor(false);
     } else {
         html.classList.add('dark-mode');
         body.classList.add('dark-mode');
         localStorage.setItem('veedor_darkMode', 'true');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = 'Modo Claro';
-        // Actualizar theme-color para modo oscuro
-        updateThemeColor(true);
     }
     
     // Actualizar icono en welcome page
     updateAuthDarkModeIcon();
     // Actualizar icono SVG del botón de navegación
     updateNavDarkModeIcon();
-}
-
-// Actualizar theme-color meta tag según el modo
-function updateThemeColor(isDark) {
-    const themeColorMeta = document.getElementById('themeColorMeta');
-    if (themeColorMeta) {
-        themeColorMeta.setAttribute('content', isDark ? '#1E3A8A' : '#F8FAFC');
-    }
 }
 
 // Actualizar icono del botón de modo oscuro en welcome page
@@ -488,18 +476,15 @@ function initDarkMode() {
     if (savedMode === null || savedMode === 'true') {
         document.documentElement.classList.add('dark-mode');
         document.body.classList.add('dark-mode');
+        updateThemeColor('#1E3A8A');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) toggleText.textContent = 'Modo Claro';
         if (savedMode === null) {
             localStorage.setItem('veedor_darkMode', 'true');
         }
-        // Actualizar theme-color para modo oscuro
-        updateThemeColor(true);
     } else {
         document.documentElement.classList.remove('dark-mode');
         document.body.classList.remove('dark-mode');
-        // Actualizar theme-color para modo claro
-        updateThemeColor(false);
     }
     
     // Actualizar icono en welcome page
