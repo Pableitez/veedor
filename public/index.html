@@ -39,8 +39,14 @@
         // Inicializar modo oscuro ANTES de que se renderice el body para evitar flash
         (function() {
             const savedMode = localStorage.getItem('veedor_darkMode');
+            const themeColorMeta = document.getElementById('themeColorMeta');
+            
             if (savedMode === null || savedMode === 'true') {
                 document.documentElement.classList.add('dark-mode');
+                // Actualizar theme-color para status bar (modo oscuro)
+                if (themeColorMeta) {
+                    themeColorMeta.setAttribute('content', '#1E3A8A');
+                }
                 // Verificar que body existe antes de acceder a classList
                 if (document.body) {
                     document.body.classList.add('dark-mode');
@@ -51,6 +57,11 @@
                             document.body.classList.add('dark-mode');
                         }
                     });
+                }
+            } else {
+                // Modo claro - actualizar theme-color
+                if (themeColorMeta) {
+                    themeColorMeta.setAttribute('content', '#F8FAFC');
                 }
             }
         })();
