@@ -497,6 +497,7 @@ function initDarkMode() {
     } else {
         document.documentElement.classList.remove('dark-mode');
         document.body.classList.remove('dark-mode');
+        updateThemeColor('#F8FAFC');
     }
     
     // Actualizar icono en welcome page
