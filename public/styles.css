@@ -114,8 +114,8 @@ html.dark-mode {
     margin: 0 !important;
     margin-top: 0 !important;
     padding: 0 !important;
-    background-color: #1E3A8A;
-    background-image: linear-gradient(180deg, #1E3A8A 0%, #1E3A8A 25%, #1D375C 30%, #1C3458 33%, #1B3154 36%, #1A2E50 39%, #192B4C 42%, #182848 45%, #172544 48%, #162240 51%, #151F3C 54%, #141C38 57%, #131934 60%, #121630 63%, #11132C 66%, #101028 69%, #0F0D24 72%, #0E0A20 75%, #0D071C 78%, #0C0518 81%, #0B0314 84%, #0A0110 87%, #09000C 90%, #08000A 93%, #080008 96%, #070006 98%, #060004 100%);
+    background-color: #0A0A1A;
+    background-image: linear-gradient(175deg, #0A0A1A 0%, #0A0A1A 5%, #0B0B1C 10%, #0C0C1E 15%, #0D0D20 20%, #0E0E22 25%, #0F0F24 30%, #101026 35%, #111128 40%, #1A1A3A 45%, #1E3A8A 50%, #1E3A8A 55%, #1D375C 60%, #1C3458 65%, #1B3154 70%, #1A2E50 75%, #192B4C 80%, #182848 85%, #172544 90%, #162240 95%, #151F3C 100%);
     background-attachment: scroll;
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -145,15 +145,13 @@ html.dark-mode body {
         background-image: none;
     }
     
-    /* Modo oscuro móvil - degradado radial */
+    /* Modo oscuro móvil - degradado desviado a la izquierda */
     html.dark-mode {
         margin: 0 !important;
         margin-top: 0 !important;
         padding: 0 !important;
-        background-color: #1E3A8A;
-        background-image: 
-            radial-gradient(ellipse 140% 90% at 50% 0%, #1E3A8A 0%, #1C3458 8%, #1A2E50 16%, #182848 24%, #162240 32%, #151F3C 40%, #141C38 48%, #131934 56%, #121630 64%, #11132C 72%, #101028 80%, #0F0D24 88%, #0E0A20 96%, #0D071C 100%),
-            linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%);
+        background-color: #0A0A1A;
+        background-image: linear-gradient(175deg, #0A0A1A 0%, #0A0A1A 5%, #0B0B1C 10%, #0C0C1E 15%, #0D0D20 20%, #0E0E22 25%, #0F0F24 30%, #101026 35%, #111128 40%, #1A1A3A 45%, #1E3A8A 50%, #1E3A8A 55%, #1D375C 60%, #1C3458 65%, #1B3154 70%, #1A2E50 75%, #192B4C 80%, #182848 85%, #172544 90%, #162240 95%, #151F3C 100%);
         background-attachment: scroll;
         background-repeat: no-repeat;
         background-size: 100% 100%;

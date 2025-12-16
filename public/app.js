@@ -1508,8 +1508,8 @@ function toggleTransactionFilters() {
             filters.classList.add('expanded');
             toggleText.textContent = 'Ocultar Filtros';
             toggleIcon.style.transform = 'rotate(180deg)';
-        }
     }
+}
 }
 
 // Mostrar/ocultar botón de filtros según el tamaño de pantalla
@@ -1528,7 +1528,7 @@ function updateFiltersButtonVisibility() {
             toggleBtn.style.display = 'none';
             // Asegurar que esté expandido en desktop
             filters.classList.add('expanded');
-        }
+    }
     }
 }
 
@@ -4086,7 +4086,7 @@ function updateBudgets() {
         if (!category) {
             category = categories.income.find(c => c.id === budget.category_id);
             isIncome = true;
-            }
+        }
             categoryName = category ? category.name : budget.category_id;
         }
         
