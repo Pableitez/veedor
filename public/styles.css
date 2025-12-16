@@ -1721,6 +1721,12 @@ body.dark-mode .more-tab-item:hover {
         min-height: calc(60px + env(safe-area-inset-bottom)) !important;
     }
     
+    /* Barra de secciones en modo oscuro con color base gris claro */
+    html.dark-mode .mobile-bottom-tabs {
+        background: rgba(107, 114, 128, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+    }
+    
     .mobile-bottom-tabs .tab-btn {
         display: flex !important;
         flex-direction: column !important;

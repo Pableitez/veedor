@@ -7609,7 +7609,12 @@ async function editPatrimonio(id) {
     
     // Abrir modal de actualización de valor (que ya existe)
     const modal = document.getElementById('updateAssetValueModal');
+    const title = document.getElementById('updateAssetValueTitle');
     if (modal) {
+        // Actualizar título del modal
+        if (title) {
+            title.textContent = `Actualizar Valor de ${prop.name}`;
+        }
         // Pre-llenar el valor actual
         const input = document.getElementById('updateAssetValueInput');
         if (input) {
