@@ -1896,10 +1896,22 @@ body.dark-mode .more-tab-item:hover {
         min-width: 100% !important;
     }
     
+    /* Estilo uniforme para todos los headers en móvil */
+    #transactionsTable thead th {
+        font-weight: 600 !important;
+        font-size: 11px !important;
+        color: var(--text-secondary) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        padding: 8px 6px !important;
+        text-align: left !important;
+        background: var(--bg-tertiary) !important;
+        border-bottom: 2px solid var(--border-color) !important;
+    }
+    
     #transactionsTable thead th:nth-child(1),
     #transactionsTable tbody td:nth-child(1) {
         min-width: 80px !important;
-        font-size: 11px !important;
         padding: 8px 6px !important;
         word-break: break-word !important;
     }
@@ -1907,7 +1919,6 @@ body.dark-mode .more-tab-item:hover {
     #transactionsTable thead th:nth-child(3),
     #transactionsTable tbody td:nth-child(3) {
         min-width: 100px !important;
-        font-size: 11px !important;
         padding: 8px 6px !important;
         word-break: break-word !important;
     }
@@ -1925,10 +1936,27 @@ body.dark-mode .more-tab-item:hover {
     #transactionsTable tbody td:nth-child(8) {
         min-width: 120px !important;
         text-align: right !important;
-        font-size: 13px !important;
-        font-weight: 600 !important;
         padding: 8px 6px !important;
         white-space: nowrap !important;
+    }
+    
+    /* Header de Monto también con estilo uniforme */
+    #transactionsTable thead th:nth-child(8) {
+        font-weight: 600 !important;
+        font-size: 11px !important;
+        color: var(--text-secondary) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    /* Header de Acciones también con estilo uniforme */
+    #transactionsTable thead th:nth-child(9) {
+        font-weight: 600 !important;
+        font-size: 11px !important;
+        color: var(--text-secondary) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        text-align: center !important;
     }
     
     /* Permitir scroll horizontal para ver el importe */
