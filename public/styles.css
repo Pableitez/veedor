@@ -109,15 +109,15 @@ html:not(.dark-mode) {
     background-size: 100% 100%;
 }
 
-/* Modo oscuro - fondo base con destello estilo Stranger Things */
+/* Modo oscuro - fondo base con destello estilo Stranger Things en la parte inferior */
 html.dark-mode {
     margin: 0 !important;
     margin-top: 0 !important;
     padding: 0 !important;
     background-color: #050510;
     background-image: 
-        radial-gradient(ellipse 80% 50% at 50% 70%, rgba(30, 58, 138, 0.4) 0%, rgba(30, 58, 138, 0.2) 20%, rgba(30, 58, 138, 0.1) 40%, transparent 60%),
-        linear-gradient(175deg, #050510 0%, #050510 30%, #060612 35%, #070714 40%, #0A0A1A 45%, #0D0D22 50%, #10102A 55%, #141432 60%, #18183A 65%, #1C1C42 70%, #20204A 75%, #242452 80%, #28285A 85%, #2C2C62 90%, #30306A 95%, #1A1A3A 100%);
+        radial-gradient(ellipse 80% 50% at 50% 80%, rgba(30, 58, 138, 0.4) 0%, rgba(30, 58, 138, 0.2) 20%, rgba(30, 58, 138, 0.1) 40%, transparent 60%),
+        linear-gradient(175deg, #050510 0%, #050510 35%, #060612 40%, #070714 45%, #0A0A1A 50%, #0D0D22 55%, #10102A 60%, #141432 65%, #18183A 70%, #1C1C42 75%, #20204A 80%, #242452 85%, #28285A 90%, #2C2C62 95%, #1A1A3A 100%);
     background-attachment: scroll;
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -147,16 +147,16 @@ html.dark-mode body {
         background-image: none;
     }
     
-    /* Modo oscuro móvil - degradado radial desviado a la derecha con destello Stranger Things */
+    /* Modo oscuro móvil - degradado radial desviado a la derecha con destello Stranger Things en la parte inferior */
     html.dark-mode {
         margin: 0 !important;
         margin-top: 0 !important;
         padding: 0 !important;
         background-color: #050510;
         background-image: 
-            radial-gradient(ellipse 100% 60% at 60% 70%, rgba(30, 58, 138, 0.5) 0%, rgba(30, 58, 138, 0.3) 25%, rgba(30, 58, 138, 0.15) 50%, transparent 70%),
-            radial-gradient(ellipse 140% 90% at 60% 0%, #050510 0%, #050510 30%, #060612 35%, #070714 40%, #0A0A1A 45%, #0D0D22 50%, #10102A 55%, #141432 60%, #18183A 65%, #1C1C42 70%, #20204A 75%, #242452 80%, #28285A 85%, #2C2C62 90%, #30306A 95%, #1A1A3A 100%),
-            linear-gradient(175deg, #050510 0%, #050510 30%, #060612 35%, #070714 40%, #0A0A1A 45%, #0D0D22 50%, #10102A 55%, #141432 60%, #18183A 65%, #1C1C42 70%, #20204A 75%, #242452 80%, #28285A 85%, #2C2C62 90%, #30306A 95%, #1A1A3A 100%);
+            radial-gradient(ellipse 100% 60% at 60% 85%, rgba(30, 58, 138, 0.5) 0%, rgba(30, 58, 138, 0.3) 25%, rgba(30, 58, 138, 0.15) 50%, transparent 70%),
+            radial-gradient(ellipse 140% 90% at 60% 0%, #050510 0%, #050510 35%, #060612 40%, #070714 45%, #0A0A1A 50%, #0D0D22 55%, #10102A 60%, #141432 65%, #18183A 70%, #1C1C42 75%, #20204A 80%, #242452 85%, #28285A 90%, #2C2C62 95%, #1A1A3A 100%),
+            linear-gradient(175deg, #050510 0%, #050510 35%, #060612 40%, #070714 45%, #0A0A1A 50%, #0D0D22 55%, #10102A 60%, #141432 65%, #18183A 70%, #1C1C42 75%, #20204A 80%, #242452 85%, #28285A 90%, #2C2C62 95%, #1A1A3A 100%);
         background-attachment: scroll;
         background-repeat: no-repeat;
         background-size: 100% 100%;
@@ -4279,6 +4279,13 @@ tbody tr:last-child td {
         backdrop-filter: blur(10px) !important;
         -webkit-backdrop-filter: blur(10px) !important;
         z-index: 1001 !important;
+    }
+    
+    /* Botón + en modo oscuro con mismo estilo que barra de secciones */
+    html.dark-mode .quick-add-btn-mobile {
+        background: rgba(107, 114, 128, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
     }
     
     .quick-add-btn-mobile:hover,
