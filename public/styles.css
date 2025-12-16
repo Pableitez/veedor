@@ -166,6 +166,16 @@ html.dark-mode body {
             linear-gradient(180deg, #0D071C 0%, #0C0518 8%, #0B0314 16%, #0A0110 24%, #09000C 32%, #08000A 40%, #080008 48%, #070006 56%, #060004 64%, #050002 72%, #040001 80%, #030000 88%, #020000 96%, #010000 100%) !important;
         background-attachment: scroll !important;
     }
+    
+    /* Asegurar que header y mainApp sean transparentes en móvil para que se vea el fondo */
+    header,
+    .main-header {
+        background: transparent !important;
+    }
+    
+    #mainApp {
+        background: transparent !important;
+    }
 }
 
 body {
