@@ -4268,7 +4268,7 @@ async function editBudget(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 600px;">
-                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Presupuesto</h2>
                         <button onclick="closeEditBudgetModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -4489,7 +4489,7 @@ async function editTransaction(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
-                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Transacción</h2>
                         <button onclick="closeEditTransactionModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -5026,7 +5026,7 @@ async function editEnvelope(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 600px;">
-                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Sobre</h2>
                         <button onclick="closeEditEnvelopeModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -6362,21 +6362,21 @@ function updateInvestments() {
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
             <div>
                 <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Total Invertido</div>
-                <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">${formatCurrency(totalInvested)}</div>
+                <div style="font-size: 24px; font-weight: 700; color: white;">${formatCurrency(totalInvested)}</div>
             </div>
             <div>
                 <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Valor Actual</div>
-                <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">${formatCurrency(totalCurrentValue)}</div>
+                <div style="font-size: 24px; font-weight: 700; color: white;">${formatCurrency(totalCurrentValue)}</div>
             </div>
             <div>
                 <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Ganancia/Pérdida</div>
-                <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">
+                <div style="font-size: 24px; font-weight: 700; color: white;">
                     ${totalProfit >= 0 ? '+' : ''}${formatCurrency(totalProfit)}
                 </div>
             </div>
             <div>
                 <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Rentabilidad Total</div>
-                <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">
+                <div style="font-size: 24px; font-weight: 700; color: white;">
                     ${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%
                 </div>
             </div>
@@ -6531,7 +6531,7 @@ async function editInvestment(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
-                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Inversión</h2>
                         <button onclick="closeEditInvestmentModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -6842,7 +6842,7 @@ async function editProperty(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
-                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Propiedad</h2>
                         <button onclick="closeEditPropertyModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -7197,7 +7197,7 @@ function updateAccounts() {
                 <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${accounts.length} cuenta${accounts.length !== 1 ? 's' : ''}</p>
             </div>
             <div style="text-align: right;">
-                <div class="rainbow-text" style="font-size: 40px; font-weight: 700;">
+                <div style="font-size: 40px; font-weight: 700; color: white;">
                     ${formatCurrency(totalBalance)}
                 </div>
                 <div style="font-size: 12px; color: rgba(255,255,255,0.8);">EUR</div>
@@ -7284,7 +7284,7 @@ async function editAccount(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
-                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Cuenta</h2>
                         <button onclick="closeEditAccountModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -7780,7 +7780,7 @@ async function editLoan(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 800px;">
-                <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Préstamo</h2>
                         <button onclick="closeEditLoanModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
@@ -10728,7 +10728,7 @@ function updateMonthDashboard() {
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                         <div>
                             <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Ingresos</div>
-                            <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">${formatCurrency(totalIncomeBudget)}</div>
+                            <div style="font-size: 24px; font-weight: 700; color: white;">${formatCurrency(totalIncomeBudget)}</div>
                             <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalIncomeActual)}</div>
                             <div style="font-size: 12px; margin-top: 4px; color: ${totalIncomeActual >= totalIncomeBudget ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'};">
                                 ${totalIncomeBudget > 0 ? ((totalIncomeActual / totalIncomeBudget) * 100).toFixed(1) + '%' : '-'}
@@ -10736,7 +10736,7 @@ function updateMonthDashboard() {
                         </div>
                         <div>
                             <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Gastos</div>
-                            <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">${formatCurrency(totalExpenseBudget)}</div>
+                            <div style="font-size: 24px; font-weight: 700; color: white;">${formatCurrency(totalExpenseBudget)}</div>
                             <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalExpenseActual)}</div>
                             <div style="font-size: 12px; margin-top: 4px; color: ${totalExpenseActual <= totalExpenseBudget ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'};">
                                 ${totalExpenseBudget > 0 ? ((totalExpenseActual / totalExpenseBudget) * 100).toFixed(1) + '%' : '-'}
@@ -10744,7 +10744,7 @@ function updateMonthDashboard() {
                         </div>
                         <div>
                             <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Ahorro Previsto</div>
-                            <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">${formatCurrency(totalIncomeBudget - totalExpenseBudget)}</div>
+                            <div style="font-size: 24px; font-weight: 700; color: white;">${formatCurrency(totalIncomeBudget - totalExpenseBudget)}</div>
                             <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalIncomeActual - totalExpenseActual)}</div>
                         </div>
                     </div>

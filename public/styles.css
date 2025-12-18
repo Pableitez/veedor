@@ -1488,22 +1488,17 @@ body:not(.dark-mode) #welcomeMessageText {
     font-weight: 600;
 }
 
-/* Efecto arcoíris estático para números grandes en tarjetas de resumen */
-.rainbow-text {
-    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+/* Efecto arcoíris estático para fondos de modales */
+.rainbow-bg {
+    background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
 }
 
-body:not(.dark-mode) .rainbow-text {
-    background: linear-gradient(90deg, #FF8A95 0%, #7DD3C0 12%, #6BC5E0 24%, #A8D5BA 36%, #FFE5A0 48%, #FDD89A 60%, #E88A7A 72%, #FF8A95 84%, #7DD3C0 96%, #FF8A95 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+body:not(.dark-mode) .rainbow-bg {
+    background: linear-gradient(135deg, #FF8A95 0%, #7DD3C0 12%, #6BC5E0 24%, #A8D5BA 36%, #FFE5A0 48%, #FDD89A 60%, #E88A7A 72%, #FF8A95 84%, #7DD3C0 96%, #FF8A95 100%);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
 }
 
 @media (max-width: 768px) {
