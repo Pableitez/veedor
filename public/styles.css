@@ -1446,7 +1446,6 @@ body.dark-mode .envelope-card:hover .envelope-budget {
 #welcomeMessage {
     padding: 6px 24px;
     text-align: center;
-    color: var(--text-secondary);
     font-size: 15px;
     font-weight: 500;
     opacity: 0;
@@ -1459,12 +1458,34 @@ body.dark-mode .envelope-card:hover .envelope-budget {
     box-sizing: border-box;
 }
 
-body.dark-mode #welcomeMessage {
-    color: rgba(255, 255, 255, 0.7);
+/* Efecto arcoíris para el texto del mensaje - Modo oscuro (más vibrante) */
+body.dark-mode #welcomeMessageText {
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 15s ease-in-out infinite;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+    font-weight: 600;
 }
 
-body:not(.dark-mode) #welcomeMessage {
-    color: var(--text-secondary);
+/* Efecto arcoíris para el texto del mensaje - Modo claro (tonos pasteles suaves) */
+body:not(.dark-mode) #welcomeMessageText {
+    background: linear-gradient(90deg, #FF8A95 0%, #7DD3C0 12%, #6BC5E0 24%, #A8D5BA 36%, #FFE5A0 48%, #FDD89A 60%, #E88A7A 72%, #FF8A95 84%, #7DD3C0 96%, #FF8A95 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 15s ease-in-out infinite;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+    font-weight: 600;
 }
 
 @media (max-width: 768px) {
