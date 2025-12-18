@@ -7166,7 +7166,7 @@ function updateAccounts() {
             <div style="margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
                 <div style="text-align: center;">
                     <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Saldo Actual</div>
-                    <div style="font-size: 28px; font-weight: 700; color: ${account.balance >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                    <div style="font-size: 48px; font-weight: 700; color: ${account.balance >= 0 ? 'var(--success)' : 'var(--danger)'};">
                         ${formatCurrency(account.balance)}
                     </div>
                     <div style="font-size: 11px; color: var(--gray-500); margin-top: 4px;">${account.currency}</div>
@@ -7193,11 +7193,11 @@ function updateAccounts() {
     summaryCard.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h3 style="margin: 0; color: white; font-size: 18px;">Saldo Total</h3>
+                <h3 style="margin: 0; color: white; font-size: 18px;">Saldo</h3>
                 <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${accounts.length} cuenta${accounts.length !== 1 ? 's' : ''}</p>
             </div>
             <div style="text-align: right;">
-                <div style="font-size: 32px; font-weight: 700; color: white;">
+                <div style="font-size: 56px; font-weight: 700; color: white;">
                     ${formatCurrency(totalBalance)}
                 </div>
                 <div style="font-size: 12px; color: rgba(255,255,255,0.8);">EUR</div>
