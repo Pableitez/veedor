@@ -1501,15 +1501,23 @@ body:not(.dark-mode) .rainbow-bg {
     background-position: 0% 50%;
 }
 
-/* Texto azul oscuro dentro de tarjetas con fondo arcoíris */
-.rainbow-bg,
-.rainbow-bg * {
+/* Texto dentro de tarjetas con fondo arcoíris - Modo claro: azul oscuro */
+body:not(.dark-mode) .rainbow-bg,
+body:not(.dark-mode) .rainbow-bg * {
     color: #0F172A !important;
 }
 
-/* Excepciones para mantener algunos elementos con opacidad */
-.rainbow-bg *[style*="opacity"] {
-    color: #0F172A !important;
+/* Texto dentro de tarjetas con fondo arcoíris - Modo oscuro: blanco/claro */
+body.dark-mode .rainbow-bg,
+body.dark-mode .rainbow-bg * {
+    color: #FFFFFF !important;
+}
+
+/* Asegurar que el fondo arcoíris se vea bien en modo oscuro */
+body.dark-mode .rainbow-bg {
+    background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%) !important;
+    background-size: 200% 200% !important;
+    background-position: 0% 50% !important;
 }
 
 @media (max-width: 768px) {
