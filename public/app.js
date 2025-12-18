@@ -1272,6 +1272,12 @@ function showAuthScreen() {
         mainApp.style.display = 'none';
     }
     
+    // Ocultar mensaje de bienvenida
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    if (welcomeMessage) {
+        welcomeMessage.style.display = 'none';
+    }
+    
     // Asegurar que los formularios estén visibles
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
@@ -1289,6 +1295,54 @@ function showMainApp() {
     // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
 }
 
+// Frases de bienvenida personalizadas
+const welcomeMessages = [
+    "¡Hola, {nombre}!",
+    "Bienvenido de nuevo, {nombre}",
+    "¡Qué tal, {nombre}!",
+    "Hola {nombre}, ¿listo para gestionar tus finanzas?",
+    "¡Hey {nombre}! Vamos a revisar tus números",
+    "Buenos días, {nombre}",
+    "¡Hola {nombre}! Tu dinero te espera",
+    "Bienvenido, {nombre}. ¿Todo bajo control?",
+    "¡Hola {nombre}! Empecemos el día organizado",
+    "Hey {nombre}, ¿cómo van tus finanzas hoy?",
+    "¡Hola {nombre}! Tiempo de revisar tus cuentas",
+    "Bienvenido de vuelta, {nombre}. ¿Todo listo?",
+    "Hola {nombre}, vamos a por ello",
+    "¡Qué bueno verte de nuevo, {nombre}!",
+    "Hola {nombre}, momento de tomar el control"
+];
+
+// Mostrar mensaje de bienvenida personalizado
+function showWelcomeMessage() {
+    const welcomeMessageEl = document.getElementById('welcomeMessage');
+    const welcomeMessageTextEl = document.getElementById('welcomeMessageText');
+    
+    if (!welcomeMessageEl || !welcomeMessageTextEl) return;
+    
+    // Obtener nombre del usuario
+    let displayName = 'Usuario';
+    if (userProfile && (userProfile.firstName || userProfile.lastName)) {
+        displayName = `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim();
+    } else if (currentUser) {
+        displayName = currentUser;
+    }
+    
+    // Seleccionar frase aleatoria
+    const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+    const personalizedMessage = randomMessage.replace('{nombre}', displayName);
+    
+    // Mostrar mensaje
+    welcomeMessageTextEl.textContent = personalizedMessage;
+    welcomeMessageEl.style.display = 'block';
+    
+    // Fade in
+    setTimeout(() => {
+        welcomeMessageEl.style.opacity = '1';
+    }, 100);
+}
+
 // Actualizar información del usuario
 function updateUserInfo() {
     const currentUserTextEl = document.getElementById('currentUserText');
@@ -1304,6 +1358,9 @@ function updateUserInfo() {
     } else {
         console.warn('⚠️ Elemento currentUserText no encontrado');
     }
+    
+    // Mostrar mensaje de bienvenida
+    showWelcomeMessage();
 }
 
 // Cargar datos del usuario actual
