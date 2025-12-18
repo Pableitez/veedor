@@ -6352,31 +6352,30 @@ function updateInvestments() {
     
     // Agregar resumen total
     const summaryCard = document.createElement('div');
-    summaryCard.className = 'envelope-card';
+    summaryCard.className = 'envelope-card rainbow-bg';
     summaryCard.style.gridColumn = '1 / -1';
-    summaryCard.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
-    summaryCard.style.color = 'white';
+    summaryCard.style.color = '#0F172A';
     summaryCard.style.border = 'none';
     summaryCard.innerHTML = `
-        <h3 style="color: white; margin-bottom: 16px;">Resumen de Inversiones</h3>
+        <h3 style="color: #0F172A; margin-bottom: 16px; font-weight: 700;">Resumen de Inversiones</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
             <div>
-                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Total Invertido</div>
-                <div style="font-size: 24px; font-weight: 700; color: white;">${formatCurrency(totalInvested)}</div>
+                <div style="font-size: 13px; opacity: 0.85; margin-bottom: 4px; color: #0F172A;">Total Invertido</div>
+                <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalInvested)}</div>
             </div>
             <div>
-                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Valor Actual</div>
-                <div style="font-size: 24px; font-weight: 700; color: white;">${formatCurrency(totalCurrentValue)}</div>
+                <div style="font-size: 13px; opacity: 0.85; margin-bottom: 4px; color: #0F172A;">Valor Actual</div>
+                <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalCurrentValue)}</div>
             </div>
             <div>
-                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Ganancia/Pérdida</div>
-                <div style="font-size: 24px; font-weight: 700; color: white;">
+                <div style="font-size: 13px; opacity: 0.85; margin-bottom: 4px; color: #0F172A;">Ganancia/Pérdida</div>
+                <div style="font-size: 24px; font-weight: 700; color: #0F172A;">
                     ${totalProfit >= 0 ? '+' : ''}${formatCurrency(totalProfit)}
                 </div>
             </div>
             <div>
-                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Rentabilidad Total</div>
-                <div style="font-size: 24px; font-weight: 700; color: white;">
+                <div style="font-size: 13px; opacity: 0.85; margin-bottom: 4px; color: #0F172A;">Rentabilidad Total</div>
+                <div style="font-size: 24px; font-weight: 700; color: #0F172A;">
                     ${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%
                 </div>
             </div>
@@ -7185,22 +7184,21 @@ function updateAccounts() {
     
     // Agregar resumen total
     const summaryCard = document.createElement('div');
-    summaryCard.className = 'envelope-card';
+    summaryCard.className = 'envelope-card rainbow-bg';
     summaryCard.style.gridColumn = '1 / -1';
-    summaryCard.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
-    summaryCard.style.color = 'white';
+    summaryCard.style.color = '#0F172A';
     summaryCard.style.border = 'none';
     summaryCard.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h3 style="margin: 0; color: white; font-size: 18px;">Saldo</h3>
-                <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${accounts.length} cuenta${accounts.length !== 1 ? 's' : ''}</p>
+                <h3 style="margin: 0; color: #0F172A; font-size: 18px; font-weight: 700;">Saldo</h3>
+                <p style="margin: 8px 0 0 0; color: #0F172A; opacity: 0.85; font-size: 14px;">${accounts.length} cuenta${accounts.length !== 1 ? 's' : ''}</p>
             </div>
             <div style="text-align: right;">
-                <div style="font-size: 40px; font-weight: 700; color: white;">
+                <div style="font-size: 40px; font-weight: 700; color: #0F172A;">
                     ${formatCurrency(totalBalance)}
                 </div>
-                <div style="font-size: 12px; color: rgba(255,255,255,0.8);">EUR</div>
+                <div style="font-size: 12px; color: #0F172A; opacity: 0.8;">EUR</div>
             </div>
         </div>
     `;
@@ -7634,22 +7632,21 @@ function updatePatrimonio() {
     
     // Agregar resumen total
     const summaryCard = document.createElement('div');
-    summaryCard.className = 'envelope-card';
+    summaryCard.className = 'envelope-card rainbow-bg';
     summaryCard.style.gridColumn = '1 / -1';
-    summaryCard.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
-    summaryCard.style.color = 'white';
+    summaryCard.style.color = '#0F172A';
     summaryCard.style.border = 'none';
     summaryCard.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h3 style="margin: 0; color: white; font-size: 18px;">Valor Total del Patrimonio</h3>
-                <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${patrimonio.length} propiedad${patrimonio.length !== 1 ? 'es' : ''}</p>
+                <h3 style="margin: 0; color: #0F172A; font-size: 18px; font-weight: 700;">Valor Total del Patrimonio</h3>
+                <p style="margin: 8px 0 0 0; color: #0F172A; opacity: 0.85; font-size: 14px;">${patrimonio.length} propiedad${patrimonio.length !== 1 ? 'es' : ''}</p>
             </div>
             <div style="text-align: right;">
-                <div style="font-size: 32px; font-weight: 700; color: white;">
+                <div style="font-size: 32px; font-weight: 700; color: #0F172A;">
                     ${formatCurrency(totalCurrentValue)}
                 </div>
-                <div style="font-size: 12px; color: rgba(255,255,255,0.8);">
+                <div style="font-size: 12px; color: #0F172A; opacity: 0.8;">
                     ${totalAppreciation >= 0 ? '+' : ''}${formatCurrency(totalAppreciation)} (${totalAppreciationPercent >= 0 ? '+' : ''}${totalAppreciationPercent.toFixed(2)}%)
                 </div>
             </div>
