@@ -1174,6 +1174,10 @@ async function register() {
         updateDisplay();
         initializeCharts();
         updateUserInfo();
+        // Mostrar mensaje de bienvenida después de un pequeño delay
+        setTimeout(() => {
+            showWelcomeMessage();
+        }, 300);
         
         const form = document.getElementById('registerFormElement');
         if (form) form.reset();
@@ -1238,6 +1242,10 @@ async function login() {
         updateDisplay();
         initializeCharts();
         updateUserInfo();
+        // Mostrar mensaje de bienvenida después de un pequeño delay
+        setTimeout(() => {
+            showWelcomeMessage();
+        }, 300);
         
         document.getElementById('loginFormElement').reset();
     } catch (error) {
