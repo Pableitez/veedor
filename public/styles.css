@@ -1444,7 +1444,7 @@ body.dark-mode .envelope-card:hover .envelope-budget {
 
 /* Mensaje de bienvenida personalizado */
 #welcomeMessage {
-    padding: 12px 24px;
+    padding: 6px 24px;
     text-align: center;
     color: var(--text-secondary);
     font-size: 15px;
@@ -1454,6 +1454,7 @@ body.dark-mode .envelope-card:hover .envelope-budget {
     display: none;
     background: transparent;
     margin: 0;
+    margin-top: -8px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -1468,8 +1469,9 @@ body:not(.dark-mode) #welcomeMessage {
 
 @media (max-width: 768px) {
     #welcomeMessage {
-        padding: 10px 16px;
+        padding: 4px 16px;
         font-size: 14px;
+        margin-top: -6px;
     }
 }
 

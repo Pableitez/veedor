@@ -1303,23 +1303,23 @@ function showMainApp() {
     // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
 }
 
-// Frases de bienvenida personalizadas
+// Frases de bienvenida personalizadas (más amistosas)
 const welcomeMessages = [
-    "¡Hola, {nombre}!",
-    "Bienvenido de nuevo, {nombre}",
-    "¡Qué tal, {nombre}!",
-    "Hola {nombre}, ¿listo para gestionar tus finanzas?",
-    "¡Hey {nombre}! Vamos a revisar tus números",
-    "Buenos días, {nombre}",
-    "¡Hola {nombre}! Tu dinero te espera",
-    "Bienvenido, {nombre}. ¿Todo bajo control?",
-    "¡Hola {nombre}! Empecemos el día organizado",
-    "Hey {nombre}, ¿cómo van tus finanzas hoy?",
-    "¡Hola {nombre}! Tiempo de revisar tus cuentas",
-    "Bienvenido de vuelta, {nombre}. ¿Todo listo?",
+    "¡Hola {nombre}!",
+    "Qué tal {nombre}",
+    "Hey {nombre}, ¿cómo va todo?",
+    "Hola {nombre}, vamos a revisar tus números",
+    "Bienvenido de nuevo {nombre}",
+    "Hola {nombre}, momento de gestionar tus finanzas",
+    "Hey {nombre}, tu dinero te espera",
+    "Hola {nombre}, ¿todo bajo control?",
+    "Qué bueno verte {nombre}",
+    "Hola {nombre}, empecemos el día organizado",
+    "Hey {nombre}, ¿cómo van tus finanzas?",
+    "Hola {nombre}, tiempo de revisar tus cuentas",
+    "Bienvenido de vuelta {nombre}",
     "Hola {nombre}, vamos a por ello",
-    "¡Qué bueno verte de nuevo, {nombre}!",
-    "Hola {nombre}, momento de tomar el control"
+    "Qué tal {nombre}, momento de tomar el control"
 ];
 
 // Mostrar mensaje de bienvenida personalizado
@@ -1329,12 +1329,13 @@ function showWelcomeMessage() {
     
     if (!welcomeMessageEl || !welcomeMessageTextEl) return;
     
-    // Obtener nombre del usuario
+    // Obtener solo el nombre (firstName) del usuario
     let displayName = 'Usuario';
-    if (userProfile && (userProfile.firstName || userProfile.lastName)) {
-        displayName = `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim();
+    if (userProfile && userProfile.firstName) {
+        displayName = userProfile.firstName.trim();
     } else if (currentUser) {
-        displayName = currentUser;
+        // Si no hay firstName, usar el username pero solo la primera parte antes de espacios/@
+        displayName = currentUser.split(' ')[0].split('@')[0];
     }
     
     // Seleccionar frase aleatoria
