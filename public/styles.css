@@ -2469,6 +2469,23 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     padding: 0;
 }
 
+/* Botones de acciones en tabla de transacciones - Desktop */
+.transaction-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+    white-space: nowrap;
+}
+
+.transaction-actions button {
+    flex: 0 0 auto;
+    min-width: auto;
+    padding: 8px 16px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
 /* Aportes periódicos responsive */
 .periodic-contribution-grid {
     display: grid;
@@ -4603,7 +4620,7 @@ body:not(.dark-mode) .quick-add-tooltip {
     }
     
     .revolut-card .amount {
-        font-size: 64px !important;
+        font-size: 48px !important;
     }
     
     .savings-card {
