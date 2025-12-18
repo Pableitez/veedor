@@ -2389,7 +2389,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%);
     background-size: 200% 100%;
     background-position: 0% 50%;
-    color: white;
+    color: #0F172A;
     border: none;
     padding: 10px 16px;
     border-radius: 8px;
