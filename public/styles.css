@@ -2858,6 +2858,37 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     overflow-x: auto;
 }
 
+/* En desktop, evitar wrap del texto y permitir scroll vertical */
+@media (min-width: 769px) {
+    #transactionsTableContainer {
+        max-height: 600px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+    
+    /* Evitar wrap del texto en desktop */
+    #transactionsTable tbody td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Permitir wrap solo en descripción si es necesario, pero con scroll */
+    #transactionsTable tbody td:nth-child(4) {
+        white-space: normal;
+        max-width: 300px;
+        word-break: break-word;
+    }
+    
+    /* Categoría puede tener un ancho máximo pero sin wrap */
+    #transactionsTable tbody td:nth-child(3) {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
 /* Scrollbars globales mejorados */
 * {
     scrollbar-width: thin;
