@@ -10710,7 +10710,8 @@ function updateMonthDashboard() {
             
             if (totalIncomeBudget > 0 || totalExpenseBudget > 0) {
                 const summaryCard = document.createElement('div');
-                summaryCard.style.cssText = 'background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 24px; border-radius: var(--radius); border: none; box-shadow: var(--shadow-light); color: white; grid-column: 1/-1; cursor: pointer; transition: all 0.2s;';
+                summaryCard.className = 'rainbow-bg';
+                summaryCard.style.cssText = 'padding: 24px; border-radius: var(--radius); border: none; box-shadow: var(--shadow-light); color: #0F172A; grid-column: 1/-1; cursor: pointer; transition: all 0.2s;';
                 summaryCard.onmouseover = function() {
                     this.style.transform = 'translateY(-2px)';
                     this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.15)';
@@ -10721,28 +10722,28 @@ function updateMonthDashboard() {
                 };
                 summaryCard.onclick = () => switchToTab('envelopes', true);
                 summaryCard.innerHTML = `
-                    <h5 style="font-size: 18px; font-weight: 700; margin: 0 0 20px 0; color: white;">Resumen del Mes</h5>
+                    <h5 style="font-size: 18px; font-weight: 700; margin: 0 0 20px 0; color: #0F172A;">Resumen del Mes</h5>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                         <div>
-                            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Ingresos</div>
-                            <div style="font-size: 24px; font-weight: 700; color: white;">${formatCurrency(totalIncomeBudget)}</div>
-                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalIncomeActual)}</div>
-                            <div style="font-size: 12px; margin-top: 4px; color: ${totalIncomeActual >= totalIncomeBudget ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'};">
+                            <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">Presupuesto Ingresos</div>
+                            <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalIncomeBudget)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">Real: ${formatCurrency(totalIncomeActual)}</div>
+                            <div style="font-size: 12px; margin-top: 4px; color: #0F172A; opacity: 0.9;">
                                 ${totalIncomeBudget > 0 ? ((totalIncomeActual / totalIncomeBudget) * 100).toFixed(1) + '%' : '-'}
                             </div>
                         </div>
                         <div>
-                            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Gastos</div>
-                            <div style="font-size: 24px; font-weight: 700; color: white;">${formatCurrency(totalExpenseBudget)}</div>
-                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalExpenseActual)}</div>
-                            <div style="font-size: 12px; margin-top: 4px; color: ${totalExpenseActual <= totalExpenseBudget ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'};">
+                            <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">Presupuesto Gastos</div>
+                            <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalExpenseBudget)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">Real: ${formatCurrency(totalExpenseActual)}</div>
+                            <div style="font-size: 12px; margin-top: 4px; color: #0F172A; opacity: 0.9;">
                                 ${totalExpenseBudget > 0 ? ((totalExpenseActual / totalExpenseBudget) * 100).toFixed(1) + '%' : '-'}
                             </div>
                         </div>
                         <div>
-                            <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Ahorro Previsto</div>
-                            <div style="font-size: 24px; font-weight: 700; color: white;">${formatCurrency(totalIncomeBudget - totalExpenseBudget)}</div>
-                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalIncomeActual - totalExpenseActual)}</div>
+                            <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">Ahorro Previsto</div>
+                            <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalIncomeBudget - totalExpenseBudget)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">Real: ${formatCurrency(totalIncomeActual - totalExpenseActual)}</div>
                         </div>
                     </div>
                 `;
