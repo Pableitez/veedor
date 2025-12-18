@@ -6362,21 +6362,21 @@ function updateInvestments() {
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
             <div>
                 <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Total Invertido</div>
-                <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalInvested)}</div>
+                <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">${formatCurrency(totalInvested)}</div>
             </div>
             <div>
                 <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Valor Actual</div>
-                <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalCurrentValue)}</div>
+                <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">${formatCurrency(totalCurrentValue)}</div>
             </div>
             <div>
                 <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Ganancia/Pérdida</div>
-                <div style="font-size: 24px; font-weight: 700; color: ${totalProfit >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">
                     ${totalProfit >= 0 ? '+' : ''}${formatCurrency(totalProfit)}
                 </div>
             </div>
             <div>
                 <div style="font-size: 13px; opacity: 0.9; margin-bottom: 4px;">Rentabilidad Total</div>
-                <div style="font-size: 24px; font-weight: 700; color: ${totalReturn >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">
                     ${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%
                 </div>
             </div>
@@ -7197,7 +7197,7 @@ function updateAccounts() {
                 <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${accounts.length} cuenta${accounts.length !== 1 ? 's' : ''}</p>
             </div>
             <div style="text-align: right;">
-                <div style="font-size: 56px; font-weight: 700; color: white;">
+                <div class="rainbow-text" style="font-size: 56px; font-weight: 700;">
                     ${formatCurrency(totalBalance)}
                 </div>
                 <div style="font-size: 12px; color: rgba(255,255,255,0.8);">EUR</div>
@@ -10728,7 +10728,7 @@ function updateMonthDashboard() {
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                         <div>
                             <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Ingresos</div>
-                            <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalIncomeBudget)}</div>
+                            <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">${formatCurrency(totalIncomeBudget)}</div>
                             <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalIncomeActual)}</div>
                             <div style="font-size: 12px; margin-top: 4px; color: ${totalIncomeActual >= totalIncomeBudget ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'};">
                                 ${totalIncomeBudget > 0 ? ((totalIncomeActual / totalIncomeBudget) * 100).toFixed(1) + '%' : '-'}
@@ -10736,7 +10736,7 @@ function updateMonthDashboard() {
                         </div>
                         <div>
                             <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Presupuesto Gastos</div>
-                            <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalExpenseBudget)}</div>
+                            <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">${formatCurrency(totalExpenseBudget)}</div>
                             <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalExpenseActual)}</div>
                             <div style="font-size: 12px; margin-top: 4px; color: ${totalExpenseActual <= totalExpenseBudget ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)'};">
                                 ${totalExpenseBudget > 0 ? ((totalExpenseActual / totalExpenseBudget) * 100).toFixed(1) + '%' : '-'}
@@ -10744,7 +10744,7 @@ function updateMonthDashboard() {
                         </div>
                         <div>
                             <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Ahorro Previsto</div>
-                            <div style="font-size: 24px; font-weight: 700;">${formatCurrency(totalIncomeBudget - totalExpenseBudget)}</div>
+                            <div class="rainbow-text" style="font-size: 24px; font-weight: 700;">${formatCurrency(totalIncomeBudget - totalExpenseBudget)}</div>
                             <div style="font-size: 14px; margin-top: 4px; opacity: 0.8;">Real: ${formatCurrency(totalIncomeActual - totalExpenseActual)}</div>
                         </div>
                     </div>
