@@ -1501,6 +1501,17 @@ body:not(.dark-mode) .rainbow-bg {
     background-position: 0% 50%;
 }
 
+/* Texto azul oscuro dentro de tarjetas con fondo arcoíris */
+.rainbow-bg,
+.rainbow-bg * {
+    color: #0F172A !important;
+}
+
+/* Excepciones para mantener algunos elementos con opacidad */
+.rainbow-bg *[style*="opacity"] {
+    color: #0F172A !important;
+}
+
 @media (max-width: 768px) {
     #welcomeMessage {
         padding: 4px 16px;
@@ -2389,7 +2400,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%);
     background-size: 200% 100%;
     background-position: 0% 50%;
-    color: #0F172A;
+    color: white;
     border: none;
     padding: 10px 16px;
     border-radius: 8px;
