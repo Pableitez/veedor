@@ -4283,12 +4283,12 @@ function updateBudgets() {
         card.className = 'envelope-card';
         card.style.borderLeft = `4px solid ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'}`;
         card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                <div>
-                    <h3 style="margin: 0;">${displayName}</h3>
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; gap: 8px;">
+                <div style="flex: 1; min-width: 0;">
+                    <h3 style="margin: 0; font-size: clamp(14px, 3vw, 16px); font-weight: 700; color: var(--text-primary) !important; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.3;">${displayName}</h3>
                     ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500);">Patrimonio</small>` : ''}
                 </div>
-                <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600;">${periodLabel}</span>
+                <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600; flex-shrink: 0; white-space: nowrap;">${periodLabel}</span>
             </div>
             <div style="margin: 12px 0;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
