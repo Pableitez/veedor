@@ -54,6 +54,63 @@ if (window.VEEDOR_LOADED) {
             console.warn('Modal de términos no encontrado');
         }
     };
+    
+    // Exponer funciones de idioma inmediatamente para evitar errores
+    window.toggleLanguageDropdown = function() {
+        const dropdown = document.getElementById('languageDropdown');
+        const mainNavDropdown = document.getElementById('mainNavDropdown');
+        const settingsDropdown = document.getElementById('settingsDropdown');
+        
+        if (dropdown) {
+            const isVisible = dropdown.style.display !== 'none' && dropdown.style.display !== '';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                dropdown.style.opacity = '0';
+                dropdown.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    dropdown.style.transition = 'all 0.3s ease';
+                    dropdown.style.opacity = '1';
+                    dropdown.style.transform = 'translateY(0)';
+                }, 10);
+            }
+        }
+        
+        if (mainNavDropdown && mainNavDropdown.style.display === 'block') {
+            mainNavDropdown.style.display = 'none';
+        }
+        if (settingsDropdown && settingsDropdown.style.display === 'block') {
+            settingsDropdown.style.display = 'none';
+        }
+    };
+    
+    window.toggleAuthLanguageDropdown = function() {
+        const dropdown = document.getElementById('authLanguageDropdown');
+        const mainNavDropdown = document.getElementById('mainNavDropdown');
+        const settingsDropdown = document.getElementById('settingsDropdown');
+        
+        if (dropdown) {
+            const isVisible = dropdown.style.display !== 'none' && dropdown.style.display !== '';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                dropdown.style.opacity = '0';
+                dropdown.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    dropdown.style.transition = 'all 0.3s ease';
+                    dropdown.style.opacity = '1';
+                    dropdown.style.transform = 'translateY(0)';
+                }, 10);
+            }
+        }
+        
+        if (mainNavDropdown && mainNavDropdown.style.display === 'block') {
+            mainNavDropdown.style.display = 'none';
+        }
+        if (settingsDropdown && settingsDropdown.style.display === 'block') {
+            settingsDropdown.style.display = 'none';
+        }
+    };
     window.closePrivacyModal = function() { 
         const modal = document.getElementById('privacyModal');
         if (modal) modal.style.display = 'none';
