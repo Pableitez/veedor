@@ -1501,10 +1501,10 @@ body:not(.dark-mode) .rainbow-bg {
     background-position: 0% 50%;
 }
 
-/* Texto azul oscuro dentro de tarjetas con fondo arcoíris - Siempre azul para mejor visibilidad */
+/* Texto gris oscuro dentro de tarjetas con fondo arcoíris - Mejor contraste y más neutro */
 .rainbow-bg,
 .rainbow-bg * {
-    color: #0F172A !important;
+    color: #1F2937 !important;
 }
 
 /* Asegurar que el fondo arcoíris se vea bien en modo oscuro */
