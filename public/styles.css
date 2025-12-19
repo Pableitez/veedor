@@ -690,6 +690,10 @@ body.dark-mode .auth-screen::before {
     transition: all 0.3s ease;
 }
 
+body.dark-mode .auth-header p {
+    color: #FFFFFF;
+}
+
 .auth-tabs {
     display: flex;
     gap: 0;
@@ -717,11 +721,19 @@ body.dark-mode .auth-screen::before {
     color: #374151;
 }
 
+body.dark-mode .auth-tab-btn:hover {
+    color: #E5E7EB;
+}
+
 .auth-tab-btn.active {
     color: #1F2937;
     border-bottom: 2px solid;
     border-image: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%) 1;
     font-weight: 600;
+}
+
+body.dark-mode .auth-tab-btn.active {
+    color: #FFFFFF;
 }
 
 .auth-form {
@@ -753,6 +765,10 @@ body.dark-mode .auth-screen::before {
     margin-bottom: clamp(4px, 0.8vh, 8px);
     font-weight: 500;
     color: #1F2937;
+}
+
+body.dark-mode .auth-form .form-group label {
+    color: #FFFFFF;
 }
 
 .auth-form .form-group input {
@@ -2413,7 +2429,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%);
     background-size: 200% 100%;
     background-position: 0% 50%;
-    color: white;
+    color: #1F2937;
     border: none;
     padding: 10px 16px;
     border-radius: 8px;

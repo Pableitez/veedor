@@ -1303,23 +1303,22 @@ function showMainApp() {
     // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
 }
 
-// Frases de bienvenida personalizadas (más amistosas)
+// Frases de bienvenida personalizadas (mejoradas y más profesionales)
 const welcomeMessages = [
-    "¡Hola {nombre}!",
-    "Qué tal {nombre}",
-    "Hey {nombre}, ¿cómo va todo?",
-    "Hola {nombre}, vamos a revisar tus números",
-    "Bienvenido de nuevo {nombre}",
-    "Hola {nombre}, momento de gestionar tus finanzas",
-    "Hey {nombre}, tu dinero te espera",
-    "Hola {nombre}, ¿todo bajo control?",
-    "Qué bueno verte {nombre}",
-    "Hola {nombre}, empecemos el día organizado",
-    "Hey {nombre}, ¿cómo van tus finanzas?",
-    "Hola {nombre}, tiempo de revisar tus cuentas",
-    "Bienvenido de vuelta {nombre}",
-    "Hola {nombre}, vamos a por ello",
-    "Qué tal {nombre}, momento de tomar el control"
+    "¡Bienvenido de vuelta, {nombre}!",
+    "Hola {nombre}, gestiona tus finanzas con confianza",
+    "¡Hola {nombre}! Todo listo para revisar tus números",
+    "Bienvenido {nombre}, toma el control de tu dinero",
+    "Hola {nombre}, tus finanzas te esperan",
+    "¡Hola {nombre}! Organiza tu economía hoy",
+    "Bienvenido de nuevo {nombre}, vamos a por ello",
+    "Hola {nombre}, momento de revisar tu situación financiera",
+    "¡Hola {nombre}! Gestiona tu dinero de forma inteligente",
+    "Bienvenido {nombre}, tus cuentas están listas",
+    "Hola {nombre}, administra tus finanzas con tranquilidad",
+    "¡Hola {nombre}! Revisa y controla tus gastos",
+    "Bienvenido de vuelta {nombre}, todo bajo control",
+    "Hola {nombre}, gestiona tu presupuesto con éxito"
 ];
 
 // Mostrar mensaje de bienvenida personalizado
@@ -10778,7 +10777,7 @@ function updateMonthDashboard() {
                     this.style.borderColor = 'var(--border-color)';
                 };
                 card.onclick = () => showCategoryDetails(category.name, categoryIncome, 'income', selectedMonth, budget.category_id, budget.amount);
-                const budgetDisplayName = budget.name || category.name;
+                const budgetDisplayName = category ? category.name : (budget.category_id || 'Sin categoría');
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${budgetDisplayName}</h5>
@@ -10836,7 +10835,7 @@ function updateMonthDashboard() {
                     this.style.borderColor = 'var(--border-color)';
                 };
                 card.onclick = () => showCategoryDetails(category.name, categoryExpenses, 'expense', selectedMonth, budget.category_id, budget.amount);
-                const budgetDisplayName = budget.name || category.name;
+                const budgetDisplayName = category ? category.name : (budget.category_id || 'Sin categoría');
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${budgetDisplayName}</h5>
