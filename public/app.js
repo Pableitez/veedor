@@ -439,7 +439,10 @@ function toggleDarkMode() {
         body.classList.remove('dark-mode');
         localStorage.setItem('veedor_darkMode', 'false');
         const toggleText = document.getElementById('darkModeToggleText');
-        if (toggleText) toggleText.textContent = 'Modo Oscuro';
+        if (toggleText) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            toggleText.textContent = getTranslation('common.darkMode', lang);
+        }
         // Actualizar theme-color para status bar (modo claro)
         updateThemeColor('#F8FAFC');
     } else {
@@ -447,7 +450,10 @@ function toggleDarkMode() {
         body.classList.add('dark-mode');
         localStorage.setItem('veedor_darkMode', 'true');
         const toggleText = document.getElementById('darkModeToggleText');
-        if (toggleText) toggleText.textContent = 'Modo Claro';
+        if (toggleText) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            toggleText.textContent = getTranslation('common.lightMode', lang);
+        }
         // Actualizar theme-color para status bar (modo oscuro - color muy oscuro del inicio)
         updateThemeColor('#050510');
     }
@@ -1571,11 +1577,13 @@ function toggleTransactionFilters() {
         
         if (isExpanded) {
             filters.classList.remove('expanded');
-            toggleText.textContent = 'Mostrar Filtros';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            toggleText.textContent = getTranslation('common.showFilters', lang);
             toggleIcon.style.transform = 'rotate(0deg)';
         } else {
             filters.classList.add('expanded');
-            toggleText.textContent = 'Ocultar Filtros';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            toggleText.textContent = getTranslation('common.hideFilters', lang);
             toggleIcon.style.transform = 'rotate(180deg)';
     }
 }
@@ -1616,11 +1624,13 @@ function toggleTransactionFilters() {
         
         if (isExpanded) {
             filters.classList.remove('expanded');
-            toggleText.textContent = 'Mostrar Filtros';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            toggleText.textContent = getTranslation('common.showFilters', lang);
             toggleIcon.style.transform = 'rotate(0deg)';
         } else {
             filters.classList.add('expanded');
-            toggleText.textContent = 'Ocultar Filtros';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            toggleText.textContent = getTranslation('common.hideFilters', lang);
             toggleIcon.style.transform = 'rotate(180deg)';
         }
     }
@@ -14015,7 +14025,19 @@ function toggleLanguageDropdown() {
     const settingsDropdown = document.getElementById('settingsDropdown');
     
     if (dropdown) {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        const isVisible = dropdown.style.display !== 'none' && dropdown.style.display !== '';
+        dropdown.style.display = isVisible ? 'none' : 'block';
+        
+        // Agregar animación suave
+        if (!isVisible) {
+            dropdown.style.opacity = '0';
+            dropdown.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                dropdown.style.transition = 'all 0.3s ease';
+                dropdown.style.opacity = '1';
+                dropdown.style.transform = 'translateY(0)';
+            }, 10);
+        }
     }
     
     // Cerrar otros dropdowns
@@ -14034,7 +14056,19 @@ function toggleAuthLanguageDropdown() {
     const settingsDropdown = document.getElementById('settingsDropdown');
     
     if (dropdown) {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        const isVisible = dropdown.style.display !== 'none' && dropdown.style.display !== '';
+        dropdown.style.display = isVisible ? 'none' : 'block';
+        
+        // Agregar animación suave
+        if (!isVisible) {
+            dropdown.style.opacity = '0';
+            dropdown.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                dropdown.style.transition = 'all 0.3s ease';
+                dropdown.style.opacity = '1';
+                dropdown.style.transform = 'translateY(0)';
+            }, 10);
+        }
     }
     
     // Cerrar otros dropdowns
