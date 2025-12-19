@@ -1657,11 +1657,7 @@ document.addEventListener('click', function(event) {
     const authLanguageDropdown = document.getElementById('authLanguageDropdown');
     const authLanguageBtn = document.getElementById('authLanguageDropdownBtn');
     if (authLanguageDropdown && authLanguageBtn && !authLanguageDropdown.contains(event.target) && !authLanguageBtn.contains(event.target)) {
-        // Solo cerrar si no estamos haciendo clic en un elemento del dropdown
-        const clickedItem = event.target.closest('.nav-dropdown-item');
-        if (!clickedItem) {
-            authLanguageDropdown.style.display = 'none';
-        }
+        authLanguageDropdown.style.display = 'none';
     }
 });
 

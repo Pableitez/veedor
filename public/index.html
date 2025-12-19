@@ -91,17 +91,17 @@
                     <button id="authLanguageDropdownBtn" onclick="toggleAuthLanguageDropdown()" style="padding: 8px 12px; background: rgba(78, 205, 196, 0.15); border: 1px solid rgba(78, 205, 196, 0.3); border-radius: 10px; color: #4ECDC4; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; min-width: 50px;" onmouseover="this.style.background='rgba(78, 205, 196, 0.25)'; this.style.borderColor='rgba(78, 205, 196, 0.5)'" onmouseout="this.style.background='rgba(78, 205, 196, 0.15)'; this.style.borderColor='rgba(78, 205, 196, 0.3)'" title="Idioma / Language">
                         <span id="authCurrentLanguageFlag" style="font-size: 16px; font-weight: 600;">🇪🇸</span>
                     </button>
-                    <div id="authLanguageDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-primary); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 180px; z-index: 1000; overflow: hidden; border: 1px solid var(--border-color);">
-                        <a href="javascript:void(0);" onclick="changeLanguage('es'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="es" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
+                    <div id="authLanguageDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-primary); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 180px; z-index: 1000; overflow: hidden; border: 1px solid var(--border-color);" onclick="event.stopPropagation();">
+                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('es'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="es" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
                             <span style="font-size: 18px;">🇪🇸</span> <span data-translate="settings.spanish">Español</span>
                         </a>
-                        <a href="javascript:void(0);" onclick="changeLanguage('en'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="en" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
+                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('en'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="en" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
                             <span style="font-size: 18px;">🇬🇧</span> <span data-translate="settings.english">English</span>
                         </a>
-                        <a href="javascript:void(0);" onclick="changeLanguage('de'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="de" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
+                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('de'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="de" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
                             <span style="font-size: 18px;">🇩🇪</span> <span data-translate="settings.german">Deutsch</span>
                         </a>
-                        <a href="javascript:void(0);" onclick="changeLanguage('fr'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="fr" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
+                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('fr'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="fr" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
                             <span style="font-size: 18px;">🇫🇷</span> <span data-translate="settings.french">Français</span>
                         </a>
                     </div>
