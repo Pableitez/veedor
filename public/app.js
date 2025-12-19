@@ -10730,6 +10730,7 @@ function closeChartModal() {
 
 // Actualizar análisis del mes seleccionado
 function updateMonthDashboard() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const dashboardMonthInput = document.getElementById('dashboardMonth');
     const monthDashboard = document.getElementById('monthDashboard');
     const monthAnalysisSelector = document.getElementById('monthAnalysisSelector');
