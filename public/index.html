@@ -82,26 +82,6 @@
             <!-- Botón de Toggle Modo Oscuro/Claro -->
             <!-- Contenedor de botones de configuración en Welcome Page -->
             <div style="position: absolute; top: 20px; right: 20px; z-index: 10; display: flex; align-items: center; gap: 12px;">
-                <!-- Selector de Idioma -->
-                <div style="position: relative;">
-                    <button id="authLanguageDropdownBtn" onclick="toggleAuthLanguageDropdown();" style="padding: 10px; background: rgba(78, 205, 196, 0.15); border: 1px solid rgba(78, 205, 196, 0.3); border-radius: 10px; color: #4ECDC4; font-size: 18px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);" onmouseover="this.style.background='rgba(78, 205, 196, 0.25)'; this.style.borderColor='rgba(78, 205, 196, 0.5)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(78, 205, 196, 0.15)'; this.style.borderColor='rgba(78, 205, 196, 0.3)'; this.style.transform='scale(1)'" title="Idioma / Language">
-                        <span id="authCurrentLanguageFlag" style="font-size: 20px; font-weight: 600;">🇪🇸</span>
-                    </button>
-                    <div id="authLanguageDropdown" style="display: none; position: absolute; top: calc(100% + 8px); right: 0; background: var(--bg-primary); border-radius: 16px; box-shadow: 0 12px 32px rgba(0,0,0,0.2), 0 4px 12px rgba(78, 205, 196, 0.15); min-width: 200px; z-index: 1000; overflow: hidden; border: 2px solid rgba(78, 205, 196, 0.3); backdrop-filter: blur(10px);" onclick="event.stopPropagation();">
-                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('es'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="es" style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; transition: all 0.2s; border-bottom: 1px solid var(--border-color);" onmouseover="this.style.background='rgba(78, 205, 196, 0.1)'" onmouseout="this.style.background='transparent'">
-                            <span style="font-size: 20px;">🇪🇸</span> <span data-translate="settings.spanish" style="font-weight: 500;">Español</span>
-                        </a>
-                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('en'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="en" style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; transition: all 0.2s; border-bottom: 1px solid var(--border-color);" onmouseover="this.style.background='rgba(78, 205, 196, 0.1)'" onmouseout="this.style.background='transparent'">
-                            <span style="font-size: 20px;">🇬🇧</span> <span data-translate="settings.english" style="font-weight: 500;">English</span>
-                        </a>
-                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('de'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="de" style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; transition: all 0.2s; border-bottom: 1px solid var(--border-color);" onmouseover="this.style.background='rgba(78, 205, 196, 0.1)'" onmouseout="this.style.background='transparent'">
-                            <span style="font-size: 20px;">🇩🇪</span> <span data-translate="settings.german" style="font-weight: 500;">Deutsch</span>
-                        </a>
-                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('fr'); toggleAuthLanguageDropdown();" class="nav-dropdown-item" data-lang="fr" style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; transition: all 0.2s;" onmouseover="this.style.background='rgba(78, 205, 196, 0.1)'" onmouseout="this.style.background='transparent'">
-                            <span style="font-size: 20px;">🇫🇷</span> <span data-translate="settings.french" style="font-weight: 500;">Français</span>
-                        </a>
-                    </div>
-                </div>
                 <!-- Toggle Modo Oscuro/Claro -->
                 <button id="authDarkModeToggle" onclick="toggleDarkMode(); updateAuthDarkModeIcon();" style="padding: 10px; background: rgba(78, 205, 196, 0.15); border: 1px solid rgba(78, 205, 196, 0.3); border-radius: 10px; color: #4ECDC4; font-size: 20px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);" onmouseover="this.style.background='rgba(78, 205, 196, 0.25)'; this.style.borderColor='rgba(78, 205, 196, 0.5)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(78, 205, 196, 0.15)'; this.style.borderColor='rgba(78, 205, 196, 0.3)'; this.style.transform='scale(1)'" title="Cambiar modo oscuro/claro">
                     <span id="authDarkModeIcon" style="font-size: 20px; filter: grayscale(100%);">🌙</span>
@@ -206,26 +186,6 @@
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0; margin-left: auto;">
-                <!-- Selector de Idioma -->
-                <div style="position: relative; flex-shrink: 0;">
-                    <button id="languageDropdownBtn" onclick="toggleLanguageDropdown();" style="padding: 8px; border-radius: 4px; font-size: 18px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0; background: rgba(78, 205, 196, 0.15); border: 1px solid rgba(78, 205, 196, 0.3); color: #4ECDC4;" onmouseover="this.style.background='rgba(78, 205, 196, 0.25)'; this.style.borderColor='rgba(78, 205, 196, 0.5)'" onmouseout="this.style.background='rgba(78, 205, 196, 0.15)'; this.style.borderColor='rgba(78, 205, 196, 0.3)'" title="Idioma / Language">
-                        <span id="currentLanguageFlag" style="font-size: 16px; font-weight: 600;">🇪🇸</span>
-                    </button>
-                    <div id="languageDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-primary); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 180px; z-index: 1000; overflow: hidden; border: 1px solid var(--border-color);" onclick="event.stopPropagation();">
-                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('es'); toggleLanguageDropdown();" class="nav-dropdown-item" data-lang="es" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
-                            <span style="font-size: 18px;">🇪🇸</span> <span data-translate="settings.spanish">Español</span>
-                        </a>
-                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('en'); toggleLanguageDropdown();" class="nav-dropdown-item" data-lang="en" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
-                            <span style="font-size: 18px;">🇬🇧</span> <span data-translate="settings.english">English</span>
-                        </a>
-                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('de'); toggleLanguageDropdown();" class="nav-dropdown-item" data-lang="de" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
-                            <span style="font-size: 18px;">🇩🇪</span> <span data-translate="settings.german">Deutsch</span>
-                        </a>
-                        <a href="javascript:void(0);" onclick="event.stopPropagation(); changeLanguage('fr'); toggleLanguageDropdown();" class="nav-dropdown-item" data-lang="fr" style="display: flex; align-items: center; gap: 8px; padding: 12px 16px;">
-                            <span style="font-size: 18px;">🇫🇷</span> <span data-translate="settings.french">Français</span>
-                        </a>
-                    </div>
-                </div>
                 <!-- Toggle Modo Oscuro/Claro -->
                 <div style="position: relative; flex-shrink: 0; display: flex !important; visibility: visible !important;">
                     <button id="darkModeToggleBtn" onclick="toggleDarkMode(); updateNavDarkModeIcon();" style="padding: 8px; border-radius: 4px; font-size: 18px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex !important; visibility: visible !important; opacity: 1 !important; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0; background: rgba(78, 205, 196, 0.15); border: 1px solid rgba(78, 205, 196, 0.3); color: #4ECDC4;" onmouseover="this.style.background='rgba(78, 205, 196, 0.25)'; this.style.borderColor='rgba(78, 205, 196, 0.5)'" onmouseout="this.style.background='rgba(78, 205, 196, 0.15)'; this.style.borderColor='rgba(78, 205, 196, 0.3)'" title="Cambiar modo oscuro/claro">
