@@ -3956,13 +3956,13 @@ function updateTransactionsTable() {
 
 // Actualizar sobres
 function updateEnvelopes() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const grid = document.getElementById('envelopesGrid');
     if (!grid) return;
     
     grid.innerHTML = '';
     
     if (envelopes.length === 0) {
-        const lang = localStorage.getItem('veedor_language') || 'es';
         grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">${getTranslation('messages.noEnvelopes', lang)}</p>`;
         return;
     }
@@ -5620,13 +5620,13 @@ async function addLoan() {
 
 // Actualizar préstamos con cálculos avanzados
 function updateLoans() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const grid = document.getElementById('loansGrid');
     if (!grid) return;
     
     grid.innerHTML = '';
     
     if (loans.length === 0) {
-        const lang = localStorage.getItem('veedor_language') || 'es';
         grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">${getTranslation('empty.noLoans', lang)}</p>`;
         return;
     }
