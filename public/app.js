@@ -3167,7 +3167,6 @@ function initializeForms() {
                 periodValueLabel.textContent = getTranslation('help.year', lang);
                 periodValueHelp.textContent = getTranslation('help.selectYear', lang);
                 amountLabel.textContent = 'Presupuesto Anual (€)';
-                const lang = localStorage.getItem('veedor_language') || 'es';
                 amountHelp.textContent = getTranslation('help.yearlyLimit', lang);
                 if (durationGroup) durationGroup.style.display = 'none';
             }
