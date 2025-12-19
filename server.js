@@ -169,15 +169,6 @@ const accountSchema = new mongoose.Schema({
     updated_at: { type: Date, default: Date.now }
 });
 
-const User = mongoose.model('User', userSchema);
-const Transaction = mongoose.model('Transaction', transactionSchema);
-const Envelope = mongoose.model('Envelope', envelopeSchema);
-const Loan = mongoose.model('Loan', loanSchema);
-const Investment = mongoose.model('Investment', investmentSchema);
-const Budget = mongoose.model('Budget', budgetSchema);
-const Account = mongoose.model('Account', accountSchema);
-const Property = mongoose.model('Property', propertySchema);
-
 const propertySchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true }, // Nombre de la propiedad (ej: "Piso Calle Mayor 5", "Casa en la playa")
@@ -188,6 +179,15 @@ const propertySchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });
+
+const User = mongoose.model('User', userSchema);
+const Transaction = mongoose.model('Transaction', transactionSchema);
+const Envelope = mongoose.model('Envelope', envelopeSchema);
+const Loan = mongoose.model('Loan', loanSchema);
+const Investment = mongoose.model('Investment', investmentSchema);
+const Budget = mongoose.model('Budget', budgetSchema);
+const Account = mongoose.model('Account', accountSchema);
+const Property = mongoose.model('Property', propertySchema);
 
 // ==================== MÓDULO PATRIMONIO ====================
 // Nuevo esquema unificado de Patrimonio que reemplaza Property y Asset
