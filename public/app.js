@@ -111,6 +111,48 @@ if (window.VEEDOR_LOADED) {
             settingsDropdown.style.display = 'none';
         }
     };
+    
+    // Exponer función changeLanguage inmediatamente para evitar errores
+    window.changeLanguage = function(lang) {
+        console.log('🌐 Cambiando idioma a:', lang);
+        
+        // Guardar idioma
+        if (window.setLanguage && typeof window.setLanguage === 'function') {
+            try {
+                window.setLanguage(lang);
+            } catch (e) {
+                console.warn('Error en setLanguage:', e);
+                localStorage.setItem('veedor_language', lang);
+            }
+        } else {
+            localStorage.setItem('veedor_language', lang);
+            if (typeof window !== 'undefined') {
+                window.currentLanguage = lang;
+            }
+        }
+        
+        // Actualizar traducciones si la función está disponible
+        if (window.updateTranslations && typeof window.updateTranslations === 'function') {
+            window.updateTranslations();
+        }
+        
+        // Actualizar banderas
+        const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
+        const authFlag = document.getElementById('authCurrentLanguageFlag');
+        if (authFlag && flags[lang]) {
+            authFlag.textContent = flags[lang];
+        }
+        const mainFlag = document.getElementById('currentLanguageFlag');
+        if (mainFlag && flags[lang]) {
+            mainFlag.textContent = flags[lang];
+        }
+        
+        // Cerrar dropdowns
+        const authDropdown = document.getElementById('authLanguageDropdown');
+        if (authDropdown) authDropdown.style.display = 'none';
+        const mainDropdown = document.getElementById('languageDropdown');
+        if (mainDropdown) mainDropdown.style.display = 'none';
+    };
     window.closePrivacyModal = function() { 
         const modal = document.getElementById('privacyModal');
         if (modal) modal.style.display = 'none';
