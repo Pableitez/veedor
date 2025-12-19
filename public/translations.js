@@ -1192,7 +1192,17 @@ const translations = {
             showFilters: "Filter anzeigen",
             hideFilters: "Filter ausblenden",
             darkMode: "Dunkler Modus",
-            lightMode: "Heller Modus"
+            lightMode: "Heller Modus",
+            transactions: "Transaktionen",
+            budget: "Budget",
+            progress: "Budgetfortschritt",
+            real: "Tatsächlich",
+            interpretation: "Interpretation",
+            patrimony: "Vermögen",
+            loan: "Darlehen",
+            initialCapital: "Anfangskapital",
+            openingCommission: "Eröffnungsgebühr",
+            periodicContribution: "Aktiver periodischer Beitrag"
         },
         buttons: {
             save: "Speichern",
