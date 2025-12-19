@@ -3169,7 +3169,6 @@ function initializeForms() {
                 const lang = localStorage.getItem('veedor_language') || 'es';
                 periodValueLabel.textContent = getTranslation('help.year', lang);
                 periodValueHelp.textContent = getTranslation('help.selectYear', lang);
-                const lang = localStorage.getItem('veedor_language') || 'es';
                 amountLabel.textContent = getTranslation('budget.yearlyBudget', lang);
                 amountHelp.textContent = getTranslation('help.yearlyLimit', lang);
                 if (durationGroup) durationGroup.style.display = 'none';
