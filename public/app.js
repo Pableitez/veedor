@@ -2539,6 +2539,8 @@ function initializeForms() {
                     const today = new Date().toISOString().split('T')[0];
                     contributionStartDate.value = today;
                 }
+                // Actualizar selector de cuentas cuando se muestran los campos
+                updateAccountSelect('contributionAccount');
             }
         });
     }
@@ -6428,6 +6430,7 @@ async function addInvestment() {
 
 // Actualizar inversiones
 function updateInvestments() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const grid = document.getElementById('investmentsGrid');
     if (!grid) return;
     
@@ -6526,7 +6529,7 @@ function updateInvestments() {
             
             ${investment.periodic_contribution && investment.periodic_contribution.enabled ? `
                 <div class="periodic-contribution-container">
-                    <div class="periodic-contribution-title">${getTranslation('common.periodicContribution', lang)}</div>
+                    <div class="periodic-contribution-title">Aporte Periódico</div>
                     <div class="periodic-contribution-grid">
                         <div class="periodic-contribution-label"><strong>Frecuencia:</strong></div>
                         <div class="periodic-contribution-value">${investment.periodic_contribution.frequency === 'weekly' ? 'Semanal' : investment.periodic_contribution.frequency === 'monthly' ? 'Mensual' : 'Anual'}</div>
