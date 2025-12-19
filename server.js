@@ -176,6 +176,7 @@ const Loan = mongoose.model('Loan', loanSchema);
 const Investment = mongoose.model('Investment', investmentSchema);
 const Budget = mongoose.model('Budget', budgetSchema);
 const Account = mongoose.model('Account', accountSchema);
+const Property = mongoose.model('Property', propertySchema);
 
 const propertySchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
