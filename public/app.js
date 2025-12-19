@@ -333,10 +333,43 @@ if (window.VEEDOR_LOADED) {
             // Escuchar actualizaciones del Service Worker
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 console.log('🔄 Nueva versión del Service Worker disponible');
-                // Opcional: mostrar notificación al usuario
+                // Recargar página cuando hay nueva versión
+                window.location.reload();
             });
         });
     }
+    
+    // Manejar prompt de instalación PWA
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevenir el prompt automático
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Mostrar botón de instalación si no está instalada
+        const installButton = document.getElementById('installPWAButton');
+        if (installButton) {
+            installButton.style.display = 'flex';
+            installButton.addEventListener('click', async () => {
+                // Mostrar el prompt
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} la instalación`);
+                deferredPrompt = null;
+                installButton.style.display = 'none';
+            });
+        }
+    });
+    
+    // Ocultar botón si ya está instalada
+    window.addEventListener('appinstalled', () => {
+        console.log('✅ PWA instalada');
+        const installButton = document.getElementById('installPWAButton');
+        if (installButton) {
+            installButton.style.display = 'none';
+        }
+        deferredPrompt = null;
+    });
     console.log('API_URL:', API_URL);
     console.log('URL actual:', window.location.href);
 

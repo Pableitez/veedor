@@ -1,6 +1,6 @@
 // Service Worker para Veedor PWA
-const CACHE_NAME = 'veedor-v1';
-const RUNTIME_CACHE = 'veedor-runtime-v1';
+const CACHE_NAME = 'veedor-v2.26.0';
+const RUNTIME_CACHE = 'veedor-runtime-v2.26.0';
 
 // Archivos estáticos a cachear
 const STATIC_CACHE_URLS = [
