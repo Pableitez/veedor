@@ -358,48 +358,64 @@ if (window.VEEDOR_LOADED) {
         return false;
     }
     
-    // Verificar al cargar
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', checkIfInstalled);
-    } else {
-        checkIfInstalled();
+    // Función para manejar el click del botón de instalación
+    function setupInstallButton() {
+        const installButton = document.getElementById('installPWAButton');
+        if (!installButton) return;
+        
+        // Remover listeners anteriores para evitar duplicados
+        const newButton = installButton.cloneNode(true);
+        installButton.parentNode.replaceChild(newButton, installButton);
+        
+        newButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // Si hay prompt disponible, usarlo
+                console.log('📱 Mostrando prompt de instalación...');
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} la instalación`);
+                deferredPrompt = null;
+                if (outcome === 'accepted') {
+                    newButton.style.display = 'none';
+                }
+            } else {
+                // Si no hay prompt, mostrar instrucciones según el dispositivo
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                const isAndroid = /Android/.test(navigator.userAgent);
+                
+                if (isIOS) {
+                    alert('Para instalar en iOS:\n1. Toca el botón de compartir (cuadrado con flecha)\n2. Selecciona "Agregar a pantalla de inicio"\n3. Toca "Agregar"');
+                } else if (isAndroid) {
+                    alert('Para instalar en Android:\n1. Toca el menú (3 puntos) en la esquina superior derecha\n2. Selecciona "Instalar aplicación" o "Agregar a pantalla de inicio"');
+                } else {
+                    alert('Para instalar:\n1. Busca el icono de instalación en la barra de direcciones\n2. O usa el menú del navegador para "Instalar aplicación"');
+                }
+            }
+        });
     }
     
-    // Manejar evento beforeinstallprompt
+    // Verificar al cargar
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkIfInstalled()) {
+                setupInstallButton();
+            }
+        });
+    } else {
+        if (!checkIfInstalled()) {
+            setupInstallButton();
+        }
+    }
+    
+    // Manejar evento beforeinstallprompt (cuando el navegador permite instalación)
     window.addEventListener('beforeinstallprompt', (e) => {
         console.log('📱 Evento beforeinstallprompt detectado');
         // Prevenir el prompt automático
         e.preventDefault();
         deferredPrompt = e;
         
-        // Mostrar botón de instalación
-        const installButton = document.getElementById('installPWAButton');
-        if (installButton) {
-            installButton.style.display = 'flex';
-            console.log('✅ Botón de instalación mostrado');
-            
-            // Remover listener anterior si existe para evitar duplicados
-            const newButton = installButton.cloneNode(true);
-            installButton.parentNode.replaceChild(newButton, installButton);
-            
-            // Agregar listener al nuevo botón
-            newButton.addEventListener('click', async () => {
-                if (!deferredPrompt) {
-                    console.log('⚠️ No hay prompt disponible');
-                    return;
-                }
-                
-                console.log('📱 Mostrando prompt de instalación...');
-                // Mostrar el prompt
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} la instalación`);
-                deferredPrompt = null;
-                newButton.style.display = 'none';
-            });
-        } else {
-            console.log('⚠️ Botón installPWAButton no encontrado');
-        }
+        // El botón ya está visible, solo actualizar el listener
+        setupInstallButton();
     });
     
     // Ocultar botón si ya está instalada
@@ -411,17 +427,6 @@ if (window.VEEDOR_LOADED) {
         }
         deferredPrompt = null;
     });
-    
-    // También verificar periódicamente (por si el evento no se dispara)
-    setTimeout(() => {
-        if (!deferredPrompt && !checkIfInstalled()) {
-            console.log('ℹ️ PWA puede ser instalable, pero el evento beforeinstallprompt no se ha disparado');
-            console.log('   Esto puede ser normal si:');
-            console.log('   - Ya está instalada');
-            console.log('   - No cumple los requisitos de instalabilidad');
-            console.log('   - El navegador no soporta PWA');
-        }
-    }, 2000);
     console.log('API_URL:', API_URL);
     console.log('URL actual:', window.location.href);
 
