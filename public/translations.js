@@ -318,7 +318,15 @@ const translations = {
             delete: "Eliminar",
             edit: "Editar",
             save: "Guardar",
-            close: "Cerrar"
+            close: "Cerrar",
+            loading: "Cargando...",
+            copying: "Copiando...",
+            copied: "Copiado",
+            copy: "Copiar",
+            showFilters: "Mostrar Filtros",
+            hideFilters: "Ocultar Filtros",
+            darkMode: "Modo Oscuro",
+            lightMode: "Modo Claro"
         },
         // Botones generales
         buttons: {

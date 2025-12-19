@@ -404,7 +404,11 @@ function showConfirm(title, message, confirmText = 'Confirmar', cancelText = 'Ca
 window.showConfirm = showConfirm;
 
 // ==================== INDICADORES DE CARGA ====================
-function showLoader(text = 'Cargando...') {
+function showLoader(text = null) {
+    if (!text) {
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        text = getTranslation('common.loading', lang);
+    }
     const loader = document.getElementById('globalLoader');
     const loaderText = document.getElementById('globalLoaderText');
     if (loader) {
@@ -2594,7 +2598,8 @@ function initializeForms() {
                 alert('✅ Fondo de emergencia guardado exitosamente');
             } catch (error) {
                 console.error('Error al guardar el fondo de emergencia:', error);
-                alert('Error al guardar el fondo de emergencia: ' + (error.message || 'Error desconocido'));
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                alert(getTranslation('messages.emergencyFundError', lang) + ': ' + (error.message || getTranslation('messages.error', lang)));
             }
         });
     }
@@ -2640,10 +2645,12 @@ function initializeForms() {
                 
                 closeBaseFundModal();
                 updateSummary(); // Actualizar la card del fondo base
-                showToast('Fondo base guardado correctamente');
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                showToast(getTranslation('messages.baseFundSaved', lang));
             } catch (error) {
                 console.error('Error al guardar el fondo base:', error);
-                alert('Error al guardar el fondo base: ' + (error.message || 'Error desconocido'));
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                alert(getTranslation('messages.baseFundError', lang) + ': ' + (error.message || getTranslation('messages.error', lang)));
             }
         });
     }
@@ -3098,7 +3105,8 @@ async function addTransaction() {
         const amount = parseFloat(normalizedAmountInput);
         if (isNaN(amount) || amount <= 0) {
             console.error('❌ Validación fallida - monto inválido:', amountInput);
-            showToast('Por favor ingresa un monto válido mayor a 0', 'warning');
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            showToast(getTranslation('messages.validAmount', lang), 'warning');
             return;
         }
         console.log('✅ Monto válido:', amount);
@@ -3268,7 +3276,8 @@ async function addEnvelope() {
         }
         updateEnvelopeSelect();
     } catch (error) {
-        alert('Error al crear sobre: ' + error.message);
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        alert(getTranslation('messages.envelopeError', lang) + ': ' + error.message);
     }
 }
 
@@ -3741,7 +3750,8 @@ function updateEnvelopes() {
     grid.innerHTML = '';
     
     if (envelopes.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay sobres creados</p>';
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">${getTranslation('messages.noEnvelopes', lang)}</p>`;
         return;
     }
     
@@ -3951,7 +3961,8 @@ async function addBudget() {
     }
     
     if (isNaN(amount) || amount <= 0) {
-        alert('El monto debe ser un número positivo');
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        alert(getTranslation('messages.positiveAmount', lang));
         return;
     }
     
@@ -4059,10 +4070,12 @@ async function addBudget() {
                 }
             }
             
-            alert('✅ Presupuesto establecido exitosamente');
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            alert('✅ ' + getTranslation('messages.budgetCreated', lang));
         }
     } catch (error) {
-        alert('Error al establecer presupuesto: ' + error.message);
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        alert(getTranslation('messages.budgetCreateError', lang) + ': ' + error.message);
     }
 }
 
@@ -4388,10 +4401,12 @@ async function deleteBudget(id) {
         await loadUserData();
         updateDisplay();
         hideLoader();
-        showToast('Presupuesto eliminado exitosamente', 'success');
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        showToast(getTranslation('messages.budgetDeleted', lang), 'success');
     } catch (error) {
         hideLoader();
-        showToast('Error al eliminar presupuesto: ' + error.message, 'error');
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        showToast(getTranslation('messages.budgetError', lang) + ': ' + error.message, 'error');
     }
 }
 
