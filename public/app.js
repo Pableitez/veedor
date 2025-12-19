@@ -10430,7 +10430,6 @@ function openChartModal(chartType, title) {
             
             const allOption = document.createElement('option');
             allOption.value = 'all';
-            const lang = localStorage.getItem('veedor_language') || 'es';
             allOption.textContent = getTranslation('help.allCategories', lang);
             categorySelect.appendChild(allOption);
             

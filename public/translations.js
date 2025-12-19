@@ -1787,9 +1787,7 @@ const translations = {
             details: "Détails",
             amortize: "Amortir",
             delete: "Supprimer"
-        }
-    }
-};
+        },
         dashboard: {
             title: "Tableau de Bord",
             monthAnalysis: "Analyse du Mois",
