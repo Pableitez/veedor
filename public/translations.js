@@ -469,6 +469,18 @@ const translations = {
         property: {
             totalExpenses: "Gastos Totales",
             totalIncome: "Ingresos Totales"
+        },
+        common: {
+            transactions: "Transacciones",
+            budget: "Presupuesto",
+            progress: "Progreso del presupuesto",
+            real: "Real",
+            interpretation: "Interpretación",
+            patrimony: "Patrimonio",
+            loan: "Préstamo",
+            initialCapital: "Capital Inicial",
+            openingCommission: "Com. Apertura",
+            periodicContribution: "Aporte Periódico Activo"
         }
     },
     en: {

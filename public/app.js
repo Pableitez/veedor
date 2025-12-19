@@ -4427,7 +4427,7 @@ function updateBudgets() {
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; gap: 8px;">
                 <div style="flex: 1; min-width: 0;">
                     <h3 style="margin: 0; font-size: clamp(14px, 3vw, 16px); font-weight: 700; color: var(--text-primary) !important; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.3;">${displayName}</h3>
-                    ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500);">Patrimonio</small>` : ''}
+                    ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500);">${getTranslation('common.patrimony', lang)}</small>` : ''}
                 </div>
                 <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600; flex-shrink: 0; white-space: nowrap;">${periodLabel}</span>
             </div>
@@ -5702,7 +5702,7 @@ function updateLoans() {
                     ` : ''}
                     <div style="color: var(--text-secondary);"><strong>Cuota Mensual:</strong></div>
                     <div style="font-weight: 600; color: var(--text-primary);">${formatCurrency(loan.monthly_payment)}</div>
-                    ${loan.opening_commission > 0 ? `<div style="color: var(--text-secondary);"><strong>Com. Apertura:</strong></div><div style="color: var(--text-primary);">${formatCurrency(loan.opening_commission)}</div>` : ''}
+                    ${loan.opening_commission > 0 ? `<div style="color: var(--text-secondary);"><strong>${getTranslation('common.openingCommission', lang)}:</strong></div><div style="color: var(--text-primary);">${formatCurrency(loan.opening_commission)}</div>` : ''}
                 </div>
             </div>
             
@@ -5895,7 +5895,7 @@ function showLoanDetails(loanId) {
         <div style="margin-bottom: 24px; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
                 <div>
-                    <strong style="color: var(--gray-600); font-size: 12px;">Capital Inicial</strong>
+                    <strong style="color: var(--gray-600); font-size: 12px;">${getTranslation('common.initialCapital', lang)}</strong>
                     <div style="font-size: 18px; font-weight: 700; color: var(--gray-900);">${formatCurrency(loan.principal)}</div>
                 </div>
                 <div>
@@ -6105,7 +6105,7 @@ function showEarlyPaymentModal(loanId) {
     if (loanInfo) {
         loanInfo.innerHTML = `
             <div style="margin-bottom: 8px;">
-                <strong style="color: var(--gray-700);">Préstamo:</strong> 
+                <strong style="color: var(--gray-700);">${getTranslation('common.loan', lang)}:</strong> 
                 <span style="font-weight: 700; color: var(--gray-900);">${loan.name}</span>
             </div>
             <div>
@@ -6524,7 +6524,7 @@ function updateInvestments() {
             
             ${investment.periodic_contribution && investment.periodic_contribution.enabled ? `
                 <div class="periodic-contribution-container">
-                    <div class="periodic-contribution-title">Aporte Periódico Activo</div>
+                    <div class="periodic-contribution-title">${getTranslation('common.periodicContribution', lang)}</div>
                     <div class="periodic-contribution-grid">
                         <div class="periodic-contribution-label"><strong>Frecuencia:</strong></div>
                         <div class="periodic-contribution-value">${investment.periodic_contribution.frequency === 'weekly' ? 'Semanal' : investment.periodic_contribution.frequency === 'monthly' ? 'Mensual' : 'Anual'}</div>
@@ -7031,7 +7031,7 @@ function updateProperties() {
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
                 <div>
-                    <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Gastos Totales</div>
+                    <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">${getTranslation('property.totalExpenses', lang)}</div>
                     <div style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(propertyExpenses)}</div>
                 </div>
                 <div>
@@ -10959,7 +10959,7 @@ function updateMonthDashboard() {
                         <div>
                             <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">${getTranslation('envelope.budgetIncome', lang)}</div>
                             <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalIncomeBudget)}</div>
-                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">Real: ${formatCurrency(totalIncomeActual)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">${getTranslation('common.real', lang)}: ${formatCurrency(totalIncomeActual)}</div>
                             <div style="font-size: 12px; margin-top: 4px; color: #0F172A; opacity: 0.9;">
                                 ${totalIncomeBudget > 0 ? ((totalIncomeActual / totalIncomeBudget) * 100).toFixed(1) + '%' : '-'}
                             </div>
@@ -13856,7 +13856,7 @@ function showFinancialHealthDetail(metric, index) {
             
             <div style="padding: 14px; background: var(--primary-light); border-radius: 10px; border: 1px solid var(--primary);">
                 <p style="margin: 0; color: var(--text-primary); font-size: 13px; line-height: 1.5;">
-                    <strong>Interpretación:</strong> ${metric.detail}
+                    <strong>${getTranslation('common.interpretation', lang)}:</strong> ${metric.detail}
                 </p>
             </div>
         </div>
