@@ -10777,32 +10777,35 @@ function updateMonthDashboard() {
                     this.style.borderColor = 'var(--border-color)';
                 };
                 card.onclick = () => showCategoryDetails(category.name, categoryIncome, 'income', selectedMonth, budget.category_id, budget.amount);
-                const budgetDisplayName = category ? category.name : (budget.category_id || 'Sin categoría');
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                const budgetDisplayName = category ? category.name : (budget.category_id || getTranslation('budgets.noCategory', lang));
+                const transCount = categoryIncome.length;
+                const transText = transCount === 1 ? getTranslation('budgets.transaction', lang) : getTranslation('budgets.transactions', lang);
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${budgetDisplayName}</h5>
-                        <span style="font-size: 11px; padding: 4px 8px; background: var(--success-light); border-radius: var(--radius); color: var(--success-dark); font-weight: 600;">Ingreso</span>
+                        <span style="font-size: 11px; padding: 4px 8px; background: var(--success-light); border-radius: var(--radius); color: var(--success-dark); font-weight: 600;">${getTranslation('budgets.income', lang)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">Presupuesto:</span>
+                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.budget', lang)}:</span>
                         <span style="font-size: 14px; font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">Ingresado:</span>
+                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.received', lang)}:</span>
                         <span style="font-size: 14px; font-weight: 600; color: var(--success);">${formatCurrency(actual)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">Diferencia:</span>
+                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.difference', lang)}:</span>
                         <span style="font-size: 14px; font-weight: 600; color: ${difference >= 0 ? 'var(--success)' : 'var(--warning)'};">${formatCurrency(Math.abs(difference))}</span>
                     </div>
                     <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
                         <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <small style="font-size: 11px; color: var(--gray-500);">${categoryIncome.length} transacciones</small>
+                        <small style="font-size: 11px; color: var(--gray-500);">${transCount} ${transText}</small>
                         <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
                     </div>
-                    ${isUnderBudget ? '<div style="margin-top: 8px; padding: 6px; background: var(--bg-secondary); border: 1px solid var(--warning); border-radius: var(--radius); color: var(--warning); font-size: 11px; font-weight: 600;">Por debajo del presupuesto</div>' : ''}
+                    ${isUnderBudget ? `<div style="margin-top: 8px; padding: 6px; background: var(--bg-secondary); border: 1px solid var(--warning); border-radius: var(--radius); color: var(--warning); font-size: 11px; font-weight: 600;">${getTranslation('budgets.underBudget', lang)}</div>` : ''}
                 `;
                 budgetsStatusContainer.appendChild(card);
             });
@@ -10835,35 +10838,38 @@ function updateMonthDashboard() {
                     this.style.borderColor = 'var(--border-color)';
                 };
                 card.onclick = () => showCategoryDetails(category.name, categoryExpenses, 'expense', selectedMonth, budget.category_id, budget.amount);
-                const budgetDisplayName = category ? category.name : (budget.category_id || 'Sin categoría');
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                const budgetDisplayName = category ? category.name : (budget.category_id || getTranslation('budgets.noCategory', lang));
+                const transCount = categoryExpenses.length;
+                const transText = transCount === 1 ? getTranslation('budgets.transaction', lang) : getTranslation('budgets.transactions', lang);
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${budgetDisplayName}</h5>
-                        <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600;">Gasto</span>
+                        <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600;">${getTranslation('budgets.expense', lang)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">Presupuesto:</span>
+                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.budget', lang)}:</span>
                         <span style="font-size: 14px; font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">Gastado:</span>
+                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.spent', lang)}:</span>
                         <span style="font-size: 14px; font-weight: 600; color: var(--danger);">${formatCurrency(spent)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">Restante:</span>
+                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.remaining', lang)}:</span>
                         <span style="font-size: 14px; font-weight: 600; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(remaining)}</span>
                     </div>
                     <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
                         <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <small style="font-size: 11px; color: var(--gray-500);">${categoryExpenses.length} transacciones</small>
-                        <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}% usado</small>
+                        <small style="font-size: 11px; color: var(--gray-500);">${transCount} ${transText}</small>
+                        <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}% ${getTranslation('budgets.used', lang)}</small>
                     </div>
                     ${isOverBudget ? `
                         <div style="margin-top: 10px; padding: 10px 12px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.15) 100%); border: 1.5px solid rgba(239, 68, 68, 0.3); border-left: 3px solid var(--danger); border-radius: 8px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.1);">
                             <span style="font-size: 16px; line-height: 1;">⚠️</span>
-                            <span style="color: var(--danger); font-size: 12px; font-weight: 700;">Presupuesto excedido</span>
+                            <span style="color: var(--danger); font-size: 12px; font-weight: 700;">${getTranslation('budgets.overBudget', lang)}</span>
                         </div>
                     ` : ''}
                 `;

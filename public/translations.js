@@ -162,7 +162,18 @@ const translations = {
             indefinite: "Indefinido",
             add: "Agregar Presupuesto",
             edit: "Editar",
-            delete: "Eliminar"
+            delete: "Eliminar",
+            budget: "Presupuesto",
+            spent: "Gastado",
+            received: "Ingresado",
+            remaining: "Restante",
+            difference: "Diferencia",
+            transactions: "transacciones",
+            transaction: "transacción",
+            used: "usado",
+            underBudget: "Por debajo del presupuesto",
+            overBudget: "Presupuesto excedido",
+            noCategory: "Sin categoría"
         },
         // Préstamos
         loans: {
@@ -464,7 +475,18 @@ const translations = {
             indefinite: "Indefinite",
             add: "Add Budget",
             edit: "Edit",
-            delete: "Delete"
+            delete: "Delete",
+            budget: "Budget",
+            spent: "Spent",
+            received: "Received",
+            remaining: "Remaining",
+            difference: "Difference",
+            transactions: "transactions",
+            transaction: "transaction",
+            used: "used",
+            underBudget: "Under budget",
+            overBudget: "Budget exceeded",
+            noCategory: "No category"
         },
         loans: {
             title: "Loans",
@@ -757,7 +779,18 @@ const translations = {
             indefinite: "Unbegrenzt",
             add: "Budget hinzufügen",
             edit: "Bearbeiten",
-            delete: "Löschen"
+            delete: "Löschen",
+            budget: "Budget",
+            spent: "Ausgegeben",
+            received: "Eingenommen",
+            remaining: "Verbleibend",
+            difference: "Differenz",
+            transactions: "Transaktionen",
+            transaction: "Transaktion",
+            used: "verwendet",
+            underBudget: "Unter dem Budget",
+            overBudget: "Budget überschritten",
+            noCategory: "Keine Kategorie"
         },
         loans: {
             title: "Kredite",
@@ -1050,7 +1083,18 @@ const translations = {
             indefinite: "Indéfini",
             add: "Ajouter un Budget",
             edit: "Modifier",
-            delete: "Supprimer"
+            delete: "Supprimer",
+            budget: "Budget",
+            spent: "Dépensé",
+            received: "Reçu",
+            remaining: "Restant",
+            difference: "Différence",
+            transactions: "transactions",
+            transaction: "transaction",
+            used: "utilisé",
+            underBudget: "Sous le budget",
+            overBudget: "Budget dépassé",
+            noCategory: "Aucune catégorie"
         },
         loans: {
             title: "Prêts",
