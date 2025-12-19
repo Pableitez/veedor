@@ -6979,6 +6979,7 @@ async function addProperty() {
 
 // Actualizar propiedades
 function updateProperties() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const grid = document.getElementById('propertiesGrid');
     if (!grid) return;
     
