@@ -392,6 +392,83 @@ const translations = {
             details: "Detalles",
             amortize: "Amortizar",
             delete: "Borrar"
+        },
+        envelope: {
+            spent: "Gastado",
+            remaining: "Restante",
+            associatedTo: "Asociado a",
+            totalSpent: "Total Gastado",
+            totalIncome: "Total Ingresado",
+            budgetIncome: "Presupuesto Ingresos",
+            budgetExpenses: "Presupuesto Gastos",
+            expectedSavings: "Ahorro Previsto",
+            exceeded: "Excedido"
+        },
+        budget: {
+            weekly: "Semanal",
+            monthly: "Mensual",
+            yearly: "Anual",
+            weekStart: "Semana (Inicio)",
+            selectWeekStart: "Selecciona el lunes de la semana",
+            monthlyBudget: "Presupuesto Mensual (€)",
+            weeklyBudget: "Presupuesto Semanal (€)",
+            yearlyBudget: "Presupuesto Anual (€)",
+            monthStart: "Mes de Inicio",
+            monthStartHelp: "Mes desde el que comienza el presupuesto",
+            spent: "Gastado",
+            received: "Ingresado",
+            remaining: "Restante",
+            missing: "Falta"
+        },
+        loan: {
+            remainingPrincipal: "Capital Restante",
+            remainingCapital: "Capital Restante",
+            totalRemaining: "Capital Restante Total",
+            monthsRemaining: "Meses Restantes",
+            earlyPayments: "Amortizaciones Anticipadas",
+            activeLoans: "Préstamos Activos",
+            hasActiveDebts: "(Hay deudas activas)",
+            noActiveDebts: "(Sin deudas activas)",
+            debt: "Deuda",
+            credit: "Crédito",
+            totalPaid: "Total Pagado"
+        },
+        financial: {
+            debt: "Deuda",
+            assets: "Activos",
+            totalAssets: "Activos Totales",
+            ratio: "Ratio",
+            income: "Ingresos",
+            expenses: "Gastos",
+            savings: "Ahorro",
+            periodIncome: "Ingresos",
+            periodExpenses: "Gastos",
+            periodSavings: "Ahorro",
+            accumulatedSavings: "Ahorro Acumulado",
+            totalIncome: "Total Ingresos",
+            totalExpenses: "Total Gastos",
+            totalSavings: "Ahorro Total",
+            totalInvested: "Total Invertido",
+            currentValue: "Valor Actual",
+            calculationDetails: "Detalles del Cálculo"
+        },
+        period: {
+            weekly: "Semanal",
+            monthly: "Mensual",
+            yearly: "Anual"
+        },
+        account: {
+            savings: "Cuenta de Ahorros",
+            credit: "Tarjeta de Crédito"
+        },
+        investment: {
+            summary: "Resumen de Inversiones",
+            amount: "Monto",
+            frequency: "Frecuencia"
+        },
+        property: {
+            totalExpenses: "Gastos Totales",
+            totalIncome: "Ingresos Totales"
         }
     },
     en: {
@@ -1787,6 +1864,83 @@ const translations = {
             details: "Détails",
             amortize: "Amortir",
             delete: "Supprimer"
+        },
+        envelope: {
+            spent: "Gastado",
+            remaining: "Restante",
+            associatedTo: "Asociado a",
+            totalSpent: "Total Gastado",
+            totalIncome: "Total Ingresado",
+            budgetIncome: "Presupuesto Ingresos",
+            budgetExpenses: "Presupuesto Gastos",
+            expectedSavings: "Ahorro Previsto",
+            exceeded: "Excedido"
+        },
+        budget: {
+            weekly: "Semanal",
+            monthly: "Mensual",
+            yearly: "Anual",
+            weekStart: "Semana (Inicio)",
+            selectWeekStart: "Selecciona el lunes de la semana",
+            monthlyBudget: "Presupuesto Mensual (€)",
+            weeklyBudget: "Presupuesto Semanal (€)",
+            yearlyBudget: "Presupuesto Anual (€)",
+            monthStart: "Mes de Inicio",
+            monthStartHelp: "Mes desde el que comienza el presupuesto",
+            spent: "Gastado",
+            received: "Ingresado",
+            remaining: "Restante",
+            missing: "Falta"
+        },
+        loan: {
+            remainingPrincipal: "Capital Restante",
+            remainingCapital: "Capital Restante",
+            totalRemaining: "Capital Restante Total",
+            monthsRemaining: "Meses Restantes",
+            earlyPayments: "Amortizaciones Anticipadas",
+            activeLoans: "Préstamos Activos",
+            hasActiveDebts: "(Hay deudas activas)",
+            noActiveDebts: "(Sin deudas activas)",
+            debt: "Deuda",
+            credit: "Crédito",
+            totalPaid: "Total Pagado"
+        },
+        financial: {
+            debt: "Deuda",
+            assets: "Activos",
+            totalAssets: "Activos Totales",
+            ratio: "Ratio",
+            income: "Ingresos",
+            expenses: "Gastos",
+            savings: "Ahorro",
+            periodIncome: "Ingresos",
+            periodExpenses: "Gastos",
+            periodSavings: "Ahorro",
+            accumulatedSavings: "Ahorro Acumulado",
+            totalIncome: "Total Ingresos",
+            totalExpenses: "Total Gastos",
+            totalSavings: "Ahorro Total",
+            totalInvested: "Total Invertido",
+            currentValue: "Valor Actual",
+            calculationDetails: "Detalles del Cálculo"
+        },
+        period: {
+            weekly: "Semanal",
+            monthly: "Mensual",
+            yearly: "Anual"
+        },
+        account: {
+            savings: "Cuenta de Ahorros",
+            credit: "Tarjeta de Crédito"
+        },
+        investment: {
+            summary: "Resumen de Inversiones",
+            amount: "Monto",
+            frequency: "Frecuencia"
+        },
+        property: {
+            totalExpenses: "Gastos Totales",
+            totalIncome: "Ingresos Totales"
         },
         dashboard: {
             title: "Tableau de Bord",
