@@ -675,6 +675,8 @@ function updateAuthDarkModeIcon() {
     if (authIcon) {
         const isDark = document.body.classList.contains('dark-mode');
         authIcon.textContent = isDark ? '☀' : '🌙';
+        // Asegurar que el emoji siempre tenga filtro grayscale
+        authIcon.style.filter = 'grayscale(100%)';
     }
 }
 
