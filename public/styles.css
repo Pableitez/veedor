@@ -710,6 +710,11 @@ body.dark-mode .auth-header p {
     cursor: pointer;
     color: #1F2937;
     font-size: clamp(12px, 1.8vw, 15px);
+}
+
+body.dark-mode .auth-tab-btn {
+    color: #FFFFFF;
+}
     font-weight: 500;
     color: var(--text-tertiary);
     border-bottom: 2px solid transparent;
