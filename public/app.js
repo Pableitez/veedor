@@ -1657,7 +1657,11 @@ document.addEventListener('click', function(event) {
     const authLanguageDropdown = document.getElementById('authLanguageDropdown');
     const authLanguageBtn = document.getElementById('authLanguageDropdownBtn');
     if (authLanguageDropdown && authLanguageBtn && !authLanguageDropdown.contains(event.target) && !authLanguageBtn.contains(event.target)) {
-        authLanguageDropdown.style.display = 'none';
+        // Solo cerrar si no estamos haciendo clic en un elemento del dropdown
+        const clickedItem = event.target.closest('.nav-dropdown-item');
+        if (!clickedItem) {
+            authLanguageDropdown.style.display = 'none';
+        }
     }
 });
 
@@ -3500,7 +3504,8 @@ async function updateSummary() {
                 }
             }
         } else {
-            baseFundDisplayEl.textContent = 'Sin fondo';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            baseFundDisplayEl.textContent = getTranslation('dashboard.noFund', lang);
             if (baseFundProgress) {
                 baseFundProgress.style.display = 'block';
                 if (baseFundProgressBar) {
@@ -3640,7 +3645,8 @@ function updateTransactionsTable() {
     tbody.innerHTML = '';
     
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">No hay transacciones registradas</td></tr>';
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">${getTranslation('transactions.noTransactions', lang)}</td></tr>`;
         return;
     }
     
@@ -3699,14 +3705,14 @@ function updateTransactionsTable() {
             <td style="font-weight: 600; color: ${transaction.amount >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(transaction.amount)}</td>
             <td class="transaction-actions">
                 <button class="btn-secondary" onclick="editTransaction('${transaction._id || transaction.id}')">
-                    <span class="btn-text">Editar</span>
+                    <span class="btn-text">${getTranslation('transactions.edit', localStorage.getItem('veedor_language') || 'es')}</span>
                     <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                 </button>
                 <button class="btn-danger" onclick="deleteTransaction('${transaction._id || transaction.id}')">
-                    <span class="btn-text">Eliminar</span>
+                    <span class="btn-text">${getTranslation('transactions.delete', localStorage.getItem('veedor_language') || 'es')}</span>
                     <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -4371,11 +4377,12 @@ window.closeEditBudgetModal = closeEditBudgetModal;
 
 // Eliminar presupuesto
 async function deleteBudget(id) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const confirmed = await showConfirm(
-        'Eliminar Presupuesto',
-        '¿Estás seguro de eliminar este presupuesto? Esta acción no se puede deshacer.',
-        'Eliminar',
-        'Cancelar'
+        getTranslation('budgets.deleteBudget', lang),
+        getTranslation('budgets.deleteConfirm', lang),
+        getTranslation('budgets.delete', lang),
+        getTranslation('common.cancel', lang) || 'Cancelar'
     );
     if (!confirmed) return;
     
@@ -4425,10 +4432,10 @@ function updateMonthFilter() {
 // Eliminar transacción
 async function deleteTransaction(id) {
     const confirmed = await showConfirm(
-        'Eliminar Transacción',
-        '¿Estás seguro de eliminar esta transacción? Esta acción no se puede deshacer.',
-        'Eliminar',
-        'Cancelar'
+        getTranslation('transactions.deleteTransaction', localStorage.getItem('veedor_language') || 'es'),
+        getTranslation('transactions.deleteConfirm', localStorage.getItem('veedor_language') || 'es'),
+        getTranslation('transactions.delete', localStorage.getItem('veedor_language') || 'es'),
+        getTranslation('common.cancel', localStorage.getItem('veedor_language') || 'es') || 'Cancelar'
     );
     if (!confirmed) return;
     

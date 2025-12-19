@@ -81,7 +81,8 @@ const translations = {
             savingsGoal: "Meta de Ahorro",
             noGoal: "Sin meta",
             setGoal: "Establecer Meta",
-            clickForDetails: "Haz clic para ver detalles"
+            clickForDetails: "Haz clic para ver detalles",
+            noFund: "Sin fondo"
         },
         // Transacciones
         transactions: {
@@ -107,10 +108,13 @@ const translations = {
             investment: "Inversión",
             add: "Agregar Transacción",
             delete: "Eliminar",
+            edit: "Editar",
             noTransactions: "No hay transacciones registradas",
             searchTransactions: "Buscar transacciones...",
             filterByCategory: "Filtrar por categoría",
-            filterByMonth: "Filtrar por mes"
+            filterByMonth: "Filtrar por mes",
+            deleteTransaction: "Eliminar Transacción",
+            deleteConfirm: "¿Estás seguro de eliminar esta transacción? Esta acción no se puede deshacer."
         },
         // Cuentas
         accounts: {
@@ -173,7 +177,10 @@ const translations = {
             used: "usado",
             underBudget: "Por debajo del presupuesto",
             overBudget: "Presupuesto excedido",
-            noCategory: "Sin categoría"
+            noCategory: "Sin categoría",
+            editBudget: "Editar Presupuesto",
+            deleteBudget: "Eliminar Presupuesto",
+            deleteConfirm: "¿Estás seguro de eliminar este presupuesto? Esta acción no se puede deshacer."
         },
         // Préstamos
         loans: {
@@ -303,6 +310,15 @@ const translations = {
             english: "English",
             german: "Deutsch",
             french: "Français"
+        },
+        // Común
+        common: {
+            cancel: "Cancelar",
+            confirm: "Confirmar",
+            delete: "Eliminar",
+            edit: "Editar",
+            save: "Guardar",
+            close: "Cerrar"
         },
         // Botones generales
         buttons: {
@@ -486,7 +502,10 @@ const translations = {
             used: "used",
             underBudget: "Under budget",
             overBudget: "Budget exceeded",
-            noCategory: "No category"
+            noCategory: "No category",
+            editBudget: "Edit Budget",
+            deleteBudget: "Delete Budget",
+            deleteConfirm: "Are you sure you want to delete this budget? This action cannot be undone."
         },
         loans: {
             title: "Loans",
@@ -790,7 +809,10 @@ const translations = {
             used: "verwendet",
             underBudget: "Unter dem Budget",
             overBudget: "Budget überschritten",
-            noCategory: "Keine Kategorie"
+            noCategory: "Keine Kategorie",
+            editBudget: "Budget bearbeiten",
+            deleteBudget: "Budget löschen",
+            deleteConfirm: "Sind Sie sicher, dass Sie dieses Budget löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
         },
         loans: {
             title: "Kredite",
@@ -1094,7 +1116,10 @@ const translations = {
             used: "utilisé",
             underBudget: "Sous le budget",
             overBudget: "Budget dépassé",
-            noCategory: "Aucune catégorie"
+            noCategory: "Aucune catégorie",
+            editBudget: "Modifier le Budget",
+            deleteBudget: "Supprimer le Budget",
+            deleteConfirm: "Êtes-vous sûr de vouloir supprimer ce budget ? Cette action ne peut pas être annulée."
         },
         loans: {
             title: "Prêts",
