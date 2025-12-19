@@ -1877,6 +1877,18 @@ const translations = {
             selectCategory: "Sélectionner une catégorie...",
             allLoans: "Tous les prêts"
         },
+        common: {
+            transactions: "Transactions",
+            budget: "Budget",
+            progress: "Progrès du budget",
+            real: "Réel",
+            interpretation: "Interprétation",
+            patrimony: "Patrimoine",
+            loan: "Prêt",
+            initialCapital: "Capital Initial",
+            openingCommission: "Com. Ouverture",
+            periodicContribution: "Contribution Périodique Active"
+        },
         empty: {
             noBudgets: "Aucun budget actif pour la période actuelle",
             noLoans: "Aucun prêt enregistré",
