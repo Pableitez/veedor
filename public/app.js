@@ -729,17 +729,18 @@ function toggleForm(formId, buttonId) {
         form.style.display = 'none';
         if (icon) icon.textContent = '➕';
         if (text) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
             const formNames = {
-                'transactionForm': 'Nueva Transacción',
-                'propertyForm': 'Nueva Propiedad',
-                'accountForm': 'Nueva Cuenta',
-                'loanForm': 'Nuevo Préstamo',
-                'investmentForm': 'Nueva Inversión',
-                'patrimonioForm': 'Nueva Propiedad',
-                'budgetForm': 'Nuevo Presupuesto',
-                'envelopeForm': 'Nuevo Sobre'
+                'transactionForm': getTranslation('forms.newTransaction', lang),
+                'propertyForm': getTranslation('forms.newProperty', lang),
+                'accountForm': getTranslation('forms.newAccount', lang),
+                'loanForm': getTranslation('forms.newLoan', lang),
+                'investmentForm': getTranslation('forms.newInvestment', lang),
+                'patrimonioForm': getTranslation('forms.newProperty', lang),
+                'budgetForm': getTranslation('forms.newBudget', lang),
+                'envelopeForm': getTranslation('forms.newEnvelope', lang)
             };
-            text.textContent = formNames[formId] || 'Nuevo';
+            text.textContent = formNames[formId] || getTranslation('forms.new', lang);
         }
         // Resetear formulario si existe función
         const resetFunc = window['reset' + formId.charAt(0).toUpperCase() + formId.slice(1).replace('Form', 'Form')];
@@ -750,7 +751,10 @@ function toggleForm(formId, buttonId) {
         // Mostrar formulario
         form.style.display = 'block';
         if (icon) icon.textContent = '➖';
-        if (text) text.textContent = 'Cancelar';
+        if (text) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            text.textContent = getTranslation('common.cancel', lang);
+        }
         // Scroll suave al formulario
         setTimeout(() => {
             form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1943,7 +1947,8 @@ function initializeCategories() {
         });
         
         if (filterCategory) {
-            filterCategory.innerHTML = '<option value="">Todas las categorías</option>';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            filterCategory.innerHTML = `<option value="">${getTranslation('help.allCategories', lang)}</option>`;
             categoryList.forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat.id;
@@ -3145,21 +3150,25 @@ function initializeForms() {
                 periodValueLabel.textContent = 'Mes de Inicio';
                 periodValueHelp.textContent = 'Mes desde el que comienza el presupuesto';
                 amountLabel.textContent = 'Presupuesto Mensual (€)';
-                amountHelp.textContent = 'Límite máximo de gasto para cada mes';
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                amountHelp.textContent = getTranslation('help.monthlyLimit', lang);
                 if (durationGroup) {
                     durationGroup.style.display = 'block';
-                    if (durationLabel) durationLabel.textContent = 'Duración';
-                    if (durationHelp) durationHelp.textContent = 'Por cuántos meses aplicar este presupuesto';
+                    const lang = localStorage.getItem('veedor_language') || 'es';
+                    if (durationLabel) durationLabel.textContent = getTranslation('help.duration', lang);
+                    if (durationHelp) durationHelp.textContent = getTranslation('help.durationHelp', lang);
                 }
             } else if (periodType === 'yearly') {
                 periodValueInput.type = 'number';
                 periodValueInput.min = '2000';
                 periodValueInput.max = '2100';
                 periodValueInput.value = now.getFullYear();
-                periodValueLabel.textContent = 'Año';
-                periodValueHelp.textContent = 'Selecciona el año';
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                periodValueLabel.textContent = getTranslation('help.year', lang);
+                periodValueHelp.textContent = getTranslation('help.selectYear', lang);
                 amountLabel.textContent = 'Presupuesto Anual (€)';
-                amountHelp.textContent = 'Límite máximo de gasto para este año';
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                amountHelp.textContent = getTranslation('help.yearlyLimit', lang);
                 if (durationGroup) durationGroup.style.display = 'none';
             }
         }
@@ -3179,7 +3188,8 @@ function initializeForms() {
         
         const updateBudgetCategories = () => {
             if (!budgetCategory || !budgetType) return;
-            budgetCategory.innerHTML = '<option value="">Seleccionar categoría...</option>';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            budgetCategory.innerHTML = `<option value="">${getTranslation('help.selectCategory', lang)}</option>`;
             
             const type = budgetType.value;
             const categoryList = type === 'income' ? categories.income : categories.expense;
@@ -4305,7 +4315,8 @@ function updateBudgets() {
     });
     
     if (activeBudgets.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay presupuestos activos para el período actual</p>';
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">${getTranslation('empty.noBudgets', lang)}</p>`;
         return;
     }
     
@@ -5194,7 +5205,8 @@ function resetTransactionForm() {
         
         const submitBtn = form.querySelector('button[type="submit"]');
         if (submitBtn) {
-            submitBtn.textContent = 'Agregar Transacción';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            submitBtn.textContent = getTranslation('forms.addTransaction', lang);
             submitBtn.classList.remove('btn-secondary');
             submitBtn.classList.add('btn-primary');
         }
@@ -5603,7 +5615,8 @@ function updateLoans() {
     grid.innerHTML = '';
     
     if (loans.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay préstamos registrados</p>';
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">${getTranslation('empty.noLoans', lang)}</p>`;
         return;
     }
     
@@ -8595,7 +8608,8 @@ function updateChartFilters() {
     const incomeFilter = document.querySelector('.chart-category-filter[data-chart="incomeEvolution"]');
     if (incomeFilter) {
         const currentValue = incomeFilter.value;
-        incomeFilter.innerHTML = '<option value="all">Todas las categorías</option>';
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        incomeFilter.innerHTML = `<option value="all">${getTranslation('help.allCategories', lang)}</option>`;
         const incomeCats = [...categories.income];
         incomeCats.forEach(cat => {
             const option = document.createElement('option');
@@ -8610,7 +8624,8 @@ function updateChartFilters() {
     const expenseFilter = document.querySelector('.chart-category-filter[data-chart="expensesEvolution"]');
     if (expenseFilter) {
         const currentValue = expenseFilter.value;
-        expenseFilter.innerHTML = '<option value="all">Todas las categorías</option>';
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        expenseFilter.innerHTML = `<option value="all">${getTranslation('help.allCategories', lang)}</option>`;
         const expenseCats = [...categories.expense];
         expenseCats.forEach(cat => {
             const option = document.createElement('option');
@@ -8625,7 +8640,8 @@ function updateChartFilters() {
     const loanFilter = document.querySelector('.chart-loan-filter[data-chart="loansPending"]');
     if (loanFilter) {
         const currentValue = loanFilter.value;
-        loanFilter.innerHTML = '<option value="all">Todos los préstamos</option>';
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        loanFilter.innerHTML = `<option value="all">${getTranslation('help.allLoans', lang)}</option>`;
         loans.forEach(loan => {
             const option = document.createElement('option');
             option.value = loan._id || loan.id;
@@ -10344,7 +10360,8 @@ function openChartModal(chartType, title) {
         periodDiv.style.gap = '8px';
         
         const periodLabel = document.createElement('label');
-        periodLabel.textContent = 'Período:';
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        periodLabel.textContent = getTranslation('help.period', lang);
         periodLabel.style.fontWeight = '600';
         periodLabel.style.fontSize = '14px';
         periodLabel.style.color = 'var(--text-primary)';
@@ -10389,7 +10406,8 @@ function openChartModal(chartType, title) {
             categoryDiv.style.gap = '8px';
             
             const categoryLabel = document.createElement('label');
-            categoryLabel.textContent = 'Categoría:';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            categoryLabel.textContent = getTranslation('help.category', lang);
             categoryLabel.style.fontWeight = '600';
             categoryLabel.style.fontSize = '14px';
             categoryLabel.style.color = 'var(--text-primary)';
@@ -10411,7 +10429,8 @@ function openChartModal(chartType, title) {
             
             const allOption = document.createElement('option');
             allOption.value = 'all';
-            allOption.textContent = 'Todas las categorías';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            allOption.textContent = getTranslation('help.allCategories', lang);
             categorySelect.appendChild(allOption);
             
             chartCategories.forEach(cat => {
@@ -12864,7 +12883,8 @@ function updateAnalysisTables() {
     if (topExpensesBody) {
         topExpensesBody.innerHTML = '';
         if (topExpenses.length === 0) {
-            topExpensesBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos en este período</td></tr>';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            topExpensesBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--gray-500);">${getTranslation('empty.noExpenses', lang)}</td></tr>`;
         } else {
             topExpenses.forEach(t => {
                 const row = document.createElement('tr');
@@ -12948,7 +12968,8 @@ function updateAnalysisTables() {
             .reverse();
         
         if (sortedMonths.length === 0) {
-            monthlyComparisonBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray-500);">No hay datos para este período</td></tr>';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            monthlyComparisonBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray-500);">${getTranslation('empty.noData', lang)}</td></tr>`;
         } else {
             sortedMonths.forEach(([monthKey, data]) => {
                 const [year, month] = monthKey.split('-');
@@ -12997,7 +13018,8 @@ function updateAnalysisTables() {
             .sort((a, b) => b.total - a.total);
         
         if (sorted.length === 0) {
-            categoryAnalysisBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos por categoría</td></tr>';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            categoryAnalysisBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray-500);">${getTranslation('empty.noCategoryExpenses', lang)}</td></tr>`;
         } else {
             sorted.forEach(item => {
                 const row = document.createElement('tr');
