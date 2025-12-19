@@ -14333,17 +14333,8 @@ window.toggleAuthLanguageDropdown = toggleAuthLanguageDropdown;
 window.toggleLanguageDropdown = toggleLanguageDropdown;
 window.updateTranslations = updateTranslations;
 // Reemplazar la función stub inicial con la versión completa
-// Guardar referencia a la función completa
-const changeLanguageComplete = changeLanguage;
-window.changeLanguage = function(lang) {
-    console.log('🌐 window.changeLanguage llamada con:', lang);
-    // Llamar a la función completa
-    if (typeof changeLanguageComplete === 'function') {
-        changeLanguageComplete(lang);
-    } else {
-        console.error('❌ changeLanguageComplete no está disponible');
-    }
-};
+// IMPORTANTE: Usar la función completa directamente, sin wrapper que cause recursión
+window.changeLanguage = changeLanguage;
 
 // Actualizar visibilidad del botón de filtros al cargar y al redimensionar
 if (typeof window !== 'undefined') {
