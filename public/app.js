@@ -14316,7 +14316,11 @@ function toggleAuthLanguageDropdown() {
 window.toggleAuthLanguageDropdown = toggleAuthLanguageDropdown;
 window.toggleLanguageDropdown = toggleLanguageDropdown;
 window.updateTranslations = updateTranslations;
-window.changeLanguage = changeLanguage;
+// Reemplazar la función stub inicial con la versión completa
+window.changeLanguage = function(lang) {
+    // Llamar a la función completa
+    changeLanguage(lang);
+};
 
 // Actualizar visibilidad del botón de filtros al cargar y al redimensionar
 if (typeof window !== 'undefined') {
