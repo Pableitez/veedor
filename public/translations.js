@@ -1676,7 +1676,8 @@ const translations = {
             details: "Détails",
             amortize: "Amortir",
             delete: "Supprimer"
-        }
+        },
+        messages: {
             noEnvelopes: "Keine Umschläge erstellt",
             completeFields: "Bitte füllen Sie alle erforderlichen Felder aus",
             validAmount: "Bitte geben Sie einen gültigen Betrag größer als 0 ein",
