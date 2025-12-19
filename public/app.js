@@ -590,8 +590,7 @@ window.showConfirm = showConfirm;
 // ==================== INDICADORES DE CARGA ====================
 function showLoader(text = null) {
     if (!text) {
-        const lang = localStorage.getItem('veedor_language') || 'es';
-        text = getTranslation('common.loading', lang);
+        text = 'Cargando...';
     }
     const loader = document.getElementById('globalLoader');
     const loaderText = document.getElementById('globalLoaderText');
@@ -624,8 +623,7 @@ function toggleDarkMode() {
         localStorage.setItem('veedor_darkMode', 'false');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) {
-            const lang = localStorage.getItem('veedor_language') || 'es';
-            toggleText.textContent = getTranslation('common.darkMode', lang);
+            toggleText.textContent = 'Modo Oscuro';
         }
         // Actualizar theme-color para status bar (modo claro)
         updateThemeColor('#F8FAFC');
@@ -635,8 +633,7 @@ function toggleDarkMode() {
         localStorage.setItem('veedor_darkMode', 'true');
         const toggleText = document.getElementById('darkModeToggleText');
         if (toggleText) {
-            const lang = localStorage.getItem('veedor_language') || 'es';
-            toggleText.textContent = getTranslation('common.lightMode', lang);
+            toggleText.textContent = 'Modo Claro';
         }
         // Actualizar theme-color para status bar (modo oscuro - color muy oscuro del inicio)
         updateThemeColor('#050510');
