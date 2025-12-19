@@ -113,28 +113,65 @@ if (window.VEEDOR_LOADED) {
     };
     
     // Exponer función changeLanguage inmediatamente para evitar errores
+    // Esta función será reemplazada por la versión completa más adelante
     window.changeLanguage = function(lang) {
         console.log('🌐 Cambiando idioma a:', lang);
         
         // Guardar idioma
+        localStorage.setItem('veedor_language', lang);
+        if (typeof window !== 'undefined') {
+            window.currentLanguage = lang;
+        }
+        
+        // Intentar usar setLanguage si está disponible
         if (window.setLanguage && typeof window.setLanguage === 'function') {
             try {
                 window.setLanguage(lang);
             } catch (e) {
                 console.warn('Error en setLanguage:', e);
-                localStorage.setItem('veedor_language', lang);
-            }
-        } else {
-            localStorage.setItem('veedor_language', lang);
-            if (typeof window !== 'undefined') {
-                window.currentLanguage = lang;
             }
         }
         
-        // Actualizar traducciones si la función está disponible
-        if (window.updateTranslations && typeof window.updateTranslations === 'function') {
-            window.updateTranslations();
-        }
+        // Actualizar traducciones múltiples veces para asegurar que funcione
+        const updateTranslations = () => {
+            if (window.updateTranslations && typeof window.updateTranslations === 'function') {
+                window.updateTranslations();
+            } else if (window.t && typeof window.t === 'function') {
+                // Fallback: actualizar elementos manualmente
+                const elements = document.querySelectorAll('[data-translate]');
+                elements.forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    if (key) {
+                        try {
+                            const translation = window.t(key, lang);
+                            if (translation && translation !== key) {
+                                el.textContent = translation;
+                            }
+                        } catch (e) {}
+                    }
+                });
+                
+                // Actualizar placeholders
+                document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                    const key = el.getAttribute('data-translate-placeholder');
+                    if (key) {
+                        try {
+                            const translation = window.t(key, lang);
+                            if (translation && translation !== key) {
+                                el.placeholder = translation;
+                            }
+                        } catch (e) {}
+                    }
+                });
+            }
+        };
+        
+        // Actualizar inmediatamente y varias veces más
+        updateTranslations();
+        setTimeout(updateTranslations, 50);
+        setTimeout(updateTranslations, 200);
+        setTimeout(updateTranslations, 500);
+        setTimeout(updateTranslations, 1000);
         
         // Actualizar banderas
         const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
@@ -147,11 +184,50 @@ if (window.VEEDOR_LOADED) {
             mainFlag.textContent = flags[lang];
         }
         
+        // Actualizar atributo lang del HTML
+        document.documentElement.lang = lang;
+        
         // Cerrar dropdowns
         const authDropdown = document.getElementById('authLanguageDropdown');
         if (authDropdown) authDropdown.style.display = 'none';
         const mainDropdown = document.getElementById('languageDropdown');
         if (mainDropdown) mainDropdown.style.display = 'none';
+        
+        // Recargar datos para actualizar formatos (solo si estamos en la app principal)
+        if (typeof updateDisplay === 'function' && document.getElementById('mainApp') && document.getElementById('mainApp').style.display !== 'none') {
+            setTimeout(() => {
+                if (typeof updateDisplay === 'function') {
+                    updateDisplay();
+                }
+            }, 300);
+        }
+        
+        // Forzar actualización de todos los elementos dinámicos
+        if (typeof updateCharts === 'function') {
+            setTimeout(() => {
+                updateCharts();
+            }, 400);
+        }
+        
+        // Actualizar contenido dinámico de presupuestos y otros elementos
+        if (typeof updateMonthDashboard === 'function' && document.getElementById('monthDashboard')) {
+            setTimeout(() => {
+                updateMonthDashboard();
+            }, 350);
+        }
+        
+        if (typeof updateBudgets === 'function') {
+            setTimeout(() => {
+                updateBudgets();
+            }, 350);
+        }
+        
+        // Actualizar mensaje de bienvenida si existe
+        if (typeof showWelcomeMessage === 'function') {
+            setTimeout(() => {
+                showWelcomeMessage();
+            }, 200);
+        }
     };
     window.closePrivacyModal = function() { 
         const modal = document.getElementById('privacyModal');
