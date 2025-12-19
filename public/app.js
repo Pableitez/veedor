@@ -132,7 +132,15 @@ if (window.VEEDOR_LOADED) {
             }
         }
         
-        // Actualizar traducciones múltiples veces para asegurar que funcione
+            // Llamar directamente a la función completa cuando esté disponible
+        // Si la función completa aún no está cargada, usar la lógica básica
+        if (typeof changeLanguage === 'function' && changeLanguage.toString().includes('forceUpdate')) {
+            // La función completa está disponible, llamarla directamente
+            changeLanguage(lang);
+            return;
+        }
+        
+        // Si no, usar lógica básica hasta que la función completa esté disponible
         const updateTranslationsNow = () => {
             console.log('🔄 Intentando actualizar traducciones...', { 
                 hasUpdateTranslations: !!window.updateTranslations,
@@ -196,6 +204,14 @@ if (window.VEEDOR_LOADED) {
         setTimeout(updateTranslationsNow, 500);
         setTimeout(updateTranslationsNow, 1000);
         setTimeout(updateTranslationsNow, 2000);
+        
+        // Intentar llamar a la función completa cuando esté disponible
+        setTimeout(() => {
+            if (typeof changeLanguage === 'function' && changeLanguage !== window.changeLanguage) {
+                console.log('✅ Función completa changeLanguage disponible, llamándola...');
+                changeLanguage(lang);
+            }
+        }, 100);
         
         // Actualizar banderas
         const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
