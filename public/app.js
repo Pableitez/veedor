@@ -4302,6 +4302,7 @@ function getWeekStartDate(date) {
 
 // Actualizar presupuestos
 function updateBudgets() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const grid = document.getElementById('budgetsGrid');
     if (!grid) return;
     
@@ -4418,7 +4419,6 @@ function updateBudgets() {
         // Obtener etiqueta del período
         let periodLabel = '';
         if (budget.period_type === 'weekly') {
-            const lang = localStorage.getItem('veedor_language') || 'es';
             periodLabel = getTranslation('budget.weekly', lang);
         } else if (budget.period_type === 'monthly') {
             periodLabel = getTranslation('budget.monthly', lang);
