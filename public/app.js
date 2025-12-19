@@ -1503,22 +1503,22 @@ function showMainApp() {
     // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
 }
 
-// Frases de bienvenida personalizadas (mejoradas y más profesionales)
+// Frases de bienvenida personalizadas (informales y casuales)
 const welcomeMessages = [
-    "¡Bienvenido de vuelta, {nombre}!",
-    "Hola {nombre}, gestiona tus finanzas con confianza",
-    "¡Hola {nombre}! Todo listo para revisar tus números",
-    "Bienvenido {nombre}, toma el control de tu dinero",
-    "Hola {nombre}, tus finanzas te esperan",
-    "¡Hola {nombre}! Organiza tu economía hoy",
-    "Bienvenido de nuevo {nombre}, vamos a por ello",
-    "Hola {nombre}, momento de revisar tu situación financiera",
-    "¡Hola {nombre}! Gestiona tu dinero de forma inteligente",
-    "Bienvenido {nombre}, tus cuentas están listas",
-    "Hola {nombre}, administra tus finanzas con tranquilidad",
-    "¡Hola {nombre}! Revisa y controla tus gastos",
-    "Bienvenido de vuelta {nombre}, todo bajo control",
-    "Hola {nombre}, gestiona tu presupuesto con éxito"
+    "¿Cómo te va el día, {nombre}?",
+    "¡Hola {nombre}! ¿Qué tal?",
+    "Ey {nombre}, ¿cómo estás?",
+    "¡Hey {nombre}! ¿Todo bien?",
+    "Hola {nombre}, ¿qué tal va todo?",
+    "¡Hola {nombre}! ¿Cómo andas?",
+    "Ey {nombre}, ¿cómo va?",
+    "¡Hey {nombre}! ¿Qué tal el día?",
+    "Hola {nombre}, ¿todo bien por ahí?",
+    "¡Hola {nombre}! ¿Cómo te va?",
+    "Ey {nombre}, ¿qué tal?",
+    "¡Hey {nombre}! ¿Todo en orden?",
+    "Hola {nombre}, ¿cómo va la cosa?",
+    "¡Hola {nombre}! ¿Qué tal todo?"
 ];
 
 // Mostrar mensaje de bienvenida personalizado
@@ -1590,6 +1590,7 @@ async function loadUserData() {
                     budgets = parsed.data.budgets || [];
                     accounts = parsed.data.accounts || [];
                     patrimonio = parsed.data.patrimonio || [];
+                    properties = parsed.data.properties || [];
                     
                     // Actualizar selectores
                     updateAccountSelect();
@@ -1628,6 +1629,7 @@ async function loadUserDataFresh() {
             budgetsData,
             accountsData,
             patrimonioData,
+            propertiesData,
             profileData
         ] = await Promise.allSettled([
             apiRequest('/transactions'),
@@ -1637,6 +1639,7 @@ async function loadUserDataFresh() {
             apiRequest('/budgets').catch(() => []),
             apiRequest('/accounts').catch(() => []),
             apiRequest('/patrimonio').catch(() => []),
+            apiRequest('/properties').catch(() => []),
             apiRequest('/user/profile').catch(() => null)
         ]);
         
@@ -1655,6 +1658,7 @@ async function loadUserDataFresh() {
         budgets = budgetsData.status === 'fulfilled' ? (budgetsData.value || []) : [];
         accounts = accountsData.status === 'fulfilled' ? (accountsData.value || []) : [];
         patrimonio = patrimonioData.status === 'fulfilled' ? (patrimonioData.value || []) : [];
+        properties = propertiesData.status === 'fulfilled' ? (propertiesData.value || []) : [];
         
         // Procesar perfil
         if (profileData.status === 'fulfilled' && profileData.value) {
@@ -1699,7 +1703,8 @@ async function loadUserDataFresh() {
             investments,
             budgets,
             accounts,
-            patrimonio
+            patrimonio,
+            properties
         };
         sessionStorage.setItem(cacheKey, JSON.stringify({
             data: cacheData,
@@ -3503,6 +3508,7 @@ function updateDisplay() {
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
         updatePatrimonio(); // Actualizar patrimonio
+        updateProperties(); // Actualizar propiedades
         updateMonthFilter();
         updateMonthDashboard();
         

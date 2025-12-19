@@ -118,6 +118,14 @@ const budgetSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 });
 
+const envelopeSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    budget: { type: Number, required: true },
+    patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null },
+    created_at: { type: Date, default: Date.now }
+});
+
 const User = mongoose.model('User', userSchema);
 const Transaction = mongoose.model('Transaction', transactionSchema);
 const Account = mongoose.model('Account', accountSchema);
@@ -126,6 +134,7 @@ const Investment = mongoose.model('Investment', investmentSchema);
 const Property = mongoose.model('Property', propertySchema);
 const Asset = mongoose.model('Asset', assetSchema);
 const Budget = mongoose.model('Budget', budgetSchema);
+const Envelope = mongoose.model('Envelope', envelopeSchema);
 
 // Función para generar fechas
 function getDateString(daysAgo = 0) {
@@ -169,6 +178,7 @@ async function createDummyProfile() {
             await Property.deleteMany({ user_id: existingUser._id });
             await Asset.deleteMany({ user_id: existingUser._id });
             await Budget.deleteMany({ user_id: existingUser._id });
+            await Envelope.deleteMany({ user_id: existingUser._id });
             await User.deleteOne({ _id: existingUser._id });
             console.log('✅ Datos anteriores eliminados');
         }
@@ -488,6 +498,137 @@ async function createDummyProfile() {
         }
         console.log('✅ Presupuestos creados');
 
+        // Crear sobres (envelopes)
+        console.log('📮 Creando sobres...');
+        const sobreVacaciones = new Envelope({
+            user_id: userId,
+            name: 'Vacaciones Verano',
+            budget: 2000.00,
+            patrimonio_id: null
+        });
+        await sobreVacaciones.save();
+
+        const sobreNavidad = new Envelope({
+            user_id: userId,
+            name: 'Navidad',
+            budget: 800.00,
+            patrimonio_id: null
+        });
+        await sobreNavidad.save();
+
+        const sobreEmergencias = new Envelope({
+            user_id: userId,
+            name: 'Fondo Emergencias',
+            budget: 15000.00,
+            patrimonio_id: null
+        });
+        await sobreEmergencias.save();
+
+        const sobreCoche = new Envelope({
+            user_id: userId,
+            name: 'Nuevo Coche',
+            budget: 15000.00,
+            patrimonio_id: null
+        });
+        await sobreCoche.save();
+
+        console.log('✅ Sobres creados');
+
+        // Crear más propiedades
+        console.log('🏘️ Creando más propiedades...');
+        const propiedad2 = new Property({
+            user_id: userId,
+            name: 'Garaje Trastero',
+            address: 'Calle Gran Vía 45, Planta -1, 28013 Madrid',
+            type: 'other',
+            description: 'Garaje y trastero asociados al piso'
+        });
+        await propiedad2.save();
+        console.log('✅ Propiedades adicionales creadas');
+
+        // Crear más activos
+        console.log('🚗 Creando más activos...');
+        const coche = new Asset({
+            user_id: userId,
+            name: 'Coche - Seat León',
+            type: 'vehicle',
+            purchase_date: getDateString(1095), // Hace 3 años
+            purchase_price: 18000,
+            current_value: 12000, // Depreciación
+            description: 'Seat León 2019, 1.6 TDI',
+            value_history: [
+                { date: getDateString(1095), value: 18000 },
+                { date: getDateString(730), value: 15000 },
+                { date: getDateString(365), value: 13500 },
+                { date: getDateString(0), value: 12000 }
+            ]
+        });
+        await coche.save();
+
+        const joyas = new Asset({
+            user_id: userId,
+            name: 'Joyas y Relojes',
+            type: 'jewelry',
+            purchase_date: getDateString(1825), // Hace 5 años
+            purchase_price: 5000,
+            current_value: 5500, // Apreciación
+            description: 'Colección de joyas y relojes',
+            value_history: [
+                { date: getDateString(1825), value: 5000 },
+                { date: getDateString(1095), value: 5200 },
+                { date: getDateString(730), value: 5300 },
+                { date: getDateString(365), value: 5400 },
+                { date: getDateString(0), value: 5500 }
+            ]
+        });
+        await joyas.save();
+
+        const electronica = new Asset({
+            user_id: userId,
+            name: 'Equipos Electrónicos',
+            type: 'electronics',
+            purchase_date: getDateString(365), // Hace 1 año
+            purchase_price: 3000,
+            current_value: 2000, // Depreciación
+            description: 'Laptop, tablet, móviles, etc.',
+            value_history: [
+                { date: getDateString(365), value: 3000 },
+                { date: getDateString(180), value: 2500 },
+                { date: getDateString(0), value: 2000 }
+            ]
+        });
+        await electronica.save();
+        console.log('✅ Activos adicionales creados');
+
+        // Crear presupuestos adicionales (semanales, anuales)
+        console.log('📊 Creando presupuestos adicionales...');
+        
+        // Presupuesto semanal
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1); // Lunes de esta semana
+        const weekStartStr = weekStart.toISOString().split('T')[0];
+        const budgetSemanal = new Budget({
+            user_id: userId,
+            category_id: 'Entretenimiento',
+            amount: 50,
+            period_type: 'weekly',
+            period_value: weekStartStr
+        });
+        await budgetSemanal.save();
+
+        // Presupuesto anual
+        const currentYear = new Date().getFullYear().toString();
+        const budgetAnual = new Budget({
+            user_id: userId,
+            category_id: 'Viajes',
+            amount: 3000,
+            period_type: 'yearly',
+            period_value: currentYear
+        });
+        await budgetAnual.save();
+
+        console.log('✅ Presupuestos adicionales creados');
+
         // Verificar que el usuario puede hacer login
         console.log('\n🔐 Verificando que el usuario puede hacer login...');
         const testUser = await User.findOne({ email: 'demo@veedor.com' });
@@ -512,11 +653,13 @@ async function createDummyProfile() {
         console.log('   y vuelve a iniciar sesión con las credenciales de arriba.');
         console.log('\n💰 Resumen del perfil:');
         console.log('   • 3 cuentas bancarias (Total: ~24,200€)');
-        console.log('   • 1 propiedad (Piso valorado en 310,000€)');
+        console.log('   • 2 propiedades (Piso + Garaje/Trastero)');
         console.log('   • 1 hipoteca (250,000€ inicial, ~223,000€ restante)');
         console.log('   • 2 inversiones (Total: ~30,500€)');
+        console.log('   • 4 activos (Piso, Coche, Joyas, Electrónica)');
+        console.log('   • 4 sobres (Vacaciones, Navidad, Emergencias, Nuevo Coche)');
         console.log('   • Transacciones de los últimos 12 meses');
-        console.log('   • Presupuestos mensuales configurados');
+        console.log('   • Presupuestos mensuales, semanales y anuales');
         console.log('   • Fondo de emergencia: 12,500€');
         console.log('\n💡 Este perfil representa una persona financieramente solvente');
         console.log('   con buen control de gastos, ahorros e inversiones.');

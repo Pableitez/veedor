@@ -55,7 +55,6 @@ const userSchema = new mongoose.Schema({
     birthDate: { type: String, default: null },
     notes: { type: String, default: '' },
     savingsGoal: { type: Number, default: null }, // Meta de ahorro del usuario
-    baseFund: { type: Number, default: null }, // Fondo base del usuario
     resetToken: { type: String, default: null },
     resetTokenExpiry: { type: Date, default: null },
     emailVerified: { type: Boolean, default: false },
@@ -1146,8 +1145,7 @@ app.get('/api/verify', authenticateToken, async (req, res) => {
                 country: user.country || '',
                 birthDate: user.birthDate || null,
                 notes: user.notes || '',
-                savingsGoal: user.savingsGoal || null,
-                baseFund: user.baseFund || null
+                savingsGoal: user.savingsGoal || null
             } 
         });
     } catch (error) {
@@ -1173,8 +1171,7 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
             country: user.country || '',
             birthDate: user.birthDate || null,
             notes: user.notes || '',
-            savingsGoal: user.savingsGoal || null,
-            baseFund: user.baseFund || null
+            savingsGoal: user.savingsGoal || null
         });
     } catch (error) {
         console.error('Error obteniendo perfil:', error);
@@ -1185,7 +1182,7 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
 // Actualizar perfil de usuario
 app.put('/api/user/profile', authenticateToken, async (req, res) => {
     try {
-        const { firstName, lastName, age, birthDate, phone, address, city, country, notes, savingsGoal, baseFund } = req.body;
+        const { firstName, lastName, age, birthDate, phone, address, city, country, notes, savingsGoal } = req.body;
 
         const user = await User.findById(req.user.userId);
         if (!user) {
@@ -1210,14 +1207,6 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
                 user.savingsGoal = isNaN(parsed) ? null : parsed;
             }
         }
-        if (baseFund !== undefined) {
-            if (baseFund === null || baseFund === '' || baseFund === 0) {
-                user.baseFund = null;
-            } else {
-                const parsed = parseFloat(baseFund);
-                user.baseFund = isNaN(parsed) ? null : parsed;
-            }
-        }
         
         user.updatedAt = new Date();
         
@@ -1237,7 +1226,6 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
                         country: user.country,
                         notes: user.notes,
                         savingsGoal: user.savingsGoal,
-                        baseFund: user.baseFund,
                         updatedAt: user.updatedAt
                     }
                 }
