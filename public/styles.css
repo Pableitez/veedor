@@ -677,6 +677,8 @@ body.dark-mode .auth-header p {
 body.dark-mode .auth-tab-btn {
     color: #FFFFFF;
 }
+
+.auth-tab-btn {
     font-weight: 500;
     color: var(--text-tertiary);
     border-bottom: 2px solid transparent;
