@@ -14333,9 +14333,16 @@ window.toggleAuthLanguageDropdown = toggleAuthLanguageDropdown;
 window.toggleLanguageDropdown = toggleLanguageDropdown;
 window.updateTranslations = updateTranslations;
 // Reemplazar la función stub inicial con la versión completa
+// Guardar referencia a la función completa
+const changeLanguageComplete = changeLanguage;
 window.changeLanguage = function(lang) {
+    console.log('🌐 window.changeLanguage llamada con:', lang);
     // Llamar a la función completa
-    changeLanguage(lang);
+    if (typeof changeLanguageComplete === 'function') {
+        changeLanguageComplete(lang);
+    } else {
+        console.error('❌ changeLanguageComplete no está disponible');
+    }
 };
 
 // Actualizar visibilidad del botón de filtros al cargar y al redimensionar
