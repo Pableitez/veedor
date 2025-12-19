@@ -133,45 +133,69 @@ if (window.VEEDOR_LOADED) {
         }
         
         // Actualizar traducciones múltiples veces para asegurar que funcione
-        const updateTranslations = () => {
+        const updateTranslationsNow = () => {
+            console.log('🔄 Intentando actualizar traducciones...', { 
+                hasUpdateTranslations: !!window.updateTranslations,
+                hasT: !!window.t,
+                lang: lang 
+            });
+            
             if (window.updateTranslations && typeof window.updateTranslations === 'function') {
-                window.updateTranslations();
-            } else if (window.t && typeof window.t === 'function') {
-                // Fallback: actualizar elementos manualmente
-                const elements = document.querySelectorAll('[data-translate]');
-                elements.forEach(el => {
-                    const key = el.getAttribute('data-translate');
-                    if (key) {
-                        try {
-                            const translation = window.t(key, lang);
-                            if (translation && translation !== key) {
-                                el.textContent = translation;
+                try {
+                    console.log('✅ Llamando a window.updateTranslations()');
+                    window.updateTranslations();
+                } catch (e) {
+                    console.error('❌ Error en updateTranslations:', e);
+                }
+            }
+            
+            // Fallback: actualizar elementos manualmente si window.t está disponible
+            if (window.t && typeof window.t === 'function') {
+                console.log('✅ Usando window.t para actualizar elementos manualmente');
+                try {
+                    const elements = document.querySelectorAll('[data-translate]');
+                    console.log(`📝 Encontrados ${elements.length} elementos con data-translate`);
+                    elements.forEach(el => {
+                        const key = el.getAttribute('data-translate');
+                        if (key) {
+                            try {
+                                const translation = window.t(key, lang);
+                                if (translation && translation !== key) {
+                                    el.textContent = translation;
+                                }
+                            } catch (e) {
+                                console.warn('Error traduciendo elemento:', key, e);
                             }
-                        } catch (e) {}
-                    }
-                });
-                
-                // Actualizar placeholders
-                document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
-                    const key = el.getAttribute('data-translate-placeholder');
-                    if (key) {
-                        try {
-                            const translation = window.t(key, lang);
-                            if (translation && translation !== key) {
-                                el.placeholder = translation;
-                            }
-                        } catch (e) {}
-                    }
-                });
+                        }
+                    });
+                    
+                    // Actualizar placeholders
+                    document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                        const key = el.getAttribute('data-translate-placeholder');
+                        if (key) {
+                            try {
+                                const translation = window.t(key, lang);
+                                if (translation && translation !== key) {
+                                    el.placeholder = translation;
+                                }
+                            } catch (e) {}
+                        }
+                    });
+                } catch (e) {
+                    console.error('❌ Error en fallback de traducciones:', e);
+                }
+            } else {
+                console.warn('⚠️ window.t no está disponible aún');
             }
         };
         
-        // Actualizar inmediatamente y varias veces más
-        updateTranslations();
-        setTimeout(updateTranslations, 50);
-        setTimeout(updateTranslations, 200);
-        setTimeout(updateTranslations, 500);
-        setTimeout(updateTranslations, 1000);
+        // Actualizar inmediatamente y varias veces más para asegurar que funcione
+        updateTranslationsNow();
+        setTimeout(updateTranslationsNow, 50);
+        setTimeout(updateTranslationsNow, 200);
+        setTimeout(updateTranslationsNow, 500);
+        setTimeout(updateTranslationsNow, 1000);
+        setTimeout(updateTranslationsNow, 2000);
         
         // Actualizar banderas
         const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
