@@ -3141,17 +3141,19 @@ function initializeForms() {
             if (periodType === 'weekly') {
                 periodValueInput.type = 'date';
                 periodValueInput.value = getWeekStartDate(now);
-                periodValueLabel.textContent = 'Semana (Inicio)';
-                periodValueHelp.textContent = 'Selecciona el lunes de la semana';
-                amountLabel.textContent = 'Presupuesto Semanal (€)';
-                amountHelp.textContent = 'Límite máximo de gasto para esta semana';
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                periodValueLabel.textContent = getTranslation('budget.weekStart', lang);
+                periodValueHelp.textContent = getTranslation('budget.selectWeekStart', lang);
+                amountLabel.textContent = getTranslation('budget.weeklyBudget', lang);
+                amountHelp.textContent = getTranslation('help.weeklyLimit', lang);
                 if (durationGroup) durationGroup.style.display = 'none';
             } else if (periodType === 'monthly') {
                 periodValueInput.type = 'month';
                 periodValueInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-                periodValueLabel.textContent = 'Mes de Inicio';
-                periodValueHelp.textContent = 'Mes desde el que comienza el presupuesto';
-                amountLabel.textContent = 'Presupuesto Mensual (€)';
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                periodValueLabel.textContent = getTranslation('budget.monthStart', lang);
+                periodValueHelp.textContent = getTranslation('budget.monthStartHelp', lang);
+                amountLabel.textContent = getTranslation('budget.monthlyBudget', lang);
                 const lang = localStorage.getItem('veedor_language') || 'es';
                 amountHelp.textContent = getTranslation('help.monthlyLimit', lang);
                 if (durationGroup) {
@@ -3168,7 +3170,8 @@ function initializeForms() {
                 const lang = localStorage.getItem('veedor_language') || 'es';
                 periodValueLabel.textContent = getTranslation('help.year', lang);
                 periodValueHelp.textContent = getTranslation('help.selectYear', lang);
-                amountLabel.textContent = 'Presupuesto Anual (€)';
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                amountLabel.textContent = getTranslation('budget.yearlyBudget', lang);
                 amountHelp.textContent = getTranslation('help.yearlyLimit', lang);
                 if (durationGroup) durationGroup.style.display = 'none';
             }
@@ -3984,12 +3987,12 @@ function updateEnvelopes() {
         card.innerHTML = `
             <div style="margin-bottom: 8px;">
                 <h3 style="margin: 0 0 4px 0;">${envelope.name}</h3>
-                ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500);">Asociado a: ${patrimonioName}</small>` : ''}
+                ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500);">${getTranslation('envelope.associatedTo', lang)}: ${patrimonioName}</small>` : ''}
             </div>
             <div class="envelope-budget">${formatCurrency(envelope.budget)}</div>
-            <div class="envelope-spent">Gastado: ${formatCurrency(spent)}</div>
+            <div class="envelope-spent">${getTranslation('envelope.spent', lang)}: ${formatCurrency(spent)}</div>
             <div class="envelope-remaining ${remaining < 0 ? 'negative' : ''}">
-                Restante: ${formatCurrency(remaining)}
+                ${getTranslation('envelope.remaining', lang)}: ${formatCurrency(remaining)}
             </div>
             <div class="envelope-progress">
                 <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%"></div>
@@ -4409,7 +4412,8 @@ function updateBudgets() {
         // Obtener etiqueta del período
         let periodLabel = '';
         if (budget.period_type === 'weekly') {
-            periodLabel = 'Semanal';
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            periodLabel = getTranslation('budget.weekly', lang);
         } else if (budget.period_type === 'monthly') {
             periodLabel = 'Mensual';
         } else if (budget.period_type === 'yearly') {
@@ -4437,7 +4441,7 @@ function updateBudgets() {
                     <span style="font-weight: 600; color: ${isOverBudget ? 'var(--danger)' : 'var(--gray-900)'};">${formatCurrency(actual)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <span style="font-size: 13px; color: var(--gray-600);">${isIncome ? 'Falta:' : 'Restante:'}</span>
+                    <span style="font-size: 13px; color: var(--gray-600);">${isIncome ? getTranslation('budget.missing', lang) + ':' : getTranslation('budget.remaining', lang) + ':'}</span>
                     <span style="font-weight: 700; font-size: 16px; color: ${difference >= 0 ? 'var(--success)' : 'var(--danger)'};">
                         ${formatCurrency(Math.abs(difference))}
                     </span>
@@ -5261,7 +5265,7 @@ async function editEnvelope(id) {
                         <small>Un nombre descriptivo para tu objetivo</small>
                     </div>
                     <div class="form-group">
-                        <label for="editEnvelopeBudget">Presupuesto Mensual (€)</label>
+                        <label for="editEnvelopeBudget">${getTranslation('budget.monthlyBudget', lang)}</label>
                         <input type="number" id="editEnvelopeBudget" step="0.01" min="0" required placeholder="0.00">
                         <small>Cuánto planeas ahorrar cada mes en este sobre</small>
                     </div>
@@ -5751,7 +5755,7 @@ function updateLoans() {
                             <span style="color: var(--text-primary);">${monthsElapsed} / ${totalMonths}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                            <strong style="color: var(--text-primary);">Meses Restantes:</strong>
+                            <strong style="color: var(--text-primary);">${getTranslation('loan.monthsRemaining', lang)}:</strong>
                             <span style="color: var(--text-primary);">${monthsRemaining}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
@@ -5765,7 +5769,7 @@ function updateLoans() {
             ${loan.early_payments && loan.early_payments.length > 0 ? `
                 <div style="margin: 10px 0; padding: 12px; background: var(--bg-tertiary); border-radius: 6px; font-size: 12px; border-left: 3px solid var(--warning); border: 1px solid var(--border-color);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <strong style="color: var(--text-primary);">Amortizaciones Anticipadas:</strong> <span style="color: var(--text-primary);">${loan.early_payments.length}</span>
+                        <strong style="color: var(--text-primary);">${getTranslation('loan.earlyPayments', lang)}:</strong> <span style="color: var(--text-primary);">${loan.early_payments.length}</span>
                     </div>
                     <div style="display: grid; gap: 6px; margin-top: 8px;">
                         ${loan.early_payments.map((ep, index) => `
@@ -5798,7 +5802,7 @@ function updateLoans() {
                                 <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Cuota</th>
                                 <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Capital</th>
                                 <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Interés</th>
-                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Restante</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">${getTranslation('budget.remaining', lang)}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -5895,7 +5899,7 @@ function showLoanDetails(loanId) {
                     <div style="font-size: 18px; font-weight: 700; color: var(--gray-900);">${formatCurrency(loan.principal)}</div>
                 </div>
                 <div>
-                    <strong style="color: var(--gray-600); font-size: 12px;">Capital Restante</strong>
+                    <strong style="color: var(--gray-600); font-size: 12px;">${getTranslation('loan.remainingCapital', lang)}</strong>
                     <div style="display: flex; flex-direction: column; gap: 8px;">
                         <input type="number" id="editRemainingPrincipal" value="${remainingPrincipal.toFixed(2)}" step="0.01" min="0" style="font-size: 18px; font-weight: 700; color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'}; border: 2px solid var(--border-color); border-radius: 6px; padding: 8px 12px; width: 100%; background: var(--bg-primary); box-sizing: border-box;">
                         <button id="saveRemainingPrincipal" onclick="saveRemainingPrincipal('${loan._id || loan.id}')" style="background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; width: 100%; box-sizing: border-box;" onmouseover="this.style.opacity='0.9'; this.style.transform='translateY(-1px)'" onmouseout="this.style.opacity='1'; this.style.transform='translateY(0)'">Guardar</button>
@@ -5938,7 +5942,7 @@ function showLoanDetails(loanId) {
                         <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Cuota</th>
                         <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Capital</th>
                         <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Interés</th>
-                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Capital Restante</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">${getTranslation('loan.remainingCapital', lang)}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -6105,7 +6109,7 @@ function showEarlyPaymentModal(loanId) {
                 <span style="font-weight: 700; color: var(--gray-900);">${loan.name}</span>
             </div>
             <div>
-                <strong style="color: var(--gray-700);">Capital Restante:</strong> 
+                <strong style="color: var(--gray-700);">${getTranslation('loan.remainingCapital', lang)}:</strong> 
                 <span style="font-weight: 700; color: ${remainingCapital > 0 ? 'var(--danger)' : 'var(--success)'}; font-size: 18px;">${formatCurrency(remainingCapital)}</span>
             </div>
         `;
@@ -13789,7 +13793,7 @@ function showFinancialHealthDetail(metric, index) {
             ${chartHTML}
             
             <div>
-                <h3 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: var(--text-primary);">Detalles del Cálculo</h3>
+                <h3 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: var(--text-primary);">${getTranslation('financial.calculationDetails', lang)}</h3>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
     `;
     
@@ -13818,7 +13822,7 @@ function showFinancialHealthDetail(metric, index) {
                 <strong>Activos Totales:</strong> ${formatCurrency(totalAssets)}
             </div>
             <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--primary); border: 1px solid var(--border-color); color: var(--text-primary);">
-                <strong>Ratio:</strong> ${(loansDebt / (totalAssets || 1) * 100).toFixed(2)}%
+                <strong>${getTranslation('financial.ratio', lang)}:</strong> ${(loansDebt / (totalAssets || 1) * 100).toFixed(2)}%
             </div>
         `;
     } else if (index === 2) { // Salud Financiera
