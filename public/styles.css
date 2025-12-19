@@ -3535,30 +3535,13 @@ tbody tr:last-child td {
         font-size: 16px !important;
     }
     
-    #languageDropdownBtn {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: none !important;
-        background: transparent !important;
-    }
-    
+    /* Selectores de idioma visibles en móvil también */
+    #languageDropdownBtn,
     #authLanguageDropdownBtn {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: none !important;
-        background: transparent !important;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
     }
     
     #settingsDropdownBtn {
@@ -5291,18 +5274,7 @@ body:not(.dark-mode) .quick-add-tooltip {
 /* ============================================
    OCULTAR BOTONES DE IDIOMA TEMPORALMENTE
    ============================================ */
-#authLanguageDropdownBtn,
-#languageDropdownBtn,
-#authLanguageDropdown,
-#languageDropdown {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
+/* Selectores de idioma ahora están habilitados */
     border: none !important;
     background: transparent !important;
     overflow: hidden !important;
