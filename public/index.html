@@ -519,33 +519,30 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="table-controls" id="transactionFilters">
-                        <input type="text" id="searchInput" data-translate-placeholder="transactions.search" placeholder="Buscar...">
-                        <select id="filterCategory">
-                            <option value="" data-translate="transactions.allCategories">Todas las categorías</option>
-                        </select>
-                        <select id="filterMonth">
-                            <option value="" data-translate="transactions.allMonths">Todos los meses</option>
-                        </select>
-                        <div class="date-filters-container">
-                            <div class="date-filter-item">
-                                <label>Desde:</label>
-                                <input type="date" id="filterStartDate">
-                            </div>
-                            <div class="date-filter-item">
-                                <label>Hasta:</label>
-                                <input type="date" id="filterEndDate">
-                            </div>
+                    <div class="table-controls" id="transactionFilters" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 12px; align-items: end; padding: 20px; background: var(--bg-secondary, var(--gray-50)); border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 20px;">
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Buscar</label>
+                            <input type="text" id="searchInput" placeholder="Buscar transacciones..." style="padding: 12px 16px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); transition: all 0.2s; width: 100%;">
                         </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap;">
-                            <label style="font-size: 13px; font-weight: 500; color: var(--text-secondary); white-space: nowrap;">Filas por página:</label>
-                            <select id="rowsPerPage" style="padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); min-width: 120px;">
-                                <option value="10">10</option>
-                                <option value="25" selected>25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                                <option value="0">Todas</option>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Categoría</label>
+                            <select id="filterCategory" style="padding: 12px 16px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; width: 100%;">
+                                <option value="">Todas las categorías</option>
                             </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Mes</label>
+                            <select id="filterMonth" style="padding: 12px 16px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; width: 100%;">
+                                <option value="">Todos los meses</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Desde</label>
+                            <input type="date" id="filterStartDate" style="padding: 12px 16px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; width: 100%;">
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Hasta</label>
+                            <input type="date" id="filterEndDate" style="padding: 12px 16px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; width: 100%;">
                         </div>
                     </div>
                     <div class="table-container" id="transactionsTableContainer" style="max-height: 600px; overflow-y: auto;">

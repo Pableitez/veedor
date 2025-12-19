@@ -2654,13 +2654,7 @@ function initializeForms() {
         });
     }
     
-    const rowsPerPageSelect = document.getElementById('rowsPerPage');
-    if (rowsPerPageSelect) {
-        rowsPerPageSelect.addEventListener('change', () => {
-            currentPage = 1;
-            updateTransactionsTable();
-        });
-    }
+    // Eliminado: selector de filas por página - mostrar todas las transacciones
     
     // Selector de período para gráficas (global - mantener para compatibilidad)
     const chartPeriod = document.getElementById('chartPeriod');
@@ -3753,7 +3747,7 @@ let currentEditingAssetId = null;
 let currentEditingBudgetId = null;
 
 let currentPage = 1;
-let rowsPerPage = 25;
+let rowsPerPage = 0; // Mostrar todas las transacciones
 
 function updateTransactionsTable() {
     const tbody = document.getElementById('transactionsBody');
@@ -3762,10 +3756,8 @@ function updateTransactionsTable() {
     const filterMonth = document.getElementById('filterMonth')?.value || '';
     const filterStartDate = document.getElementById('filterStartDate')?.value || '';
     const filterEndDate = document.getElementById('filterEndDate')?.value || '';
-    const rowsPerPageSelect = document.getElementById('rowsPerPage');
-    if (rowsPerPageSelect) {
-        rowsPerPage = parseInt(rowsPerPageSelect.value) || 25;
-    }
+    // Eliminado: selector de filas por página - mostrar todas las transacciones
+    rowsPerPage = 0;
     
     let filtered = transactions;
     
