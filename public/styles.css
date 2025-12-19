@@ -683,7 +683,7 @@ body.dark-mode .auth-screen::before {
 }
 
 .auth-header p {
-    color: var(--text-secondary);
+    color: #1F2937;
     font-size: clamp(12px, 1.8vw, 16px);
     font-weight: 500;
     margin: 0;
@@ -704,6 +704,7 @@ body.dark-mode .auth-screen::before {
     background: none;
     border: none;
     cursor: pointer;
+    color: #1F2937;
     font-size: clamp(12px, 1.8vw, 15px);
     font-weight: 500;
     color: var(--text-tertiary);
@@ -713,12 +714,13 @@ body.dark-mode .auth-screen::before {
 }
 
 .auth-tab-btn:hover {
-    color: var(--primary);
+    color: #374151;
 }
 
 .auth-tab-btn.active {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
+    color: #1F2937;
+    border-bottom: 2px solid;
+    border-image: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%) 1;
     font-weight: 600;
 }
 
@@ -750,7 +752,7 @@ body.dark-mode .auth-screen::before {
     font-size: clamp(11px, 1.5vw, 14px);
     margin-bottom: clamp(4px, 0.8vh, 8px);
     font-weight: 500;
-    color: var(--text-primary);
+    color: #1F2937;
 }
 
 .auth-form .form-group input {
@@ -767,8 +769,9 @@ body.dark-mode .auth-screen::before {
 
 .auth-form .form-group input:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border: 2px solid;
+    border-image: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%) 1;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
 }
 
 .auth-form .form-group small {
@@ -828,8 +831,9 @@ body.dark-mode .auth-screen::before {
 
 .auth-form .form-group input:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-light);
+    border: 2px solid;
+    border-image: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%) 1;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
 }
 
 .auth-form .form-group small {
@@ -1493,6 +1497,15 @@ body:not(.dark-mode) #welcomeMessageText {
     background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%);
     background-size: 200% 200%;
     background-position: 0% 50%;
+}
+
+/* Borde arcoíris para elementos seleccionados/focus - usando box-shadow */
+@keyframes rainbow-border {
+    0% { box-shadow: 0 0 0 2px #FF6B6B, 0 0 0 4px rgba(255, 107, 107, 0.2); }
+    25% { box-shadow: 0 0 0 2px #4ECDC4, 0 0 0 4px rgba(78, 205, 196, 0.2); }
+    50% { box-shadow: 0 0 0 2px #45B7D1, 0 0 0 4px rgba(69, 183, 209, 0.2); }
+    75% { box-shadow: 0 0 0 2px #FFEAA7, 0 0 0 4px rgba(255, 234, 167, 0.2); }
+    100% { box-shadow: 0 0 0 2px #FF6B6B, 0 0 0 4px rgba(255, 107, 107, 0.2); }
 }
 
 body:not(.dark-mode) .rainbow-bg {
@@ -2382,8 +2395,8 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--primary);
+    border-color: #4ECDC4;
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.3), 0 0 0 4px rgba(78, 205, 196, 0.1);
     transform: translateY(-1px);
     background: var(--bg-primary);
 }
@@ -2782,8 +2795,8 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 .chart-asset-filter:focus,
 .chart-account-filter:focus {
     outline: none;
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 2px var(--primary-light) !important;
+    border-color: #4ECDC4 !important;
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.3), 0 0 0 4px rgba(78, 205, 196, 0.1) !important;
 }
 
 .chart-period-select option,
@@ -2826,8 +2839,8 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 .table-controls input:focus,
 .table-controls select:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-light);
+    border-color: #4ECDC4;
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.3), 0 0 0 4px rgba(78, 205, 196, 0.1);
 }
 
 .table-container {
@@ -3106,8 +3119,8 @@ tbody tr:last-child td {
 }
 
 .envelope-card:hover {
-    border-color: var(--primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #4ECDC4;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(78, 205, 196, 0.2);
     transform: translateY(-2px);
 }
 
@@ -3221,8 +3234,8 @@ tbody tr:last-child td {
 
 .chart-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(78, 205, 196, 0.2);
+    border-color: #4ECDC4;
 }
 
 @media (max-width: 768px) {

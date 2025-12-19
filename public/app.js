@@ -10778,9 +10778,10 @@ function updateMonthDashboard() {
                     this.style.borderColor = 'var(--border-color)';
                 };
                 card.onclick = () => showCategoryDetails(category.name, categoryIncome, 'income', selectedMonth, budget.category_id, budget.amount);
+                const budgetDisplayName = budget.name || category.name;
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                        <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${category.name}</h5>
+                        <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${budgetDisplayName}</h5>
                         <span style="font-size: 11px; padding: 4px 8px; background: var(--success-light); border-radius: var(--radius); color: var(--success-dark); font-weight: 600;">Ingreso</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
@@ -10835,9 +10836,10 @@ function updateMonthDashboard() {
                     this.style.borderColor = 'var(--border-color)';
                 };
                 card.onclick = () => showCategoryDetails(category.name, categoryExpenses, 'expense', selectedMonth, budget.category_id, budget.amount);
+                const budgetDisplayName = budget.name || category.name;
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                        <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${category.name}</h5>
+                        <h5 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--gray-900);">${budgetDisplayName}</h5>
                         <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600;">Gasto</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
