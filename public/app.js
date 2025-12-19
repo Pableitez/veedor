@@ -132,25 +132,10 @@ if (window.VEEDOR_LOADED) {
             }
         }
         
-            // Llamar directamente a la función completa cuando esté disponible
-        // Si la función completa aún no está cargada, usar la lógica básica
-        if (typeof changeLanguage === 'function' && changeLanguage.toString().includes('forceUpdate')) {
-            // La función completa está disponible, llamarla directamente
-            changeLanguage(lang);
-            return;
-        }
-        
-        // Si no, usar lógica básica hasta que la función completa esté disponible
+        // Actualizar traducciones básicas sin recursión
         const updateTranslationsNow = () => {
-            console.log('🔄 Intentando actualizar traducciones...', { 
-                hasUpdateTranslations: !!window.updateTranslations,
-                hasT: !!window.t,
-                lang: lang 
-            });
-            
             if (window.updateTranslations && typeof window.updateTranslations === 'function') {
                 try {
-                    console.log('✅ Llamando a window.updateTranslations()');
                     window.updateTranslations();
                 } catch (e) {
                     console.error('❌ Error en updateTranslations:', e);
@@ -159,10 +144,8 @@ if (window.VEEDOR_LOADED) {
             
             // Fallback: actualizar elementos manualmente si window.t está disponible
             if (window.t && typeof window.t === 'function') {
-                console.log('✅ Usando window.t para actualizar elementos manualmente');
                 try {
                     const elements = document.querySelectorAll('[data-translate]');
-                    console.log(`📝 Encontrados ${elements.length} elementos con data-translate`);
                     elements.forEach(el => {
                         const key = el.getAttribute('data-translate');
                         if (key) {
@@ -171,9 +154,7 @@ if (window.VEEDOR_LOADED) {
                                 if (translation && translation !== key) {
                                     el.textContent = translation;
                                 }
-                            } catch (e) {
-                                console.warn('Error traduciendo elemento:', key, e);
-                            }
+                            } catch (e) {}
                         }
                     });
                     
@@ -192,26 +173,12 @@ if (window.VEEDOR_LOADED) {
                 } catch (e) {
                     console.error('❌ Error en fallback de traducciones:', e);
                 }
-            } else {
-                console.warn('⚠️ window.t no está disponible aún');
             }
         };
         
-        // Actualizar inmediatamente y varias veces más para asegurar que funcione
+        // Actualizar inmediatamente
         updateTranslationsNow();
-        setTimeout(updateTranslationsNow, 50);
-        setTimeout(updateTranslationsNow, 200);
-        setTimeout(updateTranslationsNow, 500);
-        setTimeout(updateTranslationsNow, 1000);
-        setTimeout(updateTranslationsNow, 2000);
-        
-        // Intentar llamar a la función completa cuando esté disponible
-        setTimeout(() => {
-            if (typeof changeLanguage === 'function' && changeLanguage !== window.changeLanguage) {
-                console.log('✅ Función completa changeLanguage disponible, llamándola...');
-                changeLanguage(lang);
-            }
-        }, 100);
+        setTimeout(updateTranslationsNow, 100);
         
         // Actualizar banderas
         const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
