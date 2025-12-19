@@ -448,7 +448,8 @@ async function apiRequest(endpoint, options = {}) {
             throw new Error(text || 'Error en la respuesta del servidor');
         }
 
-        if (response.status === 401 || response.status === 403) {
+        // No cerrar sesión automáticamente en el endpoint de login (401 es esperado si las credenciales son incorrectas)
+        if ((response.status === 401 || response.status === 403) && !endpoint.includes('/login')) {
             logout();
             throw new Error('Sesión expirada');
         }
