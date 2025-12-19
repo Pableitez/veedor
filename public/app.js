@@ -3994,8 +3994,8 @@ function updateEnvelopes() {
                 <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%"></div>
             </div>
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
-                <button class="btn-secondary" onclick="editEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">Editar</button>
-                <button class="btn-danger" onclick="deleteEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">Eliminar</button>
+                <button class="btn-secondary" onclick="editEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">${getTranslation('common.edit', lang)}</button>
+                <button class="btn-danger" onclick="deleteEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">${getTranslation('common.delete', lang)}</button>
             </div>
         `;
         grid.appendChild(card);
@@ -4499,7 +4499,7 @@ async function editBudget(id) {
                     </div>
                     <div style="display: flex; gap: 12px; margin-top: 8px;">
                         <button type="button" class="btn-secondary" onclick="closeEditBudgetModal()" style="flex: 1;">Cancelar</button>
-                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Presupuesto</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">${getTranslation('forms.updateBudget', lang)}</button>
                     </div>
                 </form>
             </div>
@@ -4783,7 +4783,7 @@ async function editTransaction(id) {
                     </div>
                     <div style="display: flex; gap: 12px; margin-top: 8px;">
                         <button type="button" class="btn-secondary" onclick="closeEditTransactionModal()" style="flex: 1;">Cancelar</button>
-                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Transacción</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">${getTranslation('forms.updateTransaction', lang)}</button>
                     </div>
                 </form>
             </div>
@@ -5266,7 +5266,7 @@ async function editEnvelope(id) {
                     </div>
                     <div style="display: flex; gap: 12px; margin-top: 8px;">
                         <button type="button" class="btn-secondary" onclick="closeEditEnvelopeModal()" style="flex: 1;">Cancelar</button>
-                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Sobre</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">${getTranslation('forms.updateEnvelope', lang)}</button>
                     </div>
                 </form>
             </div>
@@ -6252,7 +6252,7 @@ async function editEarlyPayment(loanId, index) {
                     </div>
                     <div style="display: flex; gap: 12px; margin-top: 8px;">
                         <button type="button" class="btn-secondary" onclick="closeEditEarlyPaymentModal()" style="flex: 1;">Cancelar</button>
-                        <button type="submit" class="btn-primary" style="flex: 1;">Guardar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">${getTranslation('common.save', lang)}</button>
                     </div>
                 </form>
             </div>
