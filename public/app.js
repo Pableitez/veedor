@@ -13735,7 +13735,7 @@ function updateTranslations() {
         });
         
         // Actualizar banderas
-        const flags = { es: 'ES', en: 'EN', de: 'DE', fr: 'FR' };
+        const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
         const flagEl = document.getElementById('currentLanguageFlag');
         if (flagEl) flagEl.textContent = flags[lang] || flags['es'];
         const authFlagEl = document.getElementById('authCurrentLanguageFlag');
