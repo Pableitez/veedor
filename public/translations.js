@@ -869,6 +869,18 @@ const translations = {
             noData: "No data for this period",
             noCategoryExpenses: "No expenses by category"
         },
+        common: {
+            transactions: "Transactions",
+            budget: "Budget",
+            progress: "Budget progress",
+            real: "Real",
+            interpretation: "Interpretation",
+            patrimony: "Patrimony",
+            loan: "Loan",
+            initialCapital: "Initial Capital",
+            openingCommission: "Opening Comm.",
+            periodicContribution: "Active Periodic Contribution"
+        },
         actions: {
             details: "Details",
             amortize: "Amortize",

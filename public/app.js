@@ -7035,7 +7035,7 @@ function updateProperties() {
                     <div style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(propertyExpenses)}</div>
                 </div>
                 <div>
-                    <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Ingresos Totales</div>
+                    <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">${getTranslation('property.totalIncome', lang)}</div>
                     <div style="font-size: 18px; font-weight: 700; color: var(--success);">${formatCurrency(propertyIncomes)}</div>
                 </div>
             </div>
@@ -10817,11 +10817,11 @@ function updateMonthDashboard() {
                     ${budgetAmount > 0 ? `
                         <div style="margin-top: 12px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                <small style="font-size: 12px; color: var(--text-secondary);">Progreso del presupuesto</small>
+                                <small style="font-size: 12px; color: var(--text-secondary);">${getTranslation('common.progress', lang)}</small>
                                 <small style="font-size: 12px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-                                <small style="font-size: 11px; color: var(--text-tertiary);">Restante: ${formatCurrency(Math.max(0, budgetAmount - data.amount))}</small>
+                                <small style="font-size: 11px; color: var(--text-tertiary);">${getTranslation('envelope.remaining', lang)}: ${formatCurrency(Math.max(0, budgetAmount - data.amount))}</small>
                                 ${percentage > 100 ? `<small style="font-size: 11px; color: var(--danger-color); font-weight: 600;">Excedido</small>` : ''}
                             </div>
                         </div>
@@ -10967,7 +10967,7 @@ function updateMonthDashboard() {
                         <div>
                             <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">${getTranslation('envelope.budgetExpenses', lang)}</div>
                             <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalExpenseBudget)}</div>
-                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">Real: ${formatCurrency(totalExpenseActual)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">${getTranslation('common.real', lang)}: ${formatCurrency(totalExpenseActual)}</div>
                             <div style="font-size: 12px; margin-top: 4px; color: #0F172A; opacity: 0.9;">
                                 ${totalExpenseBudget > 0 ? ((totalExpenseActual / totalExpenseBudget) * 100).toFixed(1) + '%' : '-'}
                             </div>
@@ -10975,7 +10975,7 @@ function updateMonthDashboard() {
                         <div>
                             <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">Ahorro Previsto</div>
                             <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalIncomeBudget - totalExpenseBudget)}</div>
-                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">Real: ${formatCurrency(totalIncomeActual - totalExpenseActual)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">${getTranslation('common.real', lang)}: ${formatCurrency(totalIncomeActual - totalExpenseActual)}</div>
                         </div>
                     </div>
                 `;
@@ -11157,7 +11157,7 @@ function updateMonthDashboard() {
                         <span style="font-size: 14px; font-weight: 600; color: var(--danger-color);">${formatCurrency(spent)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                        <span style="font-size: 14px; color: var(--text-secondary);">Restante:</span>
+                        <span style="font-size: 14px; color: var(--text-secondary);">${getTranslation('envelope.remaining', lang)}:</span>
                         <span style="font-size: 14px; font-weight: 600; color: ${remaining >= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">${formatCurrency(remaining)}</span>
                     </div>
                     <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
@@ -11209,15 +11209,15 @@ function showEnvelopeDetails(envelopeName, transactions, month, budgetAmount) {
                     <div style="font-size: 22px; font-weight: 700;">${formatCurrency(total)}</div>
                 </div>
                 <div style="background: var(--bg-tertiary); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">Transacciones</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">${getTranslation('common.transactions', lang)}</div>
                     <div style="font-size: 22px; font-weight: 700; color: var(--text-primary);">${transactions.length}</div>
                 </div>
                 <div style="background: var(--primary-light); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <div style="font-size: 12px; color: var(--primary); margin-bottom: 6px;">Presupuesto</div>
+                    <div style="font-size: 12px; color: var(--primary); margin-bottom: 6px;">${getTranslation('common.budget', lang)}</div>
                     <div style="font-size: 22px; font-weight: 700; color: var(--primary-dark);">${formatCurrency(budgetAmount)}</div>
                 </div>
                 <div style="background: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}; padding: 16px; border-radius: 10px; color: white;">
-                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Restante</div>
+                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">${getTranslation('envelope.remaining', lang)}</div>
                     <div style="font-size: 22px; font-weight: 700;">${formatCurrency(remaining)}</div>
                 </div>
             </div>
@@ -13840,13 +13840,13 @@ function showFinancialHealthDetail(metric, index) {
     } else if (index === 4) { // Ratio de Ahorro
         detailContent += `
             <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
-                <strong>Ingresos del Período:</strong> ${formatCurrency(periodIncome)}
+                <strong>${getTranslation('financial.periodIncome', lang)}:</strong> ${formatCurrency(periodIncome)}
             </div>
             <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
-                <strong>Gastos del Período:</strong> ${formatCurrency(periodExpenses)}
+                <strong>${getTranslation('financial.periodExpenses', lang)}:</strong> ${formatCurrency(periodExpenses)}
             </div>
             <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--primary); border: 1px solid var(--border-color); color: var(--text-primary);">
-                <strong>Ahorro del Período:</strong> ${formatCurrency(periodSavings)}
+                <strong>${getTranslation('financial.periodSavings', lang)}:</strong> ${formatCurrency(periodSavings)}
             </div>
         `;
     
