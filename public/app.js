@@ -4415,9 +4415,9 @@ function updateBudgets() {
             const lang = localStorage.getItem('veedor_language') || 'es';
             periodLabel = getTranslation('budget.weekly', lang);
         } else if (budget.period_type === 'monthly') {
-            periodLabel = 'Mensual';
+            periodLabel = getTranslation('budget.monthly', lang);
         } else if (budget.period_type === 'yearly') {
-            periodLabel = 'Anual';
+            periodLabel = getTranslation('budget.yearly', lang);
         }
         
         const card = document.createElement('div');
@@ -4433,7 +4433,7 @@ function updateBudgets() {
             </div>
             <div style="margin: 12px 0;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span style="font-size: 13px; color: var(--gray-600);">Presupuesto:</span>
+                    <span style="font-size: 13px; color: var(--gray-600);">${getTranslation('budgets.budget', lang)}:</span>
                     <span style="font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
