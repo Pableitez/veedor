@@ -117,8 +117,9 @@ if (window.VEEDOR_LOADED) {
     window.changeLanguage = function(lang) {
         console.log('🌐 Cambiando idioma a:', lang);
         
-        // Guardar idioma
-        localStorage.setItem('veedor_language', lang);
+        // Guardar idioma (forzar español)
+        localStorage.setItem('veedor_language', 'es');
+        lang = 'es';
         if (typeof window !== 'undefined') {
             window.currentLanguage = lang;
         }
