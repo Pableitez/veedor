@@ -13968,6 +13968,26 @@ function changeLanguage(lang) {
             updateCharts();
         }, 400);
     }
+    
+    // Actualizar contenido dinámico de presupuestos y otros elementos
+    if (typeof updateMonthDashboard === 'function' && document.getElementById('monthDashboard')) {
+        setTimeout(() => {
+            updateMonthDashboard();
+        }, 350);
+    }
+    
+    if (typeof updateBudgets === 'function') {
+        setTimeout(() => {
+            updateBudgets();
+        }, 350);
+    }
+    
+    // Actualizar mensaje de bienvenida si existe
+    if (typeof showWelcomeMessage === 'function') {
+        setTimeout(() => {
+            showWelcomeMessage();
+        }, 200);
+    }
 }
 
 // Función para toggle del dropdown de idioma (header)
