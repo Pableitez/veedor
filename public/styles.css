@@ -769,9 +769,8 @@ body.dark-mode .auth-screen::before {
 
 .auth-form .form-group input:focus {
     outline: none;
-    border: 2px solid;
-    border-image: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%) 1;
-    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    border-color: #4ECDC4;
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.3), 0 0 0 4px rgba(78, 205, 196, 0.1);
 }
 
 .auth-form .form-group small {
@@ -831,9 +830,8 @@ body.dark-mode .auth-screen::before {
 
 .auth-form .form-group input:focus {
     outline: none;
-    border: 2px solid;
-    border-image: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%) 1;
-    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    border-color: #4ECDC4;
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.3), 0 0 0 4px rgba(78, 205, 196, 0.1);
 }
 
 .auth-form .form-group small {
