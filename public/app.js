@@ -3154,7 +3154,6 @@ function initializeForms() {
                 periodValueLabel.textContent = getTranslation('budget.monthStart', lang);
                 periodValueHelp.textContent = getTranslation('budget.monthStartHelp', lang);
                 amountLabel.textContent = getTranslation('budget.monthlyBudget', lang);
-                const lang = localStorage.getItem('veedor_language') || 'es';
                 amountHelp.textContent = getTranslation('help.monthlyLimit', lang);
                 if (durationGroup) {
                     durationGroup.style.display = 'block';
