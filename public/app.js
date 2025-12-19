@@ -753,8 +753,7 @@ function toggleForm(formId, buttonId) {
         form.style.display = 'block';
         if (icon) icon.textContent = '➖';
         if (text) {
-            const lang = localStorage.getItem('veedor_language') || 'es';
-            text.textContent = getTranslation('common.cancel', lang);
+            text.textContent = 'Cancelar';
         }
         // Scroll suave al formulario
         setTimeout(() => {
@@ -3960,7 +3959,7 @@ function updateEnvelopes() {
     grid.innerHTML = '';
     
     if (envelopes.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">${getTranslation('messages.noEnvelopes', lang)}</p>`;
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay sobres creados</p>`;
         return;
     }
     
@@ -4001,8 +4000,8 @@ function updateEnvelopes() {
                 <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%"></div>
             </div>
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
-                <button class="btn-secondary" onclick="editEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">${getTranslation('common.edit', lang)}</button>
-                <button class="btn-danger" onclick="deleteEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">${getTranslation('common.delete', lang)}</button>
+                <button class="btn-secondary" onclick="editEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deleteEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
@@ -4324,7 +4323,7 @@ function updateBudgets() {
     
     if (activeBudgets.length === 0) {
         const lang = localStorage.getItem('veedor_language') || 'es';
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">${getTranslation('empty.noBudgets', lang)}</p>`;
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay presupuestos activos</p>`;
         return;
     }
     
@@ -5624,7 +5623,7 @@ function updateLoans() {
     grid.innerHTML = '';
     
     if (loans.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">${getTranslation('empty.noLoans', lang)}</p>`;
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay préstamos registrados</p>`;
         return;
     }
     
