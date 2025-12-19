@@ -10957,7 +10957,7 @@ function updateMonthDashboard() {
                     <h5 style="font-size: 18px; font-weight: 700; margin: 0 0 20px 0; color: #0F172A;">Resumen del Mes</h5>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                         <div>
-                            <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">Presupuesto Ingresos</div>
+                            <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">${getTranslation('envelope.budgetIncome', lang)}</div>
                             <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalIncomeBudget)}</div>
                             <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">Real: ${formatCurrency(totalIncomeActual)}</div>
                             <div style="font-size: 12px; margin-top: 4px; color: #0F172A; opacity: 0.9;">
@@ -10965,7 +10965,7 @@ function updateMonthDashboard() {
                             </div>
                         </div>
                         <div>
-                            <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">Presupuesto Gastos</div>
+                            <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">${getTranslation('envelope.budgetExpenses', lang)}</div>
                             <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalExpenseBudget)}</div>
                             <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">Real: ${formatCurrency(totalExpenseActual)}</div>
                             <div style="font-size: 12px; margin-top: 4px; color: #0F172A; opacity: 0.9;">
@@ -11149,11 +11149,11 @@ function updateMonthDashboard() {
                 card.innerHTML = `
                     <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-primary);">${envelope.name}</h5>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 14px; color: var(--text-secondary);">Presupuesto:</span>
+                        <span style="font-size: 14px; color: var(--text-secondary);">${getTranslation('budgets.budget', lang)}:</span>
                         <span style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${formatCurrency(envelope.budget)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 14px; color: var(--text-secondary);">Gastado:</span>
+                        <span style="font-size: 14px; color: var(--text-secondary);">${getTranslation('envelope.spent', lang)}:</span>
                         <span style="font-size: 14px; font-weight: 600; color: var(--danger-color);">${formatCurrency(spent)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
@@ -11205,7 +11205,7 @@ function showEnvelopeDetails(envelopeName, transactions, month, budgetAmount) {
         <div style="margin-bottom: 20px;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
                 <div style="background: var(--danger); padding: 16px; border-radius: 10px; color: white;">
-                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Total Gastado</div>
+                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">${getTranslation('envelope.totalSpent', lang)}</div>
                     <div style="font-size: 22px; font-weight: 700;">${formatCurrency(total)}</div>
                 </div>
                 <div style="background: var(--bg-tertiary); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
