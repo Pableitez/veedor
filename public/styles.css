@@ -309,45 +309,7 @@ body.dark-mode::before {
     }
 }
 
-/* ============================================
-   OCULTAR BOTONES DE IDIOMA TEMPORALMENTE - REGLA GLOBAL
-   ============================================ */
-#authLanguageDropdownBtn,
-#languageDropdownBtn,
-#authLanguageDropdown,
-#languageDropdown,
-#currentLanguageFlag,
-#authCurrentLanguageFlag,
-header div:has(#languageDropdownBtn),
-header > div > div:has(#languageDropdownBtn),
-header > div:last-child > div:has(#languageDropdownBtn),
-header > div:last-child > div:has(#languageDropdownBtn) button,
-header > div:last-child > div:has(#languageDropdownBtn) span,
-.auth-header div:has(#authLanguageDropdownBtn),
-.auth-container div:has(#authLanguageDropdownBtn),
-button[id*="language"]:not(#settingsDropdownBtn),
-button[id*="Language"]:not(#settingsDropdownBtn),
-div[id*="language"]:not(#settingsDropdown):not(#settingsDropdownBtn),
-div[id*="Language"]:not(#settingsDropdown):not(#settingsDropdownBtn) {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
-    background: transparent !important;
-    overflow: hidden !important;
-    position: absolute !important;
-    left: -9999px !important;
-    top: -9999px !important;
-    flex-shrink: 0 !important;
-    gap: 0 !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-}
+/* Selectores de idioma ahora están visibles y funcionales */
 
 /* ============================================
    ASEGURAR QUE EL BOTÓN DE CONFIGURACIÓN SEA VISIBLE

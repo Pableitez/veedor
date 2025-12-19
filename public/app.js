@@ -13992,11 +13992,24 @@ function toggleLanguageDropdown() {
 // Función para toggle del dropdown de idioma (auth page)
 function toggleAuthLanguageDropdown() {
     const dropdown = document.getElementById('authLanguageDropdown');
+    const mainNavDropdown = document.getElementById('mainNavDropdown');
+    const settingsDropdown = document.getElementById('settingsDropdown');
     
     if (dropdown) {
         dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
     }
+    
+    // Cerrar otros dropdowns
+    if (mainNavDropdown && mainNavDropdown.style.display === 'block') {
+        mainNavDropdown.style.display = 'none';
+    }
+    if (settingsDropdown && settingsDropdown.style.display === 'block') {
+        settingsDropdown.style.display = 'none';
+    }
 }
+
+// Exponer función globalmente
+window.toggleAuthLanguageDropdown = toggleAuthLanguageDropdown;
 
 // Exponer funciones globalmente
 window.updateTranslations = updateTranslations;
