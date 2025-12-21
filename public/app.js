@@ -12103,6 +12103,16 @@ function calculateSavingsScenarios(months = 6) {
         return tDate >= cutoffDate && t.type === 'expense';
     });
     
+    // Clasificar transacciones individuales
+    const classifiedTransactions = periodTransactions.map(t => {
+        const classification = categorizeExpense(t);
+        return {
+            ...t,
+            classification,
+            isNonEssential: classification.type === 'nonEssential' || (classification.type === 'mixed' && classification.percentage < 0.5)
+        };
+    });
+    
     // Calcular ingresos promedio
     const periodIncome = transactions.filter(t => {
         const tDate = new Date(t.date);
@@ -12257,6 +12267,55 @@ function calculateSavingsScenarios(months = 6) {
         }
     });
     
+    // Agrupar transacciones no esenciales por categoría para cada escenario
+    const nonEssentialTransactions = classifiedTransactions.filter(t => t.isNonEssential);
+    
+    // Agregar transacciones específicas a cada escenario
+    Object.keys(scenarios).forEach(key => {
+        const scenario = scenarios[key];
+        const reductionRate = key === 'strict' ? 0.35 : key === 'aggressive' ? 0.30 : key === 'normal' ? 0.20 : key === 'relaxed' ? 0.10 : 0.25;
+        
+        // Agrupar transacciones por categoría
+        const transactionsByCategory = {};
+        nonEssentialTransactions.forEach(t => {
+            const categoryId = t.categoryGeneral || 'other';
+            const categoryName = categories.expense.find(c => c.id === categoryId)?.name || 'Otros';
+            
+            if (!transactionsByCategory[categoryId]) {
+                transactionsByCategory[categoryId] = {
+                    name: categoryName,
+                    transactions: [],
+                    total: 0,
+                    savings: 0
+                };
+            }
+            
+            const amount = Math.abs(t.amount);
+            transactionsByCategory[categoryId].transactions.push({
+                ...t,
+                amount,
+                savings: amount * reductionRate
+            });
+            transactionsByCategory[categoryId].total += amount;
+            transactionsByCategory[categoryId].savings += amount * reductionRate;
+        });
+        
+        // Ordenar por potencial de ahorro y limitar
+        scenario.detailedCategories = Object.values(transactionsByCategory)
+            .sort((a, b) => b.savings - a.savings)
+            .slice(0, 10); // Top 10 categorías
+        
+        // Agregar transacciones individuales más grandes
+        scenario.topTransactions = nonEssentialTransactions
+            .map(t => ({
+                ...t,
+                amount: Math.abs(t.amount),
+                savings: Math.abs(t.amount) * reductionRate
+            }))
+            .sort((a, b) => b.savings - a.savings)
+            .slice(0, 20); // Top 20 transacciones
+    });
+    
     return {
         avgMonthlyIncome,
         avgMonthlyExpenses,
@@ -12264,7 +12323,9 @@ function calculateSavingsScenarios(months = 6) {
         avgMonthlyNonEssential,
         scenarios,
         categoriesByPotential,
-        period: months
+        period: months,
+        classifiedTransactions,
+        nonEssentialTransactions
     };
 }
 
@@ -12320,12 +12381,13 @@ function updateSavingsScenarios() {
             : '';
         
         html += `
-            <div class="card" style="padding: 20px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary);">
+            <div class="card" style="padding: 20px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); cursor: pointer; transition: all 0.2s;" onclick="showSavingsScenarioDetails('${key}')" onmouseover="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'">
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                     <div>
                         <h4 style="margin: 0 0 4px 0; color: var(--text-primary); font-size: 16px; font-weight: 700;">${scenario.name}</h4>
                         <p style="margin: 0; color: var(--text-secondary); font-size: 12px; line-height: 1.4;">${scenario.description}</p>
                     </div>
+                    <span style="color: var(--primary); font-size: 12px; font-weight: 600;">Ver detalles →</span>
                 </div>
                 
                 <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
