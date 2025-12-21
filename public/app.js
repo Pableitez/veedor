@@ -4563,6 +4563,7 @@ function updateBudgets() {
 
 // Editar presupuesto - Abre modal con formulario pre-rellenado
 async function editBudget(id) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const budget = budgets.find(b => (b._id || b.id) === id);
     if (!budget) return;
     
@@ -5325,6 +5326,7 @@ async function deleteEnvelope(id) {
 
 // Editar sobre - Abre modal con formulario pre-rellenado
 async function editEnvelope(id) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const envelope = envelopes.find(e => (e._id || e.id) === id);
     if (!envelope) return;
     
@@ -6379,6 +6381,7 @@ window.closeEarlyPaymentModal = closeEarlyPaymentModal;
 
 // Editar amortización anticipada
 async function editEarlyPayment(loanId, index) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const loan = loans.find(l => (l._id || l.id) === loanId);
     if (!loan || !loan.early_payments || index >= loan.early_payments.length) {
         showToast('Amortización no encontrada', 'error');
