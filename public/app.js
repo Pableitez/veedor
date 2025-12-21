@@ -12533,10 +12533,15 @@ function updateSavingsScenarios() {
         // Mostrar solo si tiene propuestas concretas
         if (!scenario.concreteProposals || scenario.concreteProposals.length === 0) return;
         
-        const savingsColor = scenario.monthlySavings > 0 ? 'var(--success)' : 'var(--text-secondary)';
-        const monthsToGoalText = scenario.monthsToGoal 
+        const totalSavings = scenario.concreteTotalSavings || 0;
+        const savingsColor = totalSavings > 0 ? 'var(--success)' : 'var(--text-secondary)';
+        
+        // Calcular tiempo para alcanzar meta si hay una
+        const savingsGoal = window.savingsGoal || 0;
+        const monthsToGoal = savingsGoal > 0 && totalSavings > 0 ? Math.ceil(savingsGoal / totalSavings) : null;
+        const monthsToGoalText = monthsToGoal 
             ? `<div style="margin-top: 8px; padding: 8px; background: var(--primary-light); border-radius: 6px; font-size: 12px; color: var(--text-primary);">
-                🎯 Con este ahorro alcanzarías tu meta en <strong>${scenario.monthsToGoal} meses</strong>
+                🎯 Con este ahorro alcanzarías tu meta en <strong>${monthsToGoal} meses</strong>
                </div>`
             : '';
         
