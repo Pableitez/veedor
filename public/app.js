@@ -12000,10 +12000,11 @@ function categorizeExpense(transaction) {
     // Categorías completamente esenciales
     const essentialCategories = [
         'housing',      // Vivienda (alquiler, hipoteca, servicios básicos)
-        'debt',         // Deudas y préstamos (pagos obligatorios)
+        'debt',         // Deudas y préstamos (pagos obligatorios) - TODAS las subcategorías son esenciales
         'taxes',        // Impuestos (obligatorios)
         'insurance',    // Seguros básicos
-        'fines'         // Multas (obligatorias)
+        'fines',        // Multas (obligatorias)
+        'investment'    // Inversiones (aportes y compras de activos) - NO son prescindibles
     ];
     
     // Categorías completamente no esenciales
@@ -12083,9 +12084,15 @@ function categorizeExpense(transaction) {
         }
     }
     
-    // Para 'investment' y 'other', considerar como no esencial (optimizable)
-    if (categoryId === 'investment' || categoryId === 'other') {
-        return { type: 'nonEssential', percentage: 0.8 };
+    // Para 'other', considerar como parcialmente optimizable (pero no completamente prescindible)
+    if (categoryId === 'other') {
+        // Verificar si es una emergencia o imprevisto real (esencial) vs gasto discrecional
+        const otherEssential = ['emergencias', 'reparaciones varias', 'imprevistos'];
+        const isEssentialOther = otherEssential.some(ess => subcategoryLower.includes(ess.toLowerCase()));
+        if (isEssentialOther) {
+            return { type: 'essential', percentage: 1.0 };
+        }
+        return { type: 'nonEssential', percentage: 0.7 };
     }
     
     // Por defecto, considerar como no esencial (optimizable)
