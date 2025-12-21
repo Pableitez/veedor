@@ -4577,9 +4577,9 @@ async function editBudget(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 600px;">
-                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Presupuesto</h2>
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Presupuesto</h2>
                         <button onclick="closeEditBudgetModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                     </div>
                 </div>
@@ -4802,9 +4802,9 @@ async function editTransaction(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
-                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Transacción</h2>
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Transacción</h2>
                         <button onclick="closeEditTransactionModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                     </div>
                 </div>
@@ -5341,9 +5341,9 @@ async function editEnvelope(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 600px;">
-                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Sobre</h2>
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Sobre</h2>
                         <button onclick="closeEditEnvelopeModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                     </div>
                 </div>
@@ -6921,9 +6921,9 @@ async function editInvestment(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
-                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Inversión</h2>
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Inversión</h2>
                         <button onclick="closeEditInvestmentModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                     </div>
                 </div>
@@ -7233,9 +7233,9 @@ async function editProperty(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
-                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Propiedad</h2>
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Propiedad</h2>
                         <button onclick="closeEditPropertyModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                     </div>
                 </div>
@@ -7674,9 +7674,9 @@ async function editAccount(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
-                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Cuenta</h2>
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Cuenta</h2>
                         <button onclick="closeEditAccountModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                     </div>
                 </div>
@@ -8169,9 +8169,9 @@ async function editLoan(id) {
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 800px;">
-                <div class="rainbow-bg" style="padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Editar Préstamo</h2>
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Préstamo</h2>
                         <button onclick="closeEditLoanModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                     </div>
                 </div>
