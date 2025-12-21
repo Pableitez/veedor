@@ -12195,60 +12195,8 @@ function calculateSavingsScenarios(months = 6) {
         }
     };
     
-    // Calcular escenario inteligente (identificar categorías con mayor potencial)
-    const categoriesByPotential = Object.entries(expensesByCategory)
-        .filter(([_, data]) => data.nonEssential > 0)
-        .map(([id, data]) => ({
-            id,
-            name: data.name,
-            nonEssential: data.nonEssential,
-            monthlyNonEssential: data.nonEssential / months,
-            potentialSavings: (data.nonEssential / months) * 0.25 // 25% de reducción potencial
-        }))
-        .sort((a, b) => b.potentialSavings - a.potentialSavings)
-        .slice(0, 5); // Top 5 categorías
-    
-    let smartSavings = 0;
-    categoriesByPotential.forEach(cat => {
-        smartSavings += cat.potentialSavings;
-        scenarios.smart.recommendations.push({
-            category: cat.name,
-            currentMonthly: cat.monthlyNonEssential,
-            potentialSavings: cat.potentialSavings,
-            suggestion: `Reduce ${formatCurrency(cat.potentialSavings)}/mes en ${cat.name}`
-        });
-    });
-    
-    scenarios.smart.monthlySavings = smartSavings;
-    scenarios.smart.annualSavings = smartSavings * 12;
-    scenarios.smart.reductionPercentage = avgMonthlyExpenses > 0 ? (smartSavings / avgMonthlyExpenses) * 100 : 0;
-    
-    // Generar recomendaciones para otros escenarios
-    Object.keys(scenarios).forEach(key => {
-        if (key !== 'smart' && scenarios[key].monthlySavings > 0) {
-            const topCategories = categoriesByPotential.slice(0, 3);
-            topCategories.forEach(cat => {
-                const savings = (cat.monthlyNonEssential * (key === 'strict' ? 0.35 : key === 'aggressive' ? 0.30 : key === 'normal' ? 0.20 : 0.10));
-                scenarios[key].recommendations.push({
-                    category: cat.name,
-                    currentMonthly: cat.monthlyNonEssential,
-                    potentialSavings: savings,
-                    suggestion: `Reduce ${formatCurrency(savings)}/mes en ${cat.name}`
-                });
-            });
-        }
-    });
-    
-    // Calcular tiempo para alcanzar metas de ahorro
-    const savingsGoal = window.savingsGoal || 0;
-    Object.keys(scenarios).forEach(key => {
-        const scenario = scenarios[key];
-        if (scenario.monthlySavings > 0 && savingsGoal > 0) {
-            scenario.monthsToGoal = Math.ceil(savingsGoal / scenario.monthlySavings);
-        } else {
-            scenario.monthsToGoal = null;
-        }
-    });
+    // Los ahorros se calcularán basándose en las propuestas concretas (eliminaciones completas)
+    // No usamos porcentajes, solo eliminaciones reales
     
     // Agrupar transacciones no esenciales por categoría para cada escenario
     const nonEssentialTransactions = classifiedTransactions.filter(t => t.isNonEssential);
@@ -12579,10 +12527,11 @@ function updateSavingsScenarios() {
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
     `;
     
-    // Mostrar cada escenario
+    // Mostrar cada escenario (solo 2)
     Object.keys(data.scenarios).forEach(key => {
         const scenario = data.scenarios[key];
-        if (scenario.monthlySavings <= 0 && key !== 'smart') return;
+        // Mostrar solo si tiene propuestas concretas
+        if (!scenario.concreteProposals || scenario.concreteProposals.length === 0) return;
         
         const savingsColor = scenario.monthlySavings > 0 ? 'var(--success)' : 'var(--text-secondary)';
         const monthsToGoalText = scenario.monthsToGoal 
