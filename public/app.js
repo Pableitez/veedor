@@ -12187,7 +12187,7 @@ function calculateSavingsScenarios(months = 6) {
         },
         smart: {
             name: 'Ahorro Inteligente',
-            description: 'Optimización enfocada en categorías con mayor potencial de ahorro',
+            description: 'Optimización estratégica: solo las categorías con mayor impacto, sin sacrificar suscripciones ni servicios',
             monthlySavings: 0,
             annualSavings: 0,
             reductionPercentage: 0,
@@ -12418,7 +12418,7 @@ function calculateSavingsScenarios(months = 6) {
         // Propuestas concretas basadas en el escenario
         scenario.concreteProposals = [];
         
-        // 1. Suscripciones a cancelar (solo para strict y normal)
+        // 1. Suscripciones a cancelar (solo para strict y normal, NO para smart)
         if (key === 'strict' || key === 'normal') {
             const subscriptionsToCancel = identifiedSubscriptions.slice(0, key === 'strict' ? 5 : 2);
             subscriptionsToCancel.forEach(sub => {
@@ -12434,7 +12434,7 @@ function calculateSavingsScenarios(months = 6) {
             });
         }
         
-        // 2. Gastos recurrentes a reducir (solo para strict y normal)
+        // 2. Gastos recurrentes a reducir (solo para strict y normal, NO para smart)
         if (key === 'strict' || key === 'normal') {
             const reductions = recurringToReduce.slice(0, key === 'strict' ? 5 : 3);
             reductions.forEach(rec => {
@@ -12450,23 +12450,44 @@ function calculateSavingsScenarios(months = 6) {
             });
         }
         
-        // 3. Optimizaciones por categoría (para todos los escenarios)
-        const topCategories = Object.values(categoryAnalysis)
-            .filter(cat => cat.monthlySavings > 0)
-            .sort((a, b) => b.monthlySavings - a.monthlySavings)
-            .slice(0, key === 'strict' ? 5 : key === 'normal' ? 3 : 5); // smart también tiene 5
-        
-        topCategories.forEach(cat => {
-            scenario.concreteProposals.push({
-                type: 'optimize_category',
-                title: `Optimiza gastos en ${cat.name}`,
-                description: cat.suggestion,
-                action: `Reduce gastos mensuales en ${cat.name}`,
-                savings: cat.monthlySavings,
-                annualSavings: cat.monthlySavings * 12,
-                transactions: cat.transactions.slice(0, 5)
+        // 3. Optimizaciones por categoría
+        if (key === 'smart') {
+            // Smart: Solo las top 3-5 categorías con MAYOR potencial de ahorro (más inteligente)
+            const topCategories = Object.values(categoryAnalysis)
+                .filter(cat => cat.monthlySavings > 0)
+                .sort((a, b) => b.monthlySavings - a.monthlySavings)
+                .slice(0, 3); // Solo las top 3 más rentables
+            
+            topCategories.forEach(cat => {
+                scenario.concreteProposals.push({
+                    type: 'optimize_category',
+                    title: `Optimiza gastos en ${cat.name}`,
+                    description: cat.suggestion,
+                    action: `Reduce gastos mensuales en ${cat.name}`,
+                    savings: cat.monthlySavings,
+                    annualSavings: cat.monthlySavings * 12,
+                    transactions: cat.transactions.slice(0, 5)
+                });
             });
-        });
+        } else {
+            // Normal y Rata: Optimizaciones más amplias
+            const topCategories = Object.values(categoryAnalysis)
+                .filter(cat => cat.monthlySavings > 0)
+                .sort((a, b) => b.monthlySavings - a.monthlySavings)
+                .slice(0, key === 'strict' ? 5 : 3);
+            
+            topCategories.forEach(cat => {
+                scenario.concreteProposals.push({
+                    type: 'optimize_category',
+                    title: `Optimiza gastos en ${cat.name}`,
+                    description: cat.suggestion,
+                    action: `Reduce gastos mensuales en ${cat.name}`,
+                    savings: cat.monthlySavings,
+                    annualSavings: cat.monthlySavings * 12,
+                    transactions: cat.transactions.slice(0, 5)
+                });
+            });
+        }
         
         // Calcular ahorro total de propuestas concretas
         scenario.concreteTotalSavings = scenario.concreteProposals.reduce((sum, p) => sum + p.savings, 0);
