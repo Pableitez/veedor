@@ -12484,7 +12484,8 @@ function showSavingsScenarioDetails(scenarioKey) {
                         </div>
                         <div style="text-align: right;">
                             <div style="color: var(--danger); font-weight: 700; font-size: 16px;">${formatCurrency(cat.total)}</div>
-                            <div style="color: var(--success); font-weight: 600; font-size: 13px;">Ahorro: ${formatCurrency(cat.savings)}/mes</div>
+                            <div style="color: var(--success); font-weight: 600; font-size: 13px;">Ahorro potencial: ${formatCurrency(cat.savings)}/mes</div>
+                            <small style="color: var(--text-secondary); font-size: 11px;">Si reduces ${(scenario.reductionPercentage || 0).toFixed(0)}% de estos gastos</small>
                         </div>
                     </div>
                     
@@ -12496,7 +12497,7 @@ function showSavingsScenarioDetails(scenarioKey) {
                                     <th style="text-align: left; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Descripción</th>
                                     <th style="text-align: left; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Subcategoría</th>
                                     <th style="text-align: right; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Gasto</th>
-                                    <th style="text-align: right; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Ahorro</th>
+                                    <th style="text-align: right; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Ahorro Potencial</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -12513,7 +12514,7 @@ function showSavingsScenarioDetails(scenarioKey) {
                         <td style="padding: 8px 0; color: var(--text-primary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.description || 'Sin descripción'}">${t.description || 'Sin descripción'}</td>
                         <td style="padding: 8px 0; color: var(--text-secondary); font-size: 11px;">${subcategory}</td>
                         <td style="padding: 8px 0; color: var(--danger); text-align: right; font-weight: 600;">${formatCurrency(t.amount)}</td>
-                        <td style="padding: 8px 0; color: var(--success); text-align: right; font-weight: 600;">${formatCurrency(t.savings)}</td>
+                        <td style="padding: 8px 0; color: var(--success); text-align: right; font-weight: 600;" title="Si reduces este gasto en ${(scenario.reductionPercentage || 0).toFixed(0)}%">${formatCurrency(t.savings)}</td>
                     </tr>
                 `;
             });
@@ -12555,7 +12556,7 @@ function showSavingsScenarioDetails(scenarioKey) {
                                 <th style="text-align: left; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Categoría</th>
                                 <th style="text-align: left; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Descripción</th>
                                 <th style="text-align: right; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Gasto</th>
-                                <th style="text-align: right; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Ahorro Potencial</th>
+                                <th style="text-align: right; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Ahorro Potencial*</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -12572,7 +12573,7 @@ function showSavingsScenarioDetails(scenarioKey) {
                     <td style="padding: 10px 0; color: var(--text-primary);">${categoryName}</td>
                     <td style="padding: 10px 0; color: var(--text-primary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.description || 'Sin descripción'}">${t.description || 'Sin descripción'}</td>
                     <td style="padding: 10px 0; color: var(--danger); text-align: right; font-weight: 600;">${formatCurrency(t.amount)}</td>
-                    <td style="padding: 10px 0; color: var(--success); text-align: right; font-weight: 700;">${formatCurrency(t.savings)}</td>
+                    <td style="padding: 10px 0; color: var(--success); text-align: right; font-weight: 700;" title="Si reduces este gasto en ${(scenario.reductionPercentage || 0).toFixed(0)}%">${formatCurrency(t.savings)}</td>
                 </tr>
             `;
         });
