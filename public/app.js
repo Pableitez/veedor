@@ -13800,6 +13800,7 @@ window.updateInvestmentValue = updateInvestmentValue;
 
 // Mostrar detalles de métrica de salud financiera
 function showFinancialHealthDetail(metric, index) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const modal = document.getElementById('summaryDetailsModal');
     const titleEl = document.getElementById('summaryDetailsTitle');
     const contentEl = document.getElementById('summaryDetailsContent');
