@@ -5937,6 +5937,7 @@ function updateLoans() {
 
 // Mostrar detalles del préstamo con tabla de amortización completa
 function showLoanDetails(loanId) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const loan = loans.find(l => (l._id || l.id) === loanId);
     if (!loan) return;
     
@@ -6163,6 +6164,7 @@ function closeEarlyPaymentModal() {
 
 // Mostrar modal de amortización anticipada - NUEVA VERSIÓN
 function showEarlyPaymentModal(loanId) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const loan = loans.find(l => (l._id || l.id) === loanId);
     if (!loan) {
         showToast('Préstamo no encontrado', 'error');
