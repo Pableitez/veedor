@@ -12423,6 +12423,180 @@ function updateSavingsScenarios() {
     container.innerHTML = html;
 }
 
+// Mostrar detalles específicos de un escenario de ahorro
+function showSavingsScenarioDetails(scenarioKey) {
+    const data = calculateSavingsScenarios(6);
+    const scenario = data.scenarios[scenarioKey];
+    
+    if (!scenario) return;
+    
+    const modal = document.getElementById('summaryDetailsModal');
+    const titleEl = document.getElementById('summaryDetailsTitle');
+    const contentEl = document.getElementById('summaryDetailsContent');
+    
+    if (!modal || !titleEl || !contentEl) return;
+    
+    titleEl.textContent = `Detalles: ${scenario.name}`;
+    
+    let content = `
+        <div style="margin-bottom: 24px; padding: 16px; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Ahorro Mensual</small>
+                    <div style="color: var(--success); font-weight: 700; font-size: 20px;">${formatCurrency(scenario.monthlySavings)}</div>
+                </div>
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Ahorro Anual</small>
+                    <div style="color: var(--success); font-weight: 700; font-size: 20px;">${formatCurrency(scenario.annualSavings)}</div>
+                </div>
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Reducción</small>
+                    <div style="color: var(--text-primary); font-weight: 700; font-size: 20px;">${scenario.reductionPercentage.toFixed(1)}%</div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Mostrar categorías con mayor potencial
+    if (scenario.detailedCategories && scenario.detailedCategories.length > 0) {
+        content += `
+            <div style="margin-bottom: 24px;">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">Gastos Prescindibles por Categoría</h3>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+        `;
+        
+        scenario.detailedCategories.forEach(cat => {
+            if (cat.savings <= 0) return;
+            
+            content += `
+                <div style="padding: 16px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div>
+                            <h4 style="margin: 0 0 4px 0; color: var(--text-primary); font-size: 15px; font-weight: 600;">${cat.name}</h4>
+                            <small style="color: var(--text-secondary); font-size: 12px;">${cat.transactions.length} transacciones</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: var(--danger); font-weight: 700; font-size: 16px;">${formatCurrency(cat.total)}</div>
+                            <div style="color: var(--success); font-weight: 600; font-size: 13px;">Ahorro: ${formatCurrency(cat.savings)}/mes</div>
+                        </div>
+                    </div>
+                    
+                    <div style="max-height: 200px; overflow-y: auto; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+                        <table style="width: 100%; font-size: 12px;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <th style="text-align: left; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Fecha</th>
+                                    <th style="text-align: left; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Descripción</th>
+                                    <th style="text-align: left; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Subcategoría</th>
+                                    <th style="text-align: right; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Gasto</th>
+                                    <th style="text-align: right; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Ahorro</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            cat.transactions.slice(0, 10).forEach(t => {
+                const date = new Date(t.date);
+                const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+                const subcategory = t.categorySpecific || 'Sin especificar';
+                
+                content += `
+                    <tr style="border-bottom: 1px solid var(--border-color-light);">
+                        <td style="padding: 8px 0; color: var(--text-secondary);">${dateStr}</td>
+                        <td style="padding: 8px 0; color: var(--text-primary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.description || 'Sin descripción'}">${t.description || 'Sin descripción'}</td>
+                        <td style="padding: 8px 0; color: var(--text-secondary); font-size: 11px;">${subcategory}</td>
+                        <td style="padding: 8px 0; color: var(--danger); text-align: right; font-weight: 600;">${formatCurrency(t.amount)}</td>
+                        <td style="padding: 8px 0; color: var(--success); text-align: right; font-weight: 600;">${formatCurrency(t.savings)}</td>
+                    </tr>
+                `;
+            });
+            
+            if (cat.transactions.length > 10) {
+                content += `
+                    <tr>
+                        <td colspan="5" style="padding: 8px 0; text-align: center; color: var(--text-secondary); font-size: 11px;">
+                            ... y ${cat.transactions.length - 10} transacciones más
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            content += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        });
+        
+        content += `
+                </div>
+            </div>
+        `;
+    }
+    
+    // Mostrar top transacciones individuales
+    if (scenario.topTransactions && scenario.topTransactions.length > 0) {
+        content += `
+            <div style="margin-bottom: 24px;">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">Top Transacciones Prescindibles</h3>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table style="width: 100%; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="text-align: left; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Fecha</th>
+                                <th style="text-align: left; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Categoría</th>
+                                <th style="text-align: left; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Descripción</th>
+                                <th style="text-align: right; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Gasto</th>
+                                <th style="text-align: right; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Ahorro Potencial</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        `;
+        
+        scenario.topTransactions.forEach(t => {
+            const date = new Date(t.date);
+            const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+            const categoryName = categories.expense.find(c => c.id === t.categoryGeneral)?.name || 'Otros';
+            
+            content += `
+                <tr style="border-bottom: 1px solid var(--border-color-light); cursor: pointer;" onclick="closeSummaryDetails(); switchToTab('transactions', true);" onmouseover="this.style.background='var(--bg-secondary)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 10px 0; color: var(--text-secondary);">${dateStr}</td>
+                    <td style="padding: 10px 0; color: var(--text-primary);">${categoryName}</td>
+                    <td style="padding: 10px 0; color: var(--text-primary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.description || 'Sin descripción'}">${t.description || 'Sin descripción'}</td>
+                    <td style="padding: 10px 0; color: var(--danger); text-align: right; font-weight: 600;">${formatCurrency(t.amount)}</td>
+                    <td style="padding: 10px 0; color: var(--success); text-align: right; font-weight: 700;">${formatCurrency(t.savings)}</td>
+                </tr>
+            `;
+        });
+        
+        content += `
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Recomendaciones específicas
+    if (scenario.recommendations && scenario.recommendations.length > 0) {
+        content += `
+            <div style="padding: 16px; background: var(--primary-light); border-radius: 8px; border: 1px solid var(--primary);">
+                <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">💡 Recomendaciones Accionables</h3>
+                <ul style="margin: 0; padding-left: 20px; color: var(--text-primary); line-height: 1.8; font-size: 13px;">
+                    ${scenario.recommendations.map(rec => `<li style="margin-bottom: 8px;"><strong>${rec.category}:</strong> ${rec.suggestion}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+    
+    contentEl.innerHTML = content;
+    modal.style.display = 'flex';
+}
+
+// Exponer función globalmente
+window.showSavingsScenarioDetails = showSavingsScenarioDetails;
+
 // ==================== SISTEMA DE RECOMENDACIONES ECONÓMICAS ====================
 
 // Generar recomendaciones personalizadas basadas en los datos del usuario
