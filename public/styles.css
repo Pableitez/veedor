@@ -4136,7 +4136,7 @@ tbody tr:last-child td {
     #monthBudgetsStatus h5,
     #monthBudgetsStatus h3 {
         font-size: clamp(14px, 3vw, 18px) !important;
-        color: var(--text-primary) !important;
+        color: #111827 !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         white-space: normal !important;
@@ -4148,6 +4148,12 @@ tbody tr:last-child td {
         opacity: 1 !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
+    }
+    
+    /* En modo oscuro, usar color claro */
+    body.dark-mode #monthBudgetsStatus h5,
+    body.dark-mode #monthBudgetsStatus h3 {
+        color: #F9FAFB !important;
     }
     
     /* Contenedores de cards en monthBudgetsStatus */
