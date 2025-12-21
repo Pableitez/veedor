@@ -12586,10 +12586,20 @@ function showSavingsScenarioDetails(scenarioKey) {
         `;
     }
     
+    // Aclaración sobre los cálculos
+    content += `
+        <div style="margin-top: 24px; padding: 12px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid var(--primary);">
+            <p style="margin: 0; color: var(--text-secondary); font-size: 12px; line-height: 1.6;">
+                <strong>ℹ️ Nota importante:</strong> Los montos de "Ahorro Potencial" son estimaciones basadas en reducir estos gastos en un <strong>${scenario.reductionPercentage.toFixed(0)}%</strong> según el escenario "${scenario.name}". 
+                Estos no son ahorros reales, sino el dinero que podrías ahorrar si decides reducir o eliminar estos gastos prescindibles.
+            </p>
+        </div>
+    `;
+    
     // Recomendaciones específicas
     if (scenario.recommendations && scenario.recommendations.length > 0) {
         content += `
-            <div style="padding: 16px; background: var(--primary-light); border-radius: 8px; border: 1px solid var(--primary);">
+            <div style="margin-top: 16px; padding: 16px; background: var(--primary-light); border-radius: 8px; border: 1px solid var(--primary);">
                 <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">💡 Recomendaciones Accionables</h3>
                 <ul style="margin: 0; padding-left: 20px; color: var(--text-primary); line-height: 1.8; font-size: 13px;">
                     ${scenario.recommendations.map(rec => `<li style="margin-bottom: 8px;"><strong>${rec.category}:</strong> ${rec.suggestion}</li>`).join('')}
