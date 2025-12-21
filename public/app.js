@@ -11246,20 +11246,20 @@ function updateMonthDashboard() {
                 const transText = transCount === 1 ? getTranslation('budgets.transaction', lang) : getTranslation('budgets.transactions', lang);
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; gap: 12px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
-                        <h5 style="font-size: clamp(16px, 4vw, 20px) !important; font-weight: 700 !important; margin: 0 !important; padding: 0 !important; color: #111827 !important; flex: 1 1 auto !important; min-width: 60% !important; max-width: 100% !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important;">${budgetDisplayName || 'Sin nombre'}</h5>
-                        <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600; flex-shrink: 0; white-space: nowrap; margin-top: 2px;">${getTranslation('budgets.expense', lang)}</span>
+                        <h5 style="font-size: clamp(20px, 4.5vw, 26px) !important; font-weight: 800 !important; margin: 0 !important; padding: 0 !important; color: #FFFFFF !important; flex: 1 1 auto !important; min-width: 60% !important; max-width: 100% !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;">${budgetDisplayName || 'Sin nombre'}</h5>
+                        <span style="font-size: 13px; padding: 6px 10px; background: var(--gray-100); border-radius: var(--radius); color: var(--text-primary); font-weight: 700; flex-shrink: 0; white-space: nowrap; margin-top: 2px;">${getTranslation('budgets.expense', lang)}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.budget', lang)}:</span>
-                        <span style="font-size: 14px; font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="font-size: 16px; font-weight: 600; color: var(--text-primary);">${getTranslation('budgets.budget', lang)}:</span>
+                        <span style="font-size: 18px; font-weight: 700; color: var(--text-primary);">${formatCurrency(budget.amount)}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.spent', lang)}:</span>
-                        <span style="font-size: 14px; font-weight: 600; color: var(--danger);">${formatCurrency(spent)}</span>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="font-size: 16px; font-weight: 600; color: var(--text-primary);">${getTranslation('budgets.spent', lang)}:</span>
+                        <span style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(spent)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.remaining', lang)}:</span>
-                        <span style="font-size: 14px; font-weight: 600; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(remaining)}</span>
+                        <span style="font-size: 16px; font-weight: 600; color: var(--text-primary);">${getTranslation('budgets.remaining', lang)}:</span>
+                        <span style="font-size: 18px; font-weight: 700; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(remaining)}</span>
                     </div>
                     <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
                         <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
