@@ -12175,30 +12175,22 @@ function calculateSavingsScenarios(months = 6) {
     const avgMonthlyNonEssential = totalNonEssential / months;
     const avgMonthlyExpenses = (totalEssential + totalNonEssential) / months;
     
-    // Definir escenarios de ahorro (solo 3)
+    // Definir escenarios de ahorro (solo 2)
     const scenarios = {
         normal: {
-            name: 'Ahorro Normal',
-            description: 'Reducción equilibrada en gastos discrecionales, manteniendo calidad de vida',
-            monthlySavings: avgMonthlyNonEssential * 0.20, // Reducir 20% de no esenciales
-            annualSavings: avgMonthlyNonEssential * 0.20 * 12,
-            reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.20) / avgMonthlyExpenses) * 100 : 0,
-            recommendations: []
-        },
-        smart: {
-            name: 'Ahorro Inteligente',
-            description: 'Optimización estratégica: solo las categorías con mayor impacto, sin sacrificar suscripciones ni servicios',
+            name: 'Ahorro Equilibrado',
+            description: 'Elimina gastos prescindibles manteniendo calidad de vida',
             monthlySavings: 0,
             annualSavings: 0,
             reductionPercentage: 0,
             recommendations: []
         },
-        strict: {
-            name: 'Ahorro Rata',
-            description: 'Reducción máxima en gastos no esenciales, manteniendo solo lo esencial',
-            monthlySavings: avgMonthlyNonEssential * 0.35, // Reducir 35% de no esenciales
-            annualSavings: avgMonthlyNonEssential * 0.35 * 12,
-            reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.35) / avgMonthlyExpenses) * 100 : 0,
+        smart: {
+            name: 'Ahorro Inteligente',
+            description: 'Optimización estratégica: elimina solo lo que realmente no necesitas',
+            monthlySavings: 0,
+            annualSavings: 0,
+            reductionPercentage: 0,
             recommendations: []
         }
     };
@@ -12418,86 +12410,101 @@ function calculateSavingsScenarios(months = 6) {
         // Propuestas concretas basadas en el escenario
         scenario.concreteProposals = [];
         
-        // 1. Suscripciones a cancelar (solo para strict y normal, NO para smart)
-        if (key === 'strict' || key === 'normal') {
-            const subscriptionsToCancel = identifiedSubscriptions.slice(0, key === 'strict' ? 5 : 2);
+        // 1. Suscripciones a cancelar COMPLETAMENTE (para ambos escenarios)
+        if (key === 'normal') {
+            // Normal: Cancela las suscripciones más caras que no uses frecuentemente
+            const subscriptionsToCancel = identifiedSubscriptions
+                .sort((a, b) => b.monthlyAmount - a.monthlyAmount)
+                .slice(0, 3); // Top 3 más caras
+            
             subscriptionsToCancel.forEach(sub => {
                 scenario.concreteProposals.push({
                     type: 'cancel_subscription',
-                    title: `Cancela suscripción: ${sub.name}`,
-                    description: `Esta suscripción cuesta ${formatCurrency(sub.monthlyAmount)}/mes (${formatCurrency(sub.annualAmount)}/año)`,
+                    title: `Elimina suscripción: ${sub.name}`,
+                    description: `Esta suscripción cuesta ${formatCurrency(sub.monthlyAmount)}/mes (${formatCurrency(sub.annualAmount)}/año). Puedes cancelarla completamente.`,
                     action: `Cancela "${sub.name}"`,
                     savings: sub.monthlyAmount,
                     annualSavings: sub.annualAmount,
-                    transactions: sub.transactions.slice(0, 3) // Mostrar primeras 3 transacciones
+                    transactions: sub.transactions.slice(0, 3)
+                });
+            });
+        } else if (key === 'smart') {
+            // Smart: Solo cancela suscripciones duplicadas o que claramente no usas
+            const subscriptionsToCancel = identifiedSubscriptions
+                .filter(sub => sub.count <= 2) // Solo las que aparecen 2 veces o menos (probablemente no las usas)
+                .sort((a, b) => b.monthlyAmount - a.monthlyAmount)
+                .slice(0, 2); // Máximo 2
+            
+            subscriptionsToCancel.forEach(sub => {
+                scenario.concreteProposals.push({
+                    type: 'cancel_subscription',
+                    title: `Elimina suscripción no utilizada: ${sub.name}`,
+                    description: `Esta suscripción cuesta ${formatCurrency(sub.monthlyAmount)}/mes pero solo aparece ${sub.count} vez(es) en ${months} meses. Probablemente no la uses.`,
+                    action: `Cancela "${sub.name}"`,
+                    savings: sub.monthlyAmount,
+                    annualSavings: sub.annualAmount,
+                    transactions: sub.transactions.slice(0, 3)
                 });
             });
         }
         
-        // 2. Gastos recurrentes a reducir (solo para strict y normal, NO para smart)
-        if (key === 'strict' || key === 'normal') {
-            const reductions = recurringToReduce.slice(0, key === 'strict' ? 5 : 3);
-            reductions.forEach(rec => {
-                scenario.concreteProposals.push({
-                    type: 'reduce_recurring',
-                    title: `Reduce gasto recurrente en ${rec.category}`,
-                    description: rec.suggestion,
-                    action: `Reduce de ${formatCurrency(rec.amount)} a ${formatCurrency(rec.amount * 0.7)}`,
-                    savings: rec.monthlySavings,
-                    annualSavings: rec.monthlySavings * 12,
-                    transactions: rec.transactions.slice(0, 3)
-                });
-            });
-        }
+        // 2. Gastos específicos que se pueden ELIMINAR COMPLETAMENTE (no reducir porcentajes)
+        // Identificar gastos individuales grandes que se pueden eliminar
+        const largeDiscretionaryExpenses = nonEssentialTransactions
+            .filter(t => {
+                const amount = Math.abs(t.amount);
+                // Gastos mayores a 50€ que son claramente prescindibles
+                return amount >= 50 && (
+                    t.categorySpecific?.toLowerCase().includes('restaurante') ||
+                    t.categorySpecific?.toLowerCase().includes('ocio') ||
+                    t.categorySpecific?.toLowerCase().includes('compras') ||
+                    t.description?.toLowerCase().includes('restaurante') ||
+                    t.description?.toLowerCase().includes('compras')
+                );
+            })
+            .map(t => ({
+                ...t,
+                amount: Math.abs(t.amount)
+            }))
+            .sort((a, b) => b.amount - a.amount);
         
-        // 3. Optimizaciones por categoría
-        if (key === 'smart') {
-            // Smart: Seleccionar categorías con mejor ROI (ahorro potencial / esfuerzo)
-            // Prioriza categorías con muchas transacciones pequeñas (más fáciles de optimizar)
-            // o categorías con alto gasto pero fácil reducción
-            const smartCategories = Object.values(categoryAnalysis)
-                .filter(cat => cat.monthlySavings > 0)
-                .map(cat => {
-                    // Calcular "facilidad de optimización": más transacciones = más fácil reducir
-                    const optimizationScore = cat.count > 0 ? (cat.monthlySavings / cat.count) * cat.count : 0;
-                    // Priorizar categorías con buen balance entre ahorro y número de transacciones
-                    const roi = cat.monthlySavings * (1 + Math.log10(cat.count + 1));
-                    return {
-                        ...cat,
-                        roi,
-                        optimizationScore
-                    };
-                })
-                .sort((a, b) => b.roi - a.roi) // Ordenar por ROI
-                .slice(0, 3); // Top 3 con mejor ROI
-            
-            smartCategories.forEach(cat => {
+        if (key === 'normal') {
+            // Normal: Elimina los gastos individuales más grandes y prescindibles
+            const expensesToEliminate = largeDiscretionaryExpenses.slice(0, 5);
+            expensesToEliminate.forEach(exp => {
+                const date = new Date(exp.date);
+                const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+                const categoryName = categories.expense.find(c => c.id === exp.categoryGeneral)?.name || 'Otros';
+                
                 scenario.concreteProposals.push({
-                    type: 'optimize_category',
-                    title: `Optimiza estratégicamente: ${cat.name}`,
-                    description: `${cat.suggestion} (${cat.count} transacciones - fácil de optimizar)`,
-                    action: `Reduce gastos mensuales en ${cat.name}`,
-                    savings: cat.monthlySavings,
-                    annualSavings: cat.monthlySavings * 12,
-                    transactions: cat.transactions.slice(0, 5)
+                    type: 'eliminate_expense',
+                    title: `Elimina este gasto: ${exp.description || 'Sin descripción'}`,
+                    description: `Gasto de ${formatCurrency(exp.amount)} el ${dateStr} en ${categoryName}. Es un gasto prescindible que puedes evitar.`,
+                    action: `Evita este tipo de gastos`,
+                    savings: exp.amount / months, // Promedio mensual si se repite
+                    annualSavings: (exp.amount / months) * 12,
+                    transactions: [exp]
                 });
             });
-        } else {
-            // Normal y Rata: Optimizaciones por monto total (más directas)
-            const topCategories = Object.values(categoryAnalysis)
-                .filter(cat => cat.monthlySavings > 0)
-                .sort((a, b) => b.monthlySavings - a.monthlySavings)
-                .slice(0, key === 'strict' ? 5 : 3);
+        } else if (key === 'smart') {
+            // Smart: Solo elimina gastos muy grandes y claramente innecesarios
+            const expensesToEliminate = largeDiscretionaryExpenses
+                .filter(exp => exp.amount >= 100) // Solo gastos de 100€ o más
+                .slice(0, 3);
             
-            topCategories.forEach(cat => {
+            expensesToEliminate.forEach(exp => {
+                const date = new Date(exp.date);
+                const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+                const categoryName = categories.expense.find(c => c.id === exp.categoryGeneral)?.name || 'Otros';
+                
                 scenario.concreteProposals.push({
-                    type: 'optimize_category',
-                    title: `Optimiza gastos en ${cat.name}`,
-                    description: cat.suggestion,
-                    action: `Reduce gastos mensuales en ${cat.name}`,
-                    savings: cat.monthlySavings,
-                    annualSavings: cat.monthlySavings * 12,
-                    transactions: cat.transactions.slice(0, 5)
+                    type: 'eliminate_expense',
+                    title: `Elimina gasto grande: ${exp.description || 'Sin descripción'}`,
+                    description: `Gasto de ${formatCurrency(exp.amount)} el ${dateStr} en ${categoryName}. Es un gasto grande y prescindible.`,
+                    action: `Evita este tipo de gastos grandes`,
+                    savings: exp.amount / months,
+                    annualSavings: (exp.amount / months) * 12,
+                    transactions: [exp]
                 });
             });
         }
