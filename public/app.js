@@ -3599,6 +3599,9 @@ function updateDisplay() {
         
         // Actualizar gráficas siempre (no solo cuando el tab está activo)
         updateCharts();
+        
+        // Actualizar escenarios de ahorro
+        updateSavingsScenarios();
     } catch (error) {
         console.error('Error en updateDisplay:', error);
     }
@@ -11984,6 +11987,378 @@ function updateFinancialHealthMetrics() {
         
         container.appendChild(card);
     });
+}
+
+// ==================== ESCENARIOS DE AHORRO ====================
+
+// Categorización inteligente de gastos: esenciales vs no esenciales
+function categorizeExpense(transaction) {
+    const categoryId = transaction.categoryGeneral;
+    const subcategory = transaction.categorySpecific || '';
+    const subcategoryLower = subcategory.toLowerCase();
+    
+    // Categorías completamente esenciales
+    const essentialCategories = [
+        'housing',      // Vivienda (alquiler, hipoteca, servicios básicos)
+        'debt',         // Deudas y préstamos (pagos obligatorios)
+        'taxes',        // Impuestos (obligatorios)
+        'insurance',    // Seguros básicos
+        'fines'         // Multas (obligatorias)
+    ];
+    
+    // Categorías completamente no esenciales
+    const nonEssentialCategories = [
+        'entertainment',   // Entretenimiento
+        'subscriptions',   // Suscripciones (pueden optimizarse)
+        'charity'          // Donaciones (opcionales)
+    ];
+    
+    // Categorías parcialmente esenciales (depende de la subcategoría)
+    const partiallyEssentialCategories = {
+        'food': {
+            essential: ['supermercado', 'mercado local', 'tienda de conveniencia', 'agua', 'zumos'],
+            nonEssential: ['restaurantes', 'delivery', 'café', 'comida rápida', 'catering', 'almuerzo de trabajo', 'bebidas alcohólicas', 'snacks']
+        },
+        'transport': {
+            essential: ['gasolina', 'transporte público', 'tren', 'autobús', 'metro', 'tranvía', 'seguro de coche', 'itv', 'impuesto de circulación', 'mantenimiento', 'reparaciones'],
+            nonEssential: ['taxi/uber', 'parking', 'peaje', 'vuelos', 'barco', 'ferry', 'alquiler de coche', 'bicicleta', 'scooter']
+        },
+        'health': {
+            essential: ['médico', 'farmacia', 'seguro médico', 'dentista', 'óptica', 'medicinas', 'análisis', 'especialistas', 'urgencias', 'hospital', 'ambulancia', 'prótesis', 'ortodoncia', 'cirugía', 'rehabilitación'],
+            nonEssential: ['gimnasio', 'fisioterapia', 'psicólogo', 'nutricionista', 'terapias alternativas']
+        },
+        'bills': {
+            essential: ['luz', 'agua', 'gas', 'calefacción', 'internet', 'teléfono', 'teléfono fijo', 'basura', 'reciclaje', 'seguros', 'banco'],
+            nonEssential: ['tv/cable', 'streaming servicios', 'suscripciones', 'servicios de nube', 'hosting', 'dominio', 'software', 'licencias', 'datos móviles']
+        },
+        'shopping': {
+            essential: ['herramientas', 'bricolaje', 'electrodomésticos', 'muebles'],
+            nonEssential: ['ropa', 'zapatos', 'accesorios', 'joyería', 'cosméticos', 'regalos', 'libros', 'música', 'películas', 'juguetes', 'deportes', 'fotografía', 'arte', 'antigüedades', 'hogar', 'jardín', 'mascotas']
+        },
+        'education': {
+            essential: ['matrícula', 'universidad', 'máster', 'material escolar', 'uniforme', 'becas', 'tutorías', 'certificaciones', 'exámenes'],
+            nonEssential: ['cursos', 'libros', 'materiales', 'idiomas', 'formación online', 'seminarios', 'conferencias', 'clases particulares', 'biblioteca', 'software educativo']
+        },
+        'personal': {
+            essential: ['cuidado personal', 'gafas', 'lentes de contacto'],
+            nonEssential: ['peluquería', 'estética', 'spa', 'masajes', 'cosméticos', 'perfumes', 'cumpleaños', 'aniversarios', 'bodas', 'manicura', 'pedicura', 'depilación', 'tatuajes', 'piercings', 'ropa', 'regalos']
+        },
+        'children': {
+            essential: ['guardería', 'colegio', 'medicinas', 'vacunas', 'cuidados'],
+            nonEssential: ['actividades extraescolares', 'juguetes', 'ropa', 'material escolar', 'cumpleaños', 'regalos', 'deportes', 'música', 'arte']
+        },
+        'pets': {
+            essential: ['veterinario', 'comida', 'medicinas', 'vacunas', 'seguro de mascota'],
+            nonEssential: ['juguetes', 'accesorios', 'peluquería', 'guardería', 'adiestramiento', 'pensión', 'cuidados especiales']
+        },
+        'housing': {
+            essential: ['alquiler/hipoteca', 'servicios', 'luz', 'agua', 'gas', 'calefacción', 'aire acondicionado', 'internet', 'teléfono fijo', 'basura', 'reciclaje', 'seguro del hogar', 'comunidad', 'ibi/impuestos', 'mantenimiento', 'reparaciones'],
+            nonEssential: ['decoración', 'limpieza', 'jardinería', 'mejoras', 'muebles', 'electrodomésticos']
+        }
+    };
+    
+    // Si es completamente esencial
+    if (essentialCategories.includes(categoryId)) {
+        return { type: 'essential', percentage: 1.0 };
+    }
+    
+    // Si es completamente no esencial
+    if (nonEssentialCategories.includes(categoryId)) {
+        return { type: 'nonEssential', percentage: 1.0 };
+    }
+    
+    // Si es parcialmente esencial, verificar subcategoría
+    if (partiallyEssentialCategories[categoryId]) {
+        const rules = partiallyEssentialCategories[categoryId];
+        const isEssential = rules.essential.some(ess => subcategoryLower.includes(ess.toLowerCase()));
+        const isNonEssential = rules.nonEssential.some(nonEss => subcategoryLower.includes(nonEss.toLowerCase()));
+        
+        if (isEssential) {
+            return { type: 'essential', percentage: 1.0 };
+        } else if (isNonEssential) {
+            return { type: 'nonEssential', percentage: 1.0 };
+        } else {
+            // Si no coincide con ninguna, considerar 50% esencial (conservador)
+            return { type: 'mixed', percentage: 0.5 };
+        }
+    }
+    
+    // Para 'investment' y 'other', considerar como no esencial (optimizable)
+    if (categoryId === 'investment' || categoryId === 'other') {
+        return { type: 'nonEssential', percentage: 0.8 };
+    }
+    
+    // Por defecto, considerar como no esencial (optimizable)
+    return { type: 'nonEssential', percentage: 0.7 };
+}
+
+// Calcular escenarios de ahorro
+function calculateSavingsScenarios(months = 6) {
+    const now = new Date();
+    const cutoffDate = new Date(now.getFullYear(), now.getMonth() - months, 1);
+    
+    // Filtrar transacciones del período
+    const periodTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate >= cutoffDate && t.type === 'expense';
+    });
+    
+    // Calcular ingresos promedio
+    const periodIncome = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate >= cutoffDate && t.type === 'income';
+    });
+    const avgMonthlyIncome = periodIncome.length > 0 
+        ? Math.abs(periodIncome.reduce((sum, t) => sum + t.amount, 0)) / months 
+        : 0;
+    
+    // Calcular gastos por categoría y clasificación
+    const expensesByCategory = {};
+    let totalEssential = 0;
+    let totalNonEssential = 0;
+    
+    periodTransactions.forEach(t => {
+        const amount = Math.abs(t.amount);
+        const categoryId = t.categoryGeneral || 'other';
+        const categoryName = categories.expense.find(c => c.id === categoryId)?.name || 'Otros';
+        const classification = categorizeExpense(t);
+        
+        if (!expensesByCategory[categoryId]) {
+            expensesByCategory[categoryId] = {
+                name: categoryName,
+                total: 0,
+                essential: 0,
+                nonEssential: 0,
+                count: 0
+            };
+        }
+        
+        expensesByCategory[categoryId].total += amount;
+        expensesByCategory[categoryId].count += 1;
+        
+        if (classification.type === 'essential') {
+            expensesByCategory[categoryId].essential += amount;
+            totalEssential += amount;
+        } else if (classification.type === 'nonEssential') {
+            expensesByCategory[categoryId].nonEssential += amount;
+            totalNonEssential += amount;
+        } else {
+            // Mixed: distribuir proporcionalmente
+            const essentialPart = amount * classification.percentage;
+            const nonEssentialPart = amount * (1 - classification.percentage);
+            expensesByCategory[categoryId].essential += essentialPart;
+            expensesByCategory[categoryId].nonEssential += nonEssentialPart;
+            totalEssential += essentialPart;
+            totalNonEssential += nonEssentialPart;
+        }
+    });
+    
+    // Calcular promedios mensuales
+    const avgMonthlyEssential = totalEssential / months;
+    const avgMonthlyNonEssential = totalNonEssential / months;
+    const avgMonthlyExpenses = (totalEssential + totalNonEssential) / months;
+    
+    // Definir escenarios de ahorro
+    const scenarios = {
+        strict: {
+            name: 'Ahorro Rata',
+            description: 'Reducción máxima en gastos no esenciales, manteniendo solo lo esencial',
+            monthlySavings: avgMonthlyNonEssential * 0.35, // Reducir 35% de no esenciales
+            annualSavings: avgMonthlyNonEssential * 0.35 * 12,
+            reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.35) / avgMonthlyExpenses) * 100 : 0,
+            recommendations: []
+        },
+        normal: {
+            name: 'Ahorro Normal',
+            description: 'Reducción equilibrada en gastos discrecionales, manteniendo calidad de vida',
+            monthlySavings: avgMonthlyNonEssential * 0.20, // Reducir 20% de no esenciales
+            annualSavings: avgMonthlyNonEssential * 0.20 * 12,
+            reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.20) / avgMonthlyExpenses) * 100 : 0,
+            recommendations: []
+        },
+        relaxed: {
+            name: 'Ahorro Laxo',
+            description: 'Pequeñas optimizaciones sin sacrificios significativos',
+            monthlySavings: avgMonthlyNonEssential * 0.10, // Reducir 10% de no esenciales
+            annualSavings: avgMonthlyNonEssential * 0.10 * 12,
+            reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.10) / avgMonthlyExpenses) * 100 : 0,
+            recommendations: []
+        },
+        smart: {
+            name: 'Ahorro Inteligente',
+            description: 'Optimización enfocada en categorías con mayor potencial de ahorro',
+            monthlySavings: 0,
+            annualSavings: 0,
+            reductionPercentage: 0,
+            recommendations: []
+        },
+        aggressive: {
+            name: 'Ahorro Agresivo',
+            description: 'Reducción significativa en todas las categorías no esenciales',
+            monthlySavings: avgMonthlyNonEssential * 0.30, // Reducir 30% de no esenciales
+            annualSavings: avgMonthlyNonEssential * 0.30 * 12,
+            reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.30) / avgMonthlyExpenses) * 100 : 0,
+            recommendations: []
+        }
+    };
+    
+    // Calcular escenario inteligente (identificar categorías con mayor potencial)
+    const categoriesByPotential = Object.entries(expensesByCategory)
+        .filter(([_, data]) => data.nonEssential > 0)
+        .map(([id, data]) => ({
+            id,
+            name: data.name,
+            nonEssential: data.nonEssential,
+            monthlyNonEssential: data.nonEssential / months,
+            potentialSavings: (data.nonEssential / months) * 0.25 // 25% de reducción potencial
+        }))
+        .sort((a, b) => b.potentialSavings - a.potentialSavings)
+        .slice(0, 5); // Top 5 categorías
+    
+    let smartSavings = 0;
+    categoriesByPotential.forEach(cat => {
+        smartSavings += cat.potentialSavings;
+        scenarios.smart.recommendations.push({
+            category: cat.name,
+            currentMonthly: cat.monthlyNonEssential,
+            potentialSavings: cat.potentialSavings,
+            suggestion: `Reduce ${formatCurrency(cat.potentialSavings)}/mes en ${cat.name}`
+        });
+    });
+    
+    scenarios.smart.monthlySavings = smartSavings;
+    scenarios.smart.annualSavings = smartSavings * 12;
+    scenarios.smart.reductionPercentage = avgMonthlyExpenses > 0 ? (smartSavings / avgMonthlyExpenses) * 100 : 0;
+    
+    // Generar recomendaciones para otros escenarios
+    Object.keys(scenarios).forEach(key => {
+        if (key !== 'smart' && scenarios[key].monthlySavings > 0) {
+            const topCategories = categoriesByPotential.slice(0, 3);
+            topCategories.forEach(cat => {
+                const savings = (cat.monthlyNonEssential * (key === 'strict' ? 0.35 : key === 'aggressive' ? 0.30 : key === 'normal' ? 0.20 : 0.10));
+                scenarios[key].recommendations.push({
+                    category: cat.name,
+                    currentMonthly: cat.monthlyNonEssential,
+                    potentialSavings: savings,
+                    suggestion: `Reduce ${formatCurrency(savings)}/mes en ${cat.name}`
+                });
+            });
+        }
+    });
+    
+    // Calcular tiempo para alcanzar metas de ahorro
+    const savingsGoal = window.savingsGoal || 0;
+    Object.keys(scenarios).forEach(key => {
+        const scenario = scenarios[key];
+        if (scenario.monthlySavings > 0 && savingsGoal > 0) {
+            scenario.monthsToGoal = Math.ceil(savingsGoal / scenario.monthlySavings);
+        } else {
+            scenario.monthsToGoal = null;
+        }
+    });
+    
+    return {
+        avgMonthlyIncome,
+        avgMonthlyExpenses,
+        avgMonthlyEssential,
+        avgMonthlyNonEssential,
+        scenarios,
+        categoriesByPotential,
+        period: months
+    };
+}
+
+// Actualizar UI de escenarios de ahorro
+function updateSavingsScenarios() {
+    const container = document.getElementById('savingsScenariosContainer');
+    if (!container) return;
+    
+    const data = calculateSavingsScenarios(6); // Últimos 6 meses
+    
+    if (!data || data.avgMonthlyExpenses === 0) {
+        container.innerHTML = `
+            <div style="padding: 24px; text-align: center; color: var(--text-secondary);">
+                <p>No hay suficientes datos históricos para calcular escenarios de ahorro.</p>
+                <p style="font-size: 13px; margin-top: 8px;">Necesitas al menos algunos meses de transacciones.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div style="margin-bottom: 24px; padding: 16px; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
+            <h4 style="margin: 0 0 8px 0; color: var(--text-primary); font-size: 15px; font-weight: 600;">Resumen de Análisis (Últimos ${data.period} meses)</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 12px;">
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Ingresos Promedio</small>
+                    <div style="color: var(--success); font-weight: 600; font-size: 16px;">${formatCurrency(data.avgMonthlyIncome)}</div>
+                </div>
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Gastos Promedio</small>
+                    <div style="color: var(--danger); font-weight: 600; font-size: 16px;">${formatCurrency(data.avgMonthlyExpenses)}</div>
+                </div>
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Gastos No Esenciales</small>
+                    <div style="color: var(--text-primary); font-weight: 600; font-size: 16px;">${formatCurrency(data.avgMonthlyNonEssential)}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+    `;
+    
+    // Mostrar cada escenario
+    Object.keys(data.scenarios).forEach(key => {
+        const scenario = data.scenarios[key];
+        if (scenario.monthlySavings <= 0 && key !== 'smart') return;
+        
+        const savingsColor = scenario.monthlySavings > 0 ? 'var(--success)' : 'var(--text-secondary)';
+        const monthsToGoalText = scenario.monthsToGoal 
+            ? `<div style="margin-top: 8px; padding: 8px; background: var(--primary-light); border-radius: 6px; font-size: 12px; color: var(--text-primary);">
+                🎯 Con este ahorro alcanzarías tu meta en <strong>${scenario.monthsToGoal} meses</strong>
+               </div>`
+            : '';
+        
+        html += `
+            <div class="card" style="padding: 20px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary);">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <div>
+                        <h4 style="margin: 0 0 4px 0; color: var(--text-primary); font-size: 16px; font-weight: 700;">${scenario.name}</h4>
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 12px; line-height: 1.4;">${scenario.description}</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-secondary); font-size: 13px;">Ahorro Mensual:</span>
+                        <strong style="color: ${savingsColor}; font-size: 18px;">${formatCurrency(scenario.monthlySavings)}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-secondary); font-size: 13px;">Ahorro Anual:</span>
+                        <strong style="color: ${savingsColor}; font-size: 16px;">${formatCurrency(scenario.annualSavings)}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-secondary); font-size: 13px;">Reducción:</span>
+                        <strong style="color: var(--text-primary); font-size: 14px;">${scenario.reductionPercentage.toFixed(1)}%</strong>
+                    </div>
+                </div>
+                
+                ${monthsToGoalText}
+                
+                ${scenario.recommendations.length > 0 ? `
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                        <strong style="color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Recomendaciones:</strong>
+                        <ul style="margin: 8px 0 0 0; padding-left: 20px; font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+                            ${scenario.recommendations.slice(0, 3).map(rec => `<li>${rec.suggestion}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    container.innerHTML = html;
 }
 
 // ==================== SISTEMA DE RECOMENDACIONES ECONÓMICAS ====================
