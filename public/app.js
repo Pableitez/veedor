@@ -11104,8 +11104,8 @@ function updateMonthDashboard() {
                 const transCount = categoryIncome.length;
                 const transText = transCount === 1 ? getTranslation('budgets.transaction', lang) : getTranslation('budgets.transactions', lang);
                 card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; gap: 8px;">
-                        <h5 style="font-size: clamp(14px, 3vw, 16px); font-weight: 700; margin: 0; color: var(--text-primary) !important; flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.3;">${budgetDisplayName}</h5>
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; gap: 8px; width: 100%; box-sizing: border-box;">
+                        <h5 style="font-size: clamp(14px, 3vw, 18px) !important; font-weight: 700 !important; margin: 0 !important; color: var(--text-primary) !important; flex: 1 !important; min-width: 0 !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.3 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important;">${budgetDisplayName}</h5>
                         <span style="font-size: 11px; padding: 4px 8px; background: var(--success-light); border-radius: var(--radius); color: var(--success-dark); font-weight: 600; flex-shrink: 0; white-space: nowrap;">${getTranslation('budgets.income', lang)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
@@ -11165,8 +11165,8 @@ function updateMonthDashboard() {
                 const transCount = categoryExpenses.length;
                 const transText = transCount === 1 ? getTranslation('budgets.transaction', lang) : getTranslation('budgets.transactions', lang);
                 card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; gap: 8px;">
-                        <h5 style="font-size: clamp(14px, 3vw, 16px); font-weight: 700; margin: 0; color: var(--text-primary) !important; flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.3;">${budgetDisplayName}</h5>
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; gap: 8px; width: 100%; box-sizing: border-box;">
+                        <h5 style="font-size: clamp(14px, 3vw, 18px) !important; font-weight: 700 !important; margin: 0 !important; color: var(--text-primary) !important; flex: 1 !important; min-width: 0 !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.3 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important;">${budgetDisplayName}</h5>
                         <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600; flex-shrink: 0; white-space: nowrap;">${getTranslation('budgets.expense', lang)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">

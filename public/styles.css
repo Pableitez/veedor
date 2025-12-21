@@ -4135,7 +4135,7 @@ tbody tr:last-child td {
     .envelope-card h5,
     #monthBudgetsStatus h5,
     #monthBudgetsStatus h3 {
-        font-size: clamp(14px, 3vw, 16px) !important;
+        font-size: clamp(14px, 3vw, 18px) !important;
         color: var(--text-primary) !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
@@ -4146,6 +4146,26 @@ tbody tr:last-child td {
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Contenedores de cards en monthBudgetsStatus */
+    #monthBudgetsStatus > div {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Divs internos de las cards en monthBudgetsStatus */
+    #monthBudgetsStatus > div > div {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     .envelopes-grid {
