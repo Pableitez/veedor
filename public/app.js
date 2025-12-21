@@ -4788,6 +4788,7 @@ async function deleteTransaction(id) {
 
 // Editar transacción - Abre modal con formulario pre-rellenado
 async function editTransaction(id) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
     const transaction = transactions.find(t => (t._id || t.id) === id);
     if (!transaction) return;
     
