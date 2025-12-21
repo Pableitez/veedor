@@ -12175,30 +12175,14 @@ function calculateSavingsScenarios(months = 6) {
     const avgMonthlyNonEssential = totalNonEssential / months;
     const avgMonthlyExpenses = (totalEssential + totalNonEssential) / months;
     
-    // Definir escenarios de ahorro
+    // Definir escenarios de ahorro (solo 3)
     const scenarios = {
-        strict: {
-            name: 'Ahorro Rata',
-            description: 'Reducción máxima en gastos no esenciales, manteniendo solo lo esencial',
-            monthlySavings: avgMonthlyNonEssential * 0.35, // Reducir 35% de no esenciales
-            annualSavings: avgMonthlyNonEssential * 0.35 * 12,
-            reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.35) / avgMonthlyExpenses) * 100 : 0,
-            recommendations: []
-        },
         normal: {
             name: 'Ahorro Normal',
             description: 'Reducción equilibrada en gastos discrecionales, manteniendo calidad de vida',
             monthlySavings: avgMonthlyNonEssential * 0.20, // Reducir 20% de no esenciales
             annualSavings: avgMonthlyNonEssential * 0.20 * 12,
             reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.20) / avgMonthlyExpenses) * 100 : 0,
-            recommendations: []
-        },
-        relaxed: {
-            name: 'Ahorro Laxo',
-            description: 'Pequeñas optimizaciones sin sacrificios significativos',
-            monthlySavings: avgMonthlyNonEssential * 0.10, // Reducir 10% de no esenciales
-            annualSavings: avgMonthlyNonEssential * 0.10 * 12,
-            reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.10) / avgMonthlyExpenses) * 100 : 0,
             recommendations: []
         },
         smart: {
@@ -12209,12 +12193,12 @@ function calculateSavingsScenarios(months = 6) {
             reductionPercentage: 0,
             recommendations: []
         },
-        aggressive: {
-            name: 'Ahorro Agresivo',
-            description: 'Reducción significativa en todas las categorías no esenciales',
-            monthlySavings: avgMonthlyNonEssential * 0.30, // Reducir 30% de no esenciales
-            annualSavings: avgMonthlyNonEssential * 0.30 * 12,
-            reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.30) / avgMonthlyExpenses) * 100 : 0,
+        strict: {
+            name: 'Ahorro Rata',
+            description: 'Reducción máxima en gastos no esenciales, manteniendo solo lo esencial',
+            monthlySavings: avgMonthlyNonEssential * 0.35, // Reducir 35% de no esenciales
+            annualSavings: avgMonthlyNonEssential * 0.35 * 12,
+            reductionPercentage: avgMonthlyExpenses > 0 ? ((avgMonthlyNonEssential * 0.35) / avgMonthlyExpenses) * 100 : 0,
             recommendations: []
         }
     };
