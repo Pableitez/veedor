@@ -832,10 +832,10 @@
                     <!-- Modal para tabla de amortización -->
                     <div id="amortizationModal" class="modal" style="display: none;">
                         <div class="modal-content" style="max-width: 90%; width: 1000px; max-height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
-                            <div style="class="rainbow-bg"; padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                            <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <h2 id="amortizationModalTitle" style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Tabla de Amortización</h2>
-                                    <button onclick="closeAmortizationModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                                    <h2 id="amortizationModalTitle" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Tabla de Amortización</h2>
+                                    <button onclick="closeAmortizationModal()" class="modal-close-btn" style="background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(0,0,0,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.1)'">×</button>
                                 </div>
                             </div>
                             <div id="amortizationModalContent" style="padding: 32px; max-height: calc(90vh - 100px); overflow-y: auto; flex: 1;">
@@ -846,10 +846,10 @@
                     <!-- Modal para amortización anticipada -->
                     <div id="earlyPaymentModal" class="modal" style="display: none;">
                         <div class="modal-content" style="max-width: 600px; max-height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
-                            <div style="class="rainbow-bg"; padding: 28px 32px; color: white; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                            <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px;">Amortización Anticipada</h2>
-                                    <button onclick="closeEarlyPaymentModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                                    <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Amortización Anticipada</h2>
+                                    <button onclick="closeEarlyPaymentModal()" class="modal-close-btn" style="background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(0,0,0,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.1)'">×</button>
                                 </div>
                             </div>
                             <div style="padding: 32px; max-height: calc(90vh - 100px); overflow-y: auto; flex: 1;">

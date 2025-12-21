@@ -1510,6 +1510,27 @@ body.dark-mode .rainbow-bg {
     background-position: 0% 50% !important;
 }
 
+/* En modo oscuro, el texto debe ser blanco en rainbow-bg */
+body.dark-mode .rainbow-bg,
+body.dark-mode .rainbow-bg * {
+    color: #FFFFFF !important;
+}
+
+/* Botón de cerrar modal en rainbow-bg */
+.rainbow-bg .modal-close-btn {
+    color: #1F2937 !important;
+}
+
+body.dark-mode .rainbow-bg .modal-close-btn {
+    color: #FFFFFF !important;
+    background: rgba(255,255,255,0.2) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+}
+
+body.dark-mode .rainbow-bg .modal-close-btn:hover {
+    background: rgba(255,255,255,0.3) !important;
+}
+
 @media (max-width: 768px) {
     #welcomeMessage {
         padding: 4px 16px;
