@@ -12452,17 +12452,30 @@ function calculateSavingsScenarios(months = 6) {
         
         // 3. Optimizaciones por categoría
         if (key === 'smart') {
-            // Smart: Solo las top 3-5 categorías con MAYOR potencial de ahorro (más inteligente)
-            const topCategories = Object.values(categoryAnalysis)
+            // Smart: Seleccionar categorías con mejor ROI (ahorro potencial / esfuerzo)
+            // Prioriza categorías con muchas transacciones pequeñas (más fáciles de optimizar)
+            // o categorías con alto gasto pero fácil reducción
+            const smartCategories = Object.values(categoryAnalysis)
                 .filter(cat => cat.monthlySavings > 0)
-                .sort((a, b) => b.monthlySavings - a.monthlySavings)
-                .slice(0, 3); // Solo las top 3 más rentables
+                .map(cat => {
+                    // Calcular "facilidad de optimización": más transacciones = más fácil reducir
+                    const optimizationScore = cat.count > 0 ? (cat.monthlySavings / cat.count) * cat.count : 0;
+                    // Priorizar categorías con buen balance entre ahorro y número de transacciones
+                    const roi = cat.monthlySavings * (1 + Math.log10(cat.count + 1));
+                    return {
+                        ...cat,
+                        roi,
+                        optimizationScore
+                    };
+                })
+                .sort((a, b) => b.roi - a.roi) // Ordenar por ROI
+                .slice(0, 3); // Top 3 con mejor ROI
             
-            topCategories.forEach(cat => {
+            smartCategories.forEach(cat => {
                 scenario.concreteProposals.push({
                     type: 'optimize_category',
-                    title: `Optimiza gastos en ${cat.name}`,
-                    description: cat.suggestion,
+                    title: `Optimiza estratégicamente: ${cat.name}`,
+                    description: `${cat.suggestion} (${cat.count} transacciones - fácil de optimizar)`,
                     action: `Reduce gastos mensuales en ${cat.name}`,
                     savings: cat.monthlySavings,
                     annualSavings: cat.monthlySavings * 12,
@@ -12470,7 +12483,7 @@ function calculateSavingsScenarios(months = 6) {
                 });
             });
         } else {
-            // Normal y Rata: Optimizaciones más amplias
+            // Normal y Rata: Optimizaciones por monto total (más directas)
             const topCategories = Object.values(categoryAnalysis)
                 .filter(cat => cat.monthlySavings > 0)
                 .sort((a, b) => b.monthlySavings - a.monthlySavings)
