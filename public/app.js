@@ -12277,50 +12277,227 @@ function calculateSavingsScenarios(months = 6) {
     // Agrupar transacciones no esenciales por categoría para cada escenario
     const nonEssentialTransactions = classifiedTransactions.filter(t => t.isNonEssential);
     
-    // Agregar transacciones específicas a cada escenario
-    Object.keys(scenarios).forEach(key => {
-        const scenario = scenarios[key];
-        const reductionRate = key === 'strict' ? 0.35 : key === 'aggressive' ? 0.30 : key === 'normal' ? 0.20 : key === 'relaxed' ? 0.10 : 0.25;
+    // ========== ANÁLISIS DE GASTOS RECURRENTES Y SUSCRIPCIONES ==========
+    // Identificar suscripciones y gastos recurrentes (mismo monto, misma descripción, cada mes)
+    const recurringExpenses = {};
+    const subscriptionPatterns = {};
+    
+    nonEssentialTransactions.forEach(t => {
+        const desc = (t.description || '').toLowerCase().trim();
+        const amount = Math.abs(t.amount);
+        const categoryId = t.categoryGeneral || 'other';
+        const subcategory = (t.categorySpecific || '').toLowerCase();
         
-        // Agrupar transacciones por categoría
-        const transactionsByCategory = {};
-        nonEssentialTransactions.forEach(t => {
-            const categoryId = t.categoryGeneral || 'other';
-            const categoryName = categories.expense.find(c => c.id === categoryId)?.name || 'Otros';
-            
-            if (!transactionsByCategory[categoryId]) {
-                transactionsByCategory[categoryId] = {
-                    name: categoryName,
-                    transactions: [],
-                    total: 0,
-                    savings: 0
+        // Detectar suscripciones por descripción o subcategoría
+        const isSubscription = subcategory.includes('suscripción') || 
+                              subcategory.includes('subscription') ||
+                              subcategory.includes('streaming') ||
+                              categoryId === 'subscriptions' ||
+                              desc.includes('netflix') ||
+                              desc.includes('spotify') ||
+                              desc.includes('amazon prime') ||
+                              desc.includes('disney') ||
+                              desc.includes('hbo') ||
+                              desc.includes('youtube premium') ||
+                              desc.includes('apple music') ||
+                              desc.includes('adobe') ||
+                              desc.includes('microsoft 365') ||
+                              desc.includes('cursor') ||
+                              desc.includes('chatgpt');
+        
+        if (isSubscription) {
+            const key = desc || subcategory || 'Suscripción sin nombre';
+            if (!subscriptionPatterns[key]) {
+                subscriptionPatterns[key] = {
+                    name: t.description || subcategory || 'Suscripción',
+                    amounts: [],
+                    dates: [],
+                    category: categoryId,
+                    subcategory: t.categorySpecific || subcategory,
+                    transactions: []
                 };
             }
-            
-            const amount = Math.abs(t.amount);
-            transactionsByCategory[categoryId].transactions.push({
-                ...t,
+            subscriptionPatterns[key].amounts.push(amount);
+            subscriptionPatterns[key].dates.push(new Date(t.date));
+            subscriptionPatterns[key].transactions.push(t);
+        }
+        
+        // Detectar gastos recurrentes (mismo monto aparece múltiples veces)
+        const recurringKey = `${categoryId}_${amount.toFixed(2)}`;
+        if (!recurringExpenses[recurringKey]) {
+            recurringExpenses[recurringKey] = {
+                categoryId,
+                categoryName: categories.expense.find(c => c.id === categoryId)?.name || 'Otros',
                 amount,
-                savings: amount * reductionRate
+                count: 0,
+                transactions: []
+            };
+        }
+        recurringExpenses[recurringKey].count++;
+        recurringExpenses[recurringKey].transactions.push(t);
+    });
+    
+    // Identificar suscripciones reales (aparecen regularmente)
+    const identifiedSubscriptions = Object.values(subscriptionPatterns)
+        .filter(sub => {
+            // Si aparece 2+ veces o el monto es consistente, es probablemente una suscripción
+            if (sub.amounts.length >= 2) {
+                const avgAmount = sub.amounts.reduce((a, b) => a + b, 0) / sub.amounts.length;
+                const variance = sub.amounts.every(amt => Math.abs(amt - avgAmount) < avgAmount * 0.1);
+                return variance; // Montos similares = suscripción
+            }
+            return false;
+        })
+        .map(sub => {
+            const avgAmount = sub.amounts.reduce((a, b) => a + b, 0) / sub.amounts.length;
+            const monthlyAmount = avgAmount;
+            const annualAmount = monthlyAmount * 12;
+            return {
+                name: sub.name,
+                monthlyAmount,
+                annualAmount,
+                count: sub.amounts.length,
+                category: sub.category,
+                subcategory: sub.subcategory,
+                transactions: sub.transactions,
+                action: 'cancel', // Acción: cancelar completamente
+                savings: monthlyAmount,
+                annualSavings: annualAmount
+            };
+        })
+        .sort((a, b) => b.monthlyAmount - a.monthlyAmount);
+    
+    // Identificar gastos recurrentes que se pueden reducir
+    const recurringToReduce = Object.values(recurringExpenses)
+        .filter(rec => rec.count >= 3) // Aparece 3+ veces
+        .map(rec => {
+            const avgMonthly = (rec.amount * rec.count) / months;
+            return {
+                category: rec.categoryName,
+                amount: rec.amount,
+                frequency: rec.count,
+                avgMonthly,
+                transactions: rec.transactions,
+                suggestion: `Reduce este gasto recurrente de ${formatCurrency(rec.amount)} a ${formatCurrency(rec.amount * 0.7)}`,
+                savings: rec.amount * 0.3, // Reducir 30%
+                monthlySavings: avgMonthly * 0.3
+            };
+        })
+        .sort((a, b) => b.monthlySavings - a.monthlySavings);
+    
+    // ========== ANÁLISIS DE GASTOS POR CATEGORÍA PARA OPTIMIZACIÓN ==========
+    // Agrupar por categoría para sugerir reducciones realistas
+    const categoryAnalysis = {};
+    nonEssentialTransactions.forEach(t => {
+        const categoryId = t.categoryGeneral || 'other';
+        const categoryName = categories.expense.find(c => c.id === categoryId)?.name || 'Otros';
+        const amount = Math.abs(t.amount);
+        
+        if (!categoryAnalysis[categoryId]) {
+            categoryAnalysis[categoryId] = {
+                name: categoryName,
+                transactions: [],
+                total: 0,
+                count: 0,
+                avgAmount: 0
+            };
+        }
+        
+        categoryAnalysis[categoryId].transactions.push(t);
+        categoryAnalysis[categoryId].total += amount;
+        categoryAnalysis[categoryId].count++;
+    });
+    
+    // Calcular promedios y sugerir reducciones realistas
+    Object.keys(categoryAnalysis).forEach(catId => {
+        const cat = categoryAnalysis[catId];
+        cat.avgAmount = cat.total / cat.count;
+        cat.avgMonthly = cat.total / months;
+        
+        // Sugerencias concretas según el tipo de gasto
+        if (cat.name === 'Entretenimiento' || cat.name === 'Suscripciones') {
+            cat.suggestion = `Reduce gastos en ${cat.name} de ${formatCurrency(cat.avgMonthly)}/mes a ${formatCurrency(cat.avgMonthly * 0.7)}/mes`;
+            cat.monthlySavings = cat.avgMonthly * 0.3;
+        } else if (cat.name === 'Compras' || cat.name === 'Personal') {
+            cat.suggestion = `Reduce compras discrecionales en ${cat.name} de ${formatCurrency(cat.avgMonthly)}/mes a ${formatCurrency(cat.avgMonthly * 0.8)}/mes`;
+            cat.monthlySavings = cat.avgMonthly * 0.2;
+        } else {
+            cat.suggestion = `Optimiza gastos en ${cat.name} reduciendo de ${formatCurrency(cat.avgMonthly)}/mes a ${formatCurrency(cat.avgMonthly * 0.85)}/mes`;
+            cat.monthlySavings = cat.avgMonthly * 0.15;
+        }
+    });
+    
+    // Agregar propuestas concretas a cada escenario
+    Object.keys(scenarios).forEach(key => {
+        const scenario = scenarios[key];
+        
+        // Propuestas concretas basadas en el escenario
+        scenario.concreteProposals = [];
+        
+        // 1. Suscripciones a cancelar (para escenarios strict, aggressive, normal)
+        if (key !== 'relaxed') {
+            const subscriptionsToCancel = identifiedSubscriptions.slice(0, key === 'strict' ? 5 : key === 'aggressive' ? 4 : key === 'normal' ? 2 : 1);
+            subscriptionsToCancel.forEach(sub => {
+                scenario.concreteProposals.push({
+                    type: 'cancel_subscription',
+                    title: `Cancela suscripción: ${sub.name}`,
+                    description: `Esta suscripción cuesta ${formatCurrency(sub.monthlyAmount)}/mes (${formatCurrency(sub.annualAmount)}/año)`,
+                    action: `Cancela "${sub.name}"`,
+                    savings: sub.monthlyAmount,
+                    annualSavings: sub.annualAmount,
+                    transactions: sub.transactions.slice(0, 3) // Mostrar primeras 3 transacciones
+                });
             });
-            transactionsByCategory[categoryId].total += amount;
-            transactionsByCategory[categoryId].savings += amount * reductionRate;
+        }
+        
+        // 2. Gastos recurrentes a reducir
+        const reductions = recurringToReduce.slice(0, key === 'strict' ? 5 : key === 'aggressive' ? 4 : key === 'normal' ? 3 : 2);
+        reductions.forEach(rec => {
+            scenario.concreteProposals.push({
+                type: 'reduce_recurring',
+                title: `Reduce gasto recurrente en ${rec.category}`,
+                description: rec.suggestion,
+                action: `Reduce de ${formatCurrency(rec.amount)} a ${formatCurrency(rec.amount * 0.7)}`,
+                savings: rec.monthlySavings,
+                annualSavings: rec.monthlySavings * 12,
+                transactions: rec.transactions.slice(0, 3)
+            });
         });
         
-        // Ordenar por potencial de ahorro y limitar
-        scenario.detailedCategories = Object.values(transactionsByCategory)
-            .sort((a, b) => b.savings - a.savings)
-            .slice(0, 10); // Top 10 categorías
+        // 3. Optimizaciones por categoría
+        const topCategories = Object.values(categoryAnalysis)
+            .filter(cat => cat.monthlySavings > 0)
+            .sort((a, b) => b.monthlySavings - a.monthlySavings)
+            .slice(0, key === 'strict' ? 5 : key === 'aggressive' ? 4 : key === 'normal' ? 3 : 2);
         
-        // Agregar transacciones individuales más grandes
+        topCategories.forEach(cat => {
+            scenario.concreteProposals.push({
+                type: 'optimize_category',
+                title: `Optimiza gastos en ${cat.name}`,
+                description: cat.suggestion,
+                action: `Reduce gastos mensuales en ${cat.name}`,
+                savings: cat.monthlySavings,
+                annualSavings: cat.monthlySavings * 12,
+                transactions: cat.transactions.slice(0, 5)
+            });
+        });
+        
+        // Calcular ahorro total de propuestas concretas
+        scenario.concreteTotalSavings = scenario.concreteProposals.reduce((sum, p) => sum + p.savings, 0);
+        scenario.concreteAnnualSavings = scenario.concreteTotalSavings * 12;
+        
+        // Mantener datos detallados para mostrar
+        scenario.detailedCategories = Object.values(categoryAnalysis)
+            .sort((a, b) => b.monthlySavings - a.monthlySavings)
+            .slice(0, 10);
+        
         scenario.topTransactions = nonEssentialTransactions
             .map(t => ({
                 ...t,
-                amount: Math.abs(t.amount),
-                savings: Math.abs(t.amount) * reductionRate
+                amount: Math.abs(t.amount)
             }))
-            .sort((a, b) => b.savings - a.savings)
-            .slice(0, 20); // Top 20 transacciones
+            .sort((a, b) => b.amount - a.amount)
+            .slice(0, 20);
     });
     
     return {
@@ -12399,26 +12576,26 @@ function updateSavingsScenarios() {
                 
                 <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: var(--text-secondary); font-size: 13px;">Ahorro Mensual:</span>
-                        <strong style="color: ${savingsColor}; font-size: 18px;">${formatCurrency(scenario.monthlySavings)}</strong>
+                        <span style="color: var(--text-secondary); font-size: 13px;">Ahorro Mensual Real:</span>
+                        <strong style="color: ${savingsColor}; font-size: 18px;">${formatCurrency(scenario.concreteTotalSavings || scenario.monthlySavings)}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: var(--text-secondary); font-size: 13px;">Ahorro Anual:</span>
-                        <strong style="color: ${savingsColor}; font-size: 16px;">${formatCurrency(scenario.annualSavings)}</strong>
+                        <span style="color: var(--text-secondary); font-size: 13px;">Ahorro Anual Real:</span>
+                        <strong style="color: ${savingsColor}; font-size: 16px;">${formatCurrency(scenario.concreteAnnualSavings || scenario.annualSavings)}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <span style="color: var(--text-secondary); font-size: 13px;">Reducción:</span>
-                        <strong style="color: var(--text-primary); font-size: 14px;">${scenario.reductionPercentage.toFixed(1)}%</strong>
+                        <span style="color: var(--text-secondary); font-size: 13px;">Propuestas:</span>
+                        <strong style="color: var(--text-primary); font-size: 14px;">${scenario.concreteProposals?.length || 0} acciones</strong>
                     </div>
                 </div>
                 
                 ${monthsToGoalText}
                 
-                ${scenario.recommendations.length > 0 ? `
+                ${scenario.concreteProposals && scenario.concreteProposals.length > 0 ? `
                     <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
-                        <strong style="color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Recomendaciones:</strong>
+                        <strong style="color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Ejemplos de propuestas:</strong>
                         <ul style="margin: 8px 0 0 0; padding-left: 20px; font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
-                            ${scenario.recommendations.slice(0, 3).map(rec => `<li>${rec.suggestion}</li>`).join('')}
+                            ${scenario.concreteProposals.slice(0, 2).map(prop => `<li>${prop.title} - Ahorro: ${formatCurrency(prop.savings)}/mes</li>`).join('')}
                         </ul>
                     </div>
                 ` : ''}
@@ -12443,96 +12620,83 @@ function showSavingsScenarioDetails(scenarioKey) {
     
     if (!modal || !titleEl || !contentEl) return;
     
-    titleEl.textContent = `Detalles: ${scenario.name}`;
+    titleEl.textContent = `Propuestas Concretas: ${scenario.name}`;
+    
+    // Usar ahorro de propuestas concretas si está disponible
+    const totalSavings = scenario.concreteTotalSavings || scenario.monthlySavings;
+    const totalAnnualSavings = scenario.concreteAnnualSavings || scenario.annualSavings;
     
     let content = `
         <div style="margin-bottom: 24px; padding: 16px; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
                 <div>
-                    <small style="color: var(--text-secondary); font-size: 11px;">Ahorro Mensual</small>
-                    <div style="color: var(--success); font-weight: 700; font-size: 20px;">${formatCurrency(scenario.monthlySavings)}</div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Ahorro Mensual Real</small>
+                    <div style="color: var(--success); font-weight: 700; font-size: 20px;">${formatCurrency(totalSavings)}</div>
                 </div>
                 <div>
-                    <small style="color: var(--text-secondary); font-size: 11px;">Ahorro Anual</small>
-                    <div style="color: var(--success); font-weight: 700; font-size: 20px;">${formatCurrency(scenario.annualSavings)}</div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Ahorro Anual Real</small>
+                    <div style="color: var(--success); font-weight: 700; font-size: 20px;">${formatCurrency(totalAnnualSavings)}</div>
                 </div>
                 <div>
-                    <small style="color: var(--text-secondary); font-size: 11px;">Reducción</small>
-                    <div style="color: var(--text-primary); font-weight: 700; font-size: 20px;">${scenario.reductionPercentage.toFixed(1)}%</div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Propuestas</small>
+                    <div style="color: var(--text-primary); font-weight: 700; font-size: 20px;">${scenario.concreteProposals?.length || 0}</div>
                 </div>
             </div>
         </div>
     `;
     
-    // Mostrar categorías con mayor potencial
-    if (scenario.detailedCategories && scenario.detailedCategories.length > 0) {
+    // Mostrar propuestas concretas
+    if (scenario.concreteProposals && scenario.concreteProposals.length > 0) {
         content += `
             <div style="margin-bottom: 24px;">
-                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">Gastos Prescindibles por Categoría</h3>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">🎯 Propuestas Concretas y Accionables</h3>
+                <div style="display: flex; flex-direction: column; gap: 16px;">
         `;
         
-        scenario.detailedCategories.forEach(cat => {
-            if (cat.savings <= 0) return;
+        scenario.concreteProposals.forEach((proposal, index) => {
+            const icon = proposal.type === 'cancel_subscription' ? '❌' : proposal.type === 'reduce_recurring' ? '📉' : '⚙️';
             
             content += `
-                <div style="padding: 16px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <div>
-                            <h4 style="margin: 0 0 4px 0; color: var(--text-primary); font-size: 15px; font-weight: 600;">${cat.name}</h4>
-                            <small style="color: var(--text-secondary); font-size: 12px;">${cat.transactions.length} transacciones</small>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="color: var(--danger); font-weight: 700; font-size: 16px;">${formatCurrency(cat.total)}</div>
-                            <div style="color: var(--success); font-weight: 600; font-size: 13px;">Ahorro potencial: ${formatCurrency(cat.savings)}/mes</div>
-                            <small style="color: var(--text-secondary); font-size: 11px;">Si reduces ${(scenario.reductionPercentage || 0).toFixed(0)}% de estos gastos</small>
+                <div style="padding: 20px; background: var(--bg-primary); border: 2px solid var(--border-color); border-radius: 12px; border-left: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <span style="font-size: 24px;">${icon}</span>
+                                <h4 style="margin: 0; color: var(--text-primary); font-size: 16px; font-weight: 700;">${proposal.title}</h4>
+                            </div>
+                            <p style="margin: 0 0 12px 0; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">${proposal.description}</p>
+                            <div style="padding: 12px; background: var(--success-light, rgba(16, 185, 129, 0.1)); border-radius: 8px; margin-top: 12px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong style="color: var(--success); font-size: 18px;">Ahorro: ${formatCurrency(proposal.savings)}/mes</strong>
+                                        <div style="color: var(--text-secondary); font-size: 12px; margin-top: 4px;">${formatCurrency(proposal.annualSavings)}/año</div>
+                                    </div>
+                                    <div style="padding: 8px 16px; background: var(--primary); color: white; border-radius: 6px; font-size: 13px; font-weight: 600;">
+                                        ${proposal.action}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div style="max-height: 200px; overflow-y: auto; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
-                        <table style="width: 100%; font-size: 12px;">
-                            <thead>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <th style="text-align: left; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Fecha</th>
-                                    <th style="text-align: left; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Descripción</th>
-                                    <th style="text-align: left; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Subcategoría</th>
-                                    <th style="text-align: right; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Gasto</th>
-                                    <th style="text-align: right; padding: 8px 0; color: var(--text-secondary); font-weight: 600;">Ahorro Potencial</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-            `;
-            
-            cat.transactions.slice(0, 10).forEach(t => {
-                const date = new Date(t.date);
-                const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
-                const subcategory = t.categorySpecific || 'Sin especificar';
-                
-                content += `
-                    <tr style="border-bottom: 1px solid var(--border-color-light);">
-                        <td style="padding: 8px 0; color: var(--text-secondary);">${dateStr}</td>
-                        <td style="padding: 8px 0; color: var(--text-primary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.description || 'Sin descripción'}">${t.description || 'Sin descripción'}</td>
-                        <td style="padding: 8px 0; color: var(--text-secondary); font-size: 11px;">${subcategory}</td>
-                        <td style="padding: 8px 0; color: var(--danger); text-align: right; font-weight: 600;">${formatCurrency(t.amount)}</td>
-                        <td style="padding: 8px 0; color: var(--success); text-align: right; font-weight: 600;" title="Si reduces este gasto en ${(scenario.reductionPercentage || 0).toFixed(0)}%">${formatCurrency(t.savings)}</td>
-                    </tr>
-                `;
-            });
-            
-            if (cat.transactions.length > 10) {
-                content += `
-                    <tr>
-                        <td colspan="5" style="padding: 8px 0; text-align: center; color: var(--text-secondary); font-size: 11px;">
-                            ... y ${cat.transactions.length - 10} transacciones más
-                        </td>
-                    </tr>
-                `;
-            }
-            
-            content += `
-                            </tbody>
-                        </table>
-                    </div>
+                    ${proposal.transactions && proposal.transactions.length > 0 ? `
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                            <strong style="color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Gastos relacionados:</strong>
+                            <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
+                                ${proposal.transactions.map(t => {
+                                    const date = new Date(t.date);
+                                    const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+                                    return `
+                                        <div style="display: flex; justify-content: space-between; padding: 8px; background: var(--bg-secondary); border-radius: 6px; font-size: 12px;">
+                                            <span style="color: var(--text-secondary);">${dateStr}</span>
+                                            <span style="color: var(--text-primary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.description || 'Sin descripción'}">${t.description || 'Sin descripción'}</span>
+                                            <strong style="color: var(--danger);">${formatCurrency(Math.abs(t.amount))}</strong>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
             `;
         });
@@ -12541,14 +12705,21 @@ function showSavingsScenarioDetails(scenarioKey) {
                 </div>
             </div>
         `;
+    } else {
+        content += `
+            <div style="padding: 24px; text-align: center; color: var(--text-secondary);">
+                <p>No se encontraron propuestas concretas para este escenario.</p>
+                <p style="font-size: 13px; margin-top: 8px;">Se necesitan más datos históricos para generar propuestas específicas.</p>
+            </div>
+        `;
     }
     
-    // Mostrar top transacciones individuales
-    if (scenario.topTransactions && scenario.topTransactions.length > 0) {
+    // Mostrar resumen de todas las transacciones relacionadas (opcional, al final)
+    if (scenario.topTransactions && scenario.topTransactions.length > 0 && scenario.concreteProposals.length < 5) {
         content += `
             <div style="margin-bottom: 24px;">
-                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">Top Transacciones Prescindibles</h3>
-                <div style="max-height: 400px; overflow-y: auto;">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">Gastos Más Grandes a Considerar</h3>
+                <div style="max-height: 300px; overflow-y: auto;">
                     <table style="width: 100%; font-size: 13px;">
                         <thead>
                             <tr style="border-bottom: 2px solid var(--border-color);">
@@ -12556,13 +12727,12 @@ function showSavingsScenarioDetails(scenarioKey) {
                                 <th style="text-align: left; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Categoría</th>
                                 <th style="text-align: left; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Descripción</th>
                                 <th style="text-align: right; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Gasto</th>
-                                <th style="text-align: right; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Ahorro Potencial*</th>
                             </tr>
                         </thead>
                         <tbody>
         `;
         
-        scenario.topTransactions.forEach(t => {
+        scenario.topTransactions.slice(0, 10).forEach(t => {
             const date = new Date(t.date);
             const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
             const categoryName = categories.expense.find(c => c.id === t.categoryGeneral)?.name || 'Otros';
@@ -12573,7 +12743,6 @@ function showSavingsScenarioDetails(scenarioKey) {
                     <td style="padding: 10px 0; color: var(--text-primary);">${categoryName}</td>
                     <td style="padding: 10px 0; color: var(--text-primary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.description || 'Sin descripción'}">${t.description || 'Sin descripción'}</td>
                     <td style="padding: 10px 0; color: var(--danger); text-align: right; font-weight: 600;">${formatCurrency(t.amount)}</td>
-                    <td style="padding: 10px 0; color: var(--success); text-align: right; font-weight: 700;" title="Si reduces este gasto en ${(scenario.reductionPercentage || 0).toFixed(0)}%">${formatCurrency(t.savings)}</td>
                 </tr>
             `;
         });
@@ -12582,28 +12751,6 @@ function showSavingsScenarioDetails(scenarioKey) {
                         </tbody>
                     </table>
                 </div>
-            </div>
-        `;
-    }
-    
-    // Aclaración sobre los cálculos
-    content += `
-        <div style="margin-top: 24px; padding: 12px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid var(--primary);">
-            <p style="margin: 0; color: var(--text-secondary); font-size: 12px; line-height: 1.6;">
-                <strong>ℹ️ Nota importante:</strong> Los montos de "Ahorro Potencial" son estimaciones basadas en reducir estos gastos en un <strong>${scenario.reductionPercentage.toFixed(0)}%</strong> según el escenario "${scenario.name}". 
-                Estos no son ahorros reales, sino el dinero que podrías ahorrar si decides reducir o eliminar estos gastos prescindibles.
-            </p>
-        </div>
-    `;
-    
-    // Recomendaciones específicas
-    if (scenario.recommendations && scenario.recommendations.length > 0) {
-        content += `
-            <div style="margin-top: 16px; padding: 16px; background: var(--primary-light); border-radius: 8px; border: 1px solid var(--primary);">
-                <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">💡 Recomendaciones Accionables</h3>
-                <ul style="margin: 0; padding-left: 20px; color: var(--text-primary); line-height: 1.8; font-size: 13px;">
-                    ${scenario.recommendations.map(rec => `<li style="margin-bottom: 8px;"><strong>${rec.category}:</strong> ${rec.suggestion}</li>`).join('')}
-                </ul>
             </div>
         `;
     }
