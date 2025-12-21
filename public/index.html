@@ -91,8 +91,8 @@
                 <!-- Toggle Modo Oscuro/Claro -->
                 <button id="authDarkModeToggle" onclick="toggleDarkMode(); updateAuthDarkModeIcon();" style="padding: 10px; background: rgba(78, 205, 196, 0.15); border: 1px solid rgba(78, 205, 196, 0.3); border-radius: 10px; color: #4ECDC4; font-size: 20px; font-weight: 500; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);" onmouseover="this.style.background='rgba(78, 205, 196, 0.25)'; this.style.borderColor='rgba(78, 205, 196, 0.5)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(78, 205, 196, 0.15)'; this.style.borderColor='rgba(78, 205, 196, 0.3)'; this.style.transform='scale(1)'" title="Cambiar modo oscuro/claro">
                     <span id="authDarkModeIcon" style="font-size: 20px; filter: grayscale(100%);">🌙</span>
-                </button>
-            </div>
+                        </button>
+                        </div>
             <div class="auth-header">
                 <h1 style="font-size: clamp(22px, 4vw, 36px); font-weight: 800; letter-spacing: -1px; margin: 0 0 clamp(6px, 1vh, 8px) 0; background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: rainbow-flow 20s ease-in-out infinite; transition: all 0.3s ease; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));">Veedor</h1>
                 <p style="font-size: clamp(12px, 1.8vw, 16px); color: var(--text-secondary); margin: 0; font-weight: 500; transition: all 0.3s ease;">La cuenta de la vieja, pero digital.</p>
@@ -524,12 +524,12 @@
                                 <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </button>
-                    </div>
+                            </div>
                     <div class="table-controls" id="transactionFilters" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 12px; align-items: end; padding: 20px; background: var(--bg-secondary, var(--gray-50)); border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 20px;">
                         <div style="display: flex; flex-direction: column; gap: 6px;">
                             <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Buscar</label>
                             <input type="text" id="searchInput" placeholder="Buscar transacciones..." style="padding: 12px 16px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); transition: all 0.2s; width: 100%;">
-                        </div>
+                            </div>
                         <div style="display: flex; flex-direction: column; gap: 6px;">
                             <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Categoría</label>
                             <select id="filterCategory" style="padding: 12px 16px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; width: 100%;">
@@ -863,6 +863,27 @@
                                     </div>
                                     <div id="earlyPaymentCommissionInfo" style="padding: 16px; background: #FEF3C7; border-radius: 12px; border-left: 4px solid var(--warning); display: none;">
                                         <strong style="color: var(--text-primary);">Comisión:</strong> <span id="earlyPaymentCommissionAmount" style="color: var(--text-secondary);">0,00 €</span>
+                                    </div>
+                                    <div id="earlyPaymentEffect" style="display: none; margin-top: 16px; padding: 20px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.15) 100%); border-radius: 12px; border-left: 4px solid var(--success);">
+                                        <h4 style="margin: 0 0 16px 0; font-size: 16px; font-weight: 700; color: var(--text-primary);">Efecto de la Amortización</h4>
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                                            <div>
+                                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Nuevo Capital Pendiente</div>
+                                                <div id="newRemainingCapital" style="font-size: 18px; font-weight: 700; color: var(--success);">-</div>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Ahorro en Intereses</div>
+                                                <div id="interestSavings" style="font-size: 18px; font-weight: 700; color: var(--success);">-</div>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Cuotas Reducidas</div>
+                                                <div id="reducedPayments" style="font-size: 18px; font-weight: 700; color: var(--text-primary);">-</div>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Nueva Cuota Mensual</div>
+                                                <div id="newMonthlyPayment" style="font-size: 18px; font-weight: 700; color: var(--text-primary);">-</div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div style="display: flex; gap: 12px; justify-content: center; align-items: center; padding-top: 20px; border-top: 1px solid var(--border-color);">
                                         <button type="button" class="btn-secondary" onclick="closeEarlyPaymentModal()" style="flex: 1; min-width: 120px; padding: 12px 24px; font-size: 15px; font-weight: 600;">Cancelar</button>

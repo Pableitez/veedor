@@ -6228,15 +6228,86 @@ function showEarlyPaymentModal(loanId) {
     
     if (!updatedForm || !updatedAmountInput) return;
     
-    // Calcular y mostrar comisión cuando cambia el monto
+    // Calcular y mostrar comisión y efecto cuando cambia el monto
+    const effectDiv = document.getElementById('earlyPaymentEffect');
+    const newRemainingCapitalDiv = document.getElementById('newRemainingCapital');
+    const interestSavingsDiv = document.getElementById('interestSavings');
+    const reducedPaymentsDiv = document.getElementById('reducedPayments');
+    const newMonthlyPaymentDiv = document.getElementById('newMonthlyPayment');
+    
     updatedAmountInput.addEventListener('input', () => {
         const amount = parseFloat(updatedAmountInput.value) || 0;
+        
+        // Calcular y mostrar comisión
         if (amount > 0 && loan.early_payment_commission > 0 && updatedCommissionInfo && updatedCommissionAmount) {
             const commission = amount * (loan.early_payment_commission / 100);
             updatedCommissionAmount.textContent = formatCurrency(commission);
             updatedCommissionInfo.style.display = 'block';
         } else if (updatedCommissionInfo) {
             updatedCommissionInfo.style.display = 'none';
+        }
+        
+        // Calcular y mostrar efecto de la amortización
+        if (amount > 0 && amount <= remainingCapital && effectDiv) {
+            // Simular amortización con el nuevo monto
+            const simulatedEarlyPayments = [...(loan.early_payments || []), {
+                date: new Date().toISOString().split('T')[0],
+                amount: amount,
+                commission: loan.early_payment_commission > 0 ? amount * (loan.early_payment_commission / 100) : 0
+            }];
+            
+            // Calcular amortización sin el pago anticipado (escenario actual)
+            const currentAmortization = calculateAmortizationTable(
+                loan.principal,
+                loan.interest_rate,
+                loan.monthly_payment,
+                loan.start_date,
+                0,
+                loan.early_payments || []
+            );
+            
+            // Calcular amortización con el pago anticipado (escenario futuro)
+            const futureAmortization = calculateAmortizationTable(
+                loan.principal,
+                loan.interest_rate,
+                loan.monthly_payment,
+                loan.start_date,
+                0,
+                simulatedEarlyPayments
+            );
+            
+            // Calcular diferencias
+            const newRemainingCapital = futureAmortization.finalBalance;
+            const currentTotalInterest = currentAmortization.totalInterest;
+            const futureTotalInterest = futureAmortization.totalInterest;
+            const interestSavings = currentTotalInterest - futureTotalInterest;
+            
+            // Contar cuotas reducidas
+            const currentPayments = currentAmortization.table.filter(r => r.balance > 0.01).length;
+            const futurePayments = futureAmortization.table.filter(r => r.balance > 0.01).length;
+            const reducedPayments = Math.max(0, currentPayments - futurePayments);
+            
+            // Calcular nueva cuota mensual (si se reduce el plazo, la cuota puede mantenerse igual)
+            // O si se mantiene el plazo, la cuota se reduce
+            const newMonthlyPayment = loan.monthly_payment; // Por defecto se mantiene igual
+            
+            // Actualizar UI
+            if (newRemainingCapitalDiv) {
+                newRemainingCapitalDiv.textContent = formatCurrency(newRemainingCapital);
+            }
+            if (interestSavingsDiv) {
+                interestSavingsDiv.textContent = formatCurrency(Math.max(0, interestSavings));
+            }
+            if (reducedPaymentsDiv) {
+                reducedPaymentsDiv.textContent = `${reducedPayments} cuota${reducedPayments !== 1 ? 's' : ''}`;
+            }
+            if (newMonthlyPaymentDiv) {
+                newMonthlyPaymentDiv.textContent = formatCurrency(newMonthlyPayment);
+            }
+            
+            effectDiv.style.display = 'block';
+        } else if (effectDiv) {
+            effectDiv.style.display = 'none';
         }
     });
     
