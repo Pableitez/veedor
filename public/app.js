@@ -4510,12 +4510,12 @@ function updateBudgets() {
         card.className = 'envelope-card';
         card.style.borderLeft = `4px solid ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'}`;
         card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; gap: 8px;">
-                <div style="flex: 1; min-width: 0;">
-                    <h3 style="margin: 0; font-size: clamp(14px, 3vw, 16px); font-weight: 700; color: var(--text-primary) !important; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.3;">${displayName}</h3>
-                    ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500);">${getTranslation('common.patrimony', lang)}</small>` : ''}
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; gap: 12px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
+                <div style="flex: 1 1 auto; min-width: 60%; max-width: 100%;">
+                    <h3 style="margin: 0 !important; padding: 0 !important; font-size: clamp(16px, 4vw, 20px) !important; font-weight: 700 !important; color: #111827 !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important; max-width: 100% !important; box-sizing: border-box !important;">${displayName || 'Sin nombre'}</h3>
+                    ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500); margin-top: 4px; display: block;">${getTranslation('common.patrimony', lang)}</small>` : ''}
                 </div>
-                <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600; flex-shrink: 0; white-space: nowrap;">${periodLabel}</span>
+                <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600; flex-shrink: 0; white-space: nowrap; margin-top: 2px;">${periodLabel}</span>
             </div>
             <div style="margin: 12px 0;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
