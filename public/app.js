@@ -12418,9 +12418,9 @@ function calculateSavingsScenarios(months = 6) {
         // Propuestas concretas basadas en el escenario
         scenario.concreteProposals = [];
         
-        // 1. Suscripciones a cancelar (para escenarios strict, aggressive, normal)
-        if (key !== 'relaxed') {
-            const subscriptionsToCancel = identifiedSubscriptions.slice(0, key === 'strict' ? 5 : key === 'aggressive' ? 4 : key === 'normal' ? 2 : 1);
+        // 1. Suscripciones a cancelar (solo para strict y normal)
+        if (key === 'strict' || key === 'normal') {
+            const subscriptionsToCancel = identifiedSubscriptions.slice(0, key === 'strict' ? 5 : 2);
             subscriptionsToCancel.forEach(sub => {
                 scenario.concreteProposals.push({
                     type: 'cancel_subscription',
@@ -12434,25 +12434,27 @@ function calculateSavingsScenarios(months = 6) {
             });
         }
         
-        // 2. Gastos recurrentes a reducir
-        const reductions = recurringToReduce.slice(0, key === 'strict' ? 5 : key === 'aggressive' ? 4 : key === 'normal' ? 3 : 2);
-        reductions.forEach(rec => {
-            scenario.concreteProposals.push({
-                type: 'reduce_recurring',
-                title: `Reduce gasto recurrente en ${rec.category}`,
-                description: rec.suggestion,
-                action: `Reduce de ${formatCurrency(rec.amount)} a ${formatCurrency(rec.amount * 0.7)}`,
-                savings: rec.monthlySavings,
-                annualSavings: rec.monthlySavings * 12,
-                transactions: rec.transactions.slice(0, 3)
+        // 2. Gastos recurrentes a reducir (solo para strict y normal)
+        if (key === 'strict' || key === 'normal') {
+            const reductions = recurringToReduce.slice(0, key === 'strict' ? 5 : 3);
+            reductions.forEach(rec => {
+                scenario.concreteProposals.push({
+                    type: 'reduce_recurring',
+                    title: `Reduce gasto recurrente en ${rec.category}`,
+                    description: rec.suggestion,
+                    action: `Reduce de ${formatCurrency(rec.amount)} a ${formatCurrency(rec.amount * 0.7)}`,
+                    savings: rec.monthlySavings,
+                    annualSavings: rec.monthlySavings * 12,
+                    transactions: rec.transactions.slice(0, 3)
+                });
             });
-        });
+        }
         
-        // 3. Optimizaciones por categoría
+        // 3. Optimizaciones por categoría (para todos los escenarios)
         const topCategories = Object.values(categoryAnalysis)
             .filter(cat => cat.monthlySavings > 0)
             .sort((a, b) => b.monthlySavings - a.monthlySavings)
-            .slice(0, key === 'strict' ? 5 : key === 'aggressive' ? 4 : key === 'normal' ? 3 : 2);
+            .slice(0, key === 'strict' ? 5 : key === 'normal' ? 3 : 5); // smart también tiene 5
         
         topCategories.forEach(cat => {
             scenario.concreteProposals.push({
