@@ -1371,7 +1371,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
         console.log('📥 req.body completo:', JSON.stringify(req.body, null, 2));
         
         // 3. Extraer datos del body
-        const { type, date, amount, categoryGeneral, categorySpecific, envelope, budget_id, account_id, investment_id, property_id, loan_id, description } = req.body;
+        const { type, date, amount, categoryGeneral, categorySpecific, envelope, budget_id, budget_item_index, account_id, investment_id, property_id, loan_id, description } = req.body;
         
         // 4. Validar campos requeridos
         if (!type || !date || amount === undefined || amount === null || !categoryGeneral || !categorySpecific) {
