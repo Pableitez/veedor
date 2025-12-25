@@ -443,6 +443,7 @@
                                 <select id="transactionType" required>
                                     <option value="income" data-translate="transactions.income">Ingreso</option>
                                     <option value="expense" data-translate="transactions.expense">Gasto</option>
+                                    <option value="transfer">Transferencia</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -472,6 +473,22 @@
                                 <select id="envelope">
                                     <option value="" data-translate="common.none">Ninguno</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="form-row" id="transferAccountsRow" style="display: none;">
+                            <div class="form-group">
+                                <label for="transactionFromAccount">Cuenta Origen</label>
+                                <select id="transactionFromAccount">
+                                    <option value="" data-translate="common.select">Seleccionar...</option>
+                                </select>
+                                <small>Cuenta desde la que se transfiere el dinero</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="transactionToAccount">Cuenta Destino</label>
+                                <select id="transactionToAccount">
+                                    <option value="" data-translate="common.select">Seleccionar...</option>
+                                </select>
+                                <small>Cuenta hacia la que se transfiere el dinero</small>
                             </div>
                         </div>
                         <div class="form-row">

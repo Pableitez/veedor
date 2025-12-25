@@ -1680,6 +1680,8 @@ async function loadUserData() {
                     
                     // Actualizar selectores
                     updateAccountSelect();
+                    updateAccountSelect('transactionFromAccount');
+                    updateAccountSelect('transactionToAccount');
                     updatePropertySelect();
                     updatePatrimonioSelect();
                     updateLoanSelect();
@@ -1775,6 +1777,8 @@ async function loadUserDataFresh() {
         
         // Actualizar selectores después de cargar datos
         updateAccountSelect();
+        updateAccountSelect('transactionFromAccount');
+        updateAccountSelect('transactionToAccount');
         updatePropertySelect();
         updatePatrimonioSelect();
         updateLoanSelect();
@@ -2029,27 +2033,75 @@ function initializeCategories() {
     
     function updateGeneralCategories() {
         const type = transactionType ? transactionType.value : 'expense';
-        const categoryList = type === 'income' ? categories.income : categories.expense;
         
-        generalSelect.innerHTML = '<option value="">Seleccionar...</option>';
-        specificSelect.innerHTML = '<option value="">Seleccionar...</option>';
+        // Manejar campos de transferencia
+        const transferAccountsRow = document.getElementById('transferAccountsRow');
+        const categoryGeneralEl = document.getElementById('categoryGeneral');
+        const categoryRow = categoryGeneralEl ? categoryGeneralEl.closest('.form-row') : null;
+        const accountIdEl = document.getElementById('transactionAccount');
+        const accountRow = accountIdEl ? accountIdEl.closest('.form-row') : null;
         
-        categoryList.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat.id;
-            option.textContent = cat.name;
-            generalSelect.appendChild(option);
-        });
-        
-        if (filterCategory) {
-            const lang = localStorage.getItem('veedor_language') || 'es';
-            filterCategory.innerHTML = `<option value="">${getTranslation('help.allCategories', lang)}</option>`;
+        if (type === 'transfer') {
+            // Mostrar campos de transferencia y ocultar categorías
+            if (transferAccountsRow) transferAccountsRow.style.display = 'flex';
+            if (categoryRow) categoryRow.style.display = 'none';
+            if (accountRow) accountRow.style.display = 'none';
+            
+            // Hacer campos de transferencia requeridos
+            const fromAccount = document.getElementById('transactionFromAccount');
+            const toAccount = document.getElementById('transactionToAccount');
+            if (fromAccount) {
+                fromAccount.required = true;
+                // Actualizar selector de cuenta origen
+                updateAccountSelect('transactionFromAccount');
+            }
+            if (toAccount) {
+                toAccount.required = true;
+                // Actualizar selector de cuenta destino
+                updateAccountSelect('transactionToAccount');
+            }
+            
+            // Hacer campos de categoría no requeridos
+            if (generalSelect) generalSelect.required = false;
+            if (specificSelect) specificSelect.required = false;
+        } else {
+            // Ocultar campos de transferencia y mostrar categorías
+            if (transferAccountsRow) transferAccountsRow.style.display = 'none';
+            if (categoryRow) categoryRow.style.display = 'flex';
+            if (accountRow) accountRow.style.display = 'flex';
+            
+            // Hacer campos de transferencia no requeridos
+            const fromAccount = document.getElementById('transactionFromAccount');
+            const toAccount = document.getElementById('transactionToAccount');
+            if (fromAccount) fromAccount.required = false;
+            if (toAccount) toAccount.required = false;
+            
+            // Hacer campos de categoría requeridos
+            if (generalSelect) generalSelect.required = true;
+            if (specificSelect) specificSelect.required = true;
+            
+            const categoryList = type === 'income' ? categories.income : categories.expense;
+            
+            generalSelect.innerHTML = '<option value="">Seleccionar...</option>';
+            specificSelect.innerHTML = '<option value="">Seleccionar...</option>';
+            
             categoryList.forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat.id;
                 option.textContent = cat.name;
-                filterCategory.appendChild(option);
+                generalSelect.appendChild(option);
             });
+            
+            if (filterCategory) {
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                filterCategory.innerHTML = `<option value="">${getTranslation('help.allCategories', lang)}</option>`;
+                categoryList.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.name;
+                    filterCategory.appendChild(option);
+                });
+            }
         }
     }
     
@@ -3346,6 +3398,8 @@ async function addTransaction() {
         const loanIdEl = document.getElementById('transactionLoan');
         const propertyIdEl = document.getElementById('transactionProperty');
         const descriptionEl = document.getElementById('transactionDescription');
+        const fromAccountEl = document.getElementById('transactionFromAccount');
+        const toAccountEl = document.getElementById('transactionToAccount');
         
         console.log('📋 Elementos encontrados:', {
             typeEl: !!typeEl,
@@ -3358,11 +3412,13 @@ async function addTransaction() {
             investmentIdEl: !!investmentIdEl,
             loanIdEl: !!loanIdEl,
             propertyIdEl: !!propertyIdEl,
-            descriptionEl: !!descriptionEl
+            descriptionEl: !!descriptionEl,
+            fromAccountEl: !!fromAccountEl,
+            toAccountEl: !!toAccountEl
         });
         
-        if (!typeEl || !dateEl || !amountEl || !categoryGeneralEl || !categorySpecificEl) {
-            console.error('❌ ERROR: Faltan elementos del formulario');
+        if (!typeEl || !dateEl || !amountEl) {
+            console.error('❌ ERROR: Faltan elementos básicos del formulario');
             alert('Error: No se encontraron todos los campos del formulario. Recarga la página.');
             return;
         }
@@ -3370,24 +3426,49 @@ async function addTransaction() {
         const type = typeEl.value;
         const date = dateEl.value;
         const amountInput = amountEl.value;
-        const categoryGeneral = categoryGeneralEl.value;
-        const categorySpecific = categorySpecificEl.value;
+        const categoryGeneral = categoryGeneralEl ? categoryGeneralEl.value : '';
+        const categorySpecific = categorySpecificEl ? categorySpecificEl.value : '';
         const envelope = envelopeEl ? envelopeEl.value : '';
         const accountId = accountIdEl ? accountIdEl.value : '';
         const investmentId = investmentIdEl ? investmentIdEl.value : '';
         const loanId = loanIdEl ? loanIdEl.value : '';
         const propertyId = propertyIdEl ? propertyIdEl.value : '';
         const description = descriptionEl ? descriptionEl.value : '';
+        const fromAccountId = fromAccountEl ? fromAccountEl.value : '';
+        const toAccountId = toAccountEl ? toAccountEl.value : '';
         
         console.log('📋 Datos del formulario:', {
             type, date, amountInput, categoryGeneral, categorySpecific,
-            envelope, accountId, investmentId, loanId, propertyId, description
+            envelope, accountId, investmentId, loanId, propertyId, description,
+            fromAccountId, toAccountId
         });
     
         // Validaciones básicas
         console.log('✅ Validando campos requeridos...');
-        if (!type || !date || !amountInput || !categoryGeneral || !categorySpecific) {
-            console.error('❌ Validación fallida - campos requeridos faltantes');
+        
+        // Si es transferencia, validar cuentas origen y destino
+        if (type === 'transfer') {
+            if (!fromAccountId || !toAccountId) {
+                console.error('❌ Validación fallida - cuentas de transferencia faltantes');
+                showToast('Por favor selecciona cuenta origen y cuenta destino', 'warning');
+                return;
+            }
+            if (fromAccountId === toAccountId) {
+                console.error('❌ Validación fallida - cuentas iguales');
+                showToast('La cuenta origen y destino deben ser diferentes', 'warning');
+                return;
+            }
+        } else {
+            // Para income/expense, validar categorías
+            if (!categoryGeneralEl || !categorySpecificEl || !categoryGeneral || !categorySpecific) {
+                console.error('❌ Validación fallida - categorías faltantes');
+                showToast('Por favor completa todos los campos requeridos', 'warning');
+                return;
+            }
+        }
+        
+        if (!type || !date || !amountInput) {
+            console.error('❌ Validación fallida - campos básicos faltantes');
             showToast('Por favor completa todos los campos requeridos', 'warning');
             return;
         }
@@ -3412,8 +3493,118 @@ async function addTransaction() {
         const normalizedLoanId = (loanId && loanId.trim() !== '') ? loanId.trim() : null;
         const normalizedPropertyId = (propertyId && propertyId.trim() !== '') ? propertyId.trim() : null;
         const normalizedDescription = (description && description.trim() !== '') ? description.trim() : null;
+        const normalizedFromAccountId = (fromAccountId && fromAccountId.trim() !== '') ? fromAccountId.trim() : null;
+        const normalizedToAccountId = (toAccountId && toAccountId.trim() !== '') ? toAccountId.trim() : null;
         
-        // Preparar datos para enviar
+        // Si es transferencia, crear dos transacciones
+        if (type === 'transfer') {
+            console.log('💸 Procesando transferencia entre cuentas...');
+            
+            const transferDescription = normalizedDescription || `Transferencia entre cuentas`;
+            
+            // Crear transacción de salida (expense) desde cuenta origen
+            const expenseTransaction = {
+                type: 'expense',
+                date: date,
+                amount: Math.abs(amount),
+                categoryGeneral: 'other',
+                categorySpecific: 'Transferencias',
+                envelope: null,
+                account_id: normalizedFromAccountId,
+                investment_id: null,
+                loan_id: null,
+                property_id: null,
+                description: `${transferDescription} → ${getAccountName(normalizedToAccountId)}`
+            };
+            
+            // Crear transacción de entrada (income) a cuenta destino
+            const incomeTransaction = {
+                type: 'income',
+                date: date,
+                amount: Math.abs(amount),
+                categoryGeneral: 'other',
+                categorySpecific: 'Transferencias recibidas',
+                envelope: null,
+                account_id: normalizedToAccountId,
+                investment_id: null,
+                loan_id: null,
+                property_id: null,
+                description: `${transferDescription} ← ${getAccountName(normalizedFromAccountId)}`
+            };
+            
+            console.log('📤 ========================================');
+            console.log('📤 Enviando transferencia al servidor:');
+            console.log('📤 Expense:', JSON.stringify(expenseTransaction, null, 2));
+            console.log('📤 Income:', JSON.stringify(incomeTransaction, null, 2));
+            console.log('📤 ========================================');
+            
+            // Enviar ambas transacciones
+            const expenseResult = await apiRequest('/transactions', {
+                method: 'POST',
+                body: JSON.stringify(expenseTransaction)
+            });
+            
+            const incomeResult = await apiRequest('/transactions', {
+                method: 'POST',
+                body: JSON.stringify(incomeTransaction)
+            });
+            
+            console.log('✅ ========================================');
+            console.log('✅ Transferencia creada exitosamente:');
+            console.log('✅ Expense:', expenseResult);
+            console.log('✅ Income:', incomeResult);
+            console.log('✅ ========================================');
+            
+            // Actualizar saldos de ambas cuentas
+            try {
+                const fromAccount = accounts.find(acc => (acc._id || acc.id) === normalizedFromAccountId);
+                const toAccount = accounts.find(acc => (acc._id || acc.id) === normalizedToAccountId);
+                
+                if (fromAccount) {
+                    const newFromBalance = (fromAccount.balance || 0) - Math.abs(amount);
+                    await apiRequest(`/accounts/${normalizedFromAccountId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ balance: newFromBalance })
+                    });
+                    fromAccount.balance = newFromBalance;
+                }
+                
+                if (toAccount) {
+                    const newToBalance = (toAccount.balance || 0) + Math.abs(amount);
+                    await apiRequest(`/accounts/${normalizedToAccountId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ balance: newToBalance })
+                    });
+                    toAccount.balance = newToBalance;
+                }
+            } catch (error) {
+                console.error('❌ Error al actualizar saldos de cuentas:', error);
+            }
+            
+            // Recargar datos para mostrar ambas transacciones
+            await loadUserData();
+            updateDisplay();
+            
+            // Limpiar formulario
+            const transactionForm = document.getElementById('transactionForm');
+            if (transactionForm) {
+                transactionForm.reset();
+                toggleForm('transactionForm', 'toggleTransactionFormBtn');
+            }
+            
+            initializeDate();
+            initializeCategories();
+            updateEnvelopeSelect();
+            updateAccountSelect();
+            updateAccountSelect('transactionFromAccount');
+            updateAccountSelect('transactionToAccount');
+            updatePropertySelect();
+            
+            showToast('Transferencia realizada exitosamente', 'success');
+            return;
+        }
+        
+        // Preparar datos para enviar (transacciones normales)
         const transactionData = {
             type: type,
             date: date,
@@ -3550,18 +3741,36 @@ async function addTransaction() {
 
 // Agregar sobre
 async function addEnvelope() {
-    const name = document.getElementById('envelopeName').value;
-    const budget = parseFloat(document.getElementById('envelopeBudget').value);
+    const nameEl = document.getElementById('envelopeName');
+    const budgetEl = document.getElementById('envelopeBudget');
+    
+    if (!nameEl || !budgetEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
+        return;
+    }
+    
+    const name = nameEl.value.trim();
+    const budget = parseFloat(budgetEl.value);
+    
+    if (!name || isNaN(budget) || budget < 0) {
+        showToast('Por favor completa todos los campos correctamente', 'warning');
+        return;
+    }
     
     try {
+        showLoader('Creando sobre...');
         const envelope = await apiRequest('/envelopes', {
             method: 'POST',
             body: JSON.stringify({ name, budget })
         });
         
-        envelopes.push(envelope);
+        // Recargar datos desde el servidor para asegurar sincronización
+        await loadUserData();
         updateDisplay();
         resetEnvelopeForm();
+        hideLoader();
+        showToast('Sobre creado exitosamente', 'success');
+        
         // Ocultar formulario después de agregar exitosamente
         const envelopeForm = document.getElementById('envelopeForm');
         if (envelopeForm && envelopeForm.style.display !== 'none') {
@@ -3569,8 +3778,11 @@ async function addEnvelope() {
         }
         updateEnvelopeSelect();
     } catch (error) {
+        hideLoader();
         const lang = localStorage.getItem('veedor_language') || 'es';
-        alert(getTranslation('messages.envelopeError', lang) + ': ' + error.message);
+        const errorMsg = error.message || 'Error desconocido';
+        showToast('Error al crear sobre: ' + errorMsg, 'error');
+        console.error('Error al crear sobre:', error);
     }
 }
 
@@ -3582,6 +3794,8 @@ function updateDisplay() {
         updateEnvelopes();
         updateEnvelopeSelect();
         updateAccountSelect(); // Actualizar selector de cuentas
+        updateAccountSelect('transactionFromAccount'); // Actualizar selector de cuenta origen
+        updateAccountSelect('transactionToAccount'); // Actualizar selector de cuenta destino
         updateInvestmentSelect(); // Actualizar selector de inversiones
         updatePropertySelect(); // Actualizar selector de propiedades en transacciones
         updatePatrimonioSelect(); // Actualizar selector de patrimonio (para préstamos)
@@ -4114,13 +4328,23 @@ function updateAccountSelect(selectId = 'transactionAccount') {
     const select = document.getElementById(selectId);
     if (!select) return;
     
-    select.innerHTML = '<option value="">Ninguna</option>';
+    const isTransferSelect = selectId === 'transactionFromAccount' || selectId === 'transactionToAccount';
+    select.innerHTML = isTransferSelect ? '<option value="">Seleccionar...</option>' : '<option value="">Ninguna</option>';
+    
     accounts.forEach(account => {
         const option = document.createElement('option');
         option.value = account._id || account.id;
         option.textContent = `${account.name}${account.bank ? ` (${account.bank})` : ''}`;
         select.appendChild(option);
     });
+}
+
+// Función auxiliar para obtener el nombre de una cuenta
+function getAccountName(accountId) {
+    if (!accountId) return 'Cuenta desconocida';
+    const account = accounts.find(acc => (acc._id || acc.id) === accountId);
+    if (!account) return 'Cuenta desconocida';
+    return `${account.name}${account.bank ? ` (${account.bank})` : ''}`;
 }
 
 // Actualizar selector de inversiones
@@ -4515,7 +4739,7 @@ function updateBudgets() {
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; gap: 12px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
                 <div style="flex: 1 1 auto; min-width: 60%; max-width: 100%;">
-                    <h3 style="margin: 0 !important; padding: 0 !important; font-size: clamp(16px, 4vw, 20px) !important; font-weight: 700 !important; color: #111827 !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important; max-width: 100% !important; box-sizing: border-box !important;">${displayName || 'Sin nombre'}</h3>
+                    <h3 style="margin: 0 !important; padding: 0 !important; font-size: clamp(16px, 4vw, 20px) !important; font-weight: 700 !important; color: var(--text-primary) !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important; max-width: 100% !important; box-sizing: border-box !important;">${displayName || 'Sin nombre'}</h3>
                     ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500); margin-top: 4px; display: block;">${getTranslation('common.patrimony', lang)}</small>` : ''}
                 </div>
                 <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600; flex-shrink: 0; white-space: nowrap; margin-top: 2px;">${periodLabel}</span>
@@ -11185,7 +11409,7 @@ function updateMonthDashboard() {
                 const transText = transCount === 1 ? getTranslation('budgets.transaction', lang) : getTranslation('budgets.transactions', lang);
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; gap: 12px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
-                        <h5 style="font-size: clamp(16px, 4vw, 20px) !important; font-weight: 700 !important; margin: 0 !important; padding: 0 !important; color: #111827 !important; flex: 1 1 auto !important; min-width: 60% !important; max-width: 100% !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important;">${budgetDisplayName || 'Sin nombre'}</h5>
+                        <h5 style="font-size: clamp(16px, 4vw, 20px) !important; font-weight: 700 !important; margin: 0 !important; padding: 0 !important; color: var(--text-primary) !important; flex: 1 1 auto !important; min-width: 60% !important; max-width: 100% !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important;">${budgetDisplayName || 'Sin nombre'}</h5>
                         <span style="font-size: 11px; padding: 4px 8px; background: var(--success-light); border-radius: var(--radius); color: var(--success-dark); font-weight: 600; flex-shrink: 0; white-space: nowrap; margin-top: 2px;">${getTranslation('budgets.income', lang)}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
