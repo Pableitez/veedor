@@ -2043,9 +2043,9 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
         const { category_id, category_general, category_specific, patrimonio_id, property_id, amount, period_type, period_value, items } = req.body;
 
         // Validar que al menos uno de category_general/category_id, patrimonio_id o property_id esté presente
-        const hasCategory = (category_general || category_id) && category_specific;
+        const hasCategory = (category_general || category_id); // category_specific es opcional
         if ((!hasCategory && !patrimonio_id && !property_id) || amount === undefined || !period_type || !period_value) {
-            return res.status(400).json({ error: 'Debe especificar categoría general y específica, patrimonio, o propiedad, y todos los campos son requeridos' });
+            return res.status(400).json({ error: 'Debe especificar categoría general, patrimonio, o propiedad, y todos los campos son requeridos' });
         }
 
         // Construir query de búsqueda

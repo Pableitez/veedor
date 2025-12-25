@@ -1719,6 +1719,7 @@ async function loadUserDataFresh() {
             accountsData,
             patrimonioData,
             propertiesData,
+            recurringExpensesData,
             profileData
         ] = await Promise.allSettled([
             apiRequest('/transactions'),
@@ -1729,6 +1730,7 @@ async function loadUserDataFresh() {
             apiRequest('/accounts').catch(() => []),
             apiRequest('/patrimonio').catch(() => []),
             apiRequest('/properties').catch(() => []),
+            apiRequest('/recurring-expenses').catch(() => []),
             apiRequest('/user/profile').catch(() => null)
         ]);
         
@@ -4769,7 +4771,7 @@ function toggleBudgetTarget() {
         if (categoryGroup) categoryGroup.style.display = 'block';
         if (categorySpecificGroup) categorySpecificGroup.style.display = 'block';
         if (categoryGeneralSelect) categoryGeneralSelect.required = true;
-        if (categorySpecificSelect) categorySpecificSelect.required = true;
+        if (categorySpecificSelect) categorySpecificSelect.required = false; // Opcional
     } else if (targetType === 'patrimonio') {
         if (patrimonioGroup) patrimonioGroup.style.display = 'block';
         if (patrimonioSelect) {
@@ -4931,8 +4933,8 @@ async function addBudget() {
     
     // Validar campos requeridos
     if (targetType === 'category') {
-        if (!category_general || !category_specific) {
-            showToast('Por favor selecciona categoría general y específica', 'warning');
+        if (!category_general) {
+            showToast('Por favor selecciona categoría general', 'warning');
             return;
         }
     } else if (targetType === 'patrimonio') {
