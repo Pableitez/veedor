@@ -5382,9 +5382,9 @@ function getBudgetTransactionsSection(budget, isIncome) {
         
         let html = `
             <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px solid var(--border-color);">
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                    <span>📊 Transacciones (${transactionsWithMonthInfo.length})</span>
-                    <button onclick="toggleBudgetTransactions('${budgetId}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">Ver/Ocultar</button>
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <span style="flex: 1; min-width: 200px;">📊 Transacciones (${transactionsWithMonthInfo.length})</span>
+                    <button onclick="toggleBudgetTransactions('${budgetId}')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; min-height: 36px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'" ontouchstart="this.style.background='var(--primary-dark)'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--primary)'; this.style.transform='scale(1)'">Ver/Ocultar</button>
                 </div>
                 <div id="budgetTransactions_${budgetId}" style="display: block;">
         `;
@@ -5531,9 +5531,9 @@ function getBudgetTransactionsSection(budget, isIncome) {
         
         let html = `
             <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px solid var(--border-color);">
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                    <span>📊 Transacciones (${transactionsWithMonthInfo.length}) - Total: ${formatCurrency(total)}</span>
-                    <button onclick="toggleBudgetTransactions('${budgetId}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">Ver/Ocultar</button>
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <span style="flex: 1; min-width: 200px;">📊 Transacciones (${transactionsWithMonthInfo.length}) - Total: ${formatCurrency(total)}</span>
+                    <button onclick="toggleBudgetTransactions('${budgetId}')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; min-height: 36px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'" ontouchstart="this.style.background='var(--primary-dark)'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--primary)'; this.style.transform='scale(1)'">Ver/Ocultar</button>
                 </div>
                 <div id="budgetTransactions_${budgetId}" style="display: block;">
                     <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -5596,20 +5596,22 @@ function getTransactionRow(transaction, budgetId) {
     const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
     
     return `
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: ${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}; border-radius: 4px; border: 1px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}; border-left: 3px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'};">
-            <div style="flex: 1;">
-                <div style="font-size: 11px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 4px;">
-                    ${dateStr}
-                    ${isCurrentMonth ? '<span style="font-size: 9px; background: var(--primary); color: white; padding: 2px 4px; border-radius: 3px;">Este mes</span>' : ''}
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: ${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}; border-radius: 8px; border: 1px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}; border-left: 3px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'}; margin-bottom: 6px; transition: all 0.2s;" onmouseover="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.08)' : 'var(--bg-primary)'}'; this.style.borderColor='var(--primary)'" onmouseout="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}'; this.style.borderColor='${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}'">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; width: 100%;">
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
+                        ${dateStr}
+                        ${isCurrentMonth ? '<span style="font-size: 10px; background: var(--primary); color: white; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Este mes</span>' : ''}
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">${categoryName}</div>
+                    ${transaction.description ? `<div style="font-size: 11px; color: var(--text-secondary); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">${transaction.description}</div>` : ''}
                 </div>
-                <div style="font-size: 10px; color: var(--text-secondary);">${categoryName}</div>
-                ${transaction.description ? `<div style="font-size: 10px; color: var(--text-secondary); font-style: italic;">${transaction.description}</div>` : ''}
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 12px; font-weight: 600; color: ${isExpense ? 'var(--danger)' : 'var(--success)'};">
-                    ${isExpense ? '-' : '+'}${formatCurrency(amount)}
-                </span>
-                <button onclick="editTransaction('${transaction._id || transaction.id}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">Editar</button>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;">
+                    <span style="font-size: 14px; font-weight: 700; color: ${isExpense ? 'var(--danger)' : 'var(--success)'}; white-space: nowrap;">
+                        ${isExpense ? '-' : '+'}${formatCurrency(amount)}
+                    </span>
+                    <button onclick="editTransaction('${transaction._id || transaction.id}')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); min-width: 80px; min-height: 36px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.2)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.15)'" ontouchstart="this.style.background='var(--primary-dark)'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--primary)'; this.style.transform='scale(1)'">Editar</button>
+                </div>
             </div>
         </div>
     `;
