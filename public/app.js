@@ -5338,9 +5338,317 @@ function updateBudgets() {
                 <button class="btn-secondary" onclick="editBudget('${budget._id || budget.id}')" style="flex: 1;">Editar</button>
                 <button class="btn-danger" onclick="deleteBudget('${budget._id || budget.id}')" style="flex: 1;">Eliminar</button>
             </div>
+            ${getBudgetTransactionsSection(budget, isIncome)}
         `;
         grid.appendChild(card);
     });
+}
+
+// Obtener sección de transacciones del presupuesto
+function getBudgetTransactionsSection(budget, isIncome) {
+    const budgetId = budget._id || budget.id;
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Filtrar transacciones asociadas a este presupuesto
+    const budgetTransactions = transactions.filter(t => {
+        const tBudgetId = t.budget_id || t.budgetId;
+        if (!tBudgetId || tBudgetId.toString() !== budgetId.toString()) return false;
+        
+        // Verificar que esté en el período correcto
+        const tDate = new Date(t.date);
+        if (budget.period_type === 'monthly') {
+            const budgetMonth = new Date(budget.period_value + '-01');
+            return tDate.getMonth() === budgetMonth.getMonth() && 
+                   tDate.getFullYear() === budgetMonth.getFullYear();
+        } else if (budget.period_type === 'yearly') {
+            return tDate.getFullYear() === parseInt(budget.period_value);
+        } else if (budget.period_type === 'weekly') {
+            const weekStart = new Date(budget.period_value);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            return tDate >= weekStart && tDate <= weekEnd;
+        }
+        return false;
+    });
+    
+    // Agregar información de si es del mes actual
+    const transactionsWithMonthInfo = budgetTransactions.map(t => {
+        const tDate = new Date(t.date);
+        const isCurrentMonth = tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+        return { ...t, isCurrentMonth, transactionDate: tDate };
+    });
+    
+    // Ordenar por fecha (más recientes primero)
+    transactionsWithMonthInfo.sort((a, b) => b.transactionDate - a.transactionDate);
+    
+    if (transactionsWithMonthInfo.length === 0) {
+        return `
+            <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                <div style="font-size: 12px; color: var(--text-secondary); text-align: center;">No hay transacciones asociadas a este presupuesto</div>
+            </div>
+        `;
+    }
+    
+    // Si hay partidas, agrupar por partida
+    if (budget.items && budget.items.length > 0) {
+        const transactionsByItem = {};
+        const transactionsWithoutItem = [];
+        
+        transactionsWithMonthInfo.forEach(t => {
+            const itemIndex = t.budget_item_index !== null && t.budget_item_index !== undefined ? parseInt(t.budget_item_index) : null;
+            if (itemIndex !== null && budget.items[itemIndex]) {
+                if (!transactionsByItem[itemIndex]) {
+                    transactionsByItem[itemIndex] = [];
+                }
+                transactionsByItem[itemIndex].push(t);
+            } else {
+                transactionsWithoutItem.push(t);
+            }
+        });
+        
+        let html = `
+            <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>📊 Transacciones (${transactionsWithMonthInfo.length})</span>
+                    <button onclick="toggleBudgetTransactions('${budgetId}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">Ver/Ocultar</button>
+                </div>
+                <div id="budgetTransactions_${budgetId}" style="display: none;">
+        `;
+        
+        // Mostrar transacciones agrupadas por partida
+        budget.items.forEach((item, index) => {
+            const itemTransactions = transactionsByItem[index] || [];
+            if (itemTransactions.length > 0) {
+                const itemTotal = itemTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                
+                // Agrupar por mes dentro de la partida
+                const itemTransactionsByMonth = {};
+                itemTransactions.forEach(t => {
+                    const monthKey = `${t.transactionDate.getFullYear()}-${String(t.transactionDate.getMonth() + 1).padStart(2, '0')}`;
+                    const monthName = t.transactionDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                    if (!itemTransactionsByMonth[monthKey]) {
+                        itemTransactionsByMonth[monthKey] = {
+                            name: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+                            transactions: [],
+                            isCurrentMonth: t.isCurrentMonth
+                        };
+                    }
+                    itemTransactionsByMonth[monthKey].transactions.push(t);
+                });
+                
+                html += `
+                    <div style="margin-bottom: 12px; padding: 8px; background: var(--bg-primary); border-radius: 4px; border-left: 3px solid var(--primary);">
+                        <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">
+                            ${item.name} (${itemTransactions.length} transacciones) - Total: ${formatCurrency(itemTotal)}
+                        </div>
+                `;
+                
+                // Ordenar meses (más reciente primero)
+                const sortedItemMonths = Object.keys(itemTransactionsByMonth).sort().reverse();
+                
+                sortedItemMonths.forEach(monthKey => {
+                    const monthData = itemTransactionsByMonth[monthKey];
+                    const monthTotal = monthData.transactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                    
+                    html += `
+                        <div style="margin-bottom: 6px; margin-left: 4px;">
+                            <div style="font-size: 11px; font-weight: 600; color: ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--text-secondary)'}; margin-bottom: 4px; padding: 3px 6px; background: ${monthData.isCurrentMonth ? 'rgba(var(--primary-rgb), 0.1)' : 'var(--bg-secondary)'}; border-radius: 3px; border-left: 2px solid ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'};">
+                                ${monthData.isCurrentMonth ? '📅 ' : ''}${monthData.name} (${monthData.transactions.length}) - ${formatCurrency(monthTotal)}
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 8px;">
+                    `;
+                    
+                    monthData.transactions.forEach(t => {
+                        html += getTransactionRow(t, budgetId);
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                    </div>
+                `;
+            }
+        });
+        
+        // Mostrar transacciones sin partida asignada
+        if (transactionsWithoutItem.length > 0) {
+            const noItemTotal = transactionsWithoutItem.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            
+            // Agrupar por mes
+            const noItemTransactionsByMonth = {};
+            transactionsWithoutItem.forEach(t => {
+                const monthKey = `${t.transactionDate.getFullYear()}-${String(t.transactionDate.getMonth() + 1).padStart(2, '0')}`;
+                const monthName = t.transactionDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                if (!noItemTransactionsByMonth[monthKey]) {
+                    noItemTransactionsByMonth[monthKey] = {
+                        name: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+                        transactions: [],
+                        isCurrentMonth: t.isCurrentMonth
+                    };
+                }
+                noItemTransactionsByMonth[monthKey].transactions.push(t);
+            });
+            
+            html += `
+                <div style="margin-bottom: 12px; padding: 8px; background: var(--bg-primary); border-radius: 4px; border-left: 3px solid var(--gray-400);">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">
+                        Sin partida asignada (${transactionsWithoutItem.length} transacciones) - Total: ${formatCurrency(noItemTotal)}
+                    </div>
+            `;
+            
+            // Ordenar meses (más reciente primero)
+            const sortedNoItemMonths = Object.keys(noItemTransactionsByMonth).sort().reverse();
+            
+            sortedNoItemMonths.forEach(monthKey => {
+                const monthData = noItemTransactionsByMonth[monthKey];
+                const monthTotal = monthData.transactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                
+                html += `
+                    <div style="margin-bottom: 6px; margin-left: 4px;">
+                        <div style="font-size: 11px; font-weight: 600; color: ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--text-secondary)'}; margin-bottom: 4px; padding: 3px 6px; background: ${monthData.isCurrentMonth ? 'rgba(var(--primary-rgb), 0.1)' : 'var(--bg-secondary)'}; border-radius: 3px; border-left: 2px solid ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'};">
+                            ${monthData.isCurrentMonth ? '📅 ' : ''}${monthData.name} (${monthData.transactions.length}) - ${formatCurrency(monthTotal)}
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 8px;">
+                `;
+                
+                monthData.transactions.forEach(t => {
+                    html += getTransactionRow(t, budgetId);
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                </div>
+            `;
+        }
+        
+        html += `
+                </div>
+            </div>
+        `;
+        
+        return html;
+    } else {
+        // Sin partidas, agrupar por mes y mostrar todas las transacciones
+        const total = transactionsWithMonthInfo.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+        
+        // Agrupar transacciones por mes
+        const transactionsByMonth = {};
+        transactionsWithMonthInfo.forEach(t => {
+            const monthKey = `${t.transactionDate.getFullYear()}-${String(t.transactionDate.getMonth() + 1).padStart(2, '0')}`;
+            const monthName = t.transactionDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+            if (!transactionsByMonth[monthKey]) {
+                transactionsByMonth[monthKey] = {
+                    name: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+                    transactions: [],
+                    isCurrentMonth: t.isCurrentMonth
+                };
+            }
+            transactionsByMonth[monthKey].transactions.push(t);
+        });
+        
+        let html = `
+            <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>📊 Transacciones (${transactionsWithMonthInfo.length}) - Total: ${formatCurrency(total)}</span>
+                    <button onclick="toggleBudgetTransactions('${budgetId}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">Ver/Ocultar</button>
+                </div>
+                <div id="budgetTransactions_${budgetId}" style="display: none;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+        `;
+        
+        // Ordenar meses (más reciente primero)
+        const sortedMonths = Object.keys(transactionsByMonth).sort().reverse();
+        
+        sortedMonths.forEach(monthKey => {
+            const monthData = transactionsByMonth[monthKey];
+            const monthTotal = monthData.transactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            
+            html += `
+                <div style="margin-bottom: 8px;">
+                    <div style="font-size: 12px; font-weight: 600; color: ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--text-secondary)'}; margin-bottom: 6px; padding: 4px 8px; background: ${monthData.isCurrentMonth ? 'rgba(var(--primary-rgb), 0.1)' : 'var(--bg-primary)'}; border-radius: 4px; border-left: 3px solid ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'};">
+                        ${monthData.isCurrentMonth ? '📅 ' : ''}${monthData.name} (${monthData.transactions.length} transacciones) - ${formatCurrency(monthTotal)}
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 8px;">
+            `;
+            
+            monthData.transactions.forEach(t => {
+                html += getTransactionRow(t, budgetId);
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return html;
+    }
+}
+
+// Obtener fila de transacción para mostrar en presupuesto
+function getTransactionRow(transaction, budgetId) {
+    const date = transaction.transactionDate || new Date(transaction.date);
+    const amount = Math.abs(transaction.amount);
+    const isExpense = transaction.type === 'expense';
+    const isCurrentMonth = transaction.isCurrentMonth !== undefined ? transaction.isCurrentMonth : 
+        (date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear());
+    
+    // Buscar nombre de categoría
+    let categoryName = transaction.categorySpecific || transaction.category_specific || 'Sin categoría';
+    
+    // Buscar nombre de cuenta
+    let accountName = '-';
+    if (transaction.account_id) {
+        const account = accounts.find(a => (a._id || a.id) === transaction.account_id);
+        accountName = account ? account.name : '-';
+    }
+    
+    // Formatear fecha
+    const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    
+    return `
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: ${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}; border-radius: 4px; border: 1px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}; border-left: 3px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'};">
+            <div style="flex: 1;">
+                <div style="font-size: 11px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 4px;">
+                    ${dateStr}
+                    ${isCurrentMonth ? '<span style="font-size: 9px; background: var(--primary); color: white; padding: 2px 4px; border-radius: 3px;">Este mes</span>' : ''}
+                </div>
+                <div style="font-size: 10px; color: var(--text-secondary);">${categoryName}</div>
+                ${transaction.description ? `<div style="font-size: 10px; color: var(--text-secondary); font-style: italic;">${transaction.description}</div>` : ''}
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 12px; font-weight: 600; color: ${isExpense ? 'var(--danger)' : 'var(--success)'};">
+                    ${isExpense ? '-' : '+'}${formatCurrency(amount)}
+                </span>
+                <button onclick="editTransaction('${transaction._id || transaction.id}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;">Editar</button>
+            </div>
+        </div>
+    `;
+}
+
+// Toggle para mostrar/ocultar transacciones del presupuesto
+function toggleBudgetTransactions(budgetId) {
+    const transactionsDiv = document.getElementById(`budgetTransactions_${budgetId}`);
+    if (transactionsDiv) {
+        transactionsDiv.style.display = transactionsDiv.style.display === 'none' ? 'block' : 'none';
+    }
 }
 
 // Editar presupuesto - Abre modal con formulario pre-rellenado
