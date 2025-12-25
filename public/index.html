@@ -742,11 +742,18 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group" id="budgetCategoryGroup">
-                                        <label for="budgetCategory">Categoría</label>
-                                        <select id="budgetCategory">
+                                        <label for="budgetCategoryGeneral">Categoría General</label>
+                                        <select id="budgetCategoryGeneral" required>
                                             <option value="">Seleccionar categoría...</option>
                                         </select>
-                                        <small>Elige la categoría que quieres presupuestar</small>
+                                        <small>Elige la categoría general que quieres presupuestar</small>
+                                    </div>
+                                    <div class="form-group" id="budgetCategorySpecificGroup">
+                                        <label for="budgetCategorySpecific">Categoría Específica</label>
+                                        <select id="budgetCategorySpecific" required>
+                                            <option value="">Seleccionar subcategoría...</option>
+                                        </select>
+                                        <small>Elige la subcategoría específica</small>
                                     </div>
                                     <div class="form-group" id="budgetPatrimonioGroup" style="display: none;">
                                         <label for="budgetPatrimonio">Patrimonio</label>

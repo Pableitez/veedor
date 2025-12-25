@@ -3327,12 +3327,13 @@ function initializeForms() {
         
         // Actualizar categorías según tipo de presupuesto
         const budgetType = document.getElementById('budgetType');
-        const budgetCategory = document.getElementById('budgetCategory');
+        const budgetCategoryGeneral = document.getElementById('budgetCategoryGeneral');
+        const budgetCategorySpecific = document.getElementById('budgetCategorySpecific');
         
-        const updateBudgetCategories = () => {
-            if (!budgetCategory || !budgetType) return;
+        const updateBudgetGeneralCategories = () => {
+            if (!budgetCategoryGeneral || !budgetType) return;
             const lang = localStorage.getItem('veedor_language') || 'es';
-            budgetCategory.innerHTML = `<option value="">${getTranslation('help.selectCategory', lang)}</option>`;
+            budgetCategoryGeneral.innerHTML = `<option value="">${getTranslation('help.selectCategory', lang)}</option>`;
             
             const type = budgetType.value;
             const categoryList = type === 'income' ? categories.income : categories.expense;
@@ -3341,16 +3342,46 @@ function initializeForms() {
                 const option = document.createElement('option');
                 option.value = cat.id;
                 option.textContent = cat.name;
-                budgetCategory.appendChild(option);
+                budgetCategoryGeneral.appendChild(option);
             });
+            
+            // Limpiar subcategorías cuando cambia la categoría general
+            if (budgetCategorySpecific) {
+                budgetCategorySpecific.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+            }
+        };
+        
+        const updateBudgetSpecificCategories = () => {
+            if (!budgetCategorySpecific || !budgetCategoryGeneral) return;
+            const selectedGeneral = budgetCategoryGeneral.value;
+            budgetCategorySpecific.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+            
+            if (!selectedGeneral) return;
+            
+            const type = budgetType ? budgetType.value : 'expense';
+            const categoryList = type === 'income' ? categories.income : categories.expense;
+            const category = categoryList.find(c => c.id === selectedGeneral);
+            
+            if (category && category.subcategories && category.subcategories.length > 0) {
+                category.subcategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    budgetCategorySpecific.appendChild(option);
+                });
+            }
         };
         
         if (budgetType) {
-            budgetType.addEventListener('change', updateBudgetCategories);
+            budgetType.addEventListener('change', updateBudgetGeneralCategories);
+        }
+        
+        if (budgetCategoryGeneral) {
+            budgetCategoryGeneral.addEventListener('change', updateBudgetSpecificCategories);
         }
         
         // Inicializar categorías
-        updateBudgetCategories();
+        updateBudgetGeneralCategories();
     }
     
     // Formulario de perfil de usuario
@@ -4441,24 +4472,39 @@ function updatePatrimonioSelect(selectId = 'loanPatrimonio') {
 function toggleBudgetTarget() {
     const targetType = document.getElementById('budgetTargetType').value;
     const categoryGroup = document.getElementById('budgetCategoryGroup');
+    const categorySpecificGroup = document.getElementById('budgetCategorySpecificGroup');
     const patrimonioGroup = document.getElementById('budgetPatrimonioGroup');
-    const categorySelect = document.getElementById('budgetCategory');
+    const categoryGeneralSelect = document.getElementById('budgetCategoryGeneral');
+    const categorySpecificSelect = document.getElementById('budgetCategorySpecific');
     const patrimonioSelect = document.getElementById('budgetPatrimonio');
     
     if (targetType === 'category') {
-        categoryGroup.style.display = 'block';
-        patrimonioGroup.style.display = 'none';
-        categorySelect.required = true;
-        patrimonioSelect.required = false;
-        patrimonioSelect.value = '';
+        if (categoryGroup) categoryGroup.style.display = 'block';
+        if (categorySpecificGroup) categorySpecificGroup.style.display = 'block';
+        if (patrimonioGroup) patrimonioGroup.style.display = 'none';
+        if (categoryGeneralSelect) categoryGeneralSelect.required = true;
+        if (categorySpecificSelect) categorySpecificSelect.required = true;
+        if (patrimonioSelect) {
+            patrimonioSelect.required = false;
+            patrimonioSelect.value = '';
+        }
     } else {
-        categoryGroup.style.display = 'none';
-        patrimonioGroup.style.display = 'block';
-        categorySelect.required = false;
-        patrimonioSelect.required = true;
-        categorySelect.value = '';
-        // Actualizar selector de patrimonio
-        updatePatrimonioSelect('budgetPatrimonio');
+        if (categoryGroup) categoryGroup.style.display = 'none';
+        if (categorySpecificGroup) categorySpecificGroup.style.display = 'none';
+        if (patrimonioGroup) patrimonioGroup.style.display = 'block';
+        if (categoryGeneralSelect) {
+            categoryGeneralSelect.required = false;
+            categoryGeneralSelect.value = '';
+        }
+        if (categorySpecificSelect) {
+            categorySpecificSelect.required = false;
+            categorySpecificSelect.value = '';
+        }
+        if (patrimonioSelect) {
+            patrimonioSelect.required = true;
+            // Actualizar selector de patrimonio
+            updatePatrimonioSelect('budgetPatrimonio');
+        }
     }
 }
 
@@ -4467,21 +4513,33 @@ function toggleBudgetTarget() {
 // Agregar presupuesto
 async function addBudget() {
     const targetType = document.getElementById('budgetTargetType').value;
-    const category_id = targetType === 'category' ? document.getElementById('budgetCategory').value : null;
-    const patrimonio_id = targetType === 'patrimonio' ? document.getElementById('budgetPatrimonio').value : null;
+    const category_general = targetType === 'category' ? document.getElementById('budgetCategoryGeneral')?.value : null;
+    const category_specific = targetType === 'category' ? document.getElementById('budgetCategorySpecific')?.value : null;
+    const patrimonio_id = targetType === 'patrimonio' ? document.getElementById('budgetPatrimonio')?.value : null;
     const amount = parseFloat(document.getElementById('budgetAmount').value);
     const period_type = document.getElementById('budgetPeriodType').value;
     const period_value = document.getElementById('budgetPeriodValue').value;
     const duration = period_type === 'monthly' ? parseInt(document.getElementById('budgetDuration')?.value || '1') : 1;
     
-    if ((!category_id && !patrimonio_id) || !amount || !period_type || !period_value) {
-        alert('Por favor completa todos los campos');
+    // Validar campos requeridos
+    if (targetType === 'category') {
+        if (!category_general || !category_specific) {
+            showToast('Por favor selecciona categoría general y específica', 'warning');
+            return;
+        }
+    } else if (!patrimonio_id) {
+        showToast('Por favor selecciona un patrimonio', 'warning');
+        return;
+    }
+    
+    if (!amount || !period_type || !period_value) {
+        showToast('Por favor completa todos los campos', 'warning');
         return;
     }
     
     if (isNaN(amount) || amount <= 0) {
         const lang = localStorage.getItem('veedor_language') || 'es';
-        alert(getTranslation('messages.positiveAmount', lang));
+        showToast(getTranslation('messages.positiveAmount', lang), 'warning');
         return;
     }
     
@@ -4493,7 +4551,8 @@ async function addBudget() {
                 const budget = await apiRequest('/budgets', {
                     method: 'POST',
                     body: JSON.stringify({
-                        category_id: category_id || null,
+                        category_general: category_general || null,
+                        category_specific: category_specific || null,
                         patrimonio_id: patrimonio_id || null,
                         amount,
                         period_type,
@@ -4519,7 +4578,8 @@ async function addBudget() {
                         const budget = await apiRequest('/budgets', {
                             method: 'POST',
                             body: JSON.stringify({
-                                category_id: category_id || null,
+                                category_general: category_general || null,
+                                category_specific: category_specific || null,
                                 patrimonio_id: patrimonio_id || null,
                                 amount,
                                 period_type,
@@ -4562,7 +4622,9 @@ async function addBudget() {
             const budget = await apiRequest('/budgets', {
                 method: 'POST',
                 body: JSON.stringify({
-                    category_id,
+                    category_general: category_general || null,
+                    category_specific: category_specific || null,
+                    patrimonio_id: patrimonio_id || null,
                     amount,
                     period_type,
                     period_value
@@ -4659,14 +4721,15 @@ function updateBudgets() {
         });
         
         if (isInActivePeriod) {
-            const catId = t.categoryGeneral;
-            if (!transactionsByCategory[catId]) {
-                transactionsByCategory[catId] = { income: 0, expense: 0 };
+            // Usar combinación de categoría general y específica como clave
+            const catKey = `${t.categoryGeneral || ''}_${t.categorySpecific || ''}`;
+            if (!transactionsByCategory[catKey]) {
+                transactionsByCategory[catKey] = { income: 0, expense: 0, categoryGeneral: t.categoryGeneral, categorySpecific: t.categorySpecific };
             }
             if (t.type === 'income') {
-                transactionsByCategory[catId].income += t.amount;
+                transactionsByCategory[catKey].income += t.amount;
             } else {
-                transactionsByCategory[catId].expense += Math.abs(t.amount);
+                transactionsByCategory[catKey].expense += Math.abs(t.amount);
             }
         }
     });
@@ -4681,13 +4744,22 @@ function updateBudgets() {
             // Presupuesto asociado a patrimonio
             const patrimonioItem = patrimonio.find(p => (p._id || p.id) === budget.patrimonio_id);
             patrimonioName = patrimonioItem ? patrimonioItem.name : 'Patrimonio desconocido';
+        } else if (budget.category_general && budget.category_specific) {
+            // Presupuesto asociado a categoría general y específica
+            let category = categories.expense.find(c => c.id === budget.category_general);
+            if (!category) {
+                category = categories.income.find(c => c.id === budget.category_general);
+                isIncome = true;
+            }
+            const categoryNameBase = category ? category.name : budget.category_general;
+            categoryName = `${categoryNameBase} - ${budget.category_specific}`;
         } else if (budget.category_id) {
-            // Presupuesto asociado a categoría
+            // Compatibilidad con presupuestos antiguos que solo tienen category_id
             let category = categories.expense.find(c => c.id === budget.category_id);
-        if (!category) {
-            category = categories.income.find(c => c.id === budget.category_id);
-            isIncome = true;
-        }
+            if (!category) {
+                category = categories.income.find(c => c.id === budget.category_id);
+                isIncome = true;
+            }
             categoryName = category ? category.name : budget.category_id;
         }
         
@@ -4715,9 +4787,32 @@ function updateBudgets() {
             });
             actual = Math.abs(patrimonioTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
         } else {
+            // Buscar transacciones que coincidan con category_general y category_specific
+            const budgetKey = budget.category_general && budget.category_specific 
+                ? `${budget.category_general}_${budget.category_specific}`
+                : budget.category_id;
+            
+            // Si no hay coincidencia exacta, buscar solo por category_general
+            let categoryData = transactionsByCategory[budgetKey];
+            if (!categoryData && budget.category_general) {
+                // Buscar cualquier transacción con la misma categoría general
+                const matchingKey = Object.keys(transactionsByCategory).find(key => {
+                    const data = transactionsByCategory[key];
+                    return data && data.categoryGeneral === budget.category_general;
+                });
+                if (matchingKey) {
+                    categoryData = transactionsByCategory[matchingKey];
+                }
+            }
+            
+            // Fallback a category_id para compatibilidad
+            if (!categoryData && budget.category_id) {
+                categoryData = transactionsByCategory[budget.category_id];
+            }
+            
             actual = isIncome ? 
-            (transactionsByCategory[budget.category_id]?.income || 0) : 
-            (transactionsByCategory[budget.category_id]?.expense || 0);
+                (categoryData?.income || 0) : 
+                (categoryData?.expense || 0);
         }
         const difference = isIncome ? (actual - budget.amount) : (budget.amount - actual);
         const percentage = budget.amount > 0 ? (actual / budget.amount) * 100 : 0;

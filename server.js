@@ -93,7 +93,9 @@ const envelopeSchema = new mongoose.Schema({
 
 const budgetSchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    category_id: { type: String, default: null }, // ID de la categoría (opcional si hay patrimonio_id)
+    category_id: { type: String, default: null }, // ID de la categoría (deprecated, usar category_general)
+    category_general: { type: String, default: null }, // Categoría general (igual que transacciones)
+    category_specific: { type: String, default: null }, // Subcategoría específica (igual que transacciones)
     patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null }, // ID del patrimonio asociado (opcional)
     amount: { type: Number, required: true }, // Presupuesto
     period_type: { type: String, required: true, enum: ['weekly', 'monthly', 'yearly'] }, // Tipo de período
@@ -1992,11 +1994,12 @@ app.get('/api/budgets', authenticateToken, async (req, res) => {
 // Crear o actualizar presupuesto
 app.post('/api/budgets', authenticateToken, async (req, res) => {
     try {
-        const { category_id, patrimonio_id, amount, period_type, period_value } = req.body;
+        const { category_id, category_general, category_specific, patrimonio_id, amount, period_type, period_value } = req.body;
 
-        // Validar que al menos uno de category_id o patrimonio_id esté presente
-        if ((!category_id && !patrimonio_id) || amount === undefined || !period_type || !period_value) {
-            return res.status(400).json({ error: 'Debe especificar una categoría o patrimonio, y todos los campos son requeridos' });
+        // Validar que al menos uno de category_general/category_id o patrimonio_id esté presente
+        const hasCategory = (category_general || category_id) && category_specific;
+        if ((!hasCategory && !patrimonio_id) || amount === undefined || !period_type || !period_value) {
+            return res.status(400).json({ error: 'Debe especificar categoría general y específica, o patrimonio, y todos los campos son requeridos' });
         }
 
         // Construir query de búsqueda
@@ -2006,7 +2009,11 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
             period_value
         };
         
-        if (category_id) {
+        // Priorizar category_general/category_specific sobre category_id (para compatibilidad)
+        if (category_general && category_specific) {
+            query.category_general = category_general;
+            query.category_specific = category_specific;
+        } else if (category_id) {
             query.category_id = category_id;
         }
         if (patrimonio_id) {
@@ -2019,7 +2026,16 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
         if (existingBudget) {
             // Actualizar presupuesto existente
             existingBudget.amount = amount;
-            if (category_id !== undefined) existingBudget.category_id = category_id || null;
+            if (category_general && category_specific) {
+                existingBudget.category_general = category_general;
+                existingBudget.category_specific = category_specific;
+                // Mantener category_id para compatibilidad si no se proporciona category_general
+                if (!category_id) {
+                    existingBudget.category_id = category_general;
+                }
+            } else if (category_id !== undefined) {
+                existingBudget.category_id = category_id || null;
+            }
             if (patrimonio_id !== undefined) existingBudget.patrimonio_id = patrimonio_id || null;
             await existingBudget.save();
             return res.status(200).json(existingBudget);
@@ -2027,7 +2043,9 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
             // Crear nuevo presupuesto
             const budget = new Budget({
                 user_id: req.user.userId,
-                category_id: category_id || null,
+                category_general: category_general || null,
+                category_specific: category_specific || null,
+                category_id: category_id || category_general || null, // Para compatibilidad
                 patrimonio_id: patrimonio_id || null,
                 amount,
                 period_type,
