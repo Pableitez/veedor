@@ -12705,7 +12705,6 @@ function calculateSavingsScenarios(months = 6) {
         avgMonthlyEssential,
         avgMonthlyNonEssential,
         scenarios,
-        categoriesByPotential,
         period: months,
         classifiedTransactions,
         nonEssentialTransactions

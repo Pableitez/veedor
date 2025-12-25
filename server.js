@@ -1689,6 +1689,36 @@ app.post('/api/envelopes', authenticateToken, async (req, res) => {
     }
 });
 
+// Actualizar sobre
+app.put('/api/envelopes/:id', authenticateToken, async (req, res) => {
+    try {
+        const { name, budget, patrimonio_id } = req.body;
+
+        if (!name || budget === undefined) {
+            return res.status(400).json({ error: 'Nombre y presupuesto requeridos' });
+        }
+
+        const envelope = await Envelope.findOneAndUpdate(
+            { _id: req.params.id, user_id: req.user.userId },
+            { 
+                name, 
+                budget, 
+                patrimonio_id: patrimonio_id || null
+            },
+            { new: true }
+        );
+
+        if (!envelope) {
+            return res.status(404).json({ error: 'Sobre no encontrado' });
+        }
+
+        res.json(envelope);
+    } catch (error) {
+        console.error('Error actualizando sobre:', error);
+        res.status(500).json({ error: 'Error al actualizar sobre' });
+    }
+});
+
 // Eliminar sobre
 app.delete('/api/envelopes/:id', authenticateToken, async (req, res) => {
     try {
