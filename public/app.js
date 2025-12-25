@@ -5191,7 +5191,11 @@ function updateBudgets() {
         const budgetId = budget._id || budget.id;
         const budgetTransactions = transactions.filter(t => {
             const tBudgetId = t.budget_id || t.budgetId;
-            if (!tBudgetId || tBudgetId.toString() !== budgetId.toString()) return false;
+            // Comparar como strings para evitar problemas con ObjectId
+            if (!tBudgetId) return false;
+            const budgetIdStr = budgetId ? budgetId.toString() : '';
+            const tBudgetIdStr = tBudgetId ? tBudgetId.toString() : '';
+            if (budgetIdStr !== tBudgetIdStr) return false;
             
             // Verificar que esté en el período correcto
             const tDate = new Date(t.date);
@@ -5212,82 +5216,14 @@ function updateBudgets() {
         
         let actual = 0;
         
-        // Si hay transacciones asociadas directamente al presupuesto, usarlas
-        if (budgetTransactions.length > 0) {
-            actual = Math.abs(budgetTransactions
-                .filter(t => (isIncome ? t.type === 'income' : t.type === 'expense'))
-                .reduce((sum, t) => sum + Math.abs(t.amount), 0));
-        } else {
-            // Fallback: Usar lógica antigua por categoría/patrimonio/propiedad (para compatibilidad)
-            if (budget.property_id) {
-                // Calcular transacciones asociadas a la propiedad específica
-                const propertyTransactions = transactions.filter(t => {
-                    const tDate = new Date(t.date);
-                    let isInActivePeriod = false;
-                    if (budget.period_type === 'monthly') {
-                        const budgetMonth = new Date(budget.period_value + '-01');
-                        isInActivePeriod = tDate.getMonth() === budgetMonth.getMonth() && 
-                                          tDate.getFullYear() === budgetMonth.getFullYear();
-                    } else if (budget.period_type === 'yearly') {
-                        isInActivePeriod = tDate.getFullYear() === parseInt(budget.period_value);
-                    } else if (budget.period_type === 'weekly') {
-                        const weekStart = new Date(budget.period_value);
-                        const weekEnd = new Date(weekStart);
-                        weekEnd.setDate(weekEnd.getDate() + 6);
-                        isInActivePeriod = tDate >= weekStart && tDate <= weekEnd;
-                    }
-                    return isInActivePeriod && (t.property_id === budget.property_id);
-                });
-                actual = Math.abs(propertyTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
-            } else if (budget.patrimonio_id) {
-                // Calcular transacciones asociadas al patrimonio
-                const patrimonioTransactions = transactions.filter(t => {
-                    const tDate = new Date(t.date);
-                    let isInActivePeriod = false;
-                    if (budget.period_type === 'monthly') {
-                        const budgetMonth = new Date(budget.period_value + '-01');
-                        isInActivePeriod = tDate.getMonth() === budgetMonth.getMonth() && 
-                                          tDate.getFullYear() === budgetMonth.getFullYear();
-                    } else if (budget.period_type === 'yearly') {
-                        isInActivePeriod = tDate.getFullYear() === parseInt(budget.period_value);
-                    } else if (budget.period_type === 'weekly') {
-                        const weekStart = new Date(budget.period_value);
-                        const weekEnd = new Date(weekStart);
-                        weekEnd.setDate(weekEnd.getDate() + 6);
-                        isInActivePeriod = tDate >= weekStart && tDate <= weekEnd;
-                    }
-                    return isInActivePeriod && (t.property_id === budget.patrimonio_id || t.patrimonio_id === budget.patrimonio_id);
-                });
-                actual = Math.abs(patrimonioTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
-            } else {
-                // Buscar transacciones que coincidan con category_general y category_specific
-                const budgetKey = budget.category_general && budget.category_specific 
-                    ? `${budget.category_general}_${budget.category_specific}`
-                    : budget.category_id;
-                
-                // Si no hay coincidencia exacta, buscar solo por category_general
-                let categoryData = transactionsByCategory[budgetKey];
-                if (!categoryData && budget.category_general) {
-                    // Buscar cualquier transacción con la misma categoría general
-                    const matchingKey = Object.keys(transactionsByCategory).find(key => {
-                        const data = transactionsByCategory[key];
-                        return data && data.categoryGeneral === budget.category_general;
-                    });
-                    if (matchingKey) {
-                        categoryData = transactionsByCategory[matchingKey];
-                    }
-                }
-                
-                // Fallback a category_id para compatibilidad
-                if (!categoryData && budget.category_id) {
-                    categoryData = transactionsByCategory[budget.category_id];
-                }
-                
-                actual = isIncome ? 
-                    (categoryData?.income || 0) : 
-                    (categoryData?.expense || 0);
-            }
-        }
+        // SIEMPRE usar solo transacciones asociadas directamente al presupuesto (budget_id)
+        // No usar fallback por categoría para evitar confusión
+        actual = Math.abs(budgetTransactions
+            .filter(t => (isIncome ? t.type === 'income' : t.type === 'expense'))
+            .reduce((sum, t) => sum + Math.abs(t.amount), 0));
+        
+        // NOTA: Se eliminó el fallback por categoría para que solo cuente transacciones explícitamente asociadas
+        // Si no hay transacciones asociadas, actual será 0
         const difference = isIncome ? (actual - budget.amount) : (budget.amount - actual);
         const percentage = budget.amount > 0 ? (actual / budget.amount) * 100 : 0;
         const isOverBudget = isIncome ? (actual < budget.amount) : (actual > budget.amount);
