@@ -76,8 +76,7 @@ const transactionSchema = new mongoose.Schema({
     account_id: { type: String, default: null }, // ID de la cuenta bancaria asociada
     investment_id: { type: String, default: null }, // ID de la inversión asociada (si el gasto/ingreso es para una inversión)
     loan_id: { type: String, default: null }, // ID del préstamo asociado (si es una cuota)
-    property_id: { type: String, default: null }, // ID de la propiedad/piso asociada (para inversiones)
-    residence_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Residence', default: null }, // ID de la vivienda donde se vive
+    property_id: { type: String, default: null }, // ID de la propiedad/piso asociada
     description: { type: String, default: null },
     is_recurring: { type: Boolean, default: false }, // Si es una transacción recurrente
     recurring_frequency: { type: String, enum: ['weekly', 'monthly', 'yearly'], default: null }, // Frecuencia de recurrencia
@@ -102,7 +101,6 @@ const budgetSchema = new mongoose.Schema({
     category_specific: { type: String, default: null }, // Subcategoría específica (igual que transacciones)
     patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null }, // ID del patrimonio asociado (opcional)
     property_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Property', default: null }, // ID de la propiedad específica (piso alquilado, etc.)
-    residence_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Residence', default: null }, // ID de la vivienda donde se vive
     amount: { type: Number, required: true }, // Presupuesto
     period_type: { type: String, required: true, enum: ['weekly', 'monthly', 'yearly'] }, // Tipo de período
     period_value: { type: String, required: true }, // Valor del período (YYYY-MM-DD para semanal, YYYY-MM para mensual, YYYY para anual)
@@ -148,6 +146,7 @@ const recurringExpenseSchema = new mongoose.Schema({
     start_date: { type: String, required: true }, // Fecha de inicio
     end_date: { type: String, default: null }, // Fecha de fin (null = indefinido)
     property_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Property', default: null }, // ID de la propiedad asociada (ej: piso alquilado)
+    expense_group: { type: String, default: null }, // Grupo de gastos (ej: "Piso alquilado donde vivo", "Oficina", etc.)
     account_id: { type: String, default: null }, // ID de la cuenta desde la que se paga
     budget_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Budget', default: null }, // ID del presupuesto asociado
     description: { type: String, default: null },
@@ -209,18 +208,6 @@ const propertySchema = new mongoose.Schema({
     updated_at: { type: Date, default: Date.now }
 });
 
-// Schema para viviendas/residencias donde se vive (diferente de propiedades de inversión)
-const residenceSchema = new mongoose.Schema({
-    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    name: { type: String, required: true }, // Nombre de la vivienda (ej: "Piso alquilado en Madrid", "Casa principal")
-    address: { type: String, default: null }, // Dirección completa
-    type: { type: String, enum: ['rented', 'owned'], required: true }, // Alquilada o propia
-    monthly_rent: { type: Number, default: null }, // Alquiler mensual (si es alquilada)
-    description: { type: String, default: null },
-    created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now }
-});
-
 const User = mongoose.model('User', userSchema);
 const Transaction = mongoose.model('Transaction', transactionSchema);
 const Envelope = mongoose.model('Envelope', envelopeSchema);
@@ -230,7 +217,6 @@ const Investment = mongoose.model('Investment', investmentSchema);
 const Budget = mongoose.model('Budget', budgetSchema);
 const Account = mongoose.model('Account', accountSchema);
 const Property = mongoose.model('Property', propertySchema);
-const Residence = mongoose.model('Residence', residenceSchema);
 
 // ==================== MÓDULO PATRIMONIO ====================
 // Nuevo esquema unificado de Patrimonio que reemplaza Property y Asset
@@ -1405,7 +1391,6 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
         const normalizedAccountId = (account_id && typeof account_id === 'string' && account_id.trim() !== '') ? account_id.trim() : null;
         const normalizedInvestmentId = (investment_id && typeof investment_id === 'string' && investment_id.trim() !== '') ? investment_id.trim() : null;
         const normalizedPropertyId = (property_id && typeof property_id === 'string' && property_id.trim() !== '') ? property_id.trim() : null;
-        const normalizedResidenceId = (residence_id && typeof residence_id === 'string' && residence_id.trim() !== '') ? residence_id.trim() : null;
         const normalizedLoanId = (loan_id && typeof loan_id === 'string' && loan_id.trim() !== '') ? loan_id.trim() : null;
         const normalizedDescription = (description && typeof description === 'string' && description.trim() !== '') ? description.trim() : null;
         
@@ -1441,7 +1426,6 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             account_id: normalizedAccountId,
             investment_id: normalizedInvestmentId,
             property_id: normalizedPropertyId,
-            residence_id: normalizedResidenceId,
             loan_id: normalizedLoanId,
             description: normalizedDescription
         };
@@ -1660,7 +1644,6 @@ app.put('/api/transactions/:id', authenticateToken, async (req, res) => {
         transaction.account_id = normalizedAccountId;
         transaction.investment_id = normalizedInvestmentId;
         transaction.property_id = normalizedPropertyId;
-        transaction.residence_id = normalizedResidenceId;
         transaction.description = normalizedDescription;
         
         await transaction.save();
@@ -2074,9 +2057,6 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
         if (property_id) {
             query.property_id = property_id;
         }
-        if (residence_id) {
-            query.residence_id = residence_id;
-        }
 
         // Buscar presupuesto existente
         const existingBudget = await Budget.findOne(query);
@@ -2096,7 +2076,6 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
             }
             if (patrimonio_id !== undefined) existingBudget.patrimonio_id = patrimonio_id || null;
             if (property_id !== undefined) existingBudget.property_id = property_id || null;
-            if (residence_id !== undefined) existingBudget.residence_id = residence_id || null;
             await existingBudget.save();
             return res.status(200).json(existingBudget);
         } else {
@@ -2108,7 +2087,6 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
                 category_id: category_id || category_general || null, // Para compatibilidad
                 patrimonio_id: patrimonio_id || null,
                 property_id: property_id || null,
-                residence_id: residence_id || null,
                 amount,
                 period_type,
                 period_value
@@ -2479,7 +2457,7 @@ app.post('/api/recurring-expenses', authenticateToken, async (req, res) => {
             start_date,
             end_date: end_date || null,
             property_id: property_id || null,
-            residence_id: residence_id || null,
+            expense_group: expense_group || null,
             account_id: account_id || null,
             budget_id: budget_id || null,
             description: description || null,
@@ -2499,7 +2477,7 @@ app.put('/api/recurring-expenses/:id', authenticateToken, async (req, res) => {
     try {
         const { 
             name, amount, category_general, category_specific, frequency, 
-            payment_day, start_date, end_date, property_id, account_id, 
+            payment_day, start_date, end_date, property_id, expense_group, account_id, 
             budget_id, description, is_active
         } = req.body;
 
@@ -2521,7 +2499,7 @@ app.put('/api/recurring-expenses/:id', authenticateToken, async (req, res) => {
         if (start_date !== undefined) expense.start_date = start_date;
         if (end_date !== undefined) expense.end_date = end_date;
         if (property_id !== undefined) expense.property_id = property_id;
-        if (residence_id !== undefined) expense.residence_id = residence_id;
+        if (expense_group !== undefined) expense.expense_group = expense_group;
         if (account_id !== undefined) expense.account_id = account_id;
         if (budget_id !== undefined) expense.budget_id = budget_id;
         if (description !== undefined) expense.description = description;
@@ -2551,94 +2529,6 @@ app.delete('/api/recurring-expenses/:id', authenticateToken, async (req, res) =>
     } catch (error) {
         console.error('Error eliminando gasto recurrente:', error);
         res.status(500).json({ error: 'Error al eliminar gasto recurrente' });
-    }
-});
-
-// ==================== RUTAS DE VIVIENDAS/RESIDENCIAS ====================
-
-// Obtener todas las residencias del usuario
-app.get('/api/residences', authenticateToken, async (req, res) => {
-    try {
-        const residences = await Residence.find({ user_id: req.user.userId })
-            .sort({ created_at: -1 });
-        res.json(residences);
-    } catch (error) {
-        console.error('Error obteniendo residencias:', error);
-        res.status(500).json({ error: 'Error al obtener residencias' });
-    }
-});
-
-// Crear residencia
-app.post('/api/residences', authenticateToken, async (req, res) => {
-    try {
-        const { name, address, type, monthly_rent, description } = req.body;
-
-        if (!name || !type) {
-            return res.status(400).json({ error: 'El nombre y tipo de residencia son requeridos' });
-        }
-
-        const residence = new Residence({
-            user_id: req.user.userId,
-            name,
-            address: address || null,
-            type,
-            monthly_rent: monthly_rent || null,
-            description: description || null
-        });
-
-        await residence.save();
-        res.status(201).json(residence);
-    } catch (error) {
-        console.error('Error creando residencia:', error);
-        res.status(500).json({ error: 'Error al crear residencia' });
-    }
-});
-
-// Actualizar residencia
-app.put('/api/residences/:id', authenticateToken, async (req, res) => {
-    try {
-        const { name, address, type, monthly_rent, description } = req.body;
-
-        const residence = await Residence.findOne({
-            _id: req.params.id,
-            user_id: req.user.userId
-        });
-
-        if (!residence) {
-            return res.status(404).json({ error: 'Residencia no encontrada' });
-        }
-
-        if (name !== undefined) residence.name = name;
-        if (address !== undefined) residence.address = address;
-        if (type !== undefined) residence.type = type;
-        if (monthly_rent !== undefined) residence.monthly_rent = monthly_rent;
-        if (description !== undefined) residence.description = description;
-        residence.updated_at = new Date();
-
-        await residence.save();
-        res.json(residence);
-    } catch (error) {
-        console.error('Error actualizando residencia:', error);
-        res.status(500).json({ error: 'Error al actualizar residencia' });
-    }
-});
-
-// Eliminar residencia
-app.delete('/api/residences/:id', authenticateToken, async (req, res) => {
-    try {
-        const residence = await Residence.findOneAndDelete({
-            _id: req.params.id,
-            user_id: req.user.userId
-        });
-
-        if (!residence) {
-            return res.status(404).json({ error: 'Residencia no encontrada' });
-        }
-
-        res.json({ message: 'Residencia eliminada exitosamente' });
-    } catch (error) {
-        console.error('Error eliminando residencia:', error);
-        res.status(500).json({ error: 'Error al eliminar residencia' });
     }
 });
 
