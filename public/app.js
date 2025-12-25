@@ -489,6 +489,7 @@ let envelopes = [];
 let budgets = [];
 let accounts = [];
 let properties = [];
+let residences = [];
 let recurringExpenses = [];
 let patrimonio = [];
 let loans = [];
@@ -1748,6 +1749,7 @@ async function loadUserDataFresh() {
         accounts = accountsData.status === 'fulfilled' ? (accountsData.value || []) : [];
         patrimonio = patrimonioData.status === 'fulfilled' ? (patrimonioData.value || []) : [];
         properties = propertiesData.status === 'fulfilled' ? (propertiesData.value || []) : [];
+        residences = residencesData.status === 'fulfilled' ? (residencesData.value || []) : [];
         recurringExpenses = recurringExpensesData.status === 'fulfilled' ? (recurringExpensesData.value || []) : [];
         
         // Generar transacciones automáticas desde gastos recurrentes
@@ -1786,7 +1788,7 @@ async function loadUserDataFresh() {
         updateAccountSelect('transactionToAccount');
         updatePropertySelect();
         updatePropertySelect('loanProperty');
-        updatePropertySelect('recurringExpenseProperty');
+        updateResidenceSelect('recurringExpenseResidence');
         updatePatrimonioSelect();
         updateLoanSelect();
         updateAccountSelect('recurringExpenseAccount');
@@ -3549,6 +3551,7 @@ async function addTransaction() {
             investmentIdEl: !!investmentIdEl,
             loanIdEl: !!loanIdEl,
             propertyIdEl: !!propertyIdEl,
+            residenceIdEl: !!residenceIdEl,
             descriptionEl: !!descriptionEl,
             fromAccountEl: !!fromAccountEl,
             toAccountEl: !!toAccountEl
@@ -3577,7 +3580,7 @@ async function addTransaction() {
         
         console.log('📋 Datos del formulario:', {
             type, date, amountInput, categoryGeneral, categorySpecific,
-            envelope, budgetId, accountId, investmentId, loanId, propertyId, description,
+            envelope, budgetId, accountId, investmentId, loanId, propertyId, residenceId, description,
             fromAccountId, toAccountId
         });
     
@@ -3631,6 +3634,7 @@ async function addTransaction() {
         const normalizedInvestmentId = (investmentId && investmentId.trim() !== '') ? investmentId.trim() : null;
         const normalizedLoanId = (loanId && loanId.trim() !== '') ? loanId.trim() : null;
         const normalizedPropertyId = (propertyId && propertyId.trim() !== '') ? propertyId.trim() : null;
+        const normalizedResidenceId = (residenceId && residenceId.trim() !== '') ? residenceId.trim() : null;
         const normalizedDescription = (description && description.trim() !== '') ? description.trim() : null;
         const normalizedFromAccountId = (fromAccountId && fromAccountId.trim() !== '') ? fromAccountId.trim() : null;
         const normalizedToAccountId = (toAccountId && toAccountId.trim() !== '') ? toAccountId.trim() : null;
@@ -3670,6 +3674,7 @@ async function addTransaction() {
                 investment_id: null,
                 loan_id: null,
                 property_id: null,
+                residence_id: null, // Las transferencias no se asignan a residencias
                 description: `${transferDescription} ← ${getAccountName(normalizedFromAccountId)}`
             };
             
@@ -3757,6 +3762,7 @@ async function addTransaction() {
             investment_id: normalizedInvestmentId,
             loan_id: normalizedLoanId,
             property_id: normalizedPropertyId,
+            residence_id: normalizedResidenceId,
             description: normalizedDescription
         };
         
@@ -3956,9 +3962,12 @@ function updateDisplay() {
         updateInvestmentSelect(); // Actualizar selector de inversiones
         updatePropertySelect(); // Actualizar selector de propiedades en transacciones
         updatePropertySelect('loanProperty'); // Actualizar selector de propiedades en préstamos
+        updateResidenceSelect(); // Actualizar selector de residencias en transacciones
+        updateResidenceSelect('recurringExpenseResidence'); // Actualizar selector de residencias en gastos recurrentes
         updatePatrimonioSelect(); // Actualizar selector de patrimonio (para préstamos)
         updateLoanSelect(); // Actualizar selector de préstamos
         updateLoans();
+        updateResidences();
         updateRecurringExpenses();
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
@@ -4601,7 +4610,10 @@ function updateBudgetSelectForTransaction(selectId = 'transactionBudget') {
     activeBudgets.forEach(budget => {
         let displayName = '';
         
-        if (budget.property_id) {
+        if (budget.residence_id) {
+            const residence = residences.find(r => (r._id || r.id) === budget.residence_id);
+            displayName = residence ? residence.name : 'Vivienda desconocida';
+        } else if (budget.property_id) {
             const property = properties.find(p => (p._id || p.id) === budget.property_id);
             displayName = property ? property.name : 'Propiedad desconocida';
         } else if (budget.patrimonio_id) {
@@ -4662,6 +4674,31 @@ function updatePatrimonioSelect(selectId = 'loanPatrimonio') {
     }
 }
 
+// Actualizar selector de residencias
+function updateResidenceSelect(selectId = 'recurringExpenseResidence') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Ninguna</option>';
+    
+    residences.forEach(residence => {
+        const option = document.createElement('option');
+        option.value = residence._id || residence.id;
+        const typeNames = {
+            rented: 'Alquilada',
+            owned: 'Propia'
+        };
+        option.textContent = `${residence.name} (${typeNames[residence.type] || residence.type})`;
+        select.appendChild(option);
+    });
+    
+    // Restaurar valor seleccionado si existe
+    if (currentValue) {
+        select.value = currentValue;
+    }
+}
+
 // Actualizar selector de propiedades para presupuestos
 function updatePropertySelectForBudget(selectId = 'budgetProperty') {
     const select = document.getElementById(selectId);
@@ -4693,33 +4730,38 @@ function updatePropertySelectForBudget(selectId = 'budgetProperty') {
     }
 }
 
-// Función para alternar entre categoría, propiedad y patrimonio en presupuestos
+// Función para alternar entre categoría, vivienda, propiedad y patrimonio en presupuestos
 function toggleBudgetTarget() {
     const targetType = document.getElementById('budgetTargetType').value;
     const categoryGroup = document.getElementById('budgetCategoryGroup');
     const categorySpecificGroup = document.getElementById('budgetCategorySpecificGroup');
+    const residenceGroup = document.getElementById('budgetResidenceGroup');
     const propertyGroup = document.getElementById('budgetPropertyGroup');
     const patrimonioGroup = document.getElementById('budgetPatrimonioGroup');
     const categoryGeneralSelect = document.getElementById('budgetCategoryGeneral');
     const categorySpecificSelect = document.getElementById('budgetCategorySpecific');
+    const residenceSelect = document.getElementById('budgetResidence');
     const propertySelect = document.getElementById('budgetProperty');
     const patrimonioSelect = document.getElementById('budgetPatrimonio');
     
     // Ocultar todos los grupos primero
     if (categoryGroup) categoryGroup.style.display = 'none';
     if (categorySpecificGroup) categorySpecificGroup.style.display = 'none';
+    if (residenceGroup) residenceGroup.style.display = 'none';
     if (propertyGroup) propertyGroup.style.display = 'none';
     if (patrimonioGroup) patrimonioGroup.style.display = 'none';
     
     // Desactivar todos los campos requeridos
     if (categoryGeneralSelect) categoryGeneralSelect.required = false;
     if (categorySpecificSelect) categorySpecificSelect.required = false;
+    if (residenceSelect) residenceSelect.required = false;
     if (propertySelect) propertySelect.required = false;
     if (patrimonioSelect) patrimonioSelect.required = false;
     
     // Limpiar valores
     if (categoryGeneralSelect) categoryGeneralSelect.value = '';
     if (categorySpecificSelect) categorySpecificSelect.value = '';
+    if (residenceSelect) residenceSelect.value = '';
     if (propertySelect) propertySelect.value = '';
     if (patrimonioSelect) patrimonioSelect.value = '';
     
@@ -4728,6 +4770,13 @@ function toggleBudgetTarget() {
         if (categorySpecificGroup) categorySpecificGroup.style.display = 'block';
         if (categoryGeneralSelect) categoryGeneralSelect.required = true;
         if (categorySpecificSelect) categorySpecificSelect.required = true;
+    } else if (targetType === 'residence') {
+        if (residenceGroup) residenceGroup.style.display = 'block';
+        if (residenceSelect) {
+            residenceSelect.required = true;
+            // Actualizar selector de residencias
+            updateResidenceSelect('budgetResidence');
+        }
     } else if (targetType === 'property') {
         if (propertyGroup) propertyGroup.style.display = 'block';
         if (propertySelect) {
@@ -4765,6 +4814,11 @@ async function addBudget() {
             showToast('Por favor selecciona categoría general y específica', 'warning');
             return;
         }
+    } else if (targetType === 'residence') {
+        if (!residence_id) {
+            showToast('Por favor selecciona una vivienda', 'warning');
+            return;
+        }
     } else if (targetType === 'property') {
         if (!property_id) {
             showToast('Por favor selecciona una propiedad', 'warning');
@@ -4798,6 +4852,7 @@ async function addBudget() {
                     body: JSON.stringify({
                         category_general: category_general || null,
                         category_specific: category_specific || null,
+                        residence_id: residence_id || null,
                         property_id: property_id || null,
                         patrimonio_id: patrimonio_id || null,
                         amount,
@@ -4826,6 +4881,7 @@ async function addBudget() {
                             body: JSON.stringify({
                                 category_general: category_general || null,
                                 category_specific: category_specific || null,
+                                residence_id: residence_id || null,
                                 property_id: property_id || null,
                                 patrimonio_id: patrimonio_id || null,
                                 amount,
@@ -4871,6 +4927,7 @@ async function addBudget() {
                 body: JSON.stringify({
                     category_general: category_general || null,
                     category_specific: category_specific || null,
+                    residence_id: residence_id || null,
                     property_id: property_id || null,
                     patrimonio_id: patrimonio_id || null,
                     amount,
@@ -5016,10 +5073,30 @@ function updateBudgets() {
             categoryName = category ? category.name : budget.category_id;
         }
         
-        const displayName = propertyName || patrimonioName || categoryName;
+        const displayName = residenceName || propertyName || patrimonioName || categoryName;
         // Calcular transacciones según tipo de presupuesto
         let actual = 0;
-        if (budget.property_id) {
+        if (budget.residence_id) {
+            // Calcular transacciones asociadas a la vivienda
+            const residenceTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                let isInActivePeriod = false;
+                if (budget.period_type === 'monthly') {
+                    const budgetMonth = new Date(budget.period_value + '-01');
+                    isInActivePeriod = tDate.getMonth() === budgetMonth.getMonth() && 
+                                      tDate.getFullYear() === budgetMonth.getFullYear();
+                } else if (budget.period_type === 'yearly') {
+                    isInActivePeriod = tDate.getFullYear() === parseInt(budget.period_value);
+                } else if (budget.period_type === 'weekly') {
+                    const weekStart = new Date(budget.period_value);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    isInActivePeriod = tDate >= weekStart && tDate <= weekEnd;
+                }
+                return isInActivePeriod && (t.residence_id === budget.residence_id);
+            });
+            actual = Math.abs(residenceTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        } else if (budget.property_id) {
             // Calcular transacciones asociadas a la propiedad específica
             const propertyTransactions = transactions.filter(t => {
                 const tDate = new Date(t.date);
@@ -5108,6 +5185,7 @@ function updateBudgets() {
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; gap: 12px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
                 <div style="flex: 1 1 auto; min-width: 60%; max-width: 100%;">
                     <h3 style="margin: 0 !important; padding: 0 !important; font-size: clamp(16px, 4vw, 20px) !important; font-weight: 700 !important; color: var(--text-primary) !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important; max-width: 100% !important; box-sizing: border-box !important;">${displayName || 'Sin nombre'}</h3>
+                    ${residenceName ? `<small style="font-size: 11px; color: var(--gray-500); margin-top: 4px; display: block;">Vivienda</small>` : ''}
                     ${propertyName ? `<small style="font-size: 11px; color: var(--gray-500); margin-top: 4px; display: block;">Propiedad</small>` : ''}
                     ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500); margin-top: 4px; display: block;">${getTranslation('common.patrimony', lang)}</small>` : ''}
                 </div>
@@ -5683,7 +5761,7 @@ async function updateTransactionFromModal() {
                 envelope: envelope || null,
                 account_id: accountId || null,
                 investment_id: investmentId || null,
-                property_id: propertyId || null,
+                residence_id: residenceId || null,
                 description: description || null
             })
         });
@@ -5813,7 +5891,7 @@ async function updateTransaction() {
                 account_id: accountId || null,
                 investment_id: investmentId || null,
                 loan_id: loanId || null,
-                property_id: propertyId || null,
+                residence_id: residenceId || null,
                 description: description || null
             })
         });
@@ -6368,7 +6446,7 @@ async function addLoan() {
                 monthly_payment: monthlyPayment,
                 type,
                 account_id: accountId || null,
-                property_id: propertyId || null,
+                residence_id: residenceId || null,
                 patrimonio_id: patrimonioId || null,
                 description: description || null,
                 opening_commission: openingCommission,
@@ -7227,7 +7305,7 @@ async function addRecurringExpense() {
     const startDate = document.getElementById('recurringExpenseStartDate').value;
     const endDateInput = document.getElementById('recurringExpenseEndDate');
     const endDate = endDateInput && endDateInput.value ? endDateInput.value : null;
-    const propertyId = document.getElementById('recurringExpenseProperty') ? document.getElementById('recurringExpenseProperty').value : '';
+    const residenceId = document.getElementById('recurringExpenseResidence') ? document.getElementById('recurringExpenseResidence').value : '';
     const accountId = document.getElementById('recurringExpenseAccount') ? document.getElementById('recurringExpenseAccount').value : '';
     const description = document.getElementById('recurringExpenseDescription') ? document.getElementById('recurringExpenseDescription').value.trim() : '';
     
@@ -7248,7 +7326,7 @@ async function addRecurringExpense() {
                 payment_day: paymentDay,
                 start_date: startDate,
                 end_date: endDate,
-                property_id: propertyId || null,
+                residence_id: residenceId || null,
                 account_id: accountId || null,
                 description: description || null,
                 is_active: true
@@ -7432,7 +7510,7 @@ function updateRecurringExpenses() {
                 <div style="flex: 1;">
                     <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: var(--text-primary);">${expense.name}</h3>
                     <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">${categoryName}</div>
-                    ${propertyName ? `<div style="font-size: 12px; color: var(--text-tertiary); margin-top: 4px;">🏠 ${propertyName}</div>` : ''}
+                    ${residenceName ? `<div style="font-size: 12px; color: var(--text-tertiary); margin-top: 4px;">🏠 ${residenceName}</div>` : ''}
                 </div>
                 <span style="font-size: 11px; padding: 4px 8px; background: ${isActive ? 'var(--success)' : 'var(--gray-300)'}; border-radius: var(--radius); color: ${isActive ? 'white' : 'var(--text-secondary)'}; font-weight: 600;">
                     ${isActive ? 'Activo' : 'Inactivo'}
@@ -7499,12 +7577,12 @@ async function editRecurringExpense(id) {
     if (expense.end_date) {
         document.getElementById('recurringExpenseEndDate').value = expense.end_date;
     }
-    if (expense.property_id) {
-        const propertySelect = document.getElementById('recurringExpenseProperty');
-        if (propertySelect) {
-            updatePropertySelect('recurringExpenseProperty');
+    if (expense.residence_id) {
+        const residenceSelect = document.getElementById('recurringExpenseResidence');
+        if (residenceSelect) {
+            updateResidenceSelect('recurringExpenseResidence');
             setTimeout(() => {
-                propertySelect.value = expense.property_id;
+                residenceSelect.value = expense.residence_id;
             }, 100);
         }
     }
@@ -7547,7 +7625,7 @@ async function updateRecurringExpense(id) {
     const startDate = document.getElementById('recurringExpenseStartDate').value;
     const endDateInput = document.getElementById('recurringExpenseEndDate');
     const endDate = endDateInput && endDateInput.value ? endDateInput.value : null;
-    const propertyId = document.getElementById('recurringExpenseProperty') ? document.getElementById('recurringExpenseProperty').value : '';
+    const residenceId = document.getElementById('recurringExpenseResidence') ? document.getElementById('recurringExpenseResidence').value : '';
     const accountId = document.getElementById('recurringExpenseAccount') ? document.getElementById('recurringExpenseAccount').value : '';
     const description = document.getElementById('recurringExpenseDescription') ? document.getElementById('recurringExpenseDescription').value.trim() : '';
     
@@ -7568,7 +7646,7 @@ async function updateRecurringExpense(id) {
                 payment_day: paymentDay,
                 start_date: startDate,
                 end_date: endDate,
-                property_id: propertyId || null,
+                residence_id: residenceId || null,
                 account_id: accountId || null,
                 description: description || null
             })
@@ -7688,7 +7766,7 @@ async function generateRecurringExpenseTransactions() {
                 envelope: null,
                 budget_id: expense.budget_id || null,
                 account_id: expense.account_id || null,
-                property_id: expense.property_id || null,
+                residence_id: expense.residence_id || null,
                 description: expense.description || expense.name,
                 is_recurring: true,
                 recurring_frequency: expense.frequency
@@ -7784,6 +7862,225 @@ function calculateNextPaymentDate(expense, referenceDate = new Date()) {
     }
     
     return null;
+}
+
+// ==================== VIVIENDAS/RESIDENCIAS ====================
+
+// Agregar residencia
+async function addResidence() {
+    const name = document.getElementById('residenceName').value.trim();
+    const type = document.getElementById('residenceType').value;
+    const address = document.getElementById('residenceAddress') ? document.getElementById('residenceAddress').value.trim() : '';
+    const monthlyRentInput = document.getElementById('residenceMonthlyRent');
+    const monthlyRent = monthlyRentInput && monthlyRentInput.value ? parseFloat(monthlyRentInput.value) : null;
+    const description = document.getElementById('residenceDescription') ? document.getElementById('residenceDescription').value.trim() : '';
+    
+    if (!name || !type) {
+        showToast('Por favor completa todos los campos requeridos', 'warning');
+        return;
+    }
+    
+    try {
+        const residence = await apiRequest('/residences', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                type,
+                address: address || null,
+                monthly_rent: monthlyRent,
+                description: description || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        // Limpiar formulario
+        const form = document.getElementById('residenceForm');
+        if (form) {
+            form.reset();
+            toggleForm('residenceForm', 'toggleResidenceFormBtn');
+        }
+        
+        showToast('Vivienda agregada exitosamente', 'success');
+    } catch (error) {
+        console.error('Error al crear residencia:', error);
+        showToast('Error al crear residencia: ' + (error.message || 'Error desconocido'), 'error');
+    }
+}
+
+// Actualizar visualización de residencias
+function updateResidences() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const grid = document.getElementById('residencesGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (residences.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay viviendas registradas</p>';
+        return;
+    }
+    
+    residences.forEach(residence => {
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.background = 'var(--bg-primary)';
+        card.style.color = 'var(--text-primary)';
+        card.style.border = '1px solid var(--border-color)';
+        card.style.borderRadius = 'var(--radius-md)';
+        card.style.padding = '20px';
+        card.style.boxShadow = 'var(--shadow-sm)';
+        
+        const typeNames = {
+            rented: 'Alquilada',
+            owned: 'Propia'
+        };
+        
+        // Calcular gastos asociados a esta residencia
+        const residenceExpenses = transactions
+            .filter(t => t.residence_id === (residence._id || residence.id) && t.type === 'expense')
+            .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+        
+        const residenceRecurringExpenses = recurringExpenses
+            .filter(e => e.residence_id === (residence._id || residence.id) && e.is_active)
+            .reduce((sum, e) => {
+                let annual = 0;
+                if (e.frequency === 'monthly') annual = e.amount * 12;
+                else if (e.frequency === 'weekly') annual = e.amount * 52;
+                else if (e.frequency === 'yearly') annual = e.amount;
+                return sum + annual;
+            }, 0);
+        
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: var(--text-primary);">${residence.name}</h3>
+                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">${typeNames[residence.type] || residence.type}</div>
+                    ${residence.address ? `<div style="font-size: 12px; color: var(--text-tertiary); margin-top: 4px;">📍 ${residence.address}</div>` : ''}
+                </div>
+            </div>
+            <div style="margin: 12px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                    ${residence.monthly_rent ? `
+                        <div style="color: var(--text-secondary);"><strong>Alquiler Mensual:</strong></div>
+                        <div style="font-weight: 600; color: var(--text-primary); text-align: right;">${formatCurrency(residence.monthly_rent)}</div>
+                    ` : ''}
+                    <div style="color: var(--text-secondary);"><strong>Gastos Totales:</strong></div>
+                    <div style="font-weight: 600; color: var(--text-primary); text-align: right;">${formatCurrency(residenceExpenses)}</div>
+                    <div style="color: var(--text-secondary);"><strong>Gastos Recurrentes Anuales:</strong></div>
+                    <div style="font-weight: 600; color: var(--primary); text-align: right;">${formatCurrency(residenceRecurringExpenses)}</div>
+                </div>
+            </div>
+            ${residence.description ? `<div style="margin: 12px 0; font-size: 12px; color: var(--text-tertiary); font-style: italic;">${residence.description}</div>` : ''}
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 16px;">
+                <button class="btn-secondary" onclick="editResidence('${residence._id || residence.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deleteResidence('${residence._id || residence.id}')" style="flex: 1;">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Editar residencia
+async function editResidence(id) {
+    const residence = residences.find(r => (r._id || r.id) === id);
+    if (!residence) return;
+    
+    // Llenar formulario
+    document.getElementById('residenceName').value = residence.name;
+    document.getElementById('residenceType').value = residence.type;
+    if (residence.address) {
+        document.getElementById('residenceAddress').value = residence.address;
+    }
+    if (residence.monthly_rent) {
+        document.getElementById('residenceMonthlyRent').value = residence.monthly_rent;
+    }
+    if (residence.description) {
+        document.getElementById('residenceDescription').value = residence.description;
+    }
+    
+    // Mostrar formulario
+    toggleForm('residenceForm', 'toggleResidenceFormBtn');
+    
+    // Cambiar el botón submit para actualizar
+    const form = document.getElementById('residenceForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.textContent = 'Actualizar Vivienda';
+        submitBtn.onclick = async (e) => {
+            e.preventDefault();
+            await updateResidence(id);
+        };
+    }
+}
+
+// Actualizar residencia
+async function updateResidence(id) {
+    const name = document.getElementById('residenceName').value.trim();
+    const type = document.getElementById('residenceType').value;
+    const address = document.getElementById('residenceAddress') ? document.getElementById('residenceAddress').value.trim() : '';
+    const monthlyRentInput = document.getElementById('residenceMonthlyRent');
+    const monthlyRent = monthlyRentInput && monthlyRentInput.value ? parseFloat(monthlyRentInput.value) : null;
+    const description = document.getElementById('residenceDescription') ? document.getElementById('residenceDescription').value.trim() : '';
+    
+    if (!name || !type) {
+        showToast('Por favor completa todos los campos requeridos', 'warning');
+        return;
+    }
+    
+    try {
+        await apiRequest(`/residences/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name,
+                type,
+                address: address || null,
+                monthly_rent: monthlyRent,
+                description: description || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        // Restaurar botón submit
+        const form = document.getElementById('residenceForm');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.textContent = 'Agregar Vivienda';
+            submitBtn.onclick = null;
+        }
+        
+        form.reset();
+        toggleForm('residenceForm', 'toggleResidenceFormBtn');
+        
+        showToast('Vivienda actualizada exitosamente', 'success');
+    } catch (error) {
+        console.error('Error al actualizar residencia:', error);
+        showToast('Error al actualizar residencia: ' + (error.message || 'Error desconocido'), 'error');
+    }
+}
+
+// Eliminar residencia
+async function deleteResidence(id) {
+    if (!confirm('¿Estás seguro de que quieres eliminar esta vivienda?')) {
+        return;
+    }
+    
+    try {
+        await apiRequest(`/residences/${id}`, {
+            method: 'DELETE'
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        showToast('Vivienda eliminada exitosamente', 'success');
+    } catch (error) {
+        console.error('Error al eliminar residencia:', error);
+        showToast('Error al eliminar residencia: ' + (error.message || 'Error desconocido'), 'error');
+    }
 }
 
 // ==================== INVERSIONES ====================
