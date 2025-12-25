@@ -1720,6 +1720,8 @@ async function loadUserDataFresh() {
             accountsData,
             patrimonioData,
             propertiesData,
+            residencesData,
+            recurringExpensesData,
             profileData
         ] = await Promise.allSettled([
             apiRequest('/transactions'),
@@ -1730,6 +1732,8 @@ async function loadUserDataFresh() {
             apiRequest('/accounts').catch(() => []),
             apiRequest('/patrimonio').catch(() => []),
             apiRequest('/properties').catch(() => []),
+            apiRequest('/residences').catch(() => []),
+            apiRequest('/recurring-expenses').catch(() => []),
             apiRequest('/user/profile').catch(() => null)
         ]);
         
