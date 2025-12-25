@@ -3529,6 +3529,7 @@ async function addTransaction() {
         const categorySpecificEl = document.getElementById('categorySpecific');
         const envelopeEl = document.getElementById('envelope');
         const budgetIdEl = document.getElementById('transactionBudget');
+        const budgetItemIndexEl = document.getElementById('transactionBudgetItem');
         const accountIdEl = document.getElementById('transactionAccount');
         const investmentIdEl = document.getElementById('transactionInvestment');
         const loanIdEl = document.getElementById('transactionLoan');
@@ -3567,6 +3568,7 @@ async function addTransaction() {
         const categorySpecific = categorySpecificEl ? categorySpecificEl.value : '';
         const envelope = envelopeEl ? envelopeEl.value : '';
         const budgetId = budgetIdEl ? budgetIdEl.value : '';
+        const budgetItemIndex = budgetItemIndexEl && budgetItemIndexEl.value !== '' ? parseInt(budgetItemIndexEl.value) : null;
         const accountId = accountIdEl ? accountIdEl.value : '';
         const investmentId = investmentIdEl ? investmentIdEl.value : '';
         const loanId = loanIdEl ? loanIdEl.value : '';
@@ -3577,7 +3579,7 @@ async function addTransaction() {
         
         console.log('📋 Datos del formulario:', {
             type, date, amountInput, categoryGeneral, categorySpecific,
-            envelope, budgetId, accountId, investmentId, loanId, propertyId, description,
+            envelope, budgetId, budgetItemIndex, accountId, investmentId, loanId, propertyId, description,
             fromAccountId, toAccountId
         });
     
@@ -3627,6 +3629,7 @@ async function addTransaction() {
         console.log('✅ Normalizando campos opcionales...');
         const normalizedEnvelope = (envelope && envelope.trim() !== '') ? envelope.trim() : null;
         const normalizedBudgetId = (budgetId && budgetId.trim() !== '') ? budgetId.trim() : null;
+        const normalizedBudgetItemIndex = (budgetItemIndex !== null && budgetItemIndex !== undefined && !isNaN(budgetItemIndex)) ? budgetItemIndex : null;
         const normalizedAccountId = (accountId && accountId.trim() !== '') ? accountId.trim() : null;
         const normalizedInvestmentId = (investmentId && investmentId.trim() !== '') ? investmentId.trim() : null;
         const normalizedLoanId = (loanId && loanId.trim() !== '') ? loanId.trim() : null;
@@ -3650,6 +3653,7 @@ async function addTransaction() {
                 categorySpecific: 'Transferencias',
                 envelope: null,
                 budget_id: null, // Las transferencias no se asignan a presupuestos
+                budget_item_index: null,
                 account_id: normalizedFromAccountId,
                 investment_id: null,
                 loan_id: null,
@@ -3666,6 +3670,7 @@ async function addTransaction() {
                 categorySpecific: 'Transferencias recibidas',
                 envelope: null,
                 budget_id: null, // Las transferencias no se asignan a presupuestos
+                budget_item_index: null,
                 account_id: normalizedToAccountId,
                 investment_id: null,
                 loan_id: null,
@@ -3753,6 +3758,8 @@ async function addTransaction() {
             categoryGeneral: categoryGeneral,
             categorySpecific: categorySpecific,
             envelope: normalizedEnvelope,
+            budget_id: normalizedBudgetId,
+            budget_item_index: normalizedBudgetItemIndex,
             account_id: normalizedAccountId,
             investment_id: normalizedInvestmentId,
             loan_id: normalizedLoanId,
@@ -4625,10 +4632,45 @@ function updateBudgetSelectForTransaction(selectId = 'transactionBudget') {
         if (displayName) {
             const option = document.createElement('option');
             option.value = budget._id || budget.id;
-            option.textContent = `${displayName} (${formatCurrency(budget.amount)})`;
+            const itemsCount = budget.items && budget.items.length > 0 ? ` (${budget.items.length} partidas)` : '';
+            option.textContent = `${displayName} (${formatCurrency(budget.amount)})${itemsCount}`;
             select.appendChild(option);
         }
     });
+}
+
+// Actualizar selector de partidas cuando se selecciona un presupuesto
+function updateBudgetItemSelect() {
+    const budgetSelect = document.getElementById('transactionBudget');
+    const itemSelect = document.getElementById('transactionBudgetItem');
+    const itemGroup = document.getElementById('transactionBudgetItemGroup');
+    
+    if (!budgetSelect || !itemSelect || !itemGroup) return;
+    
+    const selectedBudgetId = budgetSelect.value;
+    
+    if (!selectedBudgetId) {
+        itemGroup.style.display = 'none';
+        itemSelect.innerHTML = '<option value="">Todas las partidas</option>';
+        return;
+    }
+    
+    const budget = budgets.find(b => (b._id || b.id) === selectedBudgetId);
+    
+    if (budget && budget.items && budget.items.length > 0) {
+        itemGroup.style.display = 'block';
+        itemSelect.innerHTML = '<option value="">Todas las partidas</option>';
+        
+        budget.items.forEach((item, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `${item.name} (${formatCurrency(item.amount)})`;
+            itemSelect.appendChild(option);
+        });
+    } else {
+        itemGroup.style.display = 'none';
+        itemSelect.innerHTML = '<option value="">Todas las partidas</option>';
+    }
 }
 
 // Actualizar selector de patrimonio (para préstamos)
@@ -4747,6 +4789,110 @@ function toggleBudgetTarget() {
 
 // ==================== PRESUPUESTOS ====================
 
+// Contador de partidas de presupuesto
+let budgetItemCounter = 0;
+
+// Agregar partida al presupuesto
+function addBudgetItem() {
+    const container = document.getElementById('budgetItemsContainer');
+    if (!container) return;
+    
+    const itemId = `budgetItem_${budgetItemCounter++}`;
+    const itemDiv = document.createElement('div');
+    itemDiv.id = itemId;
+    itemDiv.style.padding = '12px';
+    itemDiv.style.background = 'var(--bg-secondary)';
+    itemDiv.style.border = '1px solid var(--border-color)';
+    itemDiv.style.borderRadius = 'var(--radius)';
+    itemDiv.style.display = 'grid';
+    itemDiv.style.gridTemplateColumns = '2fr 1fr 1fr auto';
+    itemDiv.style.gap = '8px';
+    itemDiv.style.alignItems = 'end';
+    
+    itemDiv.innerHTML = `
+        <div>
+            <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Nombre de la Partida</label>
+            <input type="text" class="budget-item-name" placeholder="Ej: Alquiler" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius);">
+        </div>
+        <div>
+            <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Categoría General</label>
+            <select class="budget-item-category-general" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius);">
+                <option value="">Opcional</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Monto</label>
+            <input type="number" class="budget-item-amount" step="0.01" min="0" placeholder="0.00" required style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius);">
+        </div>
+        <div>
+            <button type="button" class="btn-danger" onclick="removeBudgetItem('${itemId}')" style="padding: 8px 12px; font-size: 12px;">×</button>
+        </div>
+    `;
+    
+    container.appendChild(itemDiv);
+    
+    // Inicializar categorías en el selector
+    const categorySelect = itemDiv.querySelector('.budget-item-category-general');
+    if (categorySelect) {
+        const budgetType = document.getElementById('budgetType')?.value || 'expense';
+        const categoryList = budgetType === 'income' ? categories.income : categories.expense;
+        categoryList.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            categorySelect.appendChild(option);
+        });
+    }
+    
+    // Actualizar total cuando cambie el monto
+    const amountInput = itemDiv.querySelector('.budget-item-amount');
+    if (amountInput) {
+        amountInput.addEventListener('input', updateBudgetItemsTotal);
+    }
+    
+    updateBudgetItemsTotal();
+    
+    // Mostrar total si hay partidas
+    const totalDiv = document.getElementById('budgetItemsTotal');
+    if (totalDiv) {
+        totalDiv.style.display = 'block';
+    }
+}
+
+// Eliminar partida del presupuesto
+function removeBudgetItem(itemId) {
+    const item = document.getElementById(itemId);
+    if (item) {
+        item.remove();
+        updateBudgetItemsTotal();
+        
+        // Ocultar total si no hay partidas
+        const container = document.getElementById('budgetItemsContainer');
+        const totalDiv = document.getElementById('budgetItemsTotal');
+        if (container && totalDiv && container.children.length === 0) {
+            totalDiv.style.display = 'none';
+        }
+    }
+}
+
+// Actualizar total de partidas
+function updateBudgetItemsTotal() {
+    const container = document.getElementById('budgetItemsContainer');
+    if (!container) return;
+    
+    let total = 0;
+    const amountInputs = container.querySelectorAll('.budget-item-amount');
+    amountInputs.forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        total += value;
+    });
+    
+    const totalAmountSpan = document.getElementById('budgetItemsTotalAmount');
+    if (totalAmountSpan) {
+        totalAmountSpan.textContent = formatCurrency(total);
+    }
+}
+
 // Agregar presupuesto
 async function addBudget() {
     const targetType = document.getElementById('budgetTargetType').value;
@@ -4758,6 +4904,38 @@ async function addBudget() {
     const period_type = document.getElementById('budgetPeriodType').value;
     const period_value = document.getElementById('budgetPeriodValue').value;
     const duration = period_type === 'monthly' ? parseInt(document.getElementById('budgetDuration')?.value || '1') : 1;
+    
+    // Recopilar partidas del presupuesto
+    const items = [];
+    const itemsContainer = document.getElementById('budgetItemsContainer');
+    if (itemsContainer) {
+        const itemDivs = itemsContainer.querySelectorAll('[id^="budgetItem_"]');
+        itemDivs.forEach(itemDiv => {
+            const name = itemDiv.querySelector('.budget-item-name')?.value.trim();
+            const categoryGeneral = itemDiv.querySelector('.budget-item-category-general')?.value || null;
+            const itemAmount = parseFloat(itemDiv.querySelector('.budget-item-amount')?.value || 0);
+            
+            if (name && itemAmount > 0) {
+                // Buscar subcategoría si hay categoría general
+                let categorySpecific = null;
+                if (categoryGeneral) {
+                    const budgetType = document.getElementById('budgetType')?.value || 'expense';
+                    const categoryList = budgetType === 'income' ? categories.income : categories.expense;
+                    const category = categoryList.find(c => c.id === categoryGeneral);
+                    if (category && category.subcategories && category.subcategories.length > 0) {
+                        categorySpecific = category.subcategories[0]; // Usar primera subcategoría por defecto
+                    }
+                }
+                
+                items.push({
+                    name,
+                    category_general: categoryGeneral,
+                    category_specific: categorySpecific,
+                    amount: itemAmount
+                });
+            }
+        });
+    }
     
     // Validar campos requeridos
     if (targetType === 'category') {
@@ -4802,7 +4980,8 @@ async function addBudget() {
                         patrimonio_id: patrimonio_id || null,
                         amount,
                         period_type,
-                        period_value
+                        period_value,
+                        items: items.length > 0 ? items : undefined
                     })
                 });
                 
@@ -4830,7 +5009,8 @@ async function addBudget() {
                                 patrimonio_id: patrimonio_id || null,
                                 amount,
                                 period_type,
-                                period_value: monthValue
+                                period_value: monthValue,
+                                items: items.length > 0 ? items : undefined
                             })
                         });
                         budgetsCreated.push(monthValue);
@@ -4875,7 +5055,8 @@ async function addBudget() {
                     patrimonio_id: patrimonio_id || null,
                     amount,
                     period_type,
-                    period_value
+                    period_value,
+                    items: items.length > 0 ? items : undefined
                 })
             });
             
@@ -5143,6 +5324,23 @@ function updateBudgets() {
             ${isOverBudget ? `
                 <div style="margin-top: 12px; padding: 12px 16px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.15) 100%); border: 1.5px solid rgba(239, 68, 68, 0.3); border-left: 4px solid var(--danger); border-radius: 10px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);">
                     <span style="color: var(--danger); font-size: 13px; font-weight: 700; flex: 1;">${isIncome ? 'Por debajo del presupuesto' : 'Presupuesto excedido'}</span>
+                </div>
+            ` : ''}
+            ${budget.items && budget.items.length > 0 ? `
+                <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">📋 Partidas del Presupuesto:</div>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        ${budget.items.map(item => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: var(--bg-primary); border-radius: 4px;">
+                                <span style="font-size: 12px; color: var(--text-secondary);">${item.name}</span>
+                                <span style="font-size: 12px; font-weight: 600; color: var(--text-primary);">${formatCurrency(item.amount)}</span>
+                            </div>
+                        `).join('')}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; margin-top: 4px; border-top: 1px solid var(--border-color); font-weight: 600;">
+                            <span style="font-size: 12px; color: var(--text-primary);">Total Partidas:</span>
+                            <span style="font-size: 13px; color: var(--primary);">${formatCurrency(budget.items.reduce((sum, item) => sum + item.amount, 0))}</span>
+                        </div>
+                    </div>
                 </div>
             ` : ''}
             <div style="margin-top: 8px; padding: 6px; background: ${isIncome ? 'var(--success-light)' : 'var(--gray-50)'}; border-radius: var(--radius); font-size: 11px; color: var(--gray-700);">

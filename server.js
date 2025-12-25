@@ -73,6 +73,7 @@ const transactionSchema = new mongoose.Schema({
     category_specific: { type: String, required: true },
     envelope: { type: String, default: null },
     budget_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Budget', default: null }, // ID del presupuesto asociado
+    budget_item_index: { type: Number, default: null }, // Índice de la partida dentro del presupuesto (0, 1, 2, etc.)
     account_id: { type: String, default: null }, // ID de la cuenta bancaria asociada
     investment_id: { type: String, default: null }, // ID de la inversión asociada (si el gasto/ingreso es para una inversión)
     loan_id: { type: String, default: null }, // ID del préstamo asociado (si es una cuota)
@@ -101,9 +102,16 @@ const budgetSchema = new mongoose.Schema({
     category_specific: { type: String, default: null }, // Subcategoría específica (igual que transacciones)
     patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null }, // ID del patrimonio asociado (opcional)
     property_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Property', default: null }, // ID de la propiedad específica (piso alquilado, etc.)
-    amount: { type: Number, required: true }, // Presupuesto
+    amount: { type: Number, required: true }, // Presupuesto total
     period_type: { type: String, required: true, enum: ['weekly', 'monthly', 'yearly'] }, // Tipo de período
     period_value: { type: String, required: true }, // Valor del período (YYYY-MM-DD para semanal, YYYY-MM para mensual, YYYY para anual)
+    items: [{ // Partidas dentro del presupuesto
+        name: { type: String, required: true }, // Nombre de la partida (ej: "Alquiler", "Facturas")
+        category_general: { type: String, default: null }, // Categoría general de la partida
+        category_specific: { type: String, default: null }, // Subcategoría específica de la partida
+        amount: { type: Number, required: true }, // Monto asignado a esta partida
+        description: { type: String, default: null }
+    }],
     created_at: { type: Date, default: Date.now }
 });
 
@@ -1388,6 +1396,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
         // 7. Normalizar campos opcionales (convertir strings vacíos a null)
         const normalizedEnvelope = (envelope && typeof envelope === 'string' && envelope.trim() !== '') ? envelope.trim() : null;
         const normalizedBudgetId = (budget_id && typeof budget_id === 'string' && budget_id.trim() !== '') ? budget_id.trim() : null;
+        const normalizedBudgetItemIndex = (budget_item_index !== undefined && budget_item_index !== null && !isNaN(budget_item_index)) ? parseInt(budget_item_index) : null;
         const normalizedAccountId = (account_id && typeof account_id === 'string' && account_id.trim() !== '') ? account_id.trim() : null;
         const normalizedInvestmentId = (investment_id && typeof investment_id === 'string' && investment_id.trim() !== '') ? investment_id.trim() : null;
         const normalizedPropertyId = (property_id && typeof property_id === 'string' && property_id.trim() !== '') ? property_id.trim() : null;
@@ -1406,6 +1415,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             category_specific: categorySpecific,
             envelope: normalizedEnvelope,
             budget_id: normalizedBudgetId,
+            budget_item_index: normalizedBudgetItemIndex,
             account_id: normalizedAccountId,
             investment_id: normalizedInvestmentId,
             property_id: normalizedPropertyId,
@@ -1423,6 +1433,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             category_specific: categorySpecific,
             envelope: normalizedEnvelope,
             budget_id: normalizedBudgetId,
+            budget_item_index: normalizedBudgetItemIndex,
             account_id: normalizedAccountId,
             investment_id: normalizedInvestmentId,
             property_id: normalizedPropertyId,
@@ -2029,7 +2040,7 @@ app.get('/api/budgets', authenticateToken, async (req, res) => {
 // Crear o actualizar presupuesto
 app.post('/api/budgets', authenticateToken, async (req, res) => {
     try {
-        const { category_id, category_general, category_specific, patrimonio_id, property_id, amount, period_type, period_value } = req.body;
+        const { category_id, category_general, category_specific, patrimonio_id, property_id, amount, period_type, period_value, items } = req.body;
 
         // Validar que al menos uno de category_general/category_id, patrimonio_id o property_id esté presente
         const hasCategory = (category_general || category_id) && category_specific;
@@ -2089,7 +2100,8 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
                 property_id: property_id || null,
                 amount,
                 period_type,
-                period_value
+                period_value,
+                items: items && Array.isArray(items) && items.length > 0 ? items : []
             });
             await budget.save();
             return res.status(201).json(budget);
