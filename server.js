@@ -72,6 +72,7 @@ const transactionSchema = new mongoose.Schema({
     category_general: { type: String, required: true },
     category_specific: { type: String, required: true },
     envelope: { type: String, default: null },
+    budget_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Budget', default: null }, // ID del presupuesto asociado
     account_id: { type: String, default: null }, // ID de la cuenta bancaria asociada
     investment_id: { type: String, default: null }, // ID de la inversión asociada (si el gasto/ingreso es para una inversión)
     loan_id: { type: String, default: null }, // ID del préstamo asociado (si es una cuota)
@@ -99,6 +100,7 @@ const budgetSchema = new mongoose.Schema({
     category_general: { type: String, default: null }, // Categoría general (igual que transacciones)
     category_specific: { type: String, default: null }, // Subcategoría específica (igual que transacciones)
     patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null }, // ID del patrimonio asociado (opcional)
+    property_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Property', default: null }, // ID de la propiedad específica (piso alquilado, etc.)
     amount: { type: Number, required: true }, // Presupuesto
     period_type: { type: String, required: true, enum: ['weekly', 'monthly', 'yearly'] }, // Tipo de período
     period_value: { type: String, required: true }, // Valor del período (YYYY-MM-DD para semanal, YYYY-MM para mensual, YYYY para anual)
@@ -116,7 +118,8 @@ const loanSchema = new mongoose.Schema({
     monthly_payment: { type: Number, required: true },
     type: { type: String, enum: ['debt', 'credit'], required: true }, // Deuda que debo o crédito que me deben
     description: { type: String, default: null },
-    patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null }, // ID de la propiedad del patrimonio asociada
+    patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null }, // ID del patrimonio asociado (vehículo, etc.)
+    property_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Property', default: null }, // ID de la propiedad asociada (hipoteca)
     opening_commission: { type: Number, default: 0 }, // Comisión de apertura
     early_payment_commission: { type: Number, default: 0 }, // Comisión por amortización anticipada (%)
     payment_frequency: { type: String, enum: ['monthly', 'quarterly', 'yearly'], default: 'monthly' },
@@ -128,6 +131,26 @@ const loanSchema = new mongoose.Schema({
         amount: { type: Number, required: true },
         commission: { type: Number, default: 0 }
     }],
+    created_at: { type: Date, default: Date.now }
+});
+
+// Schema para gastos fijos recurrentes (alquiler, suscripciones, etc.)
+const recurringExpenseSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true }, // Ej: "Alquiler piso principal"
+    amount: { type: Number, required: true }, // Monto del gasto
+    category_general: { type: String, required: true }, // Categoría general
+    category_specific: { type: String, required: true }, // Subcategoría específica
+    frequency: { type: String, enum: ['weekly', 'monthly', 'yearly'], required: true, default: 'monthly' }, // Frecuencia
+    payment_day: { type: Number, default: 1 }, // Día del mes/semana en que se paga
+    start_date: { type: String, required: true }, // Fecha de inicio
+    end_date: { type: String, default: null }, // Fecha de fin (null = indefinido)
+    property_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Property', default: null }, // ID de la propiedad asociada (ej: piso alquilado)
+    account_id: { type: String, default: null }, // ID de la cuenta desde la que se paga
+    budget_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Budget', default: null }, // ID del presupuesto asociado
+    description: { type: String, default: null },
+    is_active: { type: Boolean, default: true }, // Si está activo o pausado
+    last_generated_date: { type: String, default: null }, // Última fecha en que se generó una transacción
     created_at: { type: Date, default: Date.now }
 });
 
@@ -188,6 +211,7 @@ const User = mongoose.model('User', userSchema);
 const Transaction = mongoose.model('Transaction', transactionSchema);
 const Envelope = mongoose.model('Envelope', envelopeSchema);
 const Loan = mongoose.model('Loan', loanSchema);
+const RecurringExpense = mongoose.model('RecurringExpense', recurringExpenseSchema);
 const Investment = mongoose.model('Investment', investmentSchema);
 const Budget = mongoose.model('Budget', budgetSchema);
 const Account = mongoose.model('Account', accountSchema);
@@ -1338,7 +1362,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
         console.log('📥 req.body completo:', JSON.stringify(req.body, null, 2));
         
         // 3. Extraer datos del body
-        const { type, date, amount, categoryGeneral, categorySpecific, envelope, account_id, investment_id, property_id, loan_id, description } = req.body;
+        const { type, date, amount, categoryGeneral, categorySpecific, envelope, budget_id, account_id, investment_id, property_id, loan_id, description } = req.body;
         
         // 4. Validar campos requeridos
         if (!type || !date || amount === undefined || amount === null || !categoryGeneral || !categorySpecific) {
@@ -1362,6 +1386,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
         
         // 7. Normalizar campos opcionales (convertir strings vacíos a null)
         const normalizedEnvelope = (envelope && typeof envelope === 'string' && envelope.trim() !== '') ? envelope.trim() : null;
+        const normalizedBudgetId = (budget_id && typeof budget_id === 'string' && budget_id.trim() !== '') ? budget_id.trim() : null;
         const normalizedAccountId = (account_id && typeof account_id === 'string' && account_id.trim() !== '') ? account_id.trim() : null;
         const normalizedInvestmentId = (investment_id && typeof investment_id === 'string' && investment_id.trim() !== '') ? investment_id.trim() : null;
         const normalizedPropertyId = (property_id && typeof property_id === 'string' && property_id.trim() !== '') ? property_id.trim() : null;
@@ -1379,6 +1404,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             category_general: categoryGeneral,
             category_specific: categorySpecific,
             envelope: normalizedEnvelope,
+            budget_id: normalizedBudgetId,
             account_id: normalizedAccountId,
             investment_id: normalizedInvestmentId,
             property_id: normalizedPropertyId,
@@ -1395,6 +1421,7 @@ app.post('/api/transactions', authenticateToken, async (req, res) => {
             category_general: categoryGeneral,
             category_specific: categorySpecific,
             envelope: normalizedEnvelope,
+            budget_id: normalizedBudgetId,
             account_id: normalizedAccountId,
             investment_id: normalizedInvestmentId,
             property_id: normalizedPropertyId,
@@ -1766,7 +1793,7 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
         const { 
             name, principal, interest_rate, tae, start_date, end_date, monthly_payment, type, description,
             opening_commission, early_payment_commission, payment_frequency, payment_day, account_id,
-            patrimonio_id
+            patrimonio_id, property_id
         } = req.body;
 
         if (!name || principal === undefined || interest_rate === undefined || !start_date || !end_date || monthly_payment === undefined || !type) {
@@ -1785,6 +1812,7 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
             type,
             description: description || null,
             patrimonio_id: patrimonio_id || null,
+            property_id: property_id || null,
             opening_commission: opening_commission || 0,
             early_payment_commission: early_payment_commission || 0,
             payment_frequency: payment_frequency || 'monthly',
@@ -2000,12 +2028,12 @@ app.get('/api/budgets', authenticateToken, async (req, res) => {
 // Crear o actualizar presupuesto
 app.post('/api/budgets', authenticateToken, async (req, res) => {
     try {
-        const { category_id, category_general, category_specific, patrimonio_id, amount, period_type, period_value } = req.body;
+        const { category_id, category_general, category_specific, patrimonio_id, property_id, amount, period_type, period_value } = req.body;
 
-        // Validar que al menos uno de category_general/category_id o patrimonio_id esté presente
+        // Validar que al menos uno de category_general/category_id, patrimonio_id o property_id esté presente
         const hasCategory = (category_general || category_id) && category_specific;
-        if ((!hasCategory && !patrimonio_id) || amount === undefined || !period_type || !period_value) {
-            return res.status(400).json({ error: 'Debe especificar categoría general y específica, o patrimonio, y todos los campos son requeridos' });
+        if ((!hasCategory && !patrimonio_id && !property_id) || amount === undefined || !period_type || !period_value) {
+            return res.status(400).json({ error: 'Debe especificar categoría general y específica, patrimonio, o propiedad, y todos los campos son requeridos' });
         }
 
         // Construir query de búsqueda
@@ -2025,6 +2053,9 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
         if (patrimonio_id) {
             query.patrimonio_id = patrimonio_id;
         }
+        if (property_id) {
+            query.property_id = property_id;
+        }
 
         // Buscar presupuesto existente
         const existingBudget = await Budget.findOne(query);
@@ -2043,6 +2074,7 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
                 existingBudget.category_id = category_id || null;
             }
             if (patrimonio_id !== undefined) existingBudget.patrimonio_id = patrimonio_id || null;
+            if (property_id !== undefined) existingBudget.property_id = property_id || null;
             await existingBudget.save();
             return res.status(200).json(existingBudget);
         } else {
@@ -2053,6 +2085,7 @@ app.post('/api/budgets', authenticateToken, async (req, res) => {
                 category_specific: category_specific || null,
                 category_id: category_id || category_general || null, // Para compatibilidad
                 patrimonio_id: patrimonio_id || null,
+                property_id: property_id || null,
                 amount,
                 period_type,
                 period_value
@@ -2382,6 +2415,117 @@ app.delete('/api/properties/:id', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error eliminando propiedad:', error);
         res.status(500).json({ error: 'Error al eliminar propiedad' });
+    }
+});
+
+// ==================== RUTAS DE GASTOS RECURRENTES ====================
+
+// Obtener todos los gastos recurrentes del usuario
+app.get('/api/recurring-expenses', authenticateToken, async (req, res) => {
+    try {
+        const expenses = await RecurringExpense.find({ user_id: req.user.userId })
+            .sort({ created_at: -1 });
+        res.json(expenses);
+    } catch (error) {
+        console.error('Error obteniendo gastos recurrentes:', error);
+        res.status(500).json({ error: 'Error al obtener gastos recurrentes' });
+    }
+});
+
+// Crear gasto recurrente
+app.post('/api/recurring-expenses', authenticateToken, async (req, res) => {
+    try {
+        const { 
+            name, amount, category_general, category_specific, frequency, 
+            payment_day, start_date, end_date, property_id, account_id, 
+            budget_id, description, is_active
+        } = req.body;
+
+        if (!name || amount === undefined || !category_general || !category_specific || !frequency || !start_date) {
+            return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes' });
+        }
+
+        const expense = new RecurringExpense({
+            user_id: req.user.userId,
+            name,
+            amount,
+            category_general,
+            category_specific,
+            frequency,
+            payment_day: payment_day || 1,
+            start_date,
+            end_date: end_date || null,
+            property_id: property_id || null,
+            account_id: account_id || null,
+            budget_id: budget_id || null,
+            description: description || null,
+            is_active: is_active !== undefined ? is_active : true
+        });
+
+        await expense.save();
+        res.status(201).json(expense);
+    } catch (error) {
+        console.error('Error creando gasto recurrente:', error);
+        res.status(500).json({ error: 'Error al crear gasto recurrente' });
+    }
+});
+
+// Actualizar gasto recurrente
+app.put('/api/recurring-expenses/:id', authenticateToken, async (req, res) => {
+    try {
+        const { 
+            name, amount, category_general, category_specific, frequency, 
+            payment_day, start_date, end_date, property_id, account_id, 
+            budget_id, description, is_active
+        } = req.body;
+
+        const expense = await RecurringExpense.findOne({
+            _id: req.params.id,
+            user_id: req.user.userId
+        });
+
+        if (!expense) {
+            return res.status(404).json({ error: 'Gasto recurrente no encontrado' });
+        }
+
+        if (name !== undefined) expense.name = name;
+        if (amount !== undefined) expense.amount = amount;
+        if (category_general !== undefined) expense.category_general = category_general;
+        if (category_specific !== undefined) expense.category_specific = category_specific;
+        if (frequency !== undefined) expense.frequency = frequency;
+        if (payment_day !== undefined) expense.payment_day = payment_day;
+        if (start_date !== undefined) expense.start_date = start_date;
+        if (end_date !== undefined) expense.end_date = end_date;
+        if (property_id !== undefined) expense.property_id = property_id;
+        if (account_id !== undefined) expense.account_id = account_id;
+        if (budget_id !== undefined) expense.budget_id = budget_id;
+        if (description !== undefined) expense.description = description;
+        if (is_active !== undefined) expense.is_active = is_active;
+
+        await expense.save();
+        res.json(expense);
+    } catch (error) {
+        console.error('Error actualizando gasto recurrente:', error);
+        res.status(500).json({ error: 'Error al actualizar gasto recurrente' });
+    }
+});
+
+// Eliminar gasto recurrente
+app.delete('/api/recurring-expenses/:id', authenticateToken, async (req, res) => {
+    try {
+        const expense = await RecurringExpense.findOneAndDelete({
+            _id: req.params.id,
+            user_id: req.user.userId
+        });
+
+        if (!expense) {
+            return res.status(404).json({ error: 'Gasto recurrente no encontrado' });
+        }
+
+        res.json({ message: 'Gasto recurrente eliminado exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando gasto recurrente:', error);
+        res.status(500).json({ error: 'Error al eliminar gasto recurrente' });
     }
 });
 

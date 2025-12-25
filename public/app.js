@@ -489,6 +489,7 @@ let envelopes = [];
 let budgets = [];
 let accounts = [];
 let properties = [];
+let recurringExpenses = [];
 let patrimonio = [];
 let loans = [];
 let investments = [];
@@ -1747,6 +1748,10 @@ async function loadUserDataFresh() {
         accounts = accountsData.status === 'fulfilled' ? (accountsData.value || []) : [];
         patrimonio = patrimonioData.status === 'fulfilled' ? (patrimonioData.value || []) : [];
         properties = propertiesData.status === 'fulfilled' ? (propertiesData.value || []) : [];
+        recurringExpenses = recurringExpensesData.status === 'fulfilled' ? (recurringExpensesData.value || []) : [];
+        
+        // Generar transacciones automáticas desde gastos recurrentes
+        await generateRecurringExpenseTransactions();
         
         // Procesar perfil
         if (profileData.status === 'fulfilled' && profileData.value) {
@@ -1780,9 +1785,13 @@ async function loadUserDataFresh() {
         updateAccountSelect('transactionFromAccount');
         updateAccountSelect('transactionToAccount');
         updatePropertySelect();
+        updatePropertySelect('loanProperty');
+        updatePropertySelect('recurringExpenseProperty');
         updatePatrimonioSelect();
         updateLoanSelect();
+        updateAccountSelect('recurringExpenseAccount');
         updateInvestmentSelect();
+        updateBudgetSelectForTransaction();
         
         // Guardar en cache
         const cacheKey = `veedor_data_cache_${currentUser}`;
@@ -2752,11 +2761,61 @@ function initializeForms() {
         console.error('❌ ERROR: No se encontró el formulario propertyForm');
     }
     
+    // Formulario de gastos recurrentes
+    const recurringExpenseForm = document.getElementById('recurringExpenseForm');
+    if (recurringExpenseForm) {
+        // Inicializar categorías cuando se muestra el formulario
+        const categoryGeneralSelect = document.getElementById('recurringExpenseCategoryGeneral');
+        const categorySpecificSelect = document.getElementById('recurringExpenseCategorySpecific');
+        
+        if (categoryGeneralSelect) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            categoryGeneralSelect.innerHTML = '<option value="">Seleccionar categoría...</option>';
+            categories.expense.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categoryGeneralSelect.appendChild(option);
+            });
+            
+            categoryGeneralSelect.addEventListener('change', () => {
+                if (categorySpecificSelect) {
+                    categorySpecificSelect.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+                    const selectedGeneral = categoryGeneralSelect.value;
+                    if (selectedGeneral) {
+                        const category = categories.expense.find(c => c.id === selectedGeneral);
+                        if (category && category.subcategories) {
+                            category.subcategories.forEach(sub => {
+                                const option = document.createElement('option');
+                                option.value = sub;
+                                option.textContent = sub;
+                                categorySpecificSelect.appendChild(option);
+                            });
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Inicializar fecha de inicio con hoy
+        const startDateInput = document.getElementById('recurringExpenseStartDate');
+        if (startDateInput) {
+            const today = new Date();
+            startDateInput.value = today.toISOString().split('T')[0];
+        }
+        
+        recurringExpenseForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addRecurringExpense();
+        });
+    }
+    
     // Formulario de préstamos
     const loanForm = document.getElementById('loanForm');
     if (loanForm) {
         // Actualizar selectores cuando se muestra el formulario
         updatePatrimonioSelect('loanPatrimonio');
+        updatePropertySelect('loanProperty');
         updateAccountSelect('loanAccount');
         
         loanForm.addEventListener('submit', async (e) => {
@@ -3469,6 +3528,7 @@ async function addTransaction() {
         const categoryGeneralEl = document.getElementById('categoryGeneral');
         const categorySpecificEl = document.getElementById('categorySpecific');
         const envelopeEl = document.getElementById('envelope');
+        const budgetIdEl = document.getElementById('transactionBudget');
         const accountIdEl = document.getElementById('transactionAccount');
         const investmentIdEl = document.getElementById('transactionInvestment');
         const loanIdEl = document.getElementById('transactionLoan');
@@ -3484,6 +3544,7 @@ async function addTransaction() {
             categoryGeneralEl: !!categoryGeneralEl,
             categorySpecificEl: !!categorySpecificEl,
             envelopeEl: !!envelopeEl,
+            budgetIdEl: !!budgetIdEl,
             accountIdEl: !!accountIdEl,
             investmentIdEl: !!investmentIdEl,
             loanIdEl: !!loanIdEl,
@@ -3505,6 +3566,7 @@ async function addTransaction() {
         const categoryGeneral = categoryGeneralEl ? categoryGeneralEl.value : '';
         const categorySpecific = categorySpecificEl ? categorySpecificEl.value : '';
         const envelope = envelopeEl ? envelopeEl.value : '';
+        const budgetId = budgetIdEl ? budgetIdEl.value : '';
         const accountId = accountIdEl ? accountIdEl.value : '';
         const investmentId = investmentIdEl ? investmentIdEl.value : '';
         const loanId = loanIdEl ? loanIdEl.value : '';
@@ -3515,7 +3577,7 @@ async function addTransaction() {
         
         console.log('📋 Datos del formulario:', {
             type, date, amountInput, categoryGeneral, categorySpecific,
-            envelope, accountId, investmentId, loanId, propertyId, description,
+            envelope, budgetId, accountId, investmentId, loanId, propertyId, description,
             fromAccountId, toAccountId
         });
     
@@ -3564,6 +3626,7 @@ async function addTransaction() {
         // Normalizar campos opcionales (convertir strings vacíos a null)
         console.log('✅ Normalizando campos opcionales...');
         const normalizedEnvelope = (envelope && envelope.trim() !== '') ? envelope.trim() : null;
+        const normalizedBudgetId = (budgetId && budgetId.trim() !== '') ? budgetId.trim() : null;
         const normalizedAccountId = (accountId && accountId.trim() !== '') ? accountId.trim() : null;
         const normalizedInvestmentId = (investmentId && investmentId.trim() !== '') ? investmentId.trim() : null;
         const normalizedLoanId = (loanId && loanId.trim() !== '') ? loanId.trim() : null;
@@ -3586,6 +3649,7 @@ async function addTransaction() {
                 categoryGeneral: 'other',
                 categorySpecific: 'Transferencias',
                 envelope: null,
+                budget_id: null, // Las transferencias no se asignan a presupuestos
                 account_id: normalizedFromAccountId,
                 investment_id: null,
                 loan_id: null,
@@ -3601,6 +3665,7 @@ async function addTransaction() {
                 categoryGeneral: 'other',
                 categorySpecific: 'Transferencias recibidas',
                 envelope: null,
+                budget_id: null, // Las transferencias no se asignan a presupuestos
                 account_id: normalizedToAccountId,
                 investment_id: null,
                 loan_id: null,
@@ -3786,6 +3851,7 @@ async function addTransaction() {
         initializeDate();
         initializeCategories();
         updateEnvelopeSelect();
+        updateBudgetSelectForTransaction();
         updateAccountSelect();
         updatePropertySelect();
         
@@ -3883,14 +3949,17 @@ function updateDisplay() {
         updateTransactionsTable();
         updateEnvelopes();
         updateEnvelopeSelect();
+        updateBudgetSelectForTransaction(); // Actualizar selector de presupuestos en transacciones
         updateAccountSelect(); // Actualizar selector de cuentas
         updateAccountSelect('transactionFromAccount'); // Actualizar selector de cuenta origen
         updateAccountSelect('transactionToAccount'); // Actualizar selector de cuenta destino
         updateInvestmentSelect(); // Actualizar selector de inversiones
         updatePropertySelect(); // Actualizar selector de propiedades en transacciones
+        updatePropertySelect('loanProperty'); // Actualizar selector de propiedades en préstamos
         updatePatrimonioSelect(); // Actualizar selector de patrimonio (para préstamos)
         updateLoanSelect(); // Actualizar selector de préstamos
         updateLoans();
+        updateRecurringExpenses();
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
         updatePatrimonio(); // Actualizar patrimonio
@@ -4505,6 +4574,63 @@ function updateLoanSelect(selectId = 'transactionLoan') {
     });
 }
 
+// Actualizar selector de presupuestos para transacciones
+function updateBudgetSelectForTransaction(selectId = 'transactionBudget') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const currentYear = now.getFullYear().toString();
+    const currentWeek = getWeekStartDate(now);
+    
+    // Filtrar presupuestos activos (del período actual)
+    const activeBudgets = budgets.filter(b => {
+        if (b.period_type === 'monthly') {
+            return b.period_value === currentMonth;
+        } else if (b.period_type === 'yearly') {
+            return b.period_value === currentYear;
+        } else if (b.period_type === 'weekly') {
+            return b.period_value === currentWeek;
+        }
+        return false;
+    });
+    
+    select.innerHTML = '<option value="">Ninguno</option>';
+    
+    activeBudgets.forEach(budget => {
+        let displayName = '';
+        
+        if (budget.property_id) {
+            const property = properties.find(p => (p._id || p.id) === budget.property_id);
+            displayName = property ? property.name : 'Propiedad desconocida';
+        } else if (budget.patrimonio_id) {
+            const patrimonioItem = patrimonio.find(p => (p._id || p.id) === budget.patrimonio_id);
+            displayName = patrimonioItem ? patrimonioItem.name : 'Patrimonio desconocido';
+        } else if (budget.category_general && budget.category_specific) {
+            let category = categories.expense.find(c => c.id === budget.category_general);
+            if (!category) {
+                category = categories.income.find(c => c.id === budget.category_general);
+            }
+            const categoryName = category ? category.name : budget.category_general;
+            displayName = `${categoryName} - ${budget.category_specific}`;
+        } else if (budget.category_id) {
+            let category = categories.expense.find(c => c.id === budget.category_id);
+            if (!category) {
+                category = categories.income.find(c => c.id === budget.category_id);
+            }
+            displayName = category ? category.name : budget.category_id;
+        }
+        
+        if (displayName) {
+            const option = document.createElement('option');
+            option.value = budget._id || budget.id;
+            option.textContent = `${displayName} (${formatCurrency(budget.amount)})`;
+            select.appendChild(option);
+        }
+    });
+}
+
 // Actualizar selector de patrimonio (para préstamos)
 function updatePatrimonioSelect(selectId = 'loanPatrimonio') {
     const select = document.getElementById(selectId);
@@ -4536,38 +4662,81 @@ function updatePatrimonioSelect(selectId = 'loanPatrimonio') {
     }
 }
 
-// Función para alternar entre categoría y patrimonio en presupuestos
+// Actualizar selector de propiedades para presupuestos
+function updatePropertySelectForBudget(selectId = 'budgetProperty') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Seleccionar propiedad...</option>';
+    
+    // Solo mostrar propiedades inmobiliarias (apartment, house, office, commercial)
+    properties.filter(prop => 
+        ['apartment', 'house', 'office', 'commercial'].includes(prop.type)
+    ).forEach(prop => {
+        const option = document.createElement('option');
+        option.value = prop._id || prop.id;
+        const typeNames = {
+            apartment: 'Piso/Apartamento',
+            house: 'Casa',
+            office: 'Oficina',
+            commercial: 'Local Comercial',
+            other: 'Otro'
+        };
+        option.textContent = `${prop.name} (${typeNames[prop.type] || prop.type})`;
+        select.appendChild(option);
+    });
+    
+    // Restaurar valor seleccionado si existe
+    if (currentValue) {
+        select.value = currentValue;
+    }
+}
+
+// Función para alternar entre categoría, propiedad y patrimonio en presupuestos
 function toggleBudgetTarget() {
     const targetType = document.getElementById('budgetTargetType').value;
     const categoryGroup = document.getElementById('budgetCategoryGroup');
     const categorySpecificGroup = document.getElementById('budgetCategorySpecificGroup');
+    const propertyGroup = document.getElementById('budgetPropertyGroup');
     const patrimonioGroup = document.getElementById('budgetPatrimonioGroup');
     const categoryGeneralSelect = document.getElementById('budgetCategoryGeneral');
     const categorySpecificSelect = document.getElementById('budgetCategorySpecific');
+    const propertySelect = document.getElementById('budgetProperty');
     const patrimonioSelect = document.getElementById('budgetPatrimonio');
+    
+    // Ocultar todos los grupos primero
+    if (categoryGroup) categoryGroup.style.display = 'none';
+    if (categorySpecificGroup) categorySpecificGroup.style.display = 'none';
+    if (propertyGroup) propertyGroup.style.display = 'none';
+    if (patrimonioGroup) patrimonioGroup.style.display = 'none';
+    
+    // Desactivar todos los campos requeridos
+    if (categoryGeneralSelect) categoryGeneralSelect.required = false;
+    if (categorySpecificSelect) categorySpecificSelect.required = false;
+    if (propertySelect) propertySelect.required = false;
+    if (patrimonioSelect) patrimonioSelect.required = false;
+    
+    // Limpiar valores
+    if (categoryGeneralSelect) categoryGeneralSelect.value = '';
+    if (categorySpecificSelect) categorySpecificSelect.value = '';
+    if (propertySelect) propertySelect.value = '';
+    if (patrimonioSelect) patrimonioSelect.value = '';
     
     if (targetType === 'category') {
         if (categoryGroup) categoryGroup.style.display = 'block';
         if (categorySpecificGroup) categorySpecificGroup.style.display = 'block';
-        if (patrimonioGroup) patrimonioGroup.style.display = 'none';
         if (categoryGeneralSelect) categoryGeneralSelect.required = true;
         if (categorySpecificSelect) categorySpecificSelect.required = true;
-        if (patrimonioSelect) {
-            patrimonioSelect.required = false;
-            patrimonioSelect.value = '';
+    } else if (targetType === 'property') {
+        if (propertyGroup) propertyGroup.style.display = 'block';
+        if (propertySelect) {
+            propertySelect.required = true;
+            // Actualizar selector de propiedades
+            updatePropertySelectForBudget('budgetProperty');
         }
-    } else {
-        if (categoryGroup) categoryGroup.style.display = 'none';
-        if (categorySpecificGroup) categorySpecificGroup.style.display = 'none';
+    } else if (targetType === 'patrimonio') {
         if (patrimonioGroup) patrimonioGroup.style.display = 'block';
-        if (categoryGeneralSelect) {
-            categoryGeneralSelect.required = false;
-            categoryGeneralSelect.value = '';
-        }
-        if (categorySpecificSelect) {
-            categorySpecificSelect.required = false;
-            categorySpecificSelect.value = '';
-        }
         if (patrimonioSelect) {
             patrimonioSelect.required = true;
             // Actualizar selector de patrimonio
@@ -4583,6 +4752,7 @@ async function addBudget() {
     const targetType = document.getElementById('budgetTargetType').value;
     const category_general = targetType === 'category' ? document.getElementById('budgetCategoryGeneral')?.value : null;
     const category_specific = targetType === 'category' ? document.getElementById('budgetCategorySpecific')?.value : null;
+    const property_id = targetType === 'property' ? document.getElementById('budgetProperty')?.value : null;
     const patrimonio_id = targetType === 'patrimonio' ? document.getElementById('budgetPatrimonio')?.value : null;
     const amount = parseFloat(document.getElementById('budgetAmount').value);
     const period_type = document.getElementById('budgetPeriodType').value;
@@ -4595,9 +4765,16 @@ async function addBudget() {
             showToast('Por favor selecciona categoría general y específica', 'warning');
             return;
         }
-    } else if (!patrimonio_id) {
-        showToast('Por favor selecciona un patrimonio', 'warning');
-        return;
+    } else if (targetType === 'property') {
+        if (!property_id) {
+            showToast('Por favor selecciona una propiedad', 'warning');
+            return;
+        }
+    } else if (targetType === 'patrimonio') {
+        if (!patrimonio_id) {
+            showToast('Por favor selecciona un patrimonio', 'warning');
+            return;
+        }
     }
     
     if (!amount || !period_type || !period_value) {
@@ -4621,6 +4798,7 @@ async function addBudget() {
                     body: JSON.stringify({
                         category_general: category_general || null,
                         category_specific: category_specific || null,
+                        property_id: property_id || null,
                         patrimonio_id: patrimonio_id || null,
                         amount,
                         period_type,
@@ -4648,6 +4826,7 @@ async function addBudget() {
                             body: JSON.stringify({
                                 category_general: category_general || null,
                                 category_specific: category_specific || null,
+                                property_id: property_id || null,
                                 patrimonio_id: patrimonio_id || null,
                                 amount,
                                 period_type,
@@ -4692,6 +4871,7 @@ async function addBudget() {
                 body: JSON.stringify({
                     category_general: category_general || null,
                     category_specific: category_specific || null,
+                    property_id: property_id || null,
                     patrimonio_id: patrimonio_id || null,
                     amount,
                     period_type,
@@ -4803,12 +4983,17 @@ function updateBudgets() {
     });
     
     activeBudgets.forEach(budget => {
-        // Determinar si es presupuesto de categoría o patrimonio
+        // Determinar si es presupuesto de categoría, propiedad o patrimonio
         let categoryName = '';
+        let propertyName = '';
         let patrimonioName = '';
         let isIncome = false;
         
-        if (budget.patrimonio_id) {
+        if (budget.property_id) {
+            // Presupuesto asociado a propiedad específica
+            const propertyItem = properties.find(p => (p._id || p.id) === budget.property_id);
+            propertyName = propertyItem ? propertyItem.name : 'Propiedad desconocida';
+        } else if (budget.patrimonio_id) {
             // Presupuesto asociado a patrimonio
             const patrimonioItem = patrimonio.find(p => (p._id || p.id) === budget.patrimonio_id);
             patrimonioName = patrimonioItem ? patrimonioItem.name : 'Patrimonio desconocido';
@@ -4831,10 +5016,30 @@ function updateBudgets() {
             categoryName = category ? category.name : budget.category_id;
         }
         
-        const displayName = patrimonioName || categoryName;
+        const displayName = propertyName || patrimonioName || categoryName;
         // Calcular transacciones según tipo de presupuesto
         let actual = 0;
-        if (budget.patrimonio_id) {
+        if (budget.property_id) {
+            // Calcular transacciones asociadas a la propiedad específica
+            const propertyTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                let isInActivePeriod = false;
+                if (budget.period_type === 'monthly') {
+                    const budgetMonth = new Date(budget.period_value + '-01');
+                    isInActivePeriod = tDate.getMonth() === budgetMonth.getMonth() && 
+                                      tDate.getFullYear() === budgetMonth.getFullYear();
+                } else if (budget.period_type === 'yearly') {
+                    isInActivePeriod = tDate.getFullYear() === parseInt(budget.period_value);
+                } else if (budget.period_type === 'weekly') {
+                    const weekStart = new Date(budget.period_value);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    isInActivePeriod = tDate >= weekStart && tDate <= weekEnd;
+                }
+                return isInActivePeriod && (t.property_id === budget.property_id);
+            });
+            actual = Math.abs(propertyTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        } else if (budget.patrimonio_id) {
             // Calcular transacciones asociadas al patrimonio
             const patrimonioTransactions = transactions.filter(t => {
                 const tDate = new Date(t.date);
@@ -4903,6 +5108,7 @@ function updateBudgets() {
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; gap: 12px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
                 <div style="flex: 1 1 auto; min-width: 60%; max-width: 100%;">
                     <h3 style="margin: 0 !important; padding: 0 !important; font-size: clamp(16px, 4vw, 20px) !important; font-weight: 700 !important; color: var(--text-primary) !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important; max-width: 100% !important; box-sizing: border-box !important;">${displayName || 'Sin nombre'}</h3>
+                    ${propertyName ? `<small style="font-size: 11px; color: var(--gray-500); margin-top: 4px; display: block;">Propiedad</small>` : ''}
                     ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500); margin-top: 4px; display: block;">${getTranslation('common.patrimony', lang)}</small>` : ''}
                 </div>
                 <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600; flex-shrink: 0; white-space: nowrap; margin-top: 2px;">${periodLabel}</span>
@@ -6137,6 +6343,7 @@ async function addLoan() {
     const monthlyPayment = parseFloat(document.getElementById('loanMonthlyPayment').value);
     const type = document.getElementById('loanType').value;
     const accountId = document.getElementById('loanAccount') ? document.getElementById('loanAccount').value : '';
+    const propertyId = document.getElementById('loanProperty') ? document.getElementById('loanProperty').value : '';
     const patrimonioId = document.getElementById('loanPatrimonio') ? document.getElementById('loanPatrimonio').value : '';
     const description = document.getElementById('loanDescription').value.trim();
     const openingCommission = parseFloat(document.getElementById('loanOpeningCommission').value) || 0;
@@ -6161,6 +6368,7 @@ async function addLoan() {
                 monthly_payment: monthlyPayment,
                 type,
                 account_id: accountId || null,
+                property_id: propertyId || null,
                 patrimonio_id: patrimonioId || null,
                 description: description || null,
                 opening_commission: openingCommission,
@@ -7005,6 +7213,578 @@ async function deleteEarlyPayment(loanId, index) {
 window.editEarlyPayment = editEarlyPayment;
 window.deleteEarlyPayment = deleteEarlyPayment;
 window.closeEditEarlyPaymentModal = closeEditEarlyPaymentModal;
+
+// ==================== GASTOS RECURRENTES ====================
+
+// Agregar gasto recurrente
+async function addRecurringExpense() {
+    const name = document.getElementById('recurringExpenseName').value.trim();
+    const amount = parseFloat(document.getElementById('recurringExpenseAmount').value);
+    const categoryGeneral = document.getElementById('recurringExpenseCategoryGeneral').value;
+    const categorySpecific = document.getElementById('recurringExpenseCategorySpecific').value;
+    const frequency = document.getElementById('recurringExpenseFrequency').value;
+    const paymentDay = parseInt(document.getElementById('recurringExpensePaymentDay').value) || 1;
+    const startDate = document.getElementById('recurringExpenseStartDate').value;
+    const endDateInput = document.getElementById('recurringExpenseEndDate');
+    const endDate = endDateInput && endDateInput.value ? endDateInput.value : null;
+    const propertyId = document.getElementById('recurringExpenseProperty') ? document.getElementById('recurringExpenseProperty').value : '';
+    const accountId = document.getElementById('recurringExpenseAccount') ? document.getElementById('recurringExpenseAccount').value : '';
+    const description = document.getElementById('recurringExpenseDescription') ? document.getElementById('recurringExpenseDescription').value.trim() : '';
+    
+    if (!name || !amount || amount <= 0 || !categoryGeneral || !categorySpecific || !frequency || !startDate) {
+        showToast('Por favor completa todos los campos requeridos', 'warning');
+        return;
+    }
+    
+    try {
+        const expense = await apiRequest('/recurring-expenses', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                amount,
+                category_general: categoryGeneral,
+                category_specific: categorySpecific,
+                frequency,
+                payment_day: paymentDay,
+                start_date: startDate,
+                end_date: endDate,
+                property_id: propertyId || null,
+                account_id: accountId || null,
+                description: description || null,
+                is_active: true
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        // Limpiar formulario
+        const form = document.getElementById('recurringExpenseForm');
+        if (form) {
+            form.reset();
+            const startDateInput = document.getElementById('recurringExpenseStartDate');
+            if (startDateInput) {
+                const today = new Date();
+                startDateInput.value = today.toISOString().split('T')[0];
+            }
+            toggleForm('recurringExpenseForm', 'toggleRecurringExpenseFormBtn');
+        }
+        
+        showToast('Gasto recurrente agregado exitosamente', 'success');
+    } catch (error) {
+        console.error('Error al crear gasto recurrente:', error);
+        showToast('Error al crear gasto recurrente: ' + (error.message || 'Error desconocido'), 'error');
+    }
+}
+
+// Actualizar visualización de gastos recurrentes
+function updateRecurringExpenses() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const grid = document.getElementById('recurringExpensesGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (recurringExpenses.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos recurrentes registrados</p>';
+        return;
+    }
+    
+    // Calcular resumen anual
+    const now = new Date();
+    let totalAnnual = 0;
+    const activeExpenses = [];
+    
+    recurringExpenses.forEach(expense => {
+        const startDate = new Date(expense.start_date);
+        const endDate = expense.end_date ? new Date(expense.end_date) : null;
+        const isActive = expense.is_active && (!endDate || endDate >= now) && startDate <= now;
+        
+        if (isActive) {
+            let annualAmount = 0;
+            
+            if (expense.frequency === 'monthly') {
+                annualAmount = expense.amount * 12;
+            } else if (expense.frequency === 'weekly') {
+                annualAmount = expense.amount * 52;
+            } else if (expense.frequency === 'yearly') {
+                annualAmount = expense.amount;
+            }
+            
+            // Si tiene fecha de fin, calcular solo hasta esa fecha
+            if (endDate) {
+                const monthsRemaining = Math.max(0, (endDate.getFullYear() - now.getFullYear()) * 12 + (endDate.getMonth() - now.getMonth()));
+                if (expense.frequency === 'monthly') {
+                    annualAmount = expense.amount * Math.min(12, monthsRemaining);
+                } else if (expense.frequency === 'weekly') {
+                    const weeksRemaining = Math.max(0, Math.ceil((endDate - now) / (1000 * 60 * 60 * 24 * 7)));
+                    annualAmount = expense.amount * Math.min(52, weeksRemaining);
+                }
+            }
+            
+            totalAnnual += annualAmount;
+            activeExpenses.push({ expense, annualAmount });
+        }
+    });
+    
+    // Mostrar resumen anual
+    if (activeExpenses.length > 0) {
+        const summaryCard = document.createElement('div');
+        summaryCard.style.gridColumn = '1 / -1';
+        summaryCard.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
+        summaryCard.style.color = 'white';
+        summaryCard.style.borderRadius = 'var(--radius-md)';
+        summaryCard.style.padding = '24px';
+        summaryCard.style.boxShadow = 'var(--shadow-md)';
+        summaryCard.style.marginBottom = '20px';
+        
+        summaryCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; opacity: 0.9;">Resumen Anual de Gastos Recurrentes</h3>
+                    <p style="margin: 0; font-size: 13px; opacity: 0.8;">${activeExpenses.length} gasto${activeExpenses.length !== 1 ? 's' : ''} activo${activeExpenses.length !== 1 ? 's' : ''}</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">${formatCurrency(totalAnnual)}</div>
+                    <div style="font-size: 12px; opacity: 0.9;">Costo anual estimado</div>
+                </div>
+            </div>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 13px;">
+                    <div>
+                        <div style="opacity: 0.8; margin-bottom: 4px;">Mensual</div>
+                        <div style="font-weight: 600; font-size: 16px;">${formatCurrency(totalAnnual / 12)}</div>
+                    </div>
+                    <div>
+                        <div style="opacity: 0.8; margin-bottom: 4px;">Semanal</div>
+                        <div style="font-weight: 600; font-size: 16px;">${formatCurrency(totalAnnual / 52)}</div>
+                    </div>
+                    <div>
+                        <div style="opacity: 0.8; margin-bottom: 4px;">Diario</div>
+                        <div style="font-weight: 600; font-size: 16px;">${formatCurrency(totalAnnual / 365)}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        grid.appendChild(summaryCard);
+    }
+    
+    recurringExpenses.forEach(expense => {
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.background = 'var(--bg-primary)';
+        card.style.color = 'var(--text-primary)';
+        card.style.border = '1px solid var(--border-color)';
+        card.style.borderRadius = 'var(--radius-md)';
+        card.style.padding = '20px';
+        card.style.boxShadow = 'var(--shadow-sm)';
+        
+        const frequencyNames = {
+            weekly: 'Semanal',
+            monthly: 'Mensual',
+            yearly: 'Anual'
+        };
+        
+        let categoryName = '';
+        const category = categories.expense.find(c => c.id === expense.category_general);
+        if (category) {
+            categoryName = `${category.name} - ${expense.category_specific}`;
+        } else {
+            categoryName = `${expense.category_general} - ${expense.category_specific}`;
+        }
+        
+        let propertyName = '';
+        if (expense.property_id) {
+            const property = properties.find(p => (p._id || p.id) === expense.property_id);
+            propertyName = property ? property.name : 'Propiedad desconocida';
+        }
+        
+        const now = new Date();
+        const startDate = new Date(expense.start_date);
+        const endDate = expense.end_date ? new Date(expense.end_date) : null;
+        const isActive = expense.is_active && (!endDate || endDate >= now) && startDate <= now;
+        
+        // Calcular costo anual de este gasto
+        let annualAmount = 0;
+        if (isActive) {
+            if (expense.frequency === 'monthly') {
+                annualAmount = expense.amount * 12;
+            } else if (expense.frequency === 'weekly') {
+                annualAmount = expense.amount * 52;
+            } else if (expense.frequency === 'yearly') {
+                annualAmount = expense.amount;
+            }
+            
+            // Si tiene fecha de fin, calcular solo hasta esa fecha
+            if (endDate) {
+                const monthsRemaining = Math.max(0, (endDate.getFullYear() - now.getFullYear()) * 12 + (endDate.getMonth() - now.getMonth()));
+                if (expense.frequency === 'monthly') {
+                    annualAmount = expense.amount * Math.min(12, monthsRemaining);
+                } else if (expense.frequency === 'weekly') {
+                    const weeksRemaining = Math.max(0, Math.ceil((endDate - now) / (1000 * 60 * 60 * 24 * 7)));
+                    annualAmount = expense.amount * Math.min(52, weeksRemaining);
+                }
+            }
+        }
+        
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: var(--text-primary);">${expense.name}</h3>
+                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">${categoryName}</div>
+                    ${propertyName ? `<div style="font-size: 12px; color: var(--text-tertiary); margin-top: 4px;">🏠 ${propertyName}</div>` : ''}
+                </div>
+                <span style="font-size: 11px; padding: 4px 8px; background: ${isActive ? 'var(--success)' : 'var(--gray-300)'}; border-radius: var(--radius); color: ${isActive ? 'white' : 'var(--text-secondary)'}; font-weight: 600;">
+                    ${isActive ? 'Activo' : 'Inactivo'}
+                </span>
+            </div>
+            <div style="margin: 12px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                    <div style="color: var(--text-secondary);"><strong>Monto:</strong></div>
+                    <div style="font-weight: 600; color: var(--text-primary); text-align: right;">${formatCurrency(expense.amount)}</div>
+                    <div style="color: var(--text-secondary);"><strong>Frecuencia:</strong></div>
+                    <div style="color: var(--text-primary); text-align: right;">${frequencyNames[expense.frequency] || expense.frequency}</div>
+                    <div style="color: var(--text-secondary);"><strong>Día de pago:</strong></div>
+                    <div style="color: var(--text-primary); text-align: right;">Día ${expense.payment_day}</div>
+                    ${isActive && annualAmount > 0 ? `
+                        <div style="color: var(--text-secondary);"><strong>Costo Anual:</strong></div>
+                        <div style="font-weight: 700; color: var(--primary); text-align: right; font-size: 14px;">${formatCurrency(annualAmount)}</div>
+                    ` : ''}
+                    <div style="color: var(--text-secondary);"><strong>Inicio:</strong></div>
+                    <div style="color: var(--text-primary); text-align: right;">${formatDate(expense.start_date)}</div>
+                    ${expense.end_date ? `
+                        <div style="color: var(--text-secondary);"><strong>Fin:</strong></div>
+                        <div style="color: var(--text-primary); text-align: right;">${formatDate(expense.end_date)}</div>
+                    ` : `
+                        <div style="color: var(--text-secondary);"><strong>Fin:</strong></div>
+                        <div style="color: var(--text-primary); text-align: right;">Indefinido</div>
+                    `}
+                </div>
+            </div>
+            ${expense.description ? `<div style="margin: 12px 0; font-size: 12px; color: var(--text-tertiary); font-style: italic;">${expense.description}</div>` : ''}
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 16px;">
+                <button class="btn-secondary" onclick="editRecurringExpense('${expense._id || expense.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-secondary" onclick="toggleRecurringExpense('${expense._id || expense.id}', ${!isActive})" style="flex: 1;">
+                    ${isActive ? 'Pausar' : 'Activar'}
+                </button>
+                <button class="btn-danger" onclick="deleteRecurringExpense('${expense._id || expense.id}')" style="flex: 1;">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Editar gasto recurrente
+async function editRecurringExpense(id) {
+    const expense = recurringExpenses.find(e => (e._id || e.id) === id);
+    if (!expense) return;
+    
+    // Llenar formulario con datos existentes
+    document.getElementById('recurringExpenseName').value = expense.name;
+    document.getElementById('recurringExpenseAmount').value = expense.amount;
+    document.getElementById('recurringExpenseCategoryGeneral').value = expense.category_general;
+    
+    // Actualizar subcategorías
+    const categoryGeneralSelect = document.getElementById('recurringExpenseCategoryGeneral');
+    if (categoryGeneralSelect) {
+        categoryGeneralSelect.dispatchEvent(new Event('change'));
+        setTimeout(() => {
+            document.getElementById('recurringExpenseCategorySpecific').value = expense.category_specific;
+        }, 100);
+    }
+    
+    document.getElementById('recurringExpenseFrequency').value = expense.frequency;
+    document.getElementById('recurringExpensePaymentDay').value = expense.payment_day;
+    document.getElementById('recurringExpenseStartDate').value = expense.start_date;
+    if (expense.end_date) {
+        document.getElementById('recurringExpenseEndDate').value = expense.end_date;
+    }
+    if (expense.property_id) {
+        const propertySelect = document.getElementById('recurringExpenseProperty');
+        if (propertySelect) {
+            updatePropertySelect('recurringExpenseProperty');
+            setTimeout(() => {
+                propertySelect.value = expense.property_id;
+            }, 100);
+        }
+    }
+    if (expense.account_id) {
+        const accountSelect = document.getElementById('recurringExpenseAccount');
+        if (accountSelect) {
+            updateAccountSelect('recurringExpenseAccount');
+            setTimeout(() => {
+                accountSelect.value = expense.account_id;
+            }, 100);
+        }
+    }
+    if (expense.description) {
+        document.getElementById('recurringExpenseDescription').value = expense.description;
+    }
+    
+    // Mostrar formulario
+    toggleForm('recurringExpenseForm', 'toggleRecurringExpenseFormBtn');
+    
+    // Cambiar el botón submit para actualizar en lugar de crear
+    const form = document.getElementById('recurringExpenseForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.textContent = 'Actualizar Gasto Recurrente';
+        submitBtn.onclick = async (e) => {
+            e.preventDefault();
+            await updateRecurringExpense(id);
+        };
+    }
+}
+
+// Actualizar gasto recurrente
+async function updateRecurringExpense(id) {
+    const name = document.getElementById('recurringExpenseName').value.trim();
+    const amount = parseFloat(document.getElementById('recurringExpenseAmount').value);
+    const categoryGeneral = document.getElementById('recurringExpenseCategoryGeneral').value;
+    const categorySpecific = document.getElementById('recurringExpenseCategorySpecific').value;
+    const frequency = document.getElementById('recurringExpenseFrequency').value;
+    const paymentDay = parseInt(document.getElementById('recurringExpensePaymentDay').value) || 1;
+    const startDate = document.getElementById('recurringExpenseStartDate').value;
+    const endDateInput = document.getElementById('recurringExpenseEndDate');
+    const endDate = endDateInput && endDateInput.value ? endDateInput.value : null;
+    const propertyId = document.getElementById('recurringExpenseProperty') ? document.getElementById('recurringExpenseProperty').value : '';
+    const accountId = document.getElementById('recurringExpenseAccount') ? document.getElementById('recurringExpenseAccount').value : '';
+    const description = document.getElementById('recurringExpenseDescription') ? document.getElementById('recurringExpenseDescription').value.trim() : '';
+    
+    if (!name || !amount || amount <= 0 || !categoryGeneral || !categorySpecific || !frequency || !startDate) {
+        showToast('Por favor completa todos los campos requeridos', 'warning');
+        return;
+    }
+    
+    try {
+        await apiRequest(`/recurring-expenses/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name,
+                amount,
+                category_general: categoryGeneral,
+                category_specific: categorySpecific,
+                frequency,
+                payment_day: paymentDay,
+                start_date: startDate,
+                end_date: endDate,
+                property_id: propertyId || null,
+                account_id: accountId || null,
+                description: description || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        // Restaurar botón submit
+        const form = document.getElementById('recurringExpenseForm');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.textContent = 'Agregar Gasto Recurrente';
+            submitBtn.onclick = null;
+        }
+        
+        form.reset();
+        toggleForm('recurringExpenseForm', 'toggleRecurringExpenseFormBtn');
+        
+        showToast('Gasto recurrente actualizado exitosamente', 'success');
+    } catch (error) {
+        console.error('Error al actualizar gasto recurrente:', error);
+        showToast('Error al actualizar gasto recurrente: ' + (error.message || 'Error desconocido'), 'error');
+    }
+}
+
+// Activar/Pausar gasto recurrente
+async function toggleRecurringExpense(id, activate) {
+    try {
+        const expense = recurringExpenses.find(e => (e._id || e.id) === id);
+        if (!expense) return;
+        
+        await apiRequest(`/recurring-expenses/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                is_active: activate
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        showToast(activate ? 'Gasto recurrente activado' : 'Gasto recurrente pausado', 'success');
+    } catch (error) {
+        console.error('Error al cambiar estado del gasto recurrente:', error);
+        showToast('Error al cambiar estado: ' + (error.message || 'Error desconocido'), 'error');
+    }
+}
+
+// Eliminar gasto recurrente
+async function deleteRecurringExpense(id) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este gasto recurrente?')) {
+        return;
+    }
+    
+    try {
+        await apiRequest(`/recurring-expenses/${id}`, {
+            method: 'DELETE'
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        showToast('Gasto recurrente eliminado exitosamente', 'success');
+    } catch (error) {
+        console.error('Error al eliminar gasto recurrente:', error);
+        showToast('Error al eliminar gasto recurrente: ' + (error.message || 'Error desconocido'), 'error');
+    }
+}
+
+// Generar transacciones automáticas desde gastos recurrentes
+async function generateRecurringExpenseTransactions() {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    
+    for (const expense of recurringExpenses) {
+        if (!expense.is_active) continue;
+        
+        const startDate = new Date(expense.start_date);
+        startDate.setHours(0, 0, 0, 0);
+        
+        // Verificar si el gasto ya comenzó
+        if (startDate > now) continue;
+        
+        // Verificar si el gasto ya terminó
+        if (expense.end_date) {
+            const endDate = new Date(expense.end_date);
+            endDate.setHours(23, 59, 59, 999);
+            if (endDate < now) continue;
+        }
+        
+        // Calcular la próxima fecha de pago según la frecuencia
+        let nextPaymentDate = calculateNextPaymentDate(expense, now);
+        
+        if (!nextPaymentDate) continue;
+        
+        // Verificar si ya existe una transacción para esta fecha
+        const existingTransaction = transactions.find(t => {
+            const tDate = new Date(t.date);
+            tDate.setHours(0, 0, 0, 0);
+            return tDate.getTime() === nextPaymentDate.getTime() &&
+                   t.category_general === expense.category_general &&
+                   t.category_specific === expense.category_specific &&
+                   Math.abs(t.amount) === expense.amount;
+        });
+        
+        if (existingTransaction) continue;
+        
+        // Crear la transacción
+        try {
+            const transactionData = {
+                type: 'expense',
+                date: nextPaymentDate.toISOString().split('T')[0],
+                amount: Math.abs(expense.amount),
+                categoryGeneral: expense.category_general,
+                categorySpecific: expense.category_specific,
+                envelope: null,
+                budget_id: expense.budget_id || null,
+                account_id: expense.account_id || null,
+                property_id: expense.property_id || null,
+                description: expense.description || expense.name,
+                is_recurring: true,
+                recurring_frequency: expense.frequency
+            };
+            
+            await apiRequest('/transactions', {
+                method: 'POST',
+                body: JSON.stringify(transactionData)
+            });
+            
+            // Actualizar last_generated_date del gasto recurrente
+            await apiRequest(`/recurring-expenses/${expense._id || expense.id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    last_generated_date: nextPaymentDate.toISOString().split('T')[0]
+                })
+            });
+            
+        } catch (error) {
+            console.error(`Error generando transacción para gasto recurrente ${expense.name}:`, error);
+            // Continuar con el siguiente gasto aunque falle uno
+        }
+    }
+    
+    // Recargar transacciones después de generar
+    if (recurringExpenses.length > 0) {
+        await loadUserDataFresh();
+    }
+}
+
+// Calcular la próxima fecha de pago para un gasto recurrente
+function calculateNextPaymentDate(expense, referenceDate = new Date()) {
+    const now = new Date(referenceDate);
+    now.setHours(0, 0, 0, 0);
+    
+    const startDate = new Date(expense.start_date);
+    startDate.setHours(0, 0, 0, 0);
+    
+    if (expense.frequency === 'monthly') {
+        // Calcular el próximo día de pago del mes
+        const paymentDay = expense.payment_day || 1;
+        let nextDate = new Date(now.getFullYear(), now.getMonth(), paymentDay);
+        
+        // Si ya pasó el día de pago este mes, usar el próximo mes
+        if (nextDate < now) {
+            nextDate = new Date(now.getFullYear(), now.getMonth() + 1, paymentDay);
+        }
+        
+        // Asegurar que no sea antes de la fecha de inicio
+        if (nextDate < startDate) {
+            nextDate = new Date(startDate.getFullYear(), startDate.getMonth(), paymentDay);
+            if (nextDate < startDate) {
+                nextDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, paymentDay);
+            }
+        }
+        
+        return nextDate;
+    } else if (expense.frequency === 'weekly') {
+        // Calcular el próximo día de la semana (asumiendo que payment_day es 1-7, donde 1 = lunes)
+        const paymentDay = expense.payment_day || 1;
+        const daysUntilNext = (paymentDay - now.getDay() + 7) % 7 || 7;
+        let nextDate = new Date(now);
+        nextDate.setDate(now.getDate() + daysUntilNext);
+        
+        // Asegurar que no sea antes de la fecha de inicio
+        if (nextDate < startDate) {
+            nextDate = new Date(startDate);
+            const daysUntilPayment = (paymentDay - startDate.getDay() + 7) % 7 || 7;
+            nextDate.setDate(startDate.getDate() + daysUntilPayment);
+        }
+        
+        return nextDate;
+    } else if (expense.frequency === 'yearly') {
+        // Calcular el próximo día del año
+        const paymentDay = expense.payment_day || 1;
+        const paymentMonth = Math.floor((paymentDay - 1) / 31); // Aproximación
+        let nextDate = new Date(now.getFullYear(), paymentMonth, paymentDay % 31 || 31);
+        
+        // Si ya pasó este año, usar el próximo año
+        if (nextDate < now) {
+            nextDate = new Date(now.getFullYear() + 1, paymentMonth, paymentDay % 31 || 31);
+        }
+        
+        // Asegurar que no sea antes de la fecha de inicio
+        if (nextDate < startDate) {
+            nextDate = new Date(startDate.getFullYear(), paymentMonth, paymentDay % 31 || 31);
+            if (nextDate < startDate) {
+                nextDate = new Date(startDate.getFullYear() + 1, paymentMonth, paymentDay % 31 || 31);
+            }
+        }
+        
+        return nextDate;
+    }
+    
+    return null;
+}
 
 // ==================== INVERSIONES ====================
 

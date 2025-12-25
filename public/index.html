@@ -474,6 +474,13 @@
                                     <option value="" data-translate="common.none">Ninguno</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="transactionBudget">Presupuesto (Opcional)</label>
+                                <select id="transactionBudget">
+                                    <option value="" data-translate="common.none">Ninguno</option>
+                                </select>
+                                <small>Asigna esta transacción a un presupuesto específico</small>
+                            </div>
                         </div>
                         <div class="form-row" id="transferAccountsRow" style="display: none;">
                             <div class="form-group">
@@ -735,9 +742,10 @@
                                         <label for="budgetTargetType">Asignar a</label>
                                         <select id="budgetTargetType" required onchange="toggleBudgetTarget()">
                                             <option value="category">Categoría</option>
+                                            <option value="property">Propiedad</option>
                                             <option value="patrimonio">Patrimonio</option>
                                         </select>
-                                        <small>Elige si asignar a categoría o patrimonio</small>
+                                        <small>Elige si asignar a categoría, propiedad específica o patrimonio</small>
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -754,6 +762,13 @@
                                             <option value="">Seleccionar subcategoría...</option>
                                         </select>
                                         <small>Elige la subcategoría específica</small>
+                                    </div>
+                                    <div class="form-group" id="budgetPropertyGroup" style="display: none;">
+                                        <label for="budgetProperty">Propiedad</label>
+                                        <select id="budgetProperty">
+                                            <option value="">Seleccionar propiedad...</option>
+                                        </select>
+                                        <small>Elige la propiedad específica (piso alquilado, casa, etc.)</small>
                                     </div>
                                     <div class="form-group" id="budgetPatrimonioGroup" style="display: none;">
                                         <label for="budgetPatrimonio">Patrimonio</label>
@@ -1003,11 +1018,18 @@
                                 <small style="color: var(--text-tertiary);">Cuenta desde la que se realizarán los pagos del préstamo</small>
                             </div>
                             <div class="form-group">
-                                <label for="loanPatrimonio">Propiedad del Patrimonio Asociada (Opcional)</label>
-                                <select id="loanPatrimonio">
+                                <label for="loanProperty">Propiedad Asociada (Opcional)</label>
+                                <select id="loanProperty">
                                     <option value="">Ninguna</option>
                                 </select>
-                                <small style="color: var(--text-tertiary);">Propiedad del patrimonio relacionada con este préstamo (ej: hipoteca)</small>
+                                <small style="color: var(--text-tertiary);">Propiedad inmobiliaria relacionada (ej: hipoteca de vivienda)</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanPatrimonio">Patrimonio Asociado (Opcional)</label>
+                                <select id="loanPatrimonio">
+                                    <option value="">Ninguno</option>
+                                </select>
+                                <small style="color: var(--text-tertiary);">Patrimonio relacionado (ej: préstamo de vehículo)</small>
                             </div>
                         </div>
                         <div class="form-row">
@@ -1020,6 +1042,95 @@
                     </form>
                 </div>
                 <div class="loans-grid" id="loansGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; margin-top: 30px;">
+                </div>
+            </div>
+
+            <!-- Tab: Gastos Recurrentes -->
+            <div class="tab-content" id="recurring-expenses-tab">
+                <div class="form-section">
+                    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px;">
+                        <button type="button" class="btn-primary" id="toggleRecurringExpenseFormBtn" onclick="toggleForm('recurringExpenseForm', 'toggleRecurringExpenseFormBtn')" style="display: flex; align-items: center; gap: 8px;">
+                            <span id="recurringExpenseFormText">Nuevo Gasto Recurrente</span>
+                        </button>
+                    </div>
+                    
+                    <form id="recurringExpenseForm" style="display: none; background: var(--bg-primary); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary);">
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <label for="recurringExpenseName">Nombre del Gasto</label>
+                                <input type="text" id="recurringExpenseName" placeholder="Ej: Alquiler piso principal" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="recurringExpenseAmount">Monto</label>
+                                <input type="number" id="recurringExpenseAmount" step="0.01" min="0" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="recurringExpenseCategoryGeneral">Categoría General</label>
+                                <select id="recurringExpenseCategoryGeneral" required>
+                                    <option value="">Seleccionar categoría...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="recurringExpenseCategorySpecific">Categoría Específica</label>
+                                <select id="recurringExpenseCategorySpecific" required>
+                                    <option value="">Seleccionar subcategoría...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="recurringExpenseFrequency">Frecuencia</label>
+                                <select id="recurringExpenseFrequency" required>
+                                    <option value="monthly">Mensual</option>
+                                    <option value="weekly">Semanal</option>
+                                    <option value="yearly">Anual</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="recurringExpensePaymentDay">Día de Pago</label>
+                                <input type="number" id="recurringExpensePaymentDay" min="1" max="31" value="1" required>
+                                <small>Día del mes en que se realiza el pago</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="recurringExpenseStartDate">Fecha de Inicio</label>
+                                <input type="date" id="recurringExpenseStartDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="recurringExpenseEndDate">Fecha de Fin (Opcional)</label>
+                                <input type="date" id="recurringExpenseEndDate">
+                                <small>Dejar vacío para gasto indefinido</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="recurringExpenseProperty">Propiedad Asociada (Opcional)</label>
+                                <select id="recurringExpenseProperty">
+                                    <option value="">Ninguna</option>
+                                </select>
+                                <small>Ej: Piso alquilado donde vivo</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="recurringExpenseAccount">Cuenta (Opcional)</label>
+                                <select id="recurringExpenseAccount">
+                                    <option value="">Ninguna</option>
+                                </select>
+                                <small>Cuenta desde la que se realiza el pago</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 2;">
+                                <label for="recurringExpenseDescription">Descripción (Opcional)</label>
+                                <input type="text" id="recurringExpenseDescription" placeholder="Ej: Alquiler mensual del piso">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Agregar Gasto Recurrente</button>
+                    </form>
+                </div>
+                <div class="recurring-expenses-grid" id="recurringExpensesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; margin-top: 30px;">
                 </div>
             </div>
 
@@ -1932,6 +2043,18 @@
             </span>
             <span class="tab-text" data-translate="nav.loans">Préstamos</span>
         </button>
+        <button class="tab-btn" data-tab="recurring-expenses">
+            <span class="tab-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                    <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path>
+                </svg>
+            </span>
+            <span class="tab-text">Gastos Recurrentes</span>
+        </button>
         <button class="tab-btn" data-tab="investments">
             <span class="tab-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1963,4 +2086,5 @@
     </div>
 </body>
 </html>
+
 
