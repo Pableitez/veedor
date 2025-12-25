@@ -796,7 +796,9 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="budgetPeriodValue" id="budgetPeriodValueLabel">Mes de Inicio</label>
-                                        <input type="month" id="budgetPeriodValue" required>
+                                        <div style="position: relative; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; box-sizing: border-box;" onclick="document.getElementById('budgetPeriodValue').showPicker ? document.getElementById('budgetPeriodValue').showPicker() : document.getElementById('budgetPeriodValue').focus();">
+                                            <input type="month" id="budgetPeriodValue" required style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: var(--radius); font-size: 14px; background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; pointer-events: auto; text-align: center; box-sizing: border-box;">
+                                        </div>
                                         <small id="budgetPeriodValueHelp">Mes desde el que comienza el presupuesto</small>
                                     </div>
                                     <div class="form-group" id="budgetDurationGroup">
