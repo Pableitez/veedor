@@ -1756,6 +1756,8 @@ async function loadUserDataFresh() {
         residences = residencesData.status === 'fulfilled' ? (residencesData.value || []) : [];
         recurringExpenses = recurringExpensesData.status === 'fulfilled' ? (recurringExpensesData.value || []) : [];
         
+        console.log('📊 Datos cargados - investments:', investments.length, 'patrimonio:', patrimonio.length);
+        
         // Generar transacciones automáticas desde gastos recurrentes
         await generateRecurringExpenseTransactions();
         
@@ -2151,9 +2153,12 @@ function initializeCategories() {
 
 // Función para cambiar de tab (reutilizable)
 function switchToTab(targetTab, doScroll = false) {
+    console.log('🔄 switchToTab llamado con:', targetTab);
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     const navItems = document.querySelectorAll('.nav-item');
+    
+    console.log('📋 Tabs encontrados:', tabButtons.length, 'Contenidos:', tabContents.length);
     
     // Actualizar tabs principales
     tabButtons.forEach(b => b.classList.remove('active'));
@@ -2161,6 +2166,8 @@ function switchToTab(targetTab, doScroll = false) {
     
     const targetTabBtn = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
     const targetTabContent = document.getElementById(`${targetTab}-tab`);
+    
+    console.log('🎯 Tab objetivo - Botón:', targetTabBtn, 'Contenido:', targetTabContent);
     
     if (targetTabBtn) targetTabBtn.classList.add('active');
     
@@ -2241,7 +2248,9 @@ function switchToTab(targetTab, doScroll = false) {
     
     // Actualizar patrimonio cuando se cambia al tab de patrimonio
     if (targetTab === 'assets') {
+        console.log('🏠 Cambiando a tab de patrimonio, llamando updatePatrimonio...');
         setTimeout(() => {
+            console.log('⏰ Ejecutando updatePatrimonio después del timeout');
             updatePatrimonio();
         }, 100);
     }
@@ -2258,7 +2267,9 @@ function switchToTab(targetTab, doScroll = false) {
     
     // Actualizar inversiones cuando se cambia al tab de inversiones
     if (targetTab === 'investments') {
+        console.log('💰 Cambiando a tab de inversiones, llamando updateInvestments...');
         setTimeout(() => {
+            console.log('⏰ Ejecutando updateInvestments después del timeout');
             updateInvestments();
             // Actualizar selector de cuentas en el formulario de inversiones (aportes periódicos)
             updateAccountSelect('contributionAccount');
@@ -2516,81 +2527,96 @@ window.toggleMoreTabs = toggleMoreTabs;
 
 // Inicializar tabs
 function initializeTabs() {
-    const tabButtons = document.querySelectorAll('.tab-btn:not(.tab-more-btn)');
-    const navItems = document.querySelectorAll('.nav-item');
-    
-    // Event listeners para tabs principales (excluyendo el botón "Más")
-    tabButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
+    try {
+        console.log('🔧 initializeTabs() - Iniciando...');
+        const tabButtons = document.querySelectorAll('.tab-btn:not(.tab-more-btn)');
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        console.log('📋 Tabs encontrados:', tabButtons.length, 'Nav items:', navItems.length);
+        
+        // Event listeners para tabs principales (excluyendo el botón "Más")
+        tabButtons.forEach((btn, index) => {
             const targetTab = btn.getAttribute('data-tab');
-            if (targetTab) {
-            switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
-            }
-        });
-    });
-    
-    // Event listeners para la barra inferior móvil
-    const mobileBottomTabs = document.getElementById('mobileBottomTabs');
-    if (mobileBottomTabs) {
-        const mobileTabButtons = mobileBottomTabs.querySelectorAll('.tab-btn');
-        mobileTabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetTab = btn.getAttribute('data-tab');
-                if (targetTab) {
-                    switchToTab(targetTab, true);
+            console.log(`🔘 Tab ${index}:`, targetTab, btn);
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const clickedTab = btn.getAttribute('data-tab');
+                console.log('👆 Click en tab:', clickedTab, 'Elemento:', btn);
+                if (clickedTab) {
+                    console.log('✅ Llamando switchToTab con:', clickedTab);
+                    switchToTab(clickedTab, true); // Permitir scroll cuando el usuario hace clic manualmente
+                } else {
+                    console.warn('⚠️ Tab sin data-tab attribute');
                 }
             });
         });
-    }
-    
-    // Inicializar botón flotante según la sección activa por defecto
-    const activeTab = document.querySelector('.tab-btn.active');
-    if (activeTab) {
-        const defaultTab = activeTab.getAttribute('data-tab');
-        if (defaultTab) {
-            updateQuickAddButton(defaultTab);
-        }
-    } else {
-        // Si no hay tab activo, usar 'transactions' por defecto
-        updateQuickAddButton('transactions');
-    }
-    
-    // Event listeners para navegación del header
-    navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const targetTab = item.getAttribute('data-tab');
-            switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
-            // Scroll suave hacia el contenido
-            const mainContent = document.querySelector('.main-content');
-            if (mainContent) {
-                mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        });
-    });
-    
-    // Inicializar estado activo - Transacciones por defecto
-    if (tabButtons.length > 0) {
-        // Activar tab de Transacciones por defecto
-        const transactionsTabBtn = document.querySelector('.tab-btn[data-tab="transactions"]');
-        const transactionsTabContent = document.getElementById('transactions-tab');
         
-        if (transactionsTabBtn) transactionsTabBtn.classList.add('active');
-        if (transactionsTabContent) {
-            transactionsTabContent.classList.add('active');
+        // Event listeners para la barra inferior móvil
+        const mobileBottomTabs = document.getElementById('mobileBottomTabs');
+        if (mobileBottomTabs) {
+            const mobileTabButtons = mobileBottomTabs.querySelectorAll('.tab-btn');
+            mobileTabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.getAttribute('data-tab');
+                    if (targetTab) {
+                        switchToTab(targetTab, true);
+                    }
+                });
+            });
         }
         
-        // Ocultar otros tabs
-        tabButtons.forEach(btn => {
-            if (btn.getAttribute('data-tab') !== 'transactions') {
-                btn.classList.remove('active');
+        // Inicializar botón flotante según la sección activa por defecto
+        const activeTab = document.querySelector('.tab-btn.active');
+        if (activeTab) {
+            const defaultTab = activeTab.getAttribute('data-tab');
+            if (defaultTab) {
+                updateQuickAddButton(defaultTab);
             }
+        } else {
+            // Si no hay tab activo, usar 'transactions' por defecto
+            updateQuickAddButton('transactions');
+        }
+        
+        // Event listeners para navegación del header
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetTab = item.getAttribute('data-tab');
+                switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
+                // Scroll suave hacia el contenido
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) {
+                    mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
         });
         
-        document.querySelectorAll('.tab-content').forEach(content => {
-            if (content.id !== 'transactions-tab') {
-                content.classList.remove('active');
+        // Inicializar estado activo - Transacciones por defecto
+        if (tabButtons.length > 0) {
+            // Activar tab de Transacciones por defecto
+            const transactionsTabBtn = document.querySelector('.tab-btn[data-tab="transactions"]');
+            const transactionsTabContent = document.getElementById('transactions-tab');
+            
+            if (transactionsTabBtn) transactionsTabBtn.classList.add('active');
+            if (transactionsTabContent) {
+                transactionsTabContent.classList.add('active');
             }
-        });
+            
+            // Ocultar otros tabs
+            tabButtons.forEach(btn => {
+                if (btn.getAttribute('data-tab') !== 'transactions') {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                if (content.id !== 'transactions-tab') {
+                    content.classList.remove('active');
+                }
+            });
+        }
+    } catch (error) {
+        console.error('❌ Error en initializeTabs:', error);
     }
 }
 
@@ -3954,6 +3980,7 @@ async function addEnvelope() {
 
 // Actualizar visualización
 function updateDisplay() {
+    console.log('🔄 updateDisplay() - Iniciando...');
     try {
         updateSummary();
         updateTransactionsTable();
@@ -3973,9 +4000,13 @@ function updateDisplay() {
         updateLoans();
         updateResidences();
         updateRecurringExpenses();
+        // Forzar actualización de inversiones y patrimonio siempre
+        console.log('🔄 updateDisplay - Llamando updateInvestments...');
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
-        updatePatrimonio(); // Actualizar patrimonio
+        // Forzar actualización de patrimonio siempre
+        console.log('🔄 updateDisplay - Llamando updatePatrimonio...');
+        updatePatrimonio();
         updateProperties(); // Actualizar propiedades
         updateMonthFilter();
         updateMonthDashboard();
@@ -8162,11 +8193,16 @@ async function addInvestment() {
 function updateInvestments() {
     const lang = localStorage.getItem('veedor_language') || 'es';
     const grid = document.getElementById('investmentsGrid');
-    if (!grid) return;
+    console.log('🔍 updateInvestments - grid:', grid, 'investments:', investments);
+    if (!grid) {
+        console.warn('⚠️ investmentsGrid no encontrado');
+        return;
+    }
     
     grid.innerHTML = '';
     
     if (investments.length === 0) {
+        console.log('ℹ️ No hay inversiones registradas');
         grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay inversiones registradas</p>';
         return;
     }
@@ -9491,11 +9527,16 @@ async function addPatrimonio() {
 // Actualizar patrimonio
 function updatePatrimonio() {
     const grid = document.getElementById('patrimonioGrid');
-    if (!grid) return;
+    console.log('🔍 updatePatrimonio - grid:', grid, 'patrimonio:', patrimonio);
+    if (!grid) {
+        console.warn('⚠️ patrimonioGrid no encontrado');
+        return;
+    }
     
     grid.innerHTML = '';
     
     if (patrimonio.length === 0) {
+        console.log('ℹ️ No hay patrimonio registrado');
         grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay propiedades registradas</p>';
         return;
     }
