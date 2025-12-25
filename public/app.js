@@ -2621,6 +2621,51 @@ function initializeForms() {
             e.preventDefault();
             await updateEnvelope();
         });
+        
+        // Inicializar categorías para sobres (solo gastos)
+        const envelopeCategoryGeneral = document.getElementById('envelopeCategoryGeneral');
+        const envelopeCategorySpecific = document.getElementById('envelopeCategorySpecific');
+        
+        const updateEnvelopeGeneralCategories = () => {
+            if (!envelopeCategoryGeneral) return;
+            envelopeCategoryGeneral.innerHTML = '<option value="">Seleccionar categoría...</option>';
+            
+            categories.expense.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                envelopeCategoryGeneral.appendChild(option);
+            });
+            
+            // Limpiar subcategorías cuando cambia la categoría general
+            if (envelopeCategorySpecific) {
+                envelopeCategorySpecific.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+            }
+        };
+        
+        const updateEnvelopeSpecificCategories = () => {
+            if (!envelopeCategorySpecific || !envelopeCategoryGeneral) return;
+            const selectedGeneral = envelopeCategoryGeneral.value;
+            envelopeCategorySpecific.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+            
+            if (!selectedGeneral) return;
+            
+            const category = categories.expense.find(c => c.id === selectedGeneral);
+            
+            if (category && category.subcategories && category.subcategories.length > 0) {
+                category.subcategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    envelopeCategorySpecific.appendChild(option);
+                });
+            }
+        };
+        
+        if (envelopeCategoryGeneral) {
+            envelopeCategoryGeneral.addEventListener('change', updateEnvelopeSpecificCategories);
+            updateEnvelopeGeneralCategories();
+        }
     }
     
     // Formulario de inversiones
@@ -3774,17 +3819,26 @@ async function addTransaction() {
 async function addEnvelope() {
     const nameEl = document.getElementById('envelopeName');
     const budgetEl = document.getElementById('envelopeBudget');
+    const categoryGeneralEl = document.getElementById('envelopeCategoryGeneral');
+    const categorySpecificEl = document.getElementById('envelopeCategorySpecific');
     
-    if (!nameEl || !budgetEl) {
+    if (!nameEl || !budgetEl || !categoryGeneralEl || !categorySpecificEl) {
         showToast('Error: No se encontraron todos los campos del formulario', 'error');
         return;
     }
     
     const name = nameEl.value.trim();
     const budget = parseFloat(budgetEl.value);
+    const category_general = categoryGeneralEl.value;
+    const category_specific = categorySpecificEl.value;
     
     if (!name || isNaN(budget) || budget < 0) {
         showToast('Por favor completa todos los campos correctamente', 'warning');
+        return;
+    }
+    
+    if (!category_general || !category_specific) {
+        showToast('Por favor selecciona categoría general y específica', 'warning');
         return;
     }
     
@@ -3792,7 +3846,12 @@ async function addEnvelope() {
         showLoader('Creando sobre...');
         const envelope = await apiRequest('/envelopes', {
             method: 'POST',
-            body: JSON.stringify({ name, budget })
+            body: JSON.stringify({ 
+                name, 
+                budget,
+                category_general,
+                category_specific
+            })
         });
         
         // Recargar datos desde el servidor para asegurar sincronización
@@ -4316,12 +4375,21 @@ function updateEnvelopes() {
         const patrimonioItem = envelope.patrimonio_id ? patrimonio.find(p => (p._id || p.id) === envelope.patrimonio_id) : null;
         const patrimonioName = patrimonioItem ? patrimonioItem.name : null;
         
+        // Obtener nombre de categoría si está asociada
+        let categoryDisplay = '';
+        if (envelope.category_general && envelope.category_specific) {
+            const category = categories.expense.find(c => c.id === envelope.category_general);
+            const categoryName = category ? category.name : envelope.category_general;
+            categoryDisplay = `<small style="font-size: 11px; color: var(--gray-500); display: block; margin-top: 4px;">${categoryName} - ${envelope.category_specific}</small>`;
+        }
+        
         const card = document.createElement('div');
         card.className = 'envelope-card';
         card.innerHTML = `
             <div style="margin-bottom: 8px;">
                 <h3 style="margin: 0 0 4px 0;">${envelope.name}</h3>
-                ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500);">${getTranslation('envelope.associatedTo', lang)}: ${patrimonioName}</small>` : ''}
+                ${categoryDisplay}
+                ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500); display: block; margin-top: 4px;">${getTranslation('envelope.associatedTo', lang)}: ${patrimonioName}</small>` : ''}
             </div>
             <div class="envelope-budget">${formatCurrency(envelope.budget)}</div>
             <div class="envelope-spent">${getTranslation('envelope.spent', lang)}: ${formatCurrency(spent)}</div>
@@ -5676,6 +5744,20 @@ async function editEnvelope(id) {
                         <small>Un nombre descriptivo para tu objetivo</small>
                     </div>
                     <div class="form-group">
+                        <label for="editEnvelopeCategoryGeneral">Categoría General</label>
+                        <select id="editEnvelopeCategoryGeneral" required>
+                            <option value="">Seleccionar categoría...</option>
+                        </select>
+                        <small>Elige la categoría general del sobre</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEnvelopeCategorySpecific">Categoría Específica</label>
+                        <select id="editEnvelopeCategorySpecific" required>
+                            <option value="">Seleccionar subcategoría...</option>
+                        </select>
+                        <small>Elige la subcategoría específica</small>
+                    </div>
+                    <div class="form-group">
                         <label for="editEnvelopeBudget">${getTranslation('budget.monthlyBudget', lang)}</label>
                         <input type="number" id="editEnvelopeBudget" step="0.01" min="0" required placeholder="0.00">
                         <small>Cuánto planeas ahorrar cada mes en este sobre</small>
@@ -5707,14 +5789,53 @@ async function editEnvelope(id) {
     // Pre-llenar formulario
     const nameEl = document.getElementById('editEnvelopeName');
     const budgetEl = document.getElementById('editEnvelopeBudget');
+    const categoryGeneralEl = document.getElementById('editEnvelopeCategoryGeneral');
+    const categorySpecificEl = document.getElementById('editEnvelopeCategorySpecific');
     
-    if (!nameEl || !budgetEl) {
+    if (!nameEl || !budgetEl || !categoryGeneralEl || !categorySpecificEl) {
         showToast('Error: No se encontraron todos los campos del formulario', 'error');
         return;
     }
     
     nameEl.value = envelope.name;
     budgetEl.value = envelope.budget || 0;
+    
+    // Inicializar categorías en el modal
+    categoryGeneralEl.innerHTML = '<option value="">Seleccionar categoría...</option>';
+    categories.expense.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.name;
+        if (envelope.category_general === cat.id) {
+            option.selected = true;
+        }
+        categoryGeneralEl.appendChild(option);
+    });
+    
+    // Actualizar subcategorías según la categoría general seleccionada
+    const updateEditEnvelopeSpecificCategories = () => {
+        const selectedGeneral = categoryGeneralEl.value;
+        categorySpecificEl.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+        
+        if (!selectedGeneral) return;
+        
+        const category = categories.expense.find(c => c.id === selectedGeneral);
+        
+        if (category && category.subcategories && category.subcategories.length > 0) {
+            category.subcategories.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.textContent = sub;
+                if (envelope.category_specific === sub) {
+                    option.selected = true;
+                }
+                categorySpecificEl.appendChild(option);
+            });
+        }
+    };
+    
+    categoryGeneralEl.addEventListener('change', updateEditEnvelopeSpecificCategories);
+    updateEditEnvelopeSpecificCategories();
     
     // Mostrar modal
     modal.style.display = 'flex';
@@ -5736,24 +5857,38 @@ async function updateEnvelopeFromModal() {
     try {
         const nameEl = document.getElementById('editEnvelopeName');
         const budgetEl = document.getElementById('editEnvelopeBudget');
+        const categoryGeneralEl = document.getElementById('editEnvelopeCategoryGeneral');
+        const categorySpecificEl = document.getElementById('editEnvelopeCategorySpecific');
         
-        if (!nameEl || !budgetEl) {
+        if (!nameEl || !budgetEl || !categoryGeneralEl || !categorySpecificEl) {
             showToast('Error: No se encontraron todos los campos del formulario', 'error');
             return;
         }
         
         const name = nameEl.value.trim();
         const budget = parseFloat(budgetEl.value);
+        const category_general = categoryGeneralEl.value;
+        const category_specific = categorySpecificEl.value;
         
         if (!name || isNaN(budget) || budget < 0) {
             showToast('Por favor completa todos los campos correctamente', 'warning');
             return;
         }
         
+        if (!category_general || !category_specific) {
+            showToast('Por favor selecciona categoría general y específica', 'warning');
+            return;
+        }
+        
         showLoader('Actualizando sobre...');
         await apiRequest(`/envelopes/${currentEditingEnvelopeId}`, {
             method: 'PUT',
-            body: JSON.stringify({ name, budget })
+            body: JSON.stringify({ 
+                name, 
+                budget,
+                category_general,
+                category_specific
+            })
         });
         
         await loadUserData();
@@ -5779,24 +5914,38 @@ async function updateEnvelope() {
     try {
         const nameEl = document.getElementById('envelopeName');
         const budgetEl = document.getElementById('envelopeBudget');
+        const categoryGeneralEl = document.getElementById('envelopeCategoryGeneral');
+        const categorySpecificEl = document.getElementById('envelopeCategorySpecific');
         
-        if (!nameEl || !budgetEl) {
+        if (!nameEl || !budgetEl || !categoryGeneralEl || !categorySpecificEl) {
             showToast('Error: No se encontraron todos los campos del formulario', 'error');
             return;
         }
         
         const name = nameEl.value.trim();
         const budget = parseFloat(budgetEl.value);
+        const category_general = categoryGeneralEl.value;
+        const category_specific = categorySpecificEl.value;
         
         if (!name || isNaN(budget) || budget < 0) {
             showToast('Por favor completa todos los campos correctamente', 'warning');
             return;
         }
         
+        if (!category_general || !category_specific) {
+            showToast('Por favor selecciona categoría general y específica', 'warning');
+            return;
+        }
+        
         showLoader('Actualizando sobre...');
         await apiRequest(`/envelopes/${currentEditingEnvelopeId}`, {
             method: 'PUT',
-            body: JSON.stringify({ name, budget })
+            body: JSON.stringify({ 
+                name, 
+                budget,
+                category_general,
+                category_specific
+            })
         });
         
         await loadUserData();
@@ -5817,6 +5966,25 @@ function resetEnvelopeForm() {
     const form = document.getElementById('envelopeForm');
     if (form) {
         form.reset();
+        
+        // Reinicializar categorías
+        const categoryGeneralEl = document.getElementById('envelopeCategoryGeneral');
+        const categorySpecificEl = document.getElementById('envelopeCategorySpecific');
+        
+        if (categoryGeneralEl) {
+            categoryGeneralEl.innerHTML = '<option value="">Seleccionar categoría...</option>';
+            categories.expense.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categoryGeneralEl.appendChild(option);
+            });
+        }
+        
+        if (categorySpecificEl) {
+            categorySpecificEl.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+        }
+        
         const submitBtn = document.getElementById('envelopeSubmitBtn') || form.querySelector('button[type="submit"]');
         const cancelBtn = document.getElementById('envelopeCancelBtn');
         

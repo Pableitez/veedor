@@ -821,6 +821,22 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
+                                        <label for="envelopeCategoryGeneral">Categoría General</label>
+                                        <select id="envelopeCategoryGeneral" required>
+                                            <option value="">Seleccionar categoría...</option>
+                                        </select>
+                                        <small>Elige la categoría general del sobre</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="envelopeCategorySpecific">Categoría Específica</label>
+                                        <select id="envelopeCategorySpecific" required>
+                                            <option value="">Seleccionar subcategoría...</option>
+                                        </select>
+                                        <small>Elige la subcategoría específica</small>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
                                         <label for="envelopeBudget">Presupuesto Mensual (€)</label>
                                         <input type="number" id="envelopeBudget" step="0.01" min="0" required placeholder="0.00">
                                         <small>Cuánto planeas ahorrar cada mes en este sobre</small>

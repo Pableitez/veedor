@@ -87,6 +87,8 @@ const envelopeSchema = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
     budget: { type: Number, required: true },
+    category_general: { type: String, default: null }, // Categoría general (igual que transacciones)
+    category_specific: { type: String, default: null }, // Subcategoría específica (igual que transacciones)
     patrimonio_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patrimonio', default: null }, // ID del patrimonio asociado (opcional)
     created_at: { type: Date, default: Date.now }
 });
@@ -1670,7 +1672,7 @@ app.get('/api/envelopes', authenticateToken, async (req, res) => {
 // Crear sobre
 app.post('/api/envelopes', authenticateToken, async (req, res) => {
     try {
-        const { name, budget, patrimonio_id } = req.body;
+        const { name, budget, category_general, category_specific, patrimonio_id } = req.body;
 
         if (!name || budget === undefined) {
             return res.status(400).json({ error: 'Nombre y presupuesto requeridos' });
@@ -1680,6 +1682,8 @@ app.post('/api/envelopes', authenticateToken, async (req, res) => {
             user_id: req.user.userId,
             name,
             budget,
+            category_general: category_general || null,
+            category_specific: category_specific || null,
             patrimonio_id: patrimonio_id || null
         });
 
@@ -1694,7 +1698,7 @@ app.post('/api/envelopes', authenticateToken, async (req, res) => {
 // Actualizar sobre
 app.put('/api/envelopes/:id', authenticateToken, async (req, res) => {
     try {
-        const { name, budget, patrimonio_id } = req.body;
+        const { name, budget, category_general, category_specific, patrimonio_id } = req.body;
 
         if (!name || budget === undefined) {
             return res.status(400).json({ error: 'Nombre y presupuesto requeridos' });
@@ -1704,7 +1708,9 @@ app.put('/api/envelopes/:id', authenticateToken, async (req, res) => {
             { _id: req.params.id, user_id: req.user.userId },
             { 
                 name, 
-                budget, 
+                budget,
+                category_general: category_general || null,
+                category_specific: category_specific || null,
                 patrimonio_id: patrimonio_id || null
             },
             { new: true }
