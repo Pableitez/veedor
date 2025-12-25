@@ -4770,19 +4770,12 @@ function toggleBudgetTarget() {
         if (categorySpecificGroup) categorySpecificGroup.style.display = 'block';
         if (categoryGeneralSelect) categoryGeneralSelect.required = true;
         if (categorySpecificSelect) categorySpecificSelect.required = true;
-    } else if (targetType === 'property') {
-        if (propertyGroup) propertyGroup.style.display = 'block';
-        if (propertySelect) {
-            propertySelect.required = true;
-            // Actualizar selector de propiedades
-            updatePropertySelectForBudget('budgetProperty');
-        }
     } else if (targetType === 'patrimonio') {
         if (patrimonioGroup) patrimonioGroup.style.display = 'block';
         if (patrimonioSelect) {
-        patrimonioSelect.required = true;
-        // Actualizar selector de patrimonio
-        updatePatrimonioSelect('budgetPatrimonio');
+            patrimonioSelect.required = true;
+            // Actualizar selector de patrimonio
+            updatePatrimonioSelect('budgetPatrimonio');
         }
     }
 }
@@ -4898,7 +4891,6 @@ async function addBudget() {
     const targetType = document.getElementById('budgetTargetType').value;
     const category_general = targetType === 'category' ? document.getElementById('budgetCategoryGeneral')?.value : null;
     const category_specific = targetType === 'category' ? document.getElementById('budgetCategorySpecific')?.value : null;
-    const property_id = targetType === 'property' ? document.getElementById('budgetProperty')?.value : null;
     const patrimonio_id = targetType === 'patrimonio' ? document.getElementById('budgetPatrimonio')?.value : null;
     const amount = parseFloat(document.getElementById('budgetAmount').value);
     const period_type = document.getElementById('budgetPeriodType').value;
@@ -4943,11 +4935,6 @@ async function addBudget() {
             showToast('Por favor selecciona categoría general y específica', 'warning');
             return;
         }
-    } else if (targetType === 'property') {
-        if (!property_id) {
-            showToast('Por favor selecciona una propiedad', 'warning');
-            return;
-        }
     } else if (targetType === 'patrimonio') {
         if (!patrimonio_id) {
             showToast('Por favor selecciona un patrimonio', 'warning');
@@ -4976,7 +4963,6 @@ async function addBudget() {
                     body: JSON.stringify({
                         category_general: category_general || null,
                         category_specific: category_specific || null,
-                        property_id: property_id || null,
                         patrimonio_id: patrimonio_id || null,
                         amount,
                         period_type,
