@@ -2220,7 +2220,9 @@ function switchToTab(targetTab, doScroll = false) {
     
     // Actualizar gráficas y análisis cuando se cambia al tab de análisis
     if (targetTab === 'charts') {
+        console.log('📊 Cambiando a tab de análisis, llamando updateCharts...');
         setTimeout(() => {
+            console.log('⏰ Ejecutando updateCharts después del timeout');
             updateCharts();
         }, 100);
     }
@@ -3980,7 +3982,6 @@ async function addEnvelope() {
 
 // Actualizar visualización
 function updateDisplay() {
-    console.log('🔄 updateDisplay() - Iniciando...');
     try {
         updateSummary();
         updateTransactionsTable();
@@ -4000,12 +4001,8 @@ function updateDisplay() {
         updateLoans();
         updateResidences();
         updateRecurringExpenses();
-        // Forzar actualización de inversiones y patrimonio siempre
-        console.log('🔄 updateDisplay - Llamando updateInvestments...');
         updateInvestments();
         updateBudgets(); // Asegurar que los presupuestos se actualicen
-        // Forzar actualización de patrimonio siempre
-        console.log('🔄 updateDisplay - Llamando updatePatrimonio...');
         updatePatrimonio();
         updateProperties(); // Actualizar propiedades
         updateMonthFilter();
@@ -8201,7 +8198,7 @@ function updateInvestments() {
     
     grid.innerHTML = '';
     
-    if (investments.length === 0) {
+    if (!investments || investments.length === 0) {
         console.log('ℹ️ No hay inversiones registradas');
         grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay inversiones registradas</p>';
         return;
@@ -16956,19 +16953,20 @@ function initializeChartsLazy() {
 }
 
 // Modificar switchToTab para inicializar gráficos lazy
-const originalSwitchToTab = switchToTab;
-switchToTab = function(tabName, doScroll) {
-    if (originalSwitchToTab) {
-        originalSwitchToTab(tabName, doScroll);
+// Guardar la función original antes de sobrescribirla
+const originalSwitchToTabFunction = window.switchToTab;
+window.switchToTab = function(tabName, doScroll) {
+    console.log('🔄 switchToTab (wrapper) llamado con:', tabName);
+    // Llamar a la función original si existe
+    if (originalSwitchToTabFunction) {
+        originalSwitchToTabFunction(tabName, doScroll);
     }
     
+    // Inicializar gráficos lazy si es necesario
     if (tabName === 'charts' && !chartsInitialized) {
         initializeChartsLazy();
     }
 };
-
-// Exponer función global
-window.switchToTab = switchToTab;
 
 // ==================== DEBOUNCE UTILITY ====================
 function debounce(func, wait) {
