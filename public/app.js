@@ -9692,9 +9692,8 @@ function getAccountTransactionsSection(account) {
         return dateB - dateA;
     });
     
-    // Mostrar solo las últimas 5 transacciones
-    const transactionsToShow = sortedTransactions.slice(0, 5);
-    const hasMore = sortedTransactions.length > 5;
+    // Mostrar todas las transacciones
+    const transactionsToShow = sortedTransactions;
     
     // Calcular totales
     const totalIncome = accountTransactions
@@ -9758,11 +9757,6 @@ function getAccountTransactionsSection(account) {
                         </div>
                     `;
                 }).join('')}
-                ${hasMore ? `
-                    <div style="text-align: center; padding: 8px; color: var(--text-tertiary); font-size: 11px;">
-                        +${sortedTransactions.length - 5} transacciones más
-                    </div>
-                ` : ''}
             </div>
         </div>
     `;
