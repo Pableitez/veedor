@@ -931,7 +931,7 @@ async function checkAuth() {
             // Esperar a que el DOM esté completamente listo antes de actualizar
             setTimeout(() => {
                 console.log('🔄 checkAuth: Llamando a updateDisplay después de inicializar...');
-                updateDisplay();
+            updateDisplay();
             }, 100);
             initializeCharts();
             // Actualizar gráficas después de inicializarlas
@@ -4468,7 +4468,6 @@ function updateTransactionsTable() {
                     </svg>
                 </button>
             </td>
-            <td></td>
         `;
         tbody.appendChild(row);
     });
@@ -4847,9 +4846,9 @@ function toggleBudgetTarget() {
     } else if (targetType === 'patrimonio') {
         if (patrimonioGroup) patrimonioGroup.style.display = 'block';
         if (patrimonioSelect) {
-            patrimonioSelect.required = true;
-            // Actualizar selector de patrimonio
-            updatePatrimonioSelect('budgetPatrimonio');
+        patrimonioSelect.required = true;
+        // Actualizar selector de patrimonio
+        updatePatrimonioSelect('budgetPatrimonio');
         }
     }
 }
@@ -5270,19 +5269,19 @@ function updateBudgets() {
             if (budgetIdStr !== tBudgetIdStr) return false;
             
             // Verificar que esté en el período correcto
-            const tDate = new Date(t.date);
-            if (budget.period_type === 'monthly') {
-                const budgetMonth = new Date(budget.period_value + '-01');
+                const tDate = new Date(t.date);
+                if (budget.period_type === 'monthly') {
+                    const budgetMonth = new Date(budget.period_value + '-01');
                 return tDate.getMonth() === budgetMonth.getMonth() && 
-                       tDate.getFullYear() === budgetMonth.getFullYear();
-            } else if (budget.period_type === 'yearly') {
+                                      tDate.getFullYear() === budgetMonth.getFullYear();
+                } else if (budget.period_type === 'yearly') {
                 return tDate.getFullYear() === parseInt(budget.period_value);
-            } else if (budget.period_type === 'weekly') {
-                const weekStart = new Date(budget.period_value);
-                const weekEnd = new Date(weekStart);
-                weekEnd.setDate(weekEnd.getDate() + 6);
+                } else if (budget.period_type === 'weekly') {
+                    const weekStart = new Date(budget.period_value);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
                 return tDate >= weekStart && tDate <= weekEnd;
-            }
+                }
             return false;
         });
         
@@ -8636,7 +8635,7 @@ function updateInvestments() {
                                         <div class="periodic-contribution-completed-actions">
                                             <button class="btn-secondary" onclick="editCompletedContribution('${investment._id || investment.id}', ${contributionIndex})" style="padding: 6px 12px; font-size: 12px; min-height: 32px;">Editar</button>
                                             <button class="btn-danger" onclick="deleteCompletedContribution('${investment._id || investment.id}', ${contributionIndex})" style="padding: 6px 12px; font-size: 12px; min-height: 32px;">Eliminar</button>
-                                        </div>
+                                    </div>
                                     </div>
                                 `;
                                 }).join('')}
@@ -8729,7 +8728,7 @@ function showAddMoneyInvestmentModal(id) {
                 <div><strong>Total Invertido:</strong></div>
                 <div style="text-align: right; font-weight: 600; color: ${totalInvested === 0 ? 'var(--danger)' : 'inherit'};">
                     ${formatCurrency(totalInvested)}
-                </div>
+            </div>
             </div>
             ${hasValueButNoContributions ? `
                 <div style="margin-top: 12px; padding: 12px; background: rgba(255, 193, 7, 0.1); border-radius: var(--radius); border-left: 3px solid #FFC107;">
