@@ -9662,6 +9662,121 @@ function updateAccounts() {
     grid.appendChild(summaryCard);
 }
 
+// Obtener sección de transacciones de una cuenta
+function getAccountTransactionsSection(account) {
+    const accountId = account._id || account.id;
+    
+    // Filtrar transacciones asociadas a esta cuenta
+    const accountTransactions = transactions.filter(t => {
+        const tAccountId = t.account_id || t.accountId;
+        if (!tAccountId) return false;
+        return tAccountId.toString() === accountId.toString();
+    });
+    
+    if (accountTransactions.length === 0) {
+        return `
+            <div style="margin: 12px 0; padding: 12px; background: rgba(147, 51, 234, 0.05); border-radius: var(--radius); border-left: 3px solid var(--primary);">
+                <div style="font-size: 12px; color: var(--gray-600); text-align: center;">
+                    💡 No hay transacciones asociadas a esta cuenta
+                </div>
+            </div>
+        `;
+    }
+    
+    // Ordenar por fecha (más recientes primero)
+    const sortedTransactions = [...accountTransactions].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+    });
+    
+    // Mostrar solo las últimas 5 transacciones
+    const transactionsToShow = sortedTransactions.slice(0, 5);
+    const hasMore = sortedTransactions.length > 5;
+    
+    // Calcular totales
+    const totalIncome = accountTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const totalExpenses = accountTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    return `
+        <div style="margin: 12px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">
+                    Transacciones (${accountTransactions.length})
+                </div>
+                <button onclick="toggleAccountTransactions('${accountId}')" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">
+                    <span id="accountTransactionsToggle_${accountId}">Ver</span>
+                </button>
+            </div>
+            <div style="margin-bottom: 8px; padding: 8px; background: var(--gray-50); border-radius: var(--radius); font-size: 12px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">Ingresos:</span>
+                    <span style="color: var(--success); font-weight: 600;">+${formatCurrency(totalIncome)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                    <span style="color: var(--text-secondary);">Gastos:</span>
+                    <span style="color: var(--danger); font-weight: 600;">-${formatCurrency(totalExpenses)}</span>
+                </div>
+            </div>
+            <div id="accountTransactions_${accountId}" style="display: none; max-height: 300px; overflow-y: auto;">
+                ${transactionsToShow.map(t => {
+                    const tDate = new Date(t.date);
+                    const isCurrentMonth = tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+                    const isExpense = t.type === 'expense';
+                    const amount = Math.abs(t.amount);
+                    const categoryName = categories.general.find(c => c.id === t.categoryGeneral)?.name || t.categoryGeneral;
+                    const dateStr = tDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    
+                    return `
+                        <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: ${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}; border-radius: 8px; border: 1px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}; border-left: 3px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'}; margin-bottom: 6px; transition: all 0.2s;" onmouseover="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.08)' : 'var(--bg-primary)'}'; this.style.borderColor='var(--primary)'" onmouseout="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}'; this.style.borderColor='${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}'">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; width: 100%;">
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
+                                        ${dateStr}
+                                        ${isCurrentMonth ? '<span style="font-size: 10px; background: var(--primary); color: white; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Este mes</span>' : ''}
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">${categoryName} - ${t.categorySpecific}</div>
+                                    ${t.description ? `<div style="font-size: 11px; color: var(--text-secondary); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">${t.description}</div>` : ''}
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;">
+                                    <span style="font-size: 14px; font-weight: 700; color: ${isExpense ? 'var(--danger)' : 'var(--success)'}; white-space: nowrap;">
+                                        ${isExpense ? '-' : '+'}${formatCurrency(amount)}
+                                    </span>
+                                    <button onclick="editTransaction('${t._id || t.id}')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); min-width: 80px; min-height: 36px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.2)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.15)'" ontouchstart="this.style.background='var(--primary-dark)'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--primary)'; this.style.transform='scale(1)'">Editar</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+                ${hasMore ? `
+                    <div style="text-align: center; padding: 8px; color: var(--text-tertiary); font-size: 11px;">
+                        +${sortedTransactions.length - 5} transacciones más
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+}
+
+// Toggle para mostrar/ocultar transacciones de una cuenta
+function toggleAccountTransactions(accountId) {
+    const transactionsDiv = document.getElementById(`accountTransactions_${accountId}`);
+    const toggleBtn = document.getElementById(`accountTransactionsToggle_${accountId}`);
+    if (transactionsDiv && toggleBtn) {
+        const isVisible = transactionsDiv.style.display !== 'none';
+        transactionsDiv.style.display = isVisible ? 'none' : 'block';
+        toggleBtn.textContent = isVisible ? 'Ver' : 'Ocultar';
+    }
+}
+
 // Variable global para el ID de cuenta actual
 let currentAccountId = null;
 
