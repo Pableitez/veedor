@@ -9713,8 +9713,8 @@ function getAccountTransactionsSection(account) {
                 <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">
                     Transacciones (${accountTransactions.length})
                 </div>
-                <button onclick="toggleAccountTransactions('${accountId}')" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">
-                    <span id="accountTransactionsToggle_${accountId}">Ver</span>
+                <button onclick="showAccountTransactionsModal('${accountId}')" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">
+                    Ver Transacciones
                 </button>
             </div>
             <div style="margin-bottom: 8px; padding: 8px; background: var(--gray-50); border-radius: var(--radius); font-size: 12px;">
@@ -9727,50 +9727,118 @@ function getAccountTransactionsSection(account) {
                     <span style="color: var(--danger); font-weight: 600;">-${formatCurrency(totalExpenses)}</span>
                 </div>
             </div>
-            <div id="accountTransactions_${accountId}" style="display: none; max-height: 300px; overflow-y: auto;">
-                ${transactionsToShow.map(t => {
-                    const tDate = new Date(t.date);
-                    const isCurrentMonth = tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
-                    const isExpense = t.type === 'expense';
-                    const amount = Math.abs(t.amount);
-                    const categoryName = categories.general.find(c => c.id === t.categoryGeneral)?.name || t.categoryGeneral;
-                    const dateStr = tDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                    
-                    return `
-                        <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: ${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}; border-radius: 8px; border: 1px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}; border-left: 3px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'}; margin-bottom: 6px; transition: all 0.2s;" onmouseover="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.08)' : 'var(--bg-primary)'}'; this.style.borderColor='var(--primary)'" onmouseout="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}'; this.style.borderColor='${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}'">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; width: 100%;">
-                                <div style="flex: 1; min-width: 0;">
-                                    <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
-                                        ${dateStr}
-                                        ${isCurrentMonth ? '<span style="font-size: 10px; background: var(--primary); color: white; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Este mes</span>' : ''}
-                                    </div>
-                                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">${categoryName} - ${t.categorySpecific}</div>
-                                    ${t.description ? `<div style="font-size: 11px; color: var(--text-secondary); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">${t.description}</div>` : ''}
-                                </div>
-                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;">
-                                    <span style="font-size: 14px; font-weight: 700; color: ${isExpense ? 'var(--danger)' : 'var(--success)'}; white-space: nowrap;">
-                                        ${isExpense ? '-' : '+'}${formatCurrency(amount)}
-                                    </span>
-                                    <button onclick="editTransaction('${t._id || t.id}')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); min-width: 80px; min-height: 36px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.2)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.15)'" ontouchstart="this.style.background='var(--primary-dark)'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--primary)'; this.style.transform='scale(1)'">Editar</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
         </div>
     `;
 }
 
-// Toggle para mostrar/ocultar transacciones de una cuenta
-function toggleAccountTransactions(accountId) {
-    const transactionsDiv = document.getElementById(`accountTransactions_${accountId}`);
-    const toggleBtn = document.getElementById(`accountTransactionsToggle_${accountId}`);
-    if (transactionsDiv && toggleBtn) {
-        const isVisible = transactionsDiv.style.display !== 'none';
-        transactionsDiv.style.display = isVisible ? 'none' : 'block';
-        toggleBtn.textContent = isVisible ? 'Ver' : 'Ocultar';
+// Mostrar modal de transacciones de una cuenta
+function showAccountTransactionsModal(accountId) {
+    const account = accounts.find(acc => (acc._id || acc.id) === accountId);
+    if (!account) return;
+    
+    const modal = document.getElementById('accountTransactionsModal');
+    const titleEl = document.getElementById('accountTransactionsModalTitle');
+    const summaryEl = document.getElementById('accountTransactionsModalSummary');
+    const contentEl = document.getElementById('accountTransactionsModalContent');
+    
+    if (!modal || !titleEl || !summaryEl || !contentEl) return;
+    
+    // Filtrar transacciones asociadas a esta cuenta
+    const accountTransactions = transactions.filter(t => {
+        const tAccountId = t.account_id || t.accountId;
+        if (!tAccountId) return false;
+        return tAccountId.toString() === accountId.toString();
+    });
+    
+    // Ordenar por fecha (más recientes primero)
+    const sortedTransactions = [...accountTransactions].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+    });
+    
+    // Calcular totales
+    const totalIncome = accountTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const totalExpenses = accountTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Actualizar título
+    titleEl.textContent = `Transacciones - ${account.name}`;
+    
+    // Actualizar resumen
+    summaryEl.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+            <div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Total Transacciones</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">${accountTransactions.length}</div>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Ingresos</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--success);">+${formatCurrency(totalIncome)}</div>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Gastos</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--danger);">-${formatCurrency(totalExpenses)}</div>
+            </div>
+        </div>
+    `;
+    
+    // Actualizar contenido
+    if (sortedTransactions.length === 0) {
+        contentEl.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--text-tertiary);">
+                <p style="font-size: 16px;">No hay transacciones asociadas a esta cuenta</p>
+            </div>
+        `;
+    } else {
+        contentEl.innerHTML = sortedTransactions.map(t => {
+            const tDate = new Date(t.date);
+            const isCurrentMonth = tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            const isExpense = t.type === 'expense';
+            const amount = Math.abs(t.amount);
+            const categoryName = categories.general.find(c => c.id === t.categoryGeneral)?.name || t.categoryGeneral;
+            const dateStr = tDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            
+            return `
+                <div style="display: flex; flex-direction: column; gap: 8px; padding: 16px; background: ${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}; border-radius: 8px; border: 1px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}; border-left: 3px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'}; margin-bottom: 12px; transition: all 0.2s;" onmouseover="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.08)' : 'var(--bg-primary)'}'; this.style.borderColor='var(--primary)'" onmouseout="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}'; this.style.borderColor='${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}'">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; width: 100%;">
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                                ${dateStr}
+                                ${isCurrentMonth ? '<span style="font-size: 11px; background: var(--primary); color: white; padding: 4px 10px; border-radius: 4px; font-weight: 600;">Este mes</span>' : ''}
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 6px;">${categoryName} - ${t.categorySpecific}</div>
+                            ${t.description ? `<div style="font-size: 12px; color: var(--text-secondary); font-style: italic; word-wrap: break-word; overflow-wrap: break-word;">${t.description}</div>` : ''}
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0;">
+                            <span style="font-size: 16px; font-weight: 700; color: ${isExpense ? 'var(--danger)' : 'var(--success)'}; white-space: nowrap;">
+                                ${isExpense ? '-' : '+'}${formatCurrency(amount)}
+                            </span>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="editTransaction('${t._id || t.id}'); closeAccountTransactionsModal();" style="background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); min-width: 90px; min-height: 38px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.2)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.15)'" ontouchstart="this.style.background='var(--primary-dark)'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--primary)'; this.style.transform='scale(1)'">Editar</button>
+                                <button onclick="if(confirm('¿Estás seguro de que quieres eliminar esta transacción?')) { deleteTransaction('${t._id || t.id}'); }" style="background: var(--danger); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); min-width: 90px; min-height: 38px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onmouseover="this.style.background='#E02D21'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.2)'" onmouseout="this.style.background='var(--danger)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.15)'" ontouchstart="this.style.background='#E02D21'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--danger)'; this.style.transform='scale(1)'">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
+    
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de transacciones de cuenta
+function closeAccountTransactionsModal() {
+    const modal = document.getElementById('accountTransactionsModal');
+    if (modal) modal.style.display = 'none';
 }
 
 // Variable global para el ID de cuenta actual
@@ -10039,7 +10107,8 @@ window.editAccount = editAccount;
 window.deleteAccount = deleteAccount;
 window.showUpdateAccountBalanceModal = showUpdateAccountBalanceModal;
 window.closeUpdateAccountBalanceModal = closeUpdateAccountBalanceModal;
-window.toggleAccountTransactions = toggleAccountTransactions;
+window.showAccountTransactionsModal = showAccountTransactionsModal;
+window.closeAccountTransactionsModal = closeAccountTransactionsModal;
 
 // ==================== PATRIMONIO ====================
 
