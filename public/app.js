@@ -9631,6 +9631,8 @@ function updateAccounts() {
             
             ${account.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${account.description}</div>` : ''}
             
+            ${getAccountTransactionsSection(account)}
+            
             <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
                 <button class="btn-secondary" onclick="editAccount('${account._id || account.id}')" style="flex: 1;">Editar</button>
                 <button class="btn-danger" onclick="deleteAccount('${account._id || account.id}')" style="flex: 1;">Eliminar</button>
