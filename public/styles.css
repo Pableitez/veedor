@@ -2945,10 +2945,14 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 
 /* Asegurar que la tabla tenga un ancho mínimo para activar scroll horizontal si es necesario */
 @media (min-width: 769px) {
+    #transactionsTable {
+        min-width: 100%;
+        width: max-content;
+    }
+    
     #transactionsTableContainer {
         overflow-x: auto !important;
         overflow-y: auto !important;
-        width: 100%;
     }
 }
 
@@ -3061,18 +3065,11 @@ table {
     color: var(--text-primary);
 }
 
-/* Permitir que la tabla de transacciones se expanda más allá del contenedor */
-#transactionsTable {
-    width: auto;
-    min-width: 100%;
-}
-
 /* Tabla de transacciones - En desktop mostrar todas las columnas con anchos ajustados */
 @media (min-width: 769px) {
     #transactionsTable {
         table-layout: auto;
-        width: auto;
-        min-width: 100%;
+        width: 100%;
     }
     
     /* En desktop, todas las columnas visibles con anchos automáticos */
@@ -3139,6 +3136,8 @@ table {
 #transactionsTable thead th:nth-child(8),
 #transactionsTable tbody td:nth-child(8) {
     text-align: right;
+    vertical-align: top;
+    padding: 14px 16px;
 }
 
 thead {
