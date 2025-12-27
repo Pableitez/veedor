@@ -2044,13 +2044,19 @@ body.dark-mode .more-tab-item:hover {
         display: none !important;
     }
     
-    /* Ajustar columna de acciones en móvil */
+    /* Ajustar columna de editar/eliminar en móvil */
     #transactionsTable thead th:nth-child(9),
     #transactionsTable tbody td:nth-child(9) {
         display: table-cell !important;
         min-width: 80px !important;
         padding: 8px 2px !important;
         vertical-align: middle !important;
+    }
+    
+    /* Ocultar columna de acciones en móvil */
+    #transactionsTable thead th:nth-child(10),
+    #transactionsTable tbody td:nth-child(10) {
+        display: none !important;
     }
     
     /* Hacer botones de acciones más integrados en móvil - iconos compactos */
