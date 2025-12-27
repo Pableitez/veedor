@@ -1838,16 +1838,16 @@
 
     <!-- Modal para Transacciones de Cuenta -->
     <div id="accountTransactionsModal" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 900px; max-height: 90vh;">
-            <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); flex-shrink: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 id="accountTransactionsModalTitle" style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Transacciones</h2>
                     <button onclick="closeAccountTransactionsModal()" style="background: rgba(255,255,255,0.2);  border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
                 </div>
             </div>
-            <div style="padding: 32px; max-height: calc(90vh - 100px); overflow-y: auto;">
-                <div id="accountTransactionsModalSummary" style="margin-bottom: 24px; padding: 16px; background: var(--gray-50); border-radius: var(--radius);"></div>
-                <div id="accountTransactionsModalContent"></div>
+            <div style="padding: 32px; overflow-y: auto; overflow-x: hidden; flex: 1; min-height: 0;">
+                <div id="accountTransactionsModalSummary" style="margin-bottom: 24px; padding: 16px; background: var(--gray-50); border-radius: var(--radius); flex-shrink: 0;"></div>
+                <div id="accountTransactionsModalContent" style="min-height: 0;"></div>
             </div>
         </div>
     </div>
