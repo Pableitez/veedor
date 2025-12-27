@@ -7820,9 +7820,14 @@ async function addRecurringExpense() {
 
 // Actualizar visualización de gastos recurrentes
 function updateRecurringExpenses() {
+    console.log('🔄 updateRecurringExpenses: Iniciando...', { count: recurringExpenses?.length || 0 });
     const lang = localStorage.getItem('veedor_language') || 'es';
     const grid = document.getElementById('recurringExpensesGrid');
-    if (!grid) return;
+    if (!grid) {
+        console.error('❌ updateRecurringExpenses: recurringExpensesGrid no encontrado');
+        return;
+    }
+    console.log('✅ updateRecurringExpenses: Grid encontrado');
     
     grid.innerHTML = '';
     
@@ -7949,8 +7954,9 @@ function updateRecurringExpenses() {
         }
     }
     
-    // Agrupar gastos para mostrar
+    // Agrupar gastos para mostrar (TODOS los gastos, no solo activos)
     const groupedExpenses = {};
+    console.log('🔄 updateRecurringExpenses: Agrupando gastos...', { total: recurringExpenses.length });
     recurringExpenses.forEach(expense => {
         const groupKey = expense.expense_group || 'Sin grupo';
         if (!groupedExpenses[groupKey]) {
@@ -7958,6 +7964,7 @@ function updateRecurringExpenses() {
         }
         groupedExpenses[groupKey].push(expense);
     });
+    console.log('🔄 updateRecurringExpenses: Grupos creados', Object.keys(groupedExpenses));
     
     // Mostrar gastos agrupados
     Object.keys(groupedExpenses).sort((a, b) => {
@@ -8087,6 +8094,8 @@ function updateRecurringExpenses() {
         grid.appendChild(card);
         });
     });
+    
+    console.log('✅ updateRecurringExpenses: Completado', { cardsAdded: grid.children.length });
 }
 
 // Editar gasto recurrente
@@ -8217,7 +8226,10 @@ async function updateRecurringExpense(id) {
 async function toggleRecurringExpense(id, activate) {
     try {
         const expense = recurringExpenses.find(e => (e._id || e.id) === id);
-        if (!expense) return;
+        if (!expense) {
+            console.error('❌ toggleRecurringExpense: Gasto no encontrado', id);
+            return;
+        }
         
         await apiRequest(`/recurring-expenses/${id}`, {
             method: 'PUT',
@@ -8256,6 +8268,11 @@ async function deleteRecurringExpense(id) {
         showToast('Error al eliminar gasto recurrente: ' + (error.message || 'Error desconocido'), 'error');
     }
 }
+
+// Exponer funciones globalmente
+window.deleteRecurringExpense = deleteRecurringExpense;
+window.editRecurringExpense = editRecurringExpense;
+window.toggleRecurringExpense = toggleRecurringExpense;
 
 // Generar transacciones automáticas desde gastos recurrentes
 async function generateRecurringExpenseTransactions() {
