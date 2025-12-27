@@ -8700,6 +8700,7 @@ function showAddMoneyInvestmentModal(id) {
     const modal = document.getElementById('addMoneyInvestmentModal');
     const titleEl = document.getElementById('addMoneyInvestmentTitle');
     const infoEl = document.getElementById('addMoneyInvestmentInfo');
+    const dateInput = document.getElementById('addMoneyDate');
     
     if (!modal || !titleEl || !infoEl) return;
     
@@ -8707,14 +8708,35 @@ function showAddMoneyInvestmentModal(id) {
     const investment = investments.find(inv => (inv._id || inv.id) === id);
     if (investment) {
         titleEl.textContent = `Añadir Dinero a ${investment.name}`;
+        const totalInvested = (investment.contributions || []).reduce((sum, c) => sum + c.amount, 0);
+        const hasContributions = investment.contributions && investment.contributions.length > 0;
+        const hasValueButNoContributions = investment.current_value > 0 && !hasContributions;
+        
         infoEl.innerHTML = `
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px; margin-bottom: ${hasValueButNoContributions ? '12px' : '0'};">
                 <div><strong>Valor Actual:</strong></div>
                 <div style="text-align: right; font-weight: 600;">${formatCurrency(investment.current_value || 0)}</div>
                 <div><strong>Total Invertido:</strong></div>
-                <div style="text-align: right; font-weight: 600;">${formatCurrency(investment.contributions?.reduce((sum, c) => sum + c.amount, 0) || 0)}</div>
+                <div style="text-align: right; font-weight: 600; color: ${totalInvested === 0 ? 'var(--danger)' : 'inherit'};">
+                    ${formatCurrency(totalInvested)}
+                </div>
             </div>
+            ${hasValueButNoContributions ? `
+                <div style="margin-top: 12px; padding: 12px; background: rgba(255, 193, 7, 0.1); border-radius: var(--radius); border-left: 3px solid #FFC107;">
+                    <div style="font-size: 13px; color: #856404; font-weight: 600; margin-bottom: 4px;">💡 Aviso</div>
+                    <div style="font-size: 12px; color: #856404;">
+                        Tienes un valor actual pero no hay aportes registrados. Puedes añadir aportes retroactivos seleccionando fechas pasadas para registrar el historial de tus inversiones.
+                    </div>
+                </div>
+            ` : ''}
         `;
+    }
+    
+    // Establecer fecha por defecto (hoy)
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+        dateInput.max = today; // No permitir fechas futuras
     }
     
     modal.style.display = 'flex';
@@ -8771,26 +8793,44 @@ async function processAddMoneyToInvestment() {
     if (!currentInvestmentId) return;
     
     const input = document.getElementById('addMoneyAmount');
+    const dateInput = document.getElementById('addMoneyDate');
+    
     if (!input || !input.value || isNaN(input.value) || parseFloat(input.value) <= 0) {
         alert('Por favor ingresa una cantidad válida mayor a 0');
         return;
     }
     
+    if (!dateInput || !dateInput.value) {
+        alert('Por favor selecciona una fecha para el aporte');
+        return;
+    }
+    
+    // Validar que la fecha no sea futura
+    const selectedDate = new Date(dateInput.value);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // Fin del día de hoy
+    
+    if (selectedDate > today) {
+        alert('No puedes registrar aportes con fechas futuras');
+        return;
+    }
+    
     const amount = parseFloat(input.value);
+    const date = dateInput.value;
     
     try {
         await apiRequest(`/investments/${currentInvestmentId}/contribution`, {
             method: 'POST',
             body: JSON.stringify({
                 amount: amount,
-                date: new Date().toISOString().split('T')[0]
+                date: date
             })
         });
         
         await loadUserData();
         updateDisplay();
         closeAddMoneyInvestmentModal();
-        alert('✅ Dinero añadido exitosamente');
+        alert('✅ Aporte registrado exitosamente');
     } catch (error) {
         alert('Error al añadir dinero: ' + error.message);
     }
