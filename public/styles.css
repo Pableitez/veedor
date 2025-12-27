@@ -3067,6 +3067,17 @@ table {
     #transactionsTable tbody td {
         width: auto;
     }
+    
+    /* Asegurar que las columnas de texto no se corten */
+    #transactionsTable tbody td:nth-child(3),
+    #transactionsTable tbody td:nth-child(4),
+    #transactionsTable tbody td:nth-child(5) {
+        min-width: 200px;
+        max-width: none !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: normal !important;
+    }
 }
 
 /* En desktop, mostrar todas las columnas - no ocultar ninguna */
