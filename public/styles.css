@@ -2536,10 +2536,9 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     vertical-align: middle;
     overflow: visible;
     white-space: nowrap;
-    padding: 12px 8px;
+    padding: 14px 16px;
     min-width: 140px;
     width: 140px;
-    height: auto;
 }
 
 /* Aportes periódicos responsive */
