@@ -2553,6 +2553,30 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     font-size: 13px;
 }
 
+/* Estilos para filas de aportes periódicos completados */
+.periodic-contribution-completed-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    gap: 12px;
+}
+
+.periodic-contribution-completed-date {
+    font-size: 13px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.periodic-contribution-completed-amount {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--danger);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 .periodic-contribution-checkbox-container {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
