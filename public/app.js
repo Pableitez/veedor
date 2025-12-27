@@ -1775,8 +1775,8 @@ async function loadUserDataFresh() {
         properties = propertiesData.status === 'fulfilled' ? (propertiesData.value || []) : [];
         recurringExpenses = recurringExpensesData.status === 'fulfilled' ? (recurringExpensesData.value || []) : [];
         
-        // Generar transacciones automáticas desde gastos recurrentes
-        await generateRecurringExpenseTransactions();
+        // Generar transacciones automáticas desde gastos recurrentes - DESACTIVADO
+        // await generateRecurringExpenseTransactions();
         
         // Procesar perfil
         if (profileData.status === 'fulfilled' && profileData.value) {
@@ -8283,8 +8283,10 @@ window.deleteRecurringExpense = deleteRecurringExpense;
 window.editRecurringExpense = editRecurringExpense;
 window.toggleRecurringExpense = toggleRecurringExpense;
 
-// Generar transacciones automáticas desde gastos recurrentes
-async function generateRecurringExpenseTransactions() {
+// Generar transacciones automáticas desde gastos recurrentes - DESACTIVADO
+// Esta función ya no se ejecuta - los gastos recurrentes no generan transacciones automáticas
+async function generateRecurringExpenseTransactions_DISABLED() {
+    return; // Función desactivada - no generar transacciones automáticas
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     
