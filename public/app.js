@@ -8076,12 +8076,12 @@ function updateRecurringExpenses() {
                 </div>
             </div>
             ${expense.description ? `<div style="margin: 12px 0; font-size: 12px; color: var(--text-tertiary); font-style: italic;">${expense.description}</div>` : ''}
-            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 16px;">
-                <button class="btn-secondary" onclick="editRecurringExpense('${expense._id || expense.id}')" style="flex: 1;">Editar</button>
-                <button class="btn-secondary" onclick="toggleRecurringExpense('${expense._id || expense.id}', ${!isActive})" style="flex: 1;">
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
+                <button class="btn-secondary" onclick="editRecurringExpense('${expense._id || expense.id}')" style="flex: 1; min-width: 80px;">Editar</button>
+                <button class="btn-secondary" onclick="toggleRecurringExpense('${expense._id || expense.id}', ${!isActive})" style="flex: 1; min-width: 80px;">
                     ${isActive ? 'Pausar' : 'Activar'}
                 </button>
-                <button class="btn-danger" onclick="deleteRecurringExpense('${expense._id || expense.id}')" style="flex: 1;">Eliminar</button>
+                <button class="btn-danger" onclick="deleteRecurringExpense('${expense._id || expense.id}')" style="flex: 1; min-width: 80px;">Eliminar</button>
             </div>
         `;
         grid.appendChild(card);
