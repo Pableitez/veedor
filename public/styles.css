@@ -2521,6 +2521,8 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     align-items: center;
     justify-content: flex-end;
     white-space: nowrap;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .transaction-actions button {
@@ -2529,6 +2531,18 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     padding: 8px 16px;
     font-size: 13px;
     white-space: nowrap;
+}
+
+/* Alinear columna de acciones correctamente */
+#transactionsTable thead th:nth-child(9) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+#transactionsTable tbody td:nth-child(9) {
+    text-align: center;
+    vertical-align: middle;
+    padding: 14px 16px;
 }
 
 /* Aportes periódicos responsive */
