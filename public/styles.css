@@ -2946,13 +2946,16 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     overflow-x: auto;
 }
 
-/* Estilos base para tabla de transacciones - sin forzar */
+/* Estilos base para tabla de transacciones - sin cortar */
 #transactionsTable tbody td {
     padding: 14px 16px;
     border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
 }
 
 /* En desktop, permitir scroll vertical */
@@ -2963,13 +2966,16 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         overflow-x: auto;
     }
     
-    /* Categoría y descripción con wrap normal */
+    /* Categoría y descripción con wrap normal - SIN límite de ancho */
     #transactionsTable tbody td:nth-child(3),
     #transactionsTable tbody td:nth-child(4) {
-        white-space: normal;
-        word-break: break-word;
-        overflow-wrap: break-word;
-        max-width: 200px;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        max-width: none !important;
+        min-width: 150px;
     }
     
     /* Monto sin wrap para mantener formato */
