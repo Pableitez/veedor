@@ -2902,6 +2902,16 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     overflow-x: auto;
 }
 
+/* FORZAR que las celdas no corten contenido */
+#transactionsTable tbody td {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: none !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
 /* En desktop, evitar wrap del texto y permitir scroll vertical */
 @media (min-width: 769px) {
     #transactionsTableContainer {
@@ -2910,32 +2920,39 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         overflow-x: auto;
     }
     
-    /* Permitir que el texto se ajuste sin cortarse */
+    /* Permitir que el texto se ajuste sin cortarse - FORZAR en todas las celdas */
     #transactionsTable tbody td {
-        white-space: normal;
-        overflow: visible;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
+        white-space: normal !important;
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        text-overflow: clip !important;
+        max-width: none !important;
     }
     
     /* Descripción con wrap normal */
     #transactionsTable tbody td:nth-child(4) {
-        white-space: normal;
-        word-break: break-word;
-        overflow-wrap: break-word;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: visible !important;
+        max-width: none !important;
     }
     
     /* Categoría con wrap normal */
     #transactionsTable tbody td:nth-child(3) {
-        white-space: normal;
-        word-break: break-word;
-        overflow-wrap: break-word;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: visible !important;
+        max-width: none !important;
     }
     
     /* Monto y acciones sin wrap para mantener formato */
     #transactionsTable tbody td:nth-child(8),
     #transactionsTable tbody td:nth-child(9) {
-        white-space: nowrap;
+        white-space: nowrap !important;
+        overflow: visible !important;
     }
 }
 
@@ -3029,20 +3046,31 @@ table {
     background: var(--bg-secondary);
 }
 
-/* Ajustar texto de categoría para que no se corte */
+/* Ajustar texto de categoría para que no se corte - FORZAR */
 #transactionsTable tbody td:nth-child(3) {
-    word-break: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-    overflow: visible;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: none !important;
 }
 
-/* Ajustar texto de descripción */
+/* Ajustar texto de descripción - FORZAR */
 #transactionsTable tbody td:nth-child(4) {
-    word-break: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-    overflow: visible;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: none !important;
+}
+
+/* Todas las celdas sin corte - FORZAR */
+#transactionsTable tbody td {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: none !important;
 }
 
 /* Monto alineado a la derecha */
@@ -3077,6 +3105,9 @@ td {
     transition: border-color 0.3s, color 0.3s;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
 }
 
 tbody tr {
