@@ -3479,21 +3479,33 @@ tbody tr:last-child td {
 #accountTransactionsModal .modal-content > div:last-child {
     overflow-y: auto !important;
     overflow-x: visible !important;
-    padding-left: 32px !important;
-    padding-right: 32px !important;
 }
 
 #accountTransactionsModal #accountTransactionsModalContent {
     overflow: visible !important;
     box-sizing: border-box !important;
-    padding: 0 !important;
 }
 
 #accountTransactionsModal #accountTransactionsModalContent > div {
     overflow: visible !important;
     box-sizing: border-box !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Asegurar que los bordes no se corten en el scroll */
+#accountTransactionsModal .modal-content > div:last-child::-webkit-scrollbar {
+    width: 8px;
+}
+
+#accountTransactionsModal .modal-content > div:last-child::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 0 32px;
+}
+
+#accountTransactionsModal .modal-content > div:last-child::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
 }
 
 /* Mejorar padding y márgenes de contenido de modales */
