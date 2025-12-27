@@ -7766,7 +7766,7 @@ async function addRecurringExpense() {
     const startDate = document.getElementById('recurringExpenseStartDate').value;
     const endDateInput = document.getElementById('recurringExpenseEndDate');
     const endDate = endDateInput && endDateInput.value ? endDateInput.value : null;
-    const expenseGroup = document.getElementById('recurringExpenseGroup') ? document.getElementById('recurringExpenseGroup').value.trim() : '';
+    const expenseGroup = ''; // Campo eliminado - siempre vacío
     const propertyId = document.getElementById('recurringExpenseProperty') ? document.getElementById('recurringExpenseProperty').value : '';
     const accountId = document.getElementById('recurringExpenseAccount') ? document.getElementById('recurringExpenseAccount').value : '';
     const description = document.getElementById('recurringExpenseDescription') ? document.getElementById('recurringExpenseDescription').value.trim() : '';
@@ -8123,9 +8123,7 @@ async function editRecurringExpense(id) {
     if (expense.end_date) {
         document.getElementById('recurringExpenseEndDate').value = expense.end_date;
     }
-    if (expense.expense_group) {
-        document.getElementById('recurringExpenseGroup').value = expense.expense_group;
-    }
+    // Campo expense_group eliminado - no se edita
     if (expense.property_id) {
         const propertySelect = document.getElementById('recurringExpenseProperty');
         if (propertySelect) {
