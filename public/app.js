@@ -1712,7 +1712,15 @@ async function loadUserData() {
 }
 
 // Cargar datos frescos del servidor
+let isLoadingUserData = false;
 async function loadUserDataFresh() {
+    // Prevenir llamadas múltiples simultáneas
+    if (isLoadingUserData) {
+        console.log('⚠️ loadUserDataFresh: Ya se está cargando, ignorando llamada duplicada...');
+        return;
+    }
+    isLoadingUserData = true;
+    console.log('🔄 loadUserDataFresh: INICIANDO carga de datos...');
     try {
         // Hacer todas las llamadas en paralelo
         const [
@@ -1829,13 +1837,25 @@ async function loadUserDataFresh() {
         
         // Actualizar la visualización después de cargar los datos
         console.log('🔄 loadUserDataFresh: Llamando a updateDisplay después de cargar datos...');
+        console.log('🔄 loadUserDataFresh: updateDisplay es función?', typeof updateDisplay);
+        console.log('🔄 loadUserDataFresh: mainApp existe?', !!document.getElementById('mainApp'));
         if (typeof updateDisplay === 'function') {
             setTimeout(() => {
-                updateDisplay();
-            }, 50);
+                console.log('🔄 loadUserDataFresh: Ejecutando updateDisplay ahora...');
+                try {
+                    updateDisplay();
+                } catch (err) {
+                    console.error('❌ Error ejecutando updateDisplay desde loadUserDataFresh:', err);
+                }
+            }, 100);
+        } else {
+            console.error('❌ updateDisplay no es una función!');
         }
         } catch (error) {
-        console.error('Error cargando datos frescos:', error);
+        console.error('❌ Error cargando datos frescos:', error);
+    } finally {
+        isLoadingUserData = false;
+        console.log('✅ loadUserDataFresh: FINALIZADO');
     }
 }
 
@@ -3976,9 +3996,12 @@ async function addEnvelope() {
 
 // Actualizar visualización
 function updateDisplay() {
-    console.log('🔄 updateDisplay: Iniciando...');
+    console.log('🔄 updateDisplay: FUNCIÓN LLAMADA - Iniciando...');
     try {
-        updateSummary();
+        console.log('🔄 updateDisplay: Llamando a updateSummary...');
+        updateSummary().catch(err => {
+            console.error('❌ Error en updateSummary:', err);
+        });
         console.log('🔄 updateDisplay: Llamando a updateTransactionsTable...');
         updateTransactionsTable();
         updateEnvelopes();
