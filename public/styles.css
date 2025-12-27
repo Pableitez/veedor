@@ -2994,6 +2994,8 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     #transactionsTable tbody td:nth-child(8) {
         white-space: nowrap;
         text-align: right;
+        vertical-align: top;
+        padding: 14px 16px;
     }
     
     /* Columna de editar/eliminar alineada correctamente en desktop */
