@@ -3471,6 +3471,21 @@ tbody tr:last-child td {
     backdrop-filter: blur(20px);
 }
 
+/* Asegurar que el modal de transacciones de cuenta no corte bordes */
+#accountTransactionsModal .modal-content {
+    overflow: visible;
+}
+
+#accountTransactionsModal .modal-content > div:last-child {
+    overflow-y: auto;
+    overflow-x: visible;
+}
+
+#accountTransactionsModal #accountTransactionsModalContent > div {
+    overflow: visible !important;
+    box-sizing: border-box !important;
+}
+
 /* Mejorar padding y márgenes de contenido de modales */
 .modal-content > div:last-child {
     padding: 32px;
