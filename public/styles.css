@@ -2910,26 +2910,32 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         overflow-x: auto;
     }
     
-    /* Evitar wrap del texto en desktop */
+    /* Permitir que el texto se ajuste sin cortarse */
     #transactionsTable tbody td {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: normal;
+        overflow: visible;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
     
-    /* Permitir wrap solo en descripción si es necesario, pero con scroll */
+    /* Descripción con wrap normal */
     #transactionsTable tbody td:nth-child(4) {
         white-space: normal;
-        max-width: 300px;
         word-break: break-word;
+        overflow-wrap: break-word;
     }
     
-    /* Categoría puede tener un ancho máximo pero sin wrap */
+    /* Categoría con wrap normal */
     #transactionsTable tbody td:nth-child(3) {
-        max-width: 200px;
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    /* Monto y acciones sin wrap para mantener formato */
+    #transactionsTable tbody td:nth-child(8),
+    #transactionsTable tbody td:nth-child(9) {
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 }
 
@@ -3028,6 +3034,7 @@ table {
     word-break: break-word;
     overflow-wrap: break-word;
     white-space: normal;
+    overflow: visible;
 }
 
 /* Ajustar texto de descripción */
@@ -3035,7 +3042,7 @@ table {
     word-break: break-word;
     overflow-wrap: break-word;
     white-space: normal;
-    max-width: 0;
+    overflow: visible;
 }
 
 /* Monto alineado a la derecha */
