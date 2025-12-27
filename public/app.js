@@ -10045,6 +10045,7 @@ window.editAccount = editAccount;
 window.deleteAccount = deleteAccount;
 window.showUpdateAccountBalanceModal = showUpdateAccountBalanceModal;
 window.closeUpdateAccountBalanceModal = closeUpdateAccountBalanceModal;
+window.toggleAccountTransactions = toggleAccountTransactions;
 
 // ==================== PATRIMONIO ====================
 
