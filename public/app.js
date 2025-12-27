@@ -13594,7 +13594,14 @@ function formatCurrency(amount) {
 }
 
 function formatDate(date) {
-    return date.toLocaleDateString('es-ES', {
+    if (!date) return '-';
+    // Si es string, convertir a Date
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    // Verificar que sea una fecha válida
+    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+        return '-';
+    }
+    return dateObj.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'short',
         day: 'numeric'
