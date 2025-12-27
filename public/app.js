@@ -8597,7 +8597,10 @@ function updateInvestments() {
             ` : `
                 <div style="margin: 12px 0; padding: 12px; background: rgba(147, 51, 234, 0.05); border-radius: var(--radius); border-left: 3px solid var(--primary);">
                     <div style="font-size: 12px; color: var(--gray-600); text-align: center;">
-                        💡 Aún no has añadido dinero. Haz clic en "Añadir Dinero" para empezar.
+                        ${investment.current_value > 0 ? 
+                            '💡 Tienes un valor actual pero no hay aportes registrados. Usa "Añadir Dinero" para registrar aportes retroactivos y mantener un historial correcto.' :
+                            '💡 Aún no has añadido dinero. Haz clic en "Añadir Dinero" para empezar.'
+                        }
                     </div>
                 </div>
             `}
