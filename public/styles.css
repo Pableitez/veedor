@@ -2054,15 +2054,6 @@ body.dark-mode .more-tab-item:hover {
     }
     
     /* Hacer botones de acciones más integrados en móvil - iconos compactos */
-    #transactionsTable tbody td:nth-child(9) {
-        display: flex !important;
-        gap: 4px !important;
-        flex-wrap: nowrap !important;
-        justify-content: center !important;
-        align-items: center !important;
-    }
-    
-    
     /* Ajustar ancho de las columnas visibles con scroll horizontal para ver el importe */
     #transactionsTable {
         font-size: 12px !important;
