@@ -2542,7 +2542,6 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 #transactionsTable tbody td:nth-child(9) {
     text-align: center;
     vertical-align: middle;
-    padding: 14px 16px;
 }
 
 /* Aportes periódicos responsive */
