@@ -3002,19 +3002,6 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         padding: 14px 16px;
         min-width: 140px;
         width: 140px;
-        height: auto;
-    }
-    
-    #transactionsTable tbody td:nth-child(9) .transaction-actions {
-        height: 36px;
-        min-height: 36px;
-    }
-    
-    #transactionsTable tbody td:nth-child(9) .transaction-actions .btn-secondary,
-    #transactionsTable tbody td:nth-child(9) .transaction-actions .btn-danger {
-        height: 36px;
-        min-height: 36px;
-        max-height: 36px;
     }
 }
 
