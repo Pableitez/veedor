@@ -2966,18 +2966,6 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         padding: 14px 16px;
     }
     
-    .transaction-actions {
-        justify-content: center;
-        gap: 4px;
-    }
-    
-    .transaction-actions button {
-        padding: 6px !important;
-        min-width: 36px !important;
-        width: 36px !important;
-        height: 36px !important;
-        border-radius: 6px !important;
-    }
     
 }
 
