@@ -2496,12 +2496,18 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 #transactionsTable .transaction-actions {
     flex-wrap: nowrap;
     gap: 6px;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 36px;
 }
 
 #transactionsTable .transaction-actions .btn-secondary,
 #transactionsTable .transaction-actions .btn-danger {
     padding: 8px 12px;
+    height: 36px;
     min-height: 36px;
+    max-height: 36px;
     min-width: 36px;
     font-size: 13px;
     border-radius: 6px;
@@ -2514,12 +2520,15 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     text-overflow: clip;
     box-sizing: border-box;
     flex-shrink: 0;
+    line-height: 1;
 }
 
 /* Alinear columna de acciones correctamente */
 #transactionsTable thead th:nth-child(9) {
     text-align: center;
     vertical-align: middle;
+    min-width: 140px;
+    width: 140px;
 }
 
 #transactionsTable tbody td:nth-child(9) {
@@ -2528,6 +2537,9 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     overflow: visible;
     white-space: nowrap;
     padding: 12px 8px;
+    min-width: 140px;
+    width: 140px;
+    height: auto;
 }
 
 /* Aportes periódicos responsive */
@@ -2930,6 +2942,15 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     max-height: 600px;
     overflow-y: auto;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Asegurar que la tabla tenga un ancho mínimo para activar scroll horizontal si es necesario */
+@media (min-width: 769px) {
+    #transactionsTable {
+        min-width: 100%;
+        width: max-content;
+    }
 }
 
 /* Estilos base para tabla de transacciones - sin cortar */
