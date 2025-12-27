@@ -2496,8 +2496,9 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 #transactionsTable .transaction-actions {
     flex-wrap: nowrap;
     gap: 6px;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    padding-top: 0;
 }
 
 #transactionsTable .transaction-actions .btn-secondary,
@@ -2524,7 +2525,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 /* Alinear columna de acciones correctamente */
 #transactionsTable thead th:nth-child(9) {
     text-align: center;
-    vertical-align: middle;
+    vertical-align: top;
     min-width: 140px;
     width: 140px;
 }
@@ -2997,14 +2998,14 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     /* Columna de editar/eliminar alineada correctamente en desktop */
     #transactionsTable thead th:nth-child(9) {
         text-align: center;
-        vertical-align: middle;
+        vertical-align: top;
         padding: 12px 16px;
     }
     
     #transactionsTable tbody td:nth-child(9) {
         white-space: nowrap;
         text-align: center;
-        vertical-align: middle;
+        vertical-align: top;
         padding: 14px 16px;
         min-width: 140px;
         width: 140px;
