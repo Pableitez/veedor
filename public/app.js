@@ -1743,6 +1743,16 @@ async function loadUserDataFresh() {
             }))
             : [];
         
+        console.log('📥 loadUserDataFresh: Transacciones cargadas', {
+            status: transactionsData.status,
+            count: transactions.length,
+            hasError: transactionsData.status === 'rejected'
+        });
+        
+        if (transactionsData.status === 'rejected') {
+            console.error('❌ Error cargando transacciones:', transactionsData.reason);
+        }
+        
         envelopes = envelopesData.status === 'fulfilled' ? envelopesData.value : [];
         loans = loansData.status === 'fulfilled' ? loansData.value : [];
         investments = investmentsData.status === 'fulfilled' ? (investmentsData.value || []) : [];
@@ -4226,6 +4236,16 @@ let rowsPerPage = 0; // Mostrar todas las transacciones
 
 function updateTransactionsTable() {
     const tbody = document.getElementById('transactionsBody');
+    if (!tbody) {
+        console.error('❌ updateTransactionsTable: transactionsBody no encontrado');
+        return;
+    }
+    
+    console.log('🔄 updateTransactionsTable: Iniciando...', {
+        transactionsCount: transactions?.length || 0,
+        tbodyExists: !!tbody
+    });
+    
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
     const filterCategory = document.getElementById('filterCategory')?.value || '';
     const filterMonth = document.getElementById('filterMonth')?.value || '';
@@ -4234,7 +4254,7 @@ function updateTransactionsTable() {
     // Eliminado: selector de filas por página - mostrar todas las transacciones
     rowsPerPage = 0;
     
-    let filtered = transactions;
+    let filtered = transactions || [];
     
     if (searchTerm) {
         filtered = filtered.filter(t => 
@@ -4271,8 +4291,6 @@ function updateTransactionsTable() {
             return tDate <= endDate;
         });
     }
-    
-    if (!tbody) return;
     
     // Ordenar transacciones
     filtered.sort((a, b) => {
@@ -4326,9 +4344,15 @@ function updateTransactionsTable() {
     
     tbody.innerHTML = '';
     
+    console.log('🔄 updateTransactionsTable: Filtrado completado', {
+        filteredCount: filtered.length,
+        originalCount: transactions?.length || 0
+    });
+    
     if (filtered.length === 0) {
         const lang = localStorage.getItem('veedor_language') || 'es';
         tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">${getTranslation('transactions.noTransactions', lang)}</td></tr>`;
+        console.log('⚠️ updateTransactionsTable: No hay transacciones para mostrar');
         return;
     }
     
@@ -4403,6 +4427,10 @@ function updateTransactionsTable() {
             </td>
         `;
         tbody.appendChild(row);
+    });
+    
+    console.log('✅ updateTransactionsTable: Completado', {
+        rowsAdded: transactionsToShow.length
     });
     
     // Mostrar información de paginación si hay más filas que las mostradas
