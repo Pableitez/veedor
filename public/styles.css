@@ -2492,19 +2492,28 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     justify-content: center;
 }
 
-/* Anular estilos base de botones en tabla de transacciones */
+/* Estilos de botones en tabla de transacciones - Web */
+#transactionsTable .transaction-actions {
+    flex-wrap: nowrap;
+    gap: 6px;
+}
+
 #transactionsTable .transaction-actions .btn-secondary,
 #transactionsTable .transaction-actions .btn-danger {
-    padding: initial;
-    min-height: initial;
-    font-size: initial;
-    border-radius: initial;
-    display: initial;
-    align-items: initial;
-    justify-content: initial;
-    gap: initial;
-    box-shadow: initial;
-    line-height: initial;
+    padding: 8px 12px;
+    min-height: 36px;
+    min-width: 36px;
+    font-size: 13px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
 /* Alinear columna de acciones correctamente */
@@ -2516,6 +2525,9 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 #transactionsTable tbody td:nth-child(9) {
     text-align: center;
     vertical-align: middle;
+    overflow: visible;
+    white-space: nowrap;
+    padding: 12px 8px;
 }
 
 /* Aportes periódicos responsive */
