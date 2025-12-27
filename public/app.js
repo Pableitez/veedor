@@ -927,7 +927,12 @@ async function checkAuth() {
             initializeDate();
             initializeTabs();
             initializeForms();
-            updateDisplay();
+            
+            // Esperar a que el DOM esté completamente listo antes de actualizar
+            setTimeout(() => {
+                console.log('🔄 checkAuth: Llamando a updateDisplay después de inicializar...');
+                updateDisplay();
+            }, 100);
             initializeCharts();
             // Actualizar gráficas después de inicializarlas
             setTimeout(() => {
@@ -1821,6 +1826,14 @@ async function loadUserDataFresh() {
             data: cacheData,
             timestamp: Date.now()
         }));
+        
+        // Actualizar la visualización después de cargar los datos
+        console.log('🔄 loadUserDataFresh: Llamando a updateDisplay después de cargar datos...');
+        if (typeof updateDisplay === 'function') {
+            setTimeout(() => {
+                updateDisplay();
+            }, 50);
+        }
         } catch (error) {
         console.error('Error cargando datos frescos:', error);
     }
@@ -3963,8 +3976,10 @@ async function addEnvelope() {
 
 // Actualizar visualización
 function updateDisplay() {
+    console.log('🔄 updateDisplay: Iniciando...');
     try {
         updateSummary();
+        console.log('🔄 updateDisplay: Llamando a updateTransactionsTable...');
         updateTransactionsTable();
         updateEnvelopes();
         updateEnvelopeSelect();
@@ -4235,15 +4250,20 @@ let currentPage = 1;
 let rowsPerPage = 0; // Mostrar todas las transacciones
 
 function updateTransactionsTable() {
+    console.log('🔄 updateTransactionsTable: FUNCIÓN LLAMADA');
     const tbody = document.getElementById('transactionsBody');
     if (!tbody) {
         console.error('❌ updateTransactionsTable: transactionsBody no encontrado');
+        console.error('❌ Buscando elemento con id="transactionsBody"');
+        console.error('❌ Elementos con id que contienen "transaction":', 
+            Array.from(document.querySelectorAll('[id*="transaction"]')).map(el => el.id));
         return;
     }
     
     console.log('🔄 updateTransactionsTable: Iniciando...', {
         transactionsCount: transactions?.length || 0,
-        tbodyExists: !!tbody
+        tbodyExists: !!tbody,
+        tbodyParent: tbody.parentElement?.id || 'sin parent'
     });
     
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
