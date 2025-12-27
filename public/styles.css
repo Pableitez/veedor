@@ -2498,8 +2498,6 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     gap: 6px;
     align-items: center;
     justify-content: center;
-    height: 100%;
-    min-height: 36px;
 }
 
 #transactionsTable .transaction-actions .btn-secondary,
