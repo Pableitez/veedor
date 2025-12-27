@@ -3159,7 +3159,7 @@ td {
     transition: border-color 0.3s, color 0.3s;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    vertical-align: middle;
+    vertical-align: top;
 }
 
 tbody tr {
