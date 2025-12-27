@@ -3134,9 +3134,7 @@ td {
     transition: border-color 0.3s, color 0.3s;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
+    vertical-align: middle;
 }
 
 tbody tr {
