@@ -3093,19 +3093,22 @@ table {
     background: var(--bg-secondary);
 }
 
-/* Ajustar texto de categoría y descripción */
+/* Ajustar texto de categoría y descripción - SIN límite */
 #transactionsTable tbody td:nth-child(3),
 #transactionsTable tbody td:nth-child(4) {
-    word-break: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-    max-width: 250px;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: none !important;
+    min-width: 150px;
 }
 
 /* Estilos específicos para celdas de transacciones */
 #transactionsTable tbody td {
-    overflow: visible;
-    text-overflow: ellipsis;
+    overflow: visible !important;
+    text-overflow: clip !important;
 }
 
 /* Monto alineado a la derecha */
