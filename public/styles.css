@@ -3499,6 +3499,52 @@ tbody tr:last-child td {
         gap: 12px !important;
     }
     
+    /* Formulario de gastos recurrentes en móvil */
+    #recurringExpenseForm .form-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    
+    #recurringExpenseForm .form-group {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    #recurringExpenseForm input[type="date"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important;
+        padding: 12px 14px !important;
+        min-height: 48px !important;
+    }
+    
+    /* Contenedor del formulario de gastos recurrentes */
+    #recurringExpenseForm {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        padding: 16px !important;
+    }
+    
+    /* Asegurar que el form-section no corte contenido */
+    #recurring-expenses-tab .form-section {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        padding: 16px !important;
+    }
+    
     .summary-cards {
         grid-template-columns: 1fr !important;
         gap: 12px !important;
