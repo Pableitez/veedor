@@ -8627,12 +8627,18 @@ function updateInvestments() {
                         <div class="periodic-contribution-completed">
                             <div class="periodic-contribution-completed-title">Aportes Realizados (${investment.periodic_contribution.completed_contributions.length})</div>
                             <div class="periodic-contribution-completed-list">
-                                ${investment.periodic_contribution.completed_contributions.slice(-5).map(c => `
+                                ${investment.periodic_contribution.completed_contributions.slice(-5).map((c, idx) => {
+                                    const contributionIndex = investment.periodic_contribution.completed_contributions.length - 5 + idx;
+                                    return `
                                     <div class="periodic-contribution-completed-item">
-                                        <span class="periodic-contribution-completed-date">${formatDate(new Date(c.date))}</span>
-                                        <span class="periodic-contribution-completed-amount">${formatCurrency(c.amount)}</span>
+                                        <span class="periodic-contribution-completed-amount">${formatCurrency(-Math.abs(c.amount))}</span>
+                                        <div class="periodic-contribution-completed-actions">
+                                            <button class="btn-secondary" onclick="editCompletedContribution('${investment._id || investment.id}', ${contributionIndex})" style="padding: 6px 12px; font-size: 12px; min-height: 32px;">Editar</button>
+                                            <button class="btn-danger" onclick="deleteCompletedContribution('${investment._id || investment.id}', ${contributionIndex})" style="padding: 6px 12px; font-size: 12px; min-height: 32px;">Eliminar</button>
+                                        </div>
                                     </div>
-                                `).join('')}
+                                `;
+                                }).join('')}
                                 ${investment.periodic_contribution.completed_contributions.length > 5 ? `
                                     <div class="periodic-contribution-completed-more">
                                         +${investment.periodic_contribution.completed_contributions.length - 5} más
@@ -8862,6 +8868,106 @@ async function processUpdateInvestmentValue() {
         closeUpdateInvestmentValueModal();
     } catch (error) {
         alert('Error al actualizar valor: ' + error.message);
+    }
+}
+
+// Editar aporte completado de inversión
+async function editCompletedContribution(investmentId, contributionIndex) {
+    const investment = investments.find(inv => (inv._id || inv.id) === investmentId);
+    if (!investment || !investment.periodic_contribution || !investment.periodic_contribution.completed_contributions) {
+        alert('No se encontró el aporte');
+        return;
+    }
+    
+    const contribution = investment.periodic_contribution.completed_contributions[contributionIndex];
+    if (!contribution) {
+        alert('No se encontró el aporte');
+        return;
+    }
+    
+    const newAmount = prompt(`Editar monto del aporte (fecha: ${formatDate(new Date(contribution.date))}):`, contribution.amount);
+    if (newAmount === null || isNaN(newAmount) || parseFloat(newAmount) <= 0) {
+        return;
+    }
+    
+    try {
+        // Actualizar el aporte en el array
+        investment.periodic_contribution.completed_contributions[contributionIndex].amount = parseFloat(newAmount);
+        
+        await apiRequest(`/investments/${investmentId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                periodic_contribution: investment.periodic_contribution
+            })
+        });
+        
+        // Si hay una transacción asociada, actualizarla también
+        if (contribution.transaction_id) {
+            try {
+                await apiRequest(`/transactions/${contribution.transaction_id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        amount: -Math.abs(parseFloat(newAmount))
+                    })
+                });
+            } catch (err) {
+                console.error('Error al actualizar transacción:', err);
+            }
+        }
+        
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Aporte actualizado exitosamente');
+    } catch (error) {
+        alert('Error al actualizar aporte: ' + error.message);
+    }
+}
+
+// Eliminar aporte completado de inversión
+async function deleteCompletedContribution(investmentId, contributionIndex) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este aporte?')) {
+        return;
+    }
+    
+    const investment = investments.find(inv => (inv._id || inv.id) === investmentId);
+    if (!investment || !investment.periodic_contribution || !investment.periodic_contribution.completed_contributions) {
+        alert('No se encontró el aporte');
+        return;
+    }
+    
+    const contribution = investment.periodic_contribution.completed_contributions[contributionIndex];
+    if (!contribution) {
+        alert('No se encontró el aporte');
+        return;
+    }
+    
+    try {
+        // Eliminar la transacción asociada si existe
+        if (contribution.transaction_id) {
+            try {
+                await apiRequest(`/transactions/${contribution.transaction_id}`, {
+                    method: 'DELETE'
+                });
+            } catch (err) {
+                console.error('Error al eliminar transacción:', err);
+            }
+        }
+        
+        // Eliminar el aporte del array
+        investment.periodic_contribution.completed_contributions.splice(contributionIndex, 1);
+        
+        await apiRequest(`/investments/${investmentId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                periodic_contribution: investment.periodic_contribution
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Aporte eliminado exitosamente');
+    } catch (error) {
+        alert('Error al eliminar aporte: ' + error.message);
     }
 }
 
@@ -9816,6 +9922,8 @@ window.addMoneyToInvestment = addMoneyToInvestment;
 window.updateInvestmentValue = updateInvestmentValue;
 window.editInvestment = editInvestment;
 window.deleteInvestment = deleteInvestment;
+window.editCompletedContribution = editCompletedContribution;
+window.deleteCompletedContribution = deleteCompletedContribution;
 window.editAccount = editAccount;
 window.deleteAccount = deleteAccount;
 window.showUpdateAccountBalanceModal = showUpdateAccountBalanceModal;

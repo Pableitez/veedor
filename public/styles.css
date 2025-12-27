@@ -2558,9 +2558,9 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
+    padding: 12px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    gap: 12px;
+    gap: 16px;
 }
 
 .periodic-contribution-completed-date {
@@ -2574,6 +2574,13 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     font-weight: 600;
     color: var(--danger);
     white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.periodic-contribution-completed-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
     flex-shrink: 0;
 }
 
