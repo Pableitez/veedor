@@ -2496,33 +2496,9 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 /* Botones de acciones en tabla de transacciones - Desktop (igual que móvil) */
 .transaction-actions {
     display: flex;
-    gap: 4px;
+    gap: 8px;
     align-items: center;
     justify-content: center;
-    white-space: nowrap;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.transaction-actions button {
-    flex: 0 0 auto;
-    padding: 6px;
-    min-width: 36px;
-    width: 36px;
-    height: 36px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.transaction-actions .btn-text {
-    display: none !important;
-}
-
-.transaction-actions .btn-icon {
-    display: block !important;
 }
 
 /* Alinear columna de acciones correctamente */
