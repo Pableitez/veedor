@@ -7845,7 +7845,17 @@ function updateRecurringExpenses() {
     recurringExpenses.forEach(expense => {
         const startDate = new Date(expense.start_date);
         const endDate = expense.end_date ? new Date(expense.end_date) : null;
-        const isActive = expense.is_active && (!endDate || endDate >= now) && startDate <= now;
+        // Un gasto está activo si: está marcado como activo Y (no tiene fecha de fin O la fecha de fin es futura) Y la fecha de inicio es pasada o hoy
+        const isActive = expense.is_active !== false && (!endDate || endDate >= now) && startDate <= now;
+        console.log('🔄 Gasto recurrente:', {
+            name: expense.name,
+            is_active: expense.is_active,
+            start_date: expense.start_date,
+            end_date: expense.end_date,
+            isActive: isActive,
+            startDateValid: startDate <= now,
+            endDateValid: !endDate || endDate >= now
+        });
         
         if (isActive) {
             let annualAmount = 0;
@@ -8022,7 +8032,8 @@ function updateRecurringExpenses() {
         const now = new Date();
         const startDate = new Date(expense.start_date);
         const endDate = expense.end_date ? new Date(expense.end_date) : null;
-        const isActive = expense.is_active && (!endDate || endDate >= now) && startDate <= now;
+        // Un gasto está activo si: está marcado como activo Y (no tiene fecha de fin O la fecha de fin es futura) Y la fecha de inicio es pasada o hoy
+        const isActive = expense.is_active !== false && (!endDate || endDate >= now) && startDate <= now;
         
         // Calcular costo anual de este gasto
         let annualAmount = 0;
