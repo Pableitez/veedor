@@ -4468,6 +4468,7 @@ function updateTransactionsTable() {
                     </svg>
                 </button>
             </td>
+            <td></td>
         `;
         tbody.appendChild(row);
     });

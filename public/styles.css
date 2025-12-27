@@ -2546,13 +2546,24 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     display: block !important;
 }
 
-/* Alinear columna de acciones correctamente */
+/* Alinear columna de editar/eliminar correctamente */
 #transactionsTable thead th:nth-child(9) {
     text-align: center;
     vertical-align: middle;
 }
 
 #transactionsTable tbody td:nth-child(9) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Columna de acciones (ahora es la 10) */
+#transactionsTable thead th:nth-child(10) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+#transactionsTable tbody td:nth-child(10) {
     text-align: center;
     vertical-align: middle;
 }
