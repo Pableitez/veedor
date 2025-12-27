@@ -2963,11 +2963,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     white-space: normal !important;
 }
 
-/* Asegurar que todas las filas tengan la misma altura base */
-#transactionsTable tbody tr {
-    height: auto;
-    min-height: 60px;
-}
+/* Las filas de tabla ajustan automáticamente su altura según el contenido */
 
 /* En desktop, permitir scroll vertical */
 @media (min-width: 769px) {
