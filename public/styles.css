@@ -4396,15 +4396,6 @@ tbody tr:last-child td {
         margin-top: 8px !important;
     }
     
-    /* Botones de acción en tablas móviles */
-    table .btn-primary,
-    table .btn-secondary,
-    table .btn-danger {
-        min-height: 36px !important;
-        padding: 8px 12px !important;
-        font-size: 12px !important;
-        touch-action: manipulation;
-    }
     
     .chart-controls {
         flex-direction: column !important;
