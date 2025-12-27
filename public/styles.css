@@ -3065,6 +3065,12 @@ table {
     color: var(--text-primary);
 }
 
+/* Permitir que la tabla de transacciones se expanda más allá del contenedor */
+#transactionsTable {
+    width: auto;
+    min-width: 100%;
+}
+
 /* Tabla de transacciones - En desktop mostrar todas las columnas con anchos ajustados */
 @media (min-width: 769px) {
     #transactionsTable {
