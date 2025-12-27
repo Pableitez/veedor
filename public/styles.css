@@ -3011,20 +3011,6 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         padding: 14px 16px;
     }
     
-    /* Columna de acciones (ahora es la 10) */
-    #transactionsTable thead th:nth-child(10) {
-        text-align: center;
-        vertical-align: middle;
-        padding: 12px 16px;
-    }
-    
-    #transactionsTable tbody td:nth-child(10) {
-        white-space: nowrap;
-        text-align: center;
-        vertical-align: middle;
-        padding: 14px 16px;
-    }
-    
     .transaction-actions {
         justify-content: center;
         gap: 4px;
