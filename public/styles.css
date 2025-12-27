@@ -2979,13 +2979,6 @@ body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         border-radius: 6px !important;
     }
     
-    .transaction-actions .btn-text {
-        display: none !important;
-    }
-    
-    .transaction-actions .btn-icon {
-        display: block !important;
-    }
 }
 
 /* Scrollbars globales mejorados */
