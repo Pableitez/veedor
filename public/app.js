@@ -1,0 +1,17662 @@
+// Evitar cargar múltiples veces
+// Versión: 2.5.0 - Detalles de resumen, meta de ahorro en BD, header mejorado
+if (window.VEEDOR_LOADED) {
+    console.warn('⚠️ app.js ya fue cargado, evitando carga duplicada');
+} else {
+    window.VEEDOR_LOADED = true;
+    
+    // Exponer funciones globales inmediatamente (stubs) para evitar errores de referencia
+    window.showUserProfile = function() { 
+        const modal = document.getElementById('userProfileModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        } else {
+            console.warn('Modal de perfil de usuario no encontrado');
+        }
+    };
+    window.closeUserProfile = function() { 
+        const modal = document.getElementById('userProfileModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.showPrivacyModal = function() { 
+        const modal = document.getElementById('privacyModal');
+        if (modal) {
+            // Intentar cargar contenido si la función está disponible
+            if (typeof loadPolicyContent === 'function') {
+                loadPolicyContent('privacy.html', 'privacyContent');
+            }
+            modal.style.display = 'flex';
+        } else {
+            console.warn('Modal de privacidad no encontrado');
+        }
+    };
+    window.showCookiesModal = function() { 
+        const modal = document.getElementById('cookiesModal');
+        if (modal) {
+            // Intentar cargar contenido si la función está disponible
+            if (typeof loadPolicyContent === 'function') {
+                loadPolicyContent('cookies.html', 'cookiesContent');
+            }
+            modal.style.display = 'flex';
+        } else {
+            console.warn('Modal de cookies no encontrado');
+        }
+    };
+    window.showTermsModal = function() { 
+        const modal = document.getElementById('termsModal');
+        if (modal) {
+            // Intentar cargar contenido si la función está disponible
+            if (typeof loadPolicyContent === 'function') {
+                loadPolicyContent('terms.html', 'termsContent');
+            }
+            modal.style.display = 'flex';
+        } else {
+            console.warn('Modal de términos no encontrado');
+        }
+    };
+    
+    // Exponer funciones de idioma inmediatamente para evitar errores
+    window.toggleLanguageDropdown = function() {
+        const dropdown = document.getElementById('languageDropdown');
+        const mainNavDropdown = document.getElementById('mainNavDropdown');
+        const settingsDropdown = document.getElementById('settingsDropdown');
+        
+        if (dropdown) {
+            const isVisible = dropdown.style.display !== 'none' && dropdown.style.display !== '';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                dropdown.style.opacity = '0';
+                dropdown.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    dropdown.style.transition = 'all 0.3s ease';
+                    dropdown.style.opacity = '1';
+                    dropdown.style.transform = 'translateY(0)';
+                }, 10);
+            }
+        }
+        
+        if (mainNavDropdown && mainNavDropdown.style.display === 'block') {
+            mainNavDropdown.style.display = 'none';
+        }
+        if (settingsDropdown && settingsDropdown.style.display === 'block') {
+            settingsDropdown.style.display = 'none';
+        }
+    };
+    
+    window.toggleAuthLanguageDropdown = function() {
+        const dropdown = document.getElementById('authLanguageDropdown');
+        const mainNavDropdown = document.getElementById('mainNavDropdown');
+        const settingsDropdown = document.getElementById('settingsDropdown');
+        
+        if (dropdown) {
+            const isVisible = dropdown.style.display !== 'none' && dropdown.style.display !== '';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                dropdown.style.opacity = '0';
+                dropdown.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    dropdown.style.transition = 'all 0.3s ease';
+                    dropdown.style.opacity = '1';
+                    dropdown.style.transform = 'translateY(0)';
+                }, 10);
+            }
+        }
+        
+        if (mainNavDropdown && mainNavDropdown.style.display === 'block') {
+            mainNavDropdown.style.display = 'none';
+        }
+        if (settingsDropdown && settingsDropdown.style.display === 'block') {
+            settingsDropdown.style.display = 'none';
+        }
+    };
+    
+    // Exponer función changeLanguage inmediatamente para evitar errores
+    // Esta función será reemplazada por la versión completa más adelante
+    window.changeLanguage = function(lang) {
+        console.log('🌐 Cambiando idioma a:', lang);
+        
+        // Guardar idioma (forzar español)
+        localStorage.setItem('veedor_language', 'es');
+        lang = 'es';
+        if (typeof window !== 'undefined') {
+            window.currentLanguage = lang;
+        }
+        
+        // Intentar usar setLanguage si está disponible
+        if (window.setLanguage && typeof window.setLanguage === 'function') {
+            try {
+                window.setLanguage(lang);
+            } catch (e) {
+                console.warn('Error en setLanguage:', e);
+            }
+        }
+        
+        // Actualizar traducciones básicas sin recursión
+        const updateTranslationsNow = () => {
+            if (window.updateTranslations && typeof window.updateTranslations === 'function') {
+                try {
+                    window.updateTranslations();
+                } catch (e) {
+                    console.error('❌ Error en updateTranslations:', e);
+                }
+            }
+            
+            // Fallback: actualizar elementos manualmente si window.t está disponible
+            if (window.t && typeof window.t === 'function') {
+                try {
+                    const elements = document.querySelectorAll('[data-translate]');
+                    elements.forEach(el => {
+                        const key = el.getAttribute('data-translate');
+                        if (key) {
+                            try {
+                                const translation = window.t(key, lang);
+                                if (translation && translation !== key) {
+                                    el.textContent = translation;
+                                }
+                            } catch (e) {}
+                        }
+                    });
+                    
+                    // Actualizar placeholders
+                    document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                        const key = el.getAttribute('data-translate-placeholder');
+                        if (key) {
+                            try {
+                                const translation = window.t(key, lang);
+                                if (translation && translation !== key) {
+                                    el.placeholder = translation;
+                                }
+                            } catch (e) {}
+                        }
+                    });
+                } catch (e) {
+                    console.error('❌ Error en fallback de traducciones:', e);
+                }
+            }
+        };
+        
+        // Actualizar inmediatamente
+        updateTranslationsNow();
+        setTimeout(updateTranslationsNow, 100);
+        
+        // Actualizar banderas
+        const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
+        const authFlag = document.getElementById('authCurrentLanguageFlag');
+        if (authFlag && flags[lang]) {
+            authFlag.textContent = flags[lang];
+        }
+        const mainFlag = document.getElementById('currentLanguageFlag');
+        if (mainFlag && flags[lang]) {
+            mainFlag.textContent = flags[lang];
+        }
+        
+        // Actualizar atributo lang del HTML
+        document.documentElement.lang = lang;
+        
+        // Cerrar dropdowns
+        const authDropdown = document.getElementById('authLanguageDropdown');
+        if (authDropdown) authDropdown.style.display = 'none';
+        const mainDropdown = document.getElementById('languageDropdown');
+        if (mainDropdown) mainDropdown.style.display = 'none';
+        
+        // Recargar datos para actualizar formatos (solo si estamos en la app principal)
+        if (typeof updateDisplay === 'function' && document.getElementById('mainApp') && document.getElementById('mainApp').style.display !== 'none') {
+            setTimeout(() => {
+                if (typeof updateDisplay === 'function') {
+                    updateDisplay();
+                }
+            }, 300);
+        }
+        
+        // Forzar actualización de todos los elementos dinámicos
+        if (typeof updateCharts === 'function') {
+            setTimeout(() => {
+                updateCharts();
+            }, 400);
+        }
+        
+        // Actualizar contenido dinámico de presupuestos y otros elementos
+        if (typeof updateMonthDashboard === 'function' && document.getElementById('monthDashboard')) {
+            setTimeout(() => {
+                updateMonthDashboard();
+            }, 350);
+        }
+        
+        if (typeof updateBudgets === 'function') {
+            setTimeout(() => {
+                updateBudgets();
+            }, 350);
+        }
+        
+        // Actualizar mensaje de bienvenida si existe
+        if (typeof showWelcomeMessage === 'function') {
+            setTimeout(() => {
+                showWelcomeMessage();
+            }, 200);
+        }
+    };
+    window.closePrivacyModal = function() { 
+        const modal = document.getElementById('privacyModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.closeCookiesModal = function() { 
+        const modal = document.getElementById('cookiesModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.closeTermsModal = function() { 
+        const modal = document.getElementById('termsModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.showSummaryDetails = function() { console.warn('showSummaryDetails aún no está disponible'); };
+    window.closeSummaryDetails = function() { 
+        const modal = document.getElementById('summaryDetailsModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.closeCategoryDetailsModal = function() { 
+        const modal = document.getElementById('categoryDetailsModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.showSavingsGoalModal = function() { console.warn('showSavingsGoalModal aún no está disponible'); };
+    window.closeSavingsGoalModal = function() { 
+        const modal = document.getElementById('savingsGoalModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.showBaseFundModal = function() { console.warn('showBaseFundModal aún no está disponible'); };
+    window.closeBaseFundModal = function() { 
+        const modal = document.getElementById('baseFundModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.openChartModal = function(chartType, title) {
+        console.log('🔧 Stub openChartModal llamado:', { chartType, title, hasRealFunction: typeof window._openChartModalReal === 'function' });
+        // Si la función real ya está disponible, usarla
+        if (typeof window._openChartModalReal === 'function') {
+            console.log('✅ Usando función real desde stub');
+            return window._openChartModalReal(chartType, title);
+        }
+        // Si no, intentar abrir el modal básico y esperar a que la función real esté lista
+        console.log('⚠️ Función real no disponible aún, usando stub. Reintentando en 200ms...');
+        const modal = document.getElementById('chartModal');
+        const modalTitle = document.getElementById('chartModalTitle');
+        if (modal && modalTitle) {
+            if (title) modalTitle.textContent = title;
+            modal.style.display = 'flex';
+            // Intentar llamar a la función real después de delays progresivos
+            let attempts = 0;
+            const maxAttempts = 10;
+            const checkFunction = () => {
+                attempts++;
+                if (typeof window._openChartModalReal === 'function') {
+                    console.log('✅ Función real disponible ahora, llamándola...');
+                    window._openChartModalReal(chartType, title);
+                } else if (attempts < maxAttempts) {
+                    setTimeout(checkFunction, 200);
+                } else {
+                    console.error('❌ Función real aún no disponible después de', maxAttempts, 'intentos');
+                    alert('Error: No se pudo cargar la función de gráficos. Por favor, recarga la página.');
+                }
+            };
+            setTimeout(checkFunction, 200);
+        } else {
+            console.error('❌ Modal o modalTitle no encontrado en stub');
+        }
+    };
+    window.closeChartModal = function() { 
+        const modal = document.getElementById('chartModal');
+        if (modal) modal.style.display = 'none';
+    };
+    window.deleteSavingsGoal = function() { console.warn('deleteSavingsGoal aún no está disponible'); };
+    
+    // Configuración de la API
+    const API_URL = '/api';
+
+    // Log inicial para verificar que el script se carga
+    console.log('🚀 app.js cargado correctamente');
+    
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then((registration) => {
+                    console.log('✅ Service Worker registrado:', registration.scope);
+                    
+                    // Verificar actualizaciones periódicamente
+                    setInterval(() => {
+                        registration.update();
+                    }, 60000); // Cada minuto
+                })
+                .catch((error) => {
+                    console.log('❌ Error registrando Service Worker:', error);
+                });
+            
+            // Escuchar actualizaciones del Service Worker
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                console.log('🔄 Nueva versión del Service Worker disponible');
+                // Recargar página cuando hay nueva versión
+                window.location.reload();
+            });
+        });
+    }
+    
+    // Manejar prompt de instalación PWA
+    let deferredPrompt = null;
+    
+    // Verificar si ya está instalada al cargar
+    function checkIfInstalled() {
+        // Verificar si está en modo standalone (instalada)
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true ||
+            document.referrer.includes('android-app://')) {
+            console.log('📱 PWA ya está instalada');
+            const installButton = document.getElementById('installPWAButton');
+            if (installButton) {
+                installButton.style.display = 'none';
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    // Función para manejar el click del botón de instalación
+    function setupInstallButton() {
+        const installButton = document.getElementById('installPWAButton');
+        if (!installButton) return;
+        
+        // Remover listeners anteriores para evitar duplicados
+        const newButton = installButton.cloneNode(true);
+        installButton.parentNode.replaceChild(newButton, installButton);
+        
+        newButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // Si hay prompt disponible, usarlo
+                console.log('📱 Mostrando prompt de instalación...');
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} la instalación`);
+                deferredPrompt = null;
+                if (outcome === 'accepted') {
+                    newButton.style.display = 'none';
+                }
+            } else {
+                // Si no hay prompt, mostrar instrucciones según el dispositivo
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                const isAndroid = /Android/.test(navigator.userAgent);
+                
+                if (isIOS) {
+                    alert('Para instalar en iOS:\n1. Toca el botón de compartir (cuadrado con flecha)\n2. Selecciona "Agregar a pantalla de inicio"\n3. Toca "Agregar"');
+                } else if (isAndroid) {
+                    alert('Para instalar en Android:\n1. Toca el menú (3 puntos) en la esquina superior derecha\n2. Selecciona "Instalar aplicación" o "Agregar a pantalla de inicio"');
+                } else {
+                    alert('Para instalar:\n1. Busca el icono de instalación en la barra de direcciones\n2. O usa el menú del navegador para "Instalar aplicación"');
+                }
+            }
+        });
+    }
+    
+    // Verificar al cargar
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkIfInstalled()) {
+                setupInstallButton();
+            }
+        });
+    } else {
+        if (!checkIfInstalled()) {
+            setupInstallButton();
+        }
+    }
+    
+    // Manejar evento beforeinstallprompt (cuando el navegador permite instalación)
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('📱 Evento beforeinstallprompt detectado');
+        // Prevenir el prompt automático
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // El botón ya está visible, solo actualizar el listener
+        setupInstallButton();
+    });
+    
+    // Ocultar botón si ya está instalada
+    window.addEventListener('appinstalled', () => {
+        console.log('✅ PWA instalada');
+        const installButton = document.getElementById('installPWAButton');
+        if (installButton) {
+            installButton.style.display = 'none';
+        }
+        deferredPrompt = null;
+    });
+    console.log('API_URL:', API_URL);
+    console.log('URL actual:', window.location.href);
+
+// Categorías de gastos e ingresos
+const categories = {
+    expense: [
+        { id: 'food', name: 'Alimentación', subcategories: ['Supermercado', 'Restaurantes', 'Delivery', 'Café', 'Bebidas', 'Comida rápida', 'Mercado local', 'Tienda de conveniencia', 'Catering', 'Almuerzo de trabajo', 'Desayuno', 'Merienda', 'Cena', 'Snacks', 'Bebidas alcohólicas', 'Agua', 'Zumos'] },
+        { id: 'transport', name: 'Transporte', subcategories: ['Gasolina', 'Transporte público', 'Taxi/Uber', 'Mantenimiento', 'Parking', 'Peaje', 'Seguro de coche', 'Reparaciones', 'Bicicleta', 'Scooter', 'Vuelos', 'Tren', 'Autobús', 'Metro', 'Tranvía', 'Barco', 'Ferry', 'Alquiler de coche', 'ITV', 'Impuesto de circulación'] },
+        { id: 'housing', name: 'Vivienda', subcategories: ['Alquiler/Hipoteca', 'Servicios', 'Mantenimiento', 'Decoración', 'Limpieza', 'Jardinería', 'Reparaciones', 'Mejoras', 'Muebles', 'Electrodomésticos', 'Seguro del hogar', 'Comunidad', 'IBI/Impuestos', 'Luz', 'Agua', 'Gas', 'Calefacción', 'Aire acondicionado', 'Internet', 'Teléfono fijo', 'Basura', 'Reciclaje'] },
+        { id: 'health', name: 'Salud', subcategories: ['Médico', 'Farmacia', 'Gimnasio', 'Seguro médico', 'Dentista', 'Óptica', 'Fisioterapia', 'Psicólogo', 'Nutricionista', 'Medicinas', 'Análisis', 'Especialistas', 'Urgencias', 'Hospital', 'Ambulancia', 'Prótesis', 'Ortodoncia', 'Cirugía', 'Rehabilitación', 'Terapias alternativas'] },
+        { id: 'entertainment', name: 'Entretenimiento', subcategories: ['Cine', 'Streaming', 'Eventos', 'Hobbies', 'Conciertos', 'Teatro', 'Museos', 'Videojuegos', 'Libros', 'Revistas', 'Juegos de mesa', 'Deportes', 'Viajes', 'Vacaciones', 'Parques temáticos', 'Zoo', 'Acuario', 'Excursiones', 'Camping', 'Deportes acuáticos', 'Ski', 'Golf'] },
+        { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros', 'Zapatos', 'Accesorios', 'Joyería', 'Cosméticos', 'Herramientas', 'Bricolaje', 'Jardín', 'Mascotas', 'Regalos', 'Libros', 'Música', 'Películas', 'Juguetes', 'Deportes', 'Fotografía', 'Arte', 'Antigüedades'] },
+        { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula', 'Universidad', 'Máster', 'Idiomas', 'Formación online', 'Seminarios', 'Conferencias', 'Material escolar', 'Uniforme', 'Becas', 'Tutorías', 'Clases particulares', 'Certificaciones', 'Exámenes', 'Biblioteca', 'Software educativo'] },
+        { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios', 'Gas', 'Calefacción', 'Basura', 'TV/Cable', 'Streaming servicios', 'Suscripciones', 'Banco', 'Seguros', 'Teléfono móvil', 'Datos móviles', 'Servicios de nube', 'Hosting', 'Dominio', 'Software', 'Licencias'] },
+        { id: 'insurance', name: 'Seguros', subcategories: ['Seguro de coche', 'Seguro de hogar', 'Seguro de vida', 'Seguro de salud', 'Otros seguros', 'Seguro de viaje', 'Seguro de mascota', 'Seguro de responsabilidad civil', 'Seguro de accidentes', 'Seguro de invalidez', 'Seguro de desempleo', 'Seguro de negocio'] },
+        { id: 'fines', name: 'Multas y Sanciones', subcategories: ['Multa de tráfico', 'Multa administrativa', 'Sanción', 'Otros', 'Aparcamiento', 'Velocidad', 'ITV', 'Impuestos atrasados', 'Multa de estacionamiento', 'Multa de tránsito', 'Multa municipal', 'Sanciones de tráfico'] },
+        { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros', 'Peluquería', 'Estética', 'Spa', 'Masajes', 'Cosméticos', 'Perfumes', 'Cumpleaños', 'Aniversarios', 'Bodas', 'Manicura', 'Pedicura', 'Depilación', 'Tatuajes', 'Piercings', 'Gafas', 'Lentes de contacto'] },
+        { id: 'subscriptions', name: 'Suscripciones', subcategories: ['Netflix', 'Spotify', 'Amazon Prime', 'Disney+', 'HBO', 'Gimnasio', 'Revistas', 'Software', 'Cloud storage', 'Apps', 'Newsletters', 'Clubes', 'Apple Music', 'YouTube Premium', 'Adobe Creative', 'Microsoft 365', 'Dropbox', 'iCloud', 'Google Drive', 'Clubes deportivos', 'Bibliotecas digitales'] },
+        { id: 'charity', name: 'Donaciones y Caridad', subcategories: ['ONG', 'Caridad', 'Donaciones', 'Ayuda humanitaria', 'Fundaciones', 'Crowdfunding', 'Voluntariado', 'Ayuda a refugiados', 'Protección animal', 'Medio ambiente', 'Educación', 'Salud', 'Investigación'] },
+        { id: 'taxes', name: 'Impuestos', subcategories: ['IRPF', 'IVA', 'IBI', 'Impuesto de circulación', 'Impuesto de sucesiones', 'Otros impuestos', 'Impuesto de sociedades', 'Impuesto de actividades económicas', 'Impuesto sobre vehículos', 'Tasas municipales', 'Multas fiscales'] },
+        { id: 'debt', name: 'Deudas y Préstamos', subcategories: ['Pago de préstamo', 'Tarjeta de crédito', 'Hipoteca', 'Intereses', 'Comisiones bancarias', 'Refinanciación', 'Préstamo personal', 'Préstamo de coche', 'Préstamo estudiantil', 'Microcréditos', 'Préstamos rápidos'] },
+        { id: 'pets', name: 'Mascotas', subcategories: ['Veterinario', 'Comida', 'Juguetes', 'Accesorios', 'Peluquería', 'Seguro de mascota', 'Medicinas', 'Vacunas', 'Guardería', 'Adiestramiento', 'Pensión', 'Cuidados especiales'] },
+        { id: 'children', name: 'Niños', subcategories: ['Guardería', 'Colegio', 'Actividades extraescolares', 'Juguetes', 'Ropa', 'Material escolar', 'Cumpleaños', 'Regalos', 'Cuidados', 'Medicinas', 'Vacunas', 'Deportes', 'Música', 'Arte'] },
+        { id: 'investment', name: 'Inversiones', subcategories: ['Aporte', 'Compra de acciones', 'Compra de bonos', 'Compra de fondos', 'Compra de criptomonedas', 'Inversión inmobiliaria', 'Inversión en negocio', 'Comisiones de inversión', 'Gastos de gestión', 'Impuestos de inversión', 'Pérdidas de inversión', 'Retiro de inversión'] },
+        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Gastos no categorizados', 'Transferencias', 'Comisiones', 'Pérdidas', 'Gastos varios', 'Emergencias', 'Reparaciones varias'] }
+    ],
+    income: [
+        { id: 'salary', name: 'Salario', subcategories: ['Nómina', 'Pago mensual', 'Pago quincenal', 'Pago semanal', 'Pago diario', 'Horas extras', 'Bonus', 'Comisiones', 'Incentivos', 'Vacaciones pagadas', 'Plus de productividad', 'Plus de antigüedad', 'Dietas', 'Kilometraje'] },
+        { id: 'freelance', name: 'Freelance', subcategories: ['Proyecto', 'Hora', 'Servicio', 'Otros', 'Consultoría', 'Diseño', 'Desarrollo', 'Escritura', 'Traducción', 'Marketing', 'Asesoría', 'Fotografía', 'Videografía', 'Diseño gráfico', 'Programación', 'Redacción', 'Edición', 'Community management'] },
+        { id: 'investment', name: 'Inversiones', subcategories: ['Dividendos', 'Intereses', 'Renta', 'Ganancias', 'Acciones', 'Bonos', 'Fondos', 'Criptomonedas', 'Forex', 'Opciones', 'Futuros', 'Rentabilidad', 'Plusvalías', 'Rendimientos', 'Rentas de capital', 'Rentas inmobiliarias'] },
+        { id: 'business', name: 'Negocio', subcategories: ['Ventas', 'Servicios', 'Comisiones', 'Otros', 'Ingresos por productos', 'Ingresos por servicios', 'Licencias', 'Franquicias', 'Royalties', 'Alquiler de maquinaria', 'Consultoría empresarial', 'Formación', 'Publicidad', 'Patrocinios'] },
+        { id: 'gift', name: 'Regalos', subcategories: ['Cumpleaños', 'Navidad', 'Ocasión especial', 'Otros', 'Bodas', 'Aniversarios', 'Graduación', 'Bautizo', 'Comunión', 'Confirmación', 'Regalo de empresa', 'Regalo de amigos', 'Regalo familiar'] },
+        { id: 'refund', name: 'Reembolsos', subcategories: ['Compra', 'Impuesto', 'Seguro', 'Otros', 'Devolución de producto', 'Reembolso de viaje', 'Reembolso médico', 'Reembolso de gastos', 'Reembolso de impuestos', 'Reembolso de seguro', 'Garantía', 'Devolución de garantía'] },
+        { id: 'rental', name: 'Alquiler', subcategories: ['Propiedad', 'Habitación', 'Garaje', 'Otros', 'Alquiler de piso', 'Alquiler de casa', 'Alquiler de local', 'Alquiler de terreno', 'Alquiler de vehículo', 'Alquiler de maquinaria', 'Alquiler de equipos', 'Alquiler de espacios', 'Parking', 'Trastero'] },
+        { id: 'pension', name: 'Pensión', subcategories: ['Jubilación', 'Invalidez', 'Viudedad', 'Orfandad', 'Pensión alimenticia', 'Pensión no contributiva', 'Pensión de viudedad', 'Pensión de orfandad', 'Pensión de invalidez permanente', 'Pensión de jubilación anticipada'] },
+        { id: 'benefits', name: 'Prestaciones', subcategories: ['Desempleo', 'Baja médica', 'Maternidad', 'Paternidad', 'Ayudas sociales', 'Subsidios', 'Becas', 'Ayuda familiar', 'Renta mínima', 'Ayuda al alquiler', 'Subsidio de desempleo', 'Prestación por incapacidad', 'Ayuda por dependencia'] },
+        { id: 'lottery', name: 'Lotería y Apuestas', subcategories: ['Lotería', 'Apuestas', 'Casino', 'Premios', 'Sorteos', 'Bingo', 'Rascas', 'Lotería de Navidad', 'Euromillones', 'Primitiva', 'Bonoloto', 'Ganancias de casino'] },
+        { id: 'sale', name: 'Ventas', subcategories: ['Venta de objetos', 'Venta de vehículo', 'Venta de propiedad', 'Venta de acciones', 'Venta de artículos usados', 'Venta online', 'Venta de muebles', 'Venta de electrónica', 'Venta de ropa', 'Venta de libros', 'Venta de coleccionables', 'Venta de arte'] },
+        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Ingresos no categorizados', 'Transferencias recibidas', 'Herencia', 'Indemnización', 'Compensación', 'Subvención', 'Ayuda económica', 'Préstamo recibido', 'Ingresos varios'] }
+    ],
+    // Mantener compatibilidad con código antiguo
+    general: [
+        { id: 'food', name: 'Alimentación', subcategories: ['Supermercado', 'Restaurantes', 'Delivery', 'Café', 'Bebidas', 'Comida rápida', 'Mercado local', 'Tienda de conveniencia', 'Catering', 'Almuerzo de trabajo', 'Desayuno', 'Merienda', 'Cena', 'Snacks', 'Bebidas alcohólicas', 'Agua', 'Zumos'] },
+        { id: 'transport', name: 'Transporte', subcategories: ['Gasolina', 'Transporte público', 'Taxi/Uber', 'Mantenimiento', 'Parking', 'Peaje', 'Seguro de coche', 'Reparaciones', 'Bicicleta', 'Scooter', 'Vuelos', 'Tren', 'Autobús', 'Metro', 'Tranvía', 'Barco', 'Ferry', 'Alquiler de coche', 'ITV', 'Impuesto de circulación'] },
+        { id: 'housing', name: 'Vivienda', subcategories: ['Alquiler/Hipoteca', 'Servicios', 'Mantenimiento', 'Decoración', 'Limpieza', 'Jardinería', 'Reparaciones', 'Mejoras', 'Muebles', 'Electrodomésticos', 'Seguro del hogar', 'Comunidad', 'IBI/Impuestos', 'Luz', 'Agua', 'Gas', 'Calefacción', 'Aire acondicionado', 'Internet', 'Teléfono fijo', 'Basura', 'Reciclaje'] },
+        { id: 'health', name: 'Salud', subcategories: ['Médico', 'Farmacia', 'Gimnasio', 'Seguro médico', 'Dentista', 'Óptica', 'Fisioterapia', 'Psicólogo', 'Nutricionista', 'Medicinas', 'Análisis', 'Especialistas', 'Urgencias', 'Hospital', 'Ambulancia', 'Prótesis', 'Ortodoncia', 'Cirugía', 'Rehabilitación', 'Terapias alternativas'] },
+        { id: 'entertainment', name: 'Entretenimiento', subcategories: ['Cine', 'Streaming', 'Eventos', 'Hobbies', 'Conciertos', 'Teatro', 'Museos', 'Videojuegos', 'Libros', 'Revistas', 'Juegos de mesa', 'Deportes', 'Viajes', 'Vacaciones', 'Parques temáticos', 'Zoo', 'Acuario', 'Excursiones', 'Camping', 'Deportes acuáticos', 'Ski', 'Golf'] },
+        { id: 'shopping', name: 'Compras', subcategories: ['Ropa', 'Electrónica', 'Hogar', 'Otros', 'Zapatos', 'Accesorios', 'Joyería', 'Cosméticos', 'Herramientas', 'Bricolaje', 'Jardín', 'Mascotas', 'Regalos', 'Libros', 'Música', 'Películas', 'Juguetes', 'Deportes', 'Fotografía', 'Arte', 'Antigüedades'] },
+        { id: 'education', name: 'Educación', subcategories: ['Cursos', 'Libros', 'Materiales', 'Matrícula', 'Universidad', 'Máster', 'Idiomas', 'Formación online', 'Seminarios', 'Conferencias', 'Material escolar', 'Uniforme', 'Becas', 'Tutorías', 'Clases particulares', 'Certificaciones', 'Exámenes', 'Biblioteca', 'Software educativo'] },
+        { id: 'bills', name: 'Facturas', subcategories: ['Internet', 'Teléfono', 'Luz', 'Agua', 'Otros servicios', 'Gas', 'Calefacción', 'Basura', 'TV/Cable', 'Streaming servicios', 'Suscripciones', 'Banco', 'Seguros', 'Teléfono móvil', 'Datos móviles', 'Servicios de nube', 'Hosting', 'Dominio', 'Software', 'Licencias'] },
+        { id: 'personal', name: 'Personal', subcategories: ['Cuidado personal', 'Ropa', 'Regalos', 'Otros', 'Peluquería', 'Estética', 'Spa', 'Masajes', 'Cosméticos', 'Perfumes', 'Cumpleaños', 'Aniversarios', 'Bodas', 'Manicura', 'Pedicura', 'Depilación', 'Tatuajes', 'Piercings', 'Gafas', 'Lentes de contacto'] },
+        { id: 'other', name: 'Otros', subcategories: ['Varios', 'Imprevistos', 'Gastos no categorizados', 'Transferencias', 'Comisiones', 'Pérdidas', 'Gastos varios', 'Emergencias', 'Reparaciones varias'] }
+    ]
+};
+
+
+// Estado de la aplicación
+let transactions = [];
+let envelopes = [];
+let budgets = [];
+let accounts = [];
+let properties = [];
+let recurringExpenses = [];
+let patrimonio = [];
+let loans = [];
+let investments = [];
+let charts = {};
+let currentUser = null;
+let currentUserEmail = null;
+let authToken = null;
+let summaryPeriod = 'year'; // 'month', 'year', 'all'
+let savingsGoal = null; // Meta de ahorro (Fondo de Emergencia)
+let baseFund = null; // Fondo Base
+
+// Variables para debounce y cache
+let filterDebounceTimeouts = {};
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+// Utilidad para hacer peticiones autenticadas
+async function apiRequest(endpoint, options = {}) {
+    // Asegurarse de que el token esté cargado desde localStorage
+    if (!authToken) {
+        authToken = localStorage.getItem('veedor_token');
+    }
+    
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+    };
+
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+    } else if (endpoint !== '/login' && endpoint !== '/register' && endpoint !== '/forgot-password' && endpoint !== '/reset-password') {
+        console.warn('⚠️ No hay token disponible para la petición a:', endpoint);
+    }
+
+    try {
+        
+        const response = await fetch(`${API_URL}${endpoint}`, {
+            ...options,
+            headers
+        });
+
+        let data;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            throw new Error(text || 'Error en la respuesta del servidor');
+        }
+
+        // No cerrar sesión automáticamente en el endpoint de login (401 es esperado si las credenciales son incorrectas)
+        if ((response.status === 401 || response.status === 403) && !endpoint.includes('/login')) {
+            logout();
+            throw new Error('Sesión expirada');
+        }
+        
+        if (!response.ok) {
+            throw new Error(data.error || `Error ${response.status}: ${response.statusText}`);
+        }
+
+        return data;
+    } catch (error) {
+        if (error.message) {
+            throw error;
+        }
+        throw new Error('Error de conexión. Verifica tu internet y que el servidor esté funcionando.');
+    }
+}
+
+// ==================== SISTEMA DE NOTIFICACIONES TOAST ====================
+function showToast(message, type = 'info', duration = 5000) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    const isDark = document.body.classList.contains('dark-mode');
+    
+    const colors = {
+        success: { 
+            border: '#10b981', 
+            bg: isDark ? 'rgba(16, 185, 129, 0.15)' : '#f0fdf4', 
+            icon: '✅', 
+            text: isDark ? '#10b981' : '#065f46' 
+        },
+        error: { 
+            border: '#ef4444', 
+            bg: isDark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2', 
+            icon: '❌', 
+            text: isDark ? '#ef4444' : '#991b1b' 
+        },
+        warning: { 
+            border: '#f59e0b', 
+            bg: isDark ? 'rgba(251, 191, 36, 0.15)' : '#fffbeb', 
+            icon: '⚠️', 
+            text: isDark ? '#fbbf24' : '#92400e' 
+        },
+        info: { 
+            border: '#6366f1', 
+            bg: isDark ? 'rgba(147, 51, 234, 0.15)' : '#f3e8ff', 
+            icon: 'ℹ️', 
+            text: isDark ? '#818cf8' : '#3730a3' 
+        }
+    };
+    
+    const style = colors[type] || colors.info;
+    
+    toast.style.cssText = `
+        background: ${style.bg};
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 300px;
+        max-width: 500px;
+        pointer-events: auto;
+        animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border-left: 4px solid ${style.border};
+        position: relative;
+        overflow: hidden;
+        z-index: 10002;
+    `;
+    
+    toast.innerHTML = `
+        <span style="font-size: 22px; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${style.icon}</span>
+        <span style="flex: 1; color: ${style.text}; font-size: 15px; font-weight: 600; line-height: 1.5;">${message}</span>
+        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: ${style.text}; font-size: 20px; cursor: pointer; padding: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: all 0.2s; border-radius: 4px;" onmouseover="this.style.opacity='1'; this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.opacity='0.7'; this.style.background='transparent'">×</button>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+
+// Exponer función global
+window.showToast = showToast;
+
+// ==================== SISTEMA DE CONFIRMACIÓN ====================
+function showConfirm(title, message, confirmText = 'Confirmar', cancelText = 'Cancelar') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirmModal');
+        const titleEl = document.getElementById('confirmModalTitle');
+        const messageEl = document.getElementById('confirmModalMessage');
+        const confirmBtn = document.getElementById('confirmModalConfirm');
+        const cancelBtn = document.getElementById('confirmModalCancel');
+        
+        if (!modal || !titleEl || !messageEl || !confirmBtn || !cancelBtn) {
+            resolve(false);
+            return;
+        }
+        
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        confirmBtn.textContent = confirmText;
+        cancelBtn.textContent = cancelText;
+        
+        modal.style.display = 'flex';
+        
+        const handleConfirm = () => {
+            modal.style.display = 'none';
+            confirmBtn.onclick = null;
+            cancelBtn.onclick = null;
+            resolve(true);
+        };
+        
+        const handleCancel = () => {
+            modal.style.display = 'none';
+            confirmBtn.onclick = null;
+            cancelBtn.onclick = null;
+            resolve(false);
+        };
+        
+        confirmBtn.onclick = handleConfirm;
+        cancelBtn.onclick = handleCancel;
+        
+        // Cerrar al hacer click fuera del modal
+        modal.onclick = (e) => {
+            if (e.target === modal) handleCancel();
+        };
+    });
+}
+
+// Exponer función global
+window.showConfirm = showConfirm;
+
+// ==================== INDICADORES DE CARGA ====================
+function showLoader(text = null) {
+    if (!text) {
+        text = 'Cargando...';
+    }
+    const loader = document.getElementById('globalLoader');
+    const loaderText = document.getElementById('globalLoaderText');
+    if (loader) {
+        if (loaderText) loaderText.textContent = text;
+        loader.style.display = 'flex';
+    }
+}
+
+function hideLoader() {
+    const loader = document.getElementById('globalLoader');
+    if (loader) {
+        loader.style.display = 'none';
+    }
+}
+
+// Exponer funciones globales
+window.showLoader = showLoader;
+window.hideLoader = hideLoader;
+
+// ==================== MODO OSCURO ====================
+function toggleDarkMode() {
+    const body = document.body;
+    const html = document.documentElement;
+    const isDark = body.classList.contains('dark-mode');
+    
+    if (isDark) {
+        html.classList.remove('dark-mode');
+        body.classList.remove('dark-mode');
+        localStorage.setItem('veedor_darkMode', 'false');
+        const toggleText = document.getElementById('darkModeToggleText');
+        if (toggleText) {
+            toggleText.textContent = 'Modo Oscuro';
+        }
+        // Actualizar theme-color para status bar (modo claro)
+        updateThemeColor('#F8FAFC');
+    } else {
+        html.classList.add('dark-mode');
+        body.classList.add('dark-mode');
+        localStorage.setItem('veedor_darkMode', 'true');
+        const toggleText = document.getElementById('darkModeToggleText');
+        if (toggleText) {
+            toggleText.textContent = 'Modo Claro';
+        }
+        // Actualizar theme-color para status bar (modo oscuro - color muy oscuro del inicio)
+        updateThemeColor('#050510');
+    }
+    
+    // Actualizar icono en welcome page
+    updateAuthDarkModeIcon();
+    // Actualizar icono SVG del botón de navegación
+    updateNavDarkModeIcon();
+}
+
+// Actualizar theme-color para que coincida con el background (status bar en iPhone)
+function updateThemeColor(color) {
+    const themeColorMeta = document.getElementById('themeColorMeta');
+    const statusBarStyle = document.getElementById('statusBarStyle');
+    
+    if (themeColorMeta) {
+        themeColorMeta.setAttribute('content', color);
+    }
+    
+    // Actualizar status bar style según el modo
+    if (statusBarStyle) {
+        // Modo claro: status bar con contenido oscuro (default)
+        // Modo oscuro: status bar con contenido claro (black-translucent o light-content)
+        if (color === '#F8FAFC') {
+            // Modo claro - status bar con contenido oscuro
+            statusBarStyle.setAttribute('content', 'default');
+        } else {
+            // Modo oscuro - status bar con contenido claro
+            statusBarStyle.setAttribute('content', 'black-translucent');
+        }
+    }
+}
+
+// Actualizar icono del botón de modo oscuro en welcome page
+function updateAuthDarkModeIcon() {
+    const authIcon = document.getElementById('authDarkModeIcon');
+    if (authIcon) {
+        const isDark = document.body.classList.contains('dark-mode');
+        authIcon.textContent = isDark ? '☀' : '🌙';
+        // Asegurar que el emoji siempre tenga filtro grayscale
+        authIcon.style.filter = 'grayscale(100%)';
+    }
+}
+
+// Actualizar icono del botón de navegación (modo claro/oscuro)
+function updateNavDarkModeIcon() {
+    const navIcon = document.getElementById('darkModeToggleIcon');
+    if (navIcon) {
+        const isDark = document.body.classList.contains('dark-mode');
+        // Si está en modo oscuro, mostrar icono de sol (modo claro)
+        // Si está en modo claro, mostrar icono de luna (modo oscuro)
+        navIcon.textContent = isDark ? '☀️' : '🌙';
+    }
+}
+
+function initDarkMode() {
+    const savedMode = localStorage.getItem('veedor_darkMode');
+    // Por defecto, activar modo oscuro si no hay preferencia guardada
+    if (savedMode === null || savedMode === 'true') {
+        document.documentElement.classList.add('dark-mode');
+        document.body.classList.add('dark-mode');
+        updateThemeColor('#050510');
+        const toggleText = document.getElementById('darkModeToggleText');
+        if (toggleText) toggleText.textContent = 'Modo Claro';
+        if (savedMode === null) {
+            localStorage.setItem('veedor_darkMode', 'true');
+        }
+    } else {
+        document.documentElement.classList.remove('dark-mode');
+        document.body.classList.remove('dark-mode');
+        updateThemeColor('#F8FAFC');
+    }
+    
+    // Actualizar icono en welcome page
+    updateAuthDarkModeIcon();
+    // Actualizar icono SVG del botón de navegación
+    updateNavDarkModeIcon();
+}
+
+// ==================== TOGGLE FORMULARIOS ====================
+function toggleForm(formId, buttonId) {
+    const form = document.getElementById(formId);
+    const button = document.getElementById(buttonId);
+    const icon = document.getElementById(formId.replace('Form', 'FormIcon'));
+    const text = document.getElementById(formId.replace('Form', 'FormText'));
+    
+    if (!form || !button) return;
+    
+    const isVisible = form.style.display !== 'none';
+    
+    if (isVisible) {
+        // Ocultar formulario
+        form.style.display = 'none';
+        if (icon) icon.textContent = '➕';
+        if (text) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            const formNames = {
+                'transactionForm': getTranslation('forms.newTransaction', lang),
+                'propertyForm': getTranslation('forms.newProperty', lang),
+                'accountForm': getTranslation('forms.newAccount', lang),
+                'loanForm': getTranslation('forms.newLoan', lang),
+                'investmentForm': getTranslation('forms.newInvestment', lang),
+                'patrimonioForm': getTranslation('forms.newProperty', lang),
+                'budgetForm': getTranslation('forms.newBudget', lang),
+                'envelopeForm': getTranslation('forms.newEnvelope', lang)
+            };
+            text.textContent = formNames[formId] || getTranslation('forms.new', lang);
+        }
+        // Resetear formulario si existe función
+        const resetFunc = window['reset' + formId.charAt(0).toUpperCase() + formId.slice(1).replace('Form', 'Form')];
+        if (resetFunc && typeof resetFunc === 'function') {
+            resetFunc();
+        }
+    } else {
+        // Mostrar formulario
+        form.style.display = 'block';
+        if (icon) icon.textContent = '➖';
+        if (text) {
+            text.textContent = 'Cancelar';
+        }
+        // Scroll suave al formulario
+        setTimeout(() => {
+            form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+}
+
+// Exponer funciones globales
+window.toggleDarkMode = toggleDarkMode;
+window.updateAuthDarkModeIcon = updateAuthDarkModeIcon;
+window.toggleForm = toggleForm;
+
+// Inicialización - Ejecutar inmediatamente
+
+// Establecer español como idioma por defecto al iniciar
+if (!localStorage.getItem('veedor_language')) {
+    localStorage.setItem('veedor_language', 'es');
+    document.documentElement.lang = 'es';
+}
+
+function initializeApp() {
+    // Inicializar modo oscuro primero
+    initDarkMode();
+    // Asegurar que el idioma esté en español por defecto
+    if (!localStorage.getItem('veedor_language')) {
+        localStorage.setItem('veedor_language', 'es');
+        document.documentElement.lang = 'es';
+    }
+    checkAuth();
+    initializeAuth();
+}
+
+// Intentar inicializar de inmediato (solo una vez)
+if (!window.VEEDOR_INITIALIZED) {
+    window.VEEDOR_INITIALIZED = true;
+    
+    // Función para inicializar cuando el DOM esté listo
+    const initWhenReady = () => {
+        // Verificar que los elementos críticos existan
+        if (!document.getElementById('authScreen') && !document.getElementById('mainApp')) {
+            // Si no hay elementos críticos, esperar un poco más
+            setTimeout(initWhenReady, 50);
+            return;
+        }
+        initializeApp();
+    };
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initWhenReady);
+    } else {
+        // Si el DOM ya está cargado, usar un pequeño delay para asegurar que todo esté listo
+        setTimeout(initWhenReady, 100);
+    }
+}
+
+// Verificar autenticación
+async function checkAuth() {
+    authToken = localStorage.getItem('veedor_token');
+    if (authToken) {
+        try {
+            const data = await apiRequest('/verify');
+            currentUser = data.user.username || data.user.email;
+            currentUserEmail = data.user.email;
+            // Cargar datos del perfil
+            userProfile = {
+                firstName: data.user.firstName || '',
+                lastName: data.user.lastName || '',
+                age: data.user.age || null,
+                phone: data.user.phone || '',
+                address: data.user.address || '',
+                city: data.user.city || '',
+                country: data.user.country || '',
+                birthDate: data.user.birthDate || null,
+                notes: data.user.notes || ''
+            };
+            showMainApp();
+            // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
+            await loadUserData();
+            initializeDate();
+            initializeTabs();
+            initializeForms();
+            
+            // Esperar a que el DOM esté completamente listo antes de actualizar
+            setTimeout(() => {
+                console.log('🔄 checkAuth: Llamando a updateDisplay después de inicializar...');
+            updateDisplay();
+            }, 100);
+            initializeCharts();
+            // Actualizar gráficas después de inicializarlas
+            setTimeout(() => {
+                updateCharts();
+            }, 200);
+            updateUserInfo();
+            // Inicializar traducciones
+            if (typeof updateTranslations === 'function') {
+                updateTranslations();
+            }
+            // NO hacer scroll automático - el usuario decidirá dónde quiere ir
+        } catch (error) {
+            console.error('Error verificando autenticación:', error);
+            logout();
+        }
+    } else {
+        showAuthScreen();
+        // Inicializar traducciones en la pantalla de auth también
+        setTimeout(() => {
+            if (typeof updateTranslations === 'function') {
+                updateTranslations();
+            }
+        }, 300);
+    }
+}
+
+// Inicializar sistema de autenticación
+function initializeAuth() {
+    console.log('Inicializando autenticación...');
+    
+    // Verificar que los elementos necesarios existan
+    if (!document.getElementById('authScreen')) {
+        console.warn('⚠️ authScreen no encontrado, esperando a que el DOM esté listo...');
+        setTimeout(initializeAuth, 100);
+        return;
+    }
+    
+    // Tabs de autenticación
+    const authTabs = document.querySelectorAll('.auth-tab-btn');
+    console.log('Tabs encontrados:', authTabs.length);
+    
+    if (authTabs.length === 0) {
+        console.warn('⚠️ No se encontraron tabs de autenticación');
+        return;
+    }
+    
+    authTabs.forEach(btn => {
+        if (!btn) return;
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const targetTab = btn.getAttribute('data-auth-tab');
+            console.log('🔄 Tab seleccionado:', targetTab);
+            
+            // Actualizar clases de tabs
+            authTabs.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Mostrar/ocultar formularios de forma explícita
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+            
+            // Ocultar formulario de recuperación siempre que se cambie de tab
+            if (forgotPasswordForm) {
+                forgotPasswordForm.style.display = 'none';
+                forgotPasswordForm.classList.remove('active');
+            }
+            
+            if (loginForm && registerForm) {
+                if (targetTab === 'login') {
+                    // Ocultar registro primero
+                    registerForm.classList.remove('active');
+                    registerForm.style.display = 'none';
+                    registerForm.style.setProperty('display', 'none', 'important');
+                    
+                    // Mostrar login
+                    loginForm.classList.add('active');
+                    loginForm.style.display = 'block';
+                    loginForm.style.setProperty('display', 'block', 'important');
+                    
+                    console.log('✅ Mostrando formulario de login');
+                    console.log('🔍 Estado loginForm:', { 
+                        display: loginForm.style.display, 
+                        computed: window.getComputedStyle(loginForm).display,
+                        hasActive: loginForm.classList.contains('active') 
+                    });
+                    console.log('🔍 Estado registerForm:', { 
+                        display: registerForm.style.display,
+                        computed: window.getComputedStyle(registerForm).display,
+                        hasActive: registerForm.classList.contains('active') 
+                    });
+                } else if (targetTab === 'register') {
+                    // Ocultar login primero
+                    loginForm.classList.remove('active');
+                    loginForm.style.display = 'none';
+                    loginForm.style.setProperty('display', 'none', 'important');
+                    
+                    // Mostrar registro
+                    registerForm.classList.add('active');
+                    registerForm.style.display = 'block';
+                    registerForm.style.setProperty('display', 'block', 'important');
+                    
+                    console.log('✅ Mostrando formulario de registro');
+                    console.log('🔍 Estado loginForm:', { 
+                        display: loginForm.style.display,
+                        computed: window.getComputedStyle(loginForm).display,
+                        hasActive: loginForm.classList.contains('active') 
+                    });
+                    console.log('🔍 Estado registerForm:', { 
+                        display: registerForm.style.display,
+                        computed: window.getComputedStyle(registerForm).display,
+                        hasActive: registerForm.classList.contains('active') 
+                    });
+                }
+            } else {
+                console.error('❌ Formularios no encontrados:', { loginForm: !!loginForm, registerForm: !!registerForm });
+            }
+            
+            // Limpiar errores
+            const loginError = document.getElementById('loginError');
+            const registerError = document.getElementById('registerError');
+            if (loginError) loginError.textContent = '';
+            if (registerError) registerError.textContent = '';
+        });
+    });
+    
+    // Formulario de login
+    const loginFormElement = document.getElementById('loginFormElement');
+    if (loginFormElement) {
+        console.log('Agregando listener a loginFormElement');
+        loginFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('Formulario de login enviado');
+            await login();
+        });
+    } else {
+        console.error('❌ loginFormElement no encontrado');
+    }
+    
+    // Formulario de registro - Múltiples formas de asegurar que funcione
+    const registerFormElement = document.getElementById('registerFormElement');
+    const registerButton = registerFormElement?.querySelector('button[type="submit"]');
+    
+    if (registerFormElement) {
+        console.log('✅ registerFormElement encontrado');
+        
+        // Listener en el formulario (submit)
+        registerFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('✅ Formulario de registro enviado (submit event)');
+            await register();
+            return false;
+        });
+        
+        // También listener directo en el botón por si acaso
+        if (registerButton) {
+            console.log('✅ Botón de registro encontrado, agregando listener adicional');
+            registerButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('✅ Botón de registro clickeado');
+                await register();
+                return false;
+            });
+        }
+    } else {
+        console.error('❌ registerFormElement no encontrado');
+        // Intentar de nuevo después de un momento
+        setTimeout(() => {
+            const retryForm = document.getElementById('registerFormElement');
+            if (retryForm) {
+                console.log('✅ registerFormElement encontrado en reintento');
+                retryForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await register();
+                });
+            }
+        }, 1000);
+    }
+    
+    // Botón cambiar usuario
+    const switchUserBtn = document.getElementById('switchUserBtn');
+    if (switchUserBtn) {
+        switchUserBtn.addEventListener('click', async () => {
+            const confirmed = await showConfirm(
+                'Cerrar Sesión',
+                '¿Deseas cerrar sesión y cambiar de usuario?',
+                'Cerrar Sesión',
+                'Cancelar'
+            );
+            if (confirmed) {
+                logout();
+            }
+        });
+    }
+    
+    // Enlaces de recuperación de contraseña
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const backToLoginLink = document.getElementById('backToLoginLink');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Ocultar todos los formularios
+            if (loginForm) {
+                loginForm.style.display = 'none';
+                loginForm.classList.remove('active');
+            }
+            if (registerForm) {
+                registerForm.style.display = 'none';
+                registerForm.classList.remove('active');
+            }
+            // Mostrar solo el formulario de recuperación
+            if (forgotPasswordForm) {
+                forgotPasswordForm.style.display = 'block';
+                forgotPasswordForm.classList.add('active');
+            }
+        });
+    }
+    
+    if (backToLoginLink) {
+        backToLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Ocultar formulario de recuperación
+            if (forgotPasswordForm) {
+                forgotPasswordForm.style.display = 'none';
+                forgotPasswordForm.classList.remove('active');
+            }
+            // Ocultar registro
+            if (registerForm) {
+                registerForm.style.display = 'none';
+                registerForm.classList.remove('active');
+            }
+            // Mostrar solo login
+            if (loginForm) {
+                loginForm.style.display = 'block';
+                loginForm.classList.add('active');
+            }
+        });
+    } else {
+        console.warn('⚠️ backToLoginLink no encontrado');
+    }
+    
+    // Formulario de solicitud de token
+    const forgotPasswordFormElement = document.getElementById('forgotPasswordFormElement');
+    if (forgotPasswordFormElement) {
+        forgotPasswordFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await requestPasswordReset();
+        });
+    } else {
+        console.warn('⚠️ forgotPasswordFormElement no encontrado');
+    }
+    
+    // Formulario de reset de contraseña
+    const resetPasswordFormElement = document.getElementById('resetPasswordFormElement');
+    if (resetPasswordFormElement) {
+        resetPasswordFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await resetPassword();
+        });
+    } else {
+        console.warn('⚠️ resetPasswordFormElement no encontrado');
+    }
+    
+    console.log('Autenticación inicializada');
+}
+
+// Helper para obtener traducciones
+function getTranslation(key, lang = null) {
+    if (!lang) {
+        lang = localStorage.getItem('veedor_language') || 'es';
+    }
+    if (window.t && typeof window.t === 'function') {
+        return window.t(key, lang);
+    }
+    if (window.translations && window.translations[lang]) {
+        const keys = key.split('.');
+        let value = window.translations[lang];
+        for (const k of keys) {
+            value = value?.[k];
+            if (!value) {
+                // Fallback a español
+                value = window.translations['es'];
+                for (const k2 of keys) {
+                    value = value?.[k2];
+                }
+                break;
+            }
+        }
+        return value || key;
+    }
+    return key;
+}
+
+// Solicitar recuperación de contraseña
+async function requestPasswordReset() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    const errorMsg = document.getElementById('forgotPasswordError');
+    const successMsg = document.getElementById('forgotPasswordSuccess');
+    const resetSection = document.getElementById('resetPasswordSection');
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    
+    if (errorMsg) errorMsg.textContent = '';
+    if (successMsg) successMsg.style.display = 'none';
+    
+    if (!email) {
+        if (errorMsg) errorMsg.textContent = getTranslation('auth.pleaseEnterEmail', lang);
+        return;
+    }
+    
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        if (errorMsg) errorMsg.textContent = getTranslation('auth.pleaseEnterValidEmail', lang);
+        return;
+    }
+    
+    try {
+        const data = await apiRequest('/forgot-password', {
+            method: 'POST',
+            body: JSON.stringify({ email })
+        });
+        
+        if (successMsg) {
+            if (data.token) {
+                    // Mostrar código directamente (normal en Render plan gratuito)
+                successMsg.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 10px; border-radius: 8px; border: 1px solid var(--primary); margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+                            <span style="font-size: 16px;">✅</span>
+                            <strong style="color: var(--gray-900); font-size: 13px;">Código generado (válido 1h)</strong>
+                        </div>
+                        <div style="background: var(--bg-primary); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--primary); margin: 6px 0; display: flex; align-items: center; justify-content: space-between; gap: 6px; color: var(--text-primary);">
+                            <code style="font-size: 10px; font-weight: 600; color: var(--primary); word-break: break-all; flex: 1; font-family: 'Courier New', monospace; line-height: 1.3;">${data.token}</code>
+                            <button type="button" onclick="event.preventDefault(); event.stopPropagation(); const token = '${data.token}'; navigator.clipboard.writeText(token).then(() => { const btn = event.target; btn.textContent='Copiado'; setTimeout(() => { btn.textContent='Copiar'; }, 2000); }).catch(err => console.error('Error copiando:', err));" style="background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; flex-shrink: 0;" title="Copiar">Copiar</button>
+                        </div>
+                    </div>
+                `;
+                successMsg.style.display = 'block';
+                if (resetSection) resetSection.style.display = 'block';
+            } else {
+                    // Email enviado correctamente - NO mostrar código
+                    successMsg.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 14px; border-radius: 10px; border: 1px solid #22c55e; margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                            <span style="font-size: 20px;">✅</span>
+                            <strong style="color: var(--gray-900); font-size: 14px;">Email de recuperación enviado</strong>
+                        </div>
+                        <p style="margin: 4px 0 8px 0; color: var(--gray-700); font-size: 13px; line-height: 1.4;">Hemos enviado un código de recuperación a tu email. Revisa tu bandeja de entrada y la carpeta de spam.</p>
+                        <p style="margin: 8px 0 0 0; color: var(--gray-600); font-size: 12px; line-height: 1.3; font-style: italic;">El código expirará en 1 hora. Si no lo recibes en unos minutos, verifica tu carpeta de spam o solicita uno nuevo.</p>
+                    </div>
+                `;
+                successMsg.style.display = 'block';
+                    if (resetSection) resetSection.style.display = 'block';
+            }
+        }
+    } catch (error) {
+        console.error('Error en requestPasswordReset:', error);
+        if (errorMsg) {
+            errorMsg.textContent = error.message || getTranslation('auth.passwordResetRequestError', lang);
+        }
+    }
+}
+
+// Resetear contraseña
+async function resetPassword() {
+    const token = document.getElementById('resetToken').value.trim();
+    const newPassword = document.getElementById('resetNewPassword').value;
+    const errorMsg = document.getElementById('resetPasswordError');
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    
+    if (errorMsg) errorMsg.textContent = '';
+    
+    if (!token || !newPassword) {
+        if (errorMsg) errorMsg.textContent = getTranslation('auth.pleaseCompleteAllFields', lang);
+        return;
+    }
+    
+    if (newPassword.length < 4) {
+        if (errorMsg) errorMsg.textContent = getTranslation('auth.passwordMinLength', lang);
+        return;
+    }
+    
+    try {
+        await apiRequest('/reset-password', {
+            method: 'POST',
+            body: JSON.stringify({ token, newPassword })
+        });
+        
+        alert('✅ ' + getTranslation('auth.passwordResetSuccess', lang));
+        const forgotForm = document.getElementById('forgotPasswordFormElement');
+        const resetForm = document.getElementById('resetPasswordFormElement');
+        if (forgotForm) forgotForm.reset();
+        if (resetForm) resetForm.reset();
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const loginForm = document.getElementById('loginForm');
+        if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
+        if (loginForm) loginForm.style.display = 'block';
+    } catch (error) {
+        if (errorMsg) errorMsg.textContent = error.message || getTranslation('auth.passwordResetError', lang);
+    }
+}
+
+// Registrar nuevo usuario
+async function register() {
+    console.log('=== FUNCIÓN REGISTER LLAMADA ===');
+    
+    const emailInput = document.getElementById('registerEmail');
+    const usernameInput = document.getElementById('registerUsername');
+    const passwordInput = document.getElementById('registerPassword');
+    const passwordConfirmInput = document.getElementById('registerPasswordConfirm');
+    const errorMsg = document.getElementById('registerError');
+    
+    if (!emailInput || !usernameInput || !passwordInput || !passwordConfirmInput || !errorMsg) {
+        console.error('❌ Elementos del formulario no encontrados');
+        alert('Error: Formulario no encontrado. Recarga la página.');
+        return;
+    }
+    
+    const email = emailInput.value.trim();
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+    const passwordConfirm = passwordConfirmInput.value;
+    
+    console.log('Datos del formulario:', { email, username, passwordLength: password.length, passwordsMatch: password === passwordConfirm });
+    
+    errorMsg.textContent = '';
+    
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    
+    if (!email) {
+        errorMsg.textContent = getTranslation('auth.emailRequired', lang);
+        console.log('Validación fallida: email vacío');
+        return;
+    }
+    
+    if (!username) {
+        errorMsg.textContent = getTranslation('auth.usernameRequired', lang);
+        console.log('Validación fallida: username vacío');
+        return;
+    }
+    
+    if (username.length < 3) {
+        errorMsg.textContent = getTranslation('auth.usernameMinLength', lang);
+        console.log('Validación fallida: username muy corto');
+        return;
+    }
+    
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        errorMsg.textContent = getTranslation('auth.pleaseEnterValidEmail', lang);
+        console.log('Validación fallida: email inválido');
+        return;
+    }
+    
+    if (password !== passwordConfirm) {
+        errorMsg.textContent = getTranslation('auth.passwordsDoNotMatch', lang);
+        console.log('Validación fallida: contraseñas no coinciden');
+        return;
+    }
+    
+    if (password.length < 4) {
+        errorMsg.textContent = getTranslation('auth.passwordMinLength', lang);
+        console.log('Validación fallida: contraseña muy corta');
+        return;
+    }
+    
+    try {
+        errorMsg.textContent = getTranslation('auth.registering', lang);
+        errorMsg.style.color = 'var(--text-tertiary)';
+        console.log('Enviando registro a:', `${API_URL}/register`);
+        console.log('URL completa:', window.location.origin + API_URL + '/register');
+        console.log('Datos:', { email, username, password: '***' });
+        
+        const response = await fetch(`${API_URL}/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, username, password })
+        });
+        
+        console.log('Respuesta recibida. Status:', response.status);
+        console.log('Headers:', Object.fromEntries(response.headers.entries()));
+        
+        let data;
+        try {
+            const text = await response.text();
+            console.log('Respuesta texto:', text);
+            data = JSON.parse(text);
+            console.log('Datos de respuesta parseados:', data);
+        } catch (parseError) {
+            console.error('Error parseando JSON:', parseError);
+            throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
+        }
+        
+        if (!response.ok) {
+            throw new Error(data.error || `Error ${response.status}: ${response.statusText}`);
+        }
+        
+        console.log('✅ Registro exitoso');
+        authToken = data.token;
+        currentUser = data.user.username || data.user.email;
+        currentUserEmail = data.user.email;
+        // Cargar datos del perfil
+        userProfile = {
+            firstName: data.user.firstName || '',
+            lastName: data.user.lastName || '',
+            age: data.user.age || null,
+            phone: data.user.phone || '',
+            address: data.user.address || '',
+            city: data.user.city || '',
+            country: data.user.country || '',
+            birthDate: data.user.birthDate || null,
+            notes: data.user.notes || ''
+        };
+        localStorage.setItem('veedor_token', authToken);
+        
+        showMainApp();
+        await loadUserData();
+        initializeDate();
+        initializeTabs();
+        initializeForms();
+        updateDisplay();
+        initializeCharts();
+        updateUserInfo();
+        // Mostrar mensaje de bienvenida después de un pequeño delay
+        setTimeout(() => {
+            showWelcomeMessage();
+        }, 300);
+        
+        const form = document.getElementById('registerFormElement');
+        if (form) form.reset();
+    } catch (error) {
+        console.error('❌ Error en registro:', error);
+        console.error('Stack:', error.stack);
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        errorMsg.textContent = error.message || getTranslation('auth.registerError', lang);
+        errorMsg.style.color = '#ef4444';
+    }
+}
+
+// Iniciar sesión
+async function login() {
+    const emailOrUsernameInput = document.getElementById('loginEmailOrUsername');
+    if (!emailOrUsernameInput) {
+        console.error('Campo loginEmailOrUsername no encontrado');
+        return;
+    }
+    const emailOrUsername = emailOrUsernameInput.value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorMsg = document.getElementById('loginError');
+    
+    errorMsg.textContent = '';
+    
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    
+    if (!emailOrUsername) {
+        errorMsg.textContent = getTranslation('auth.pleaseEnterEmailOrUsername', lang);
+        return;
+    }
+    
+    try {
+        const data = await apiRequest('/login', {
+            method: 'POST',
+            body: JSON.stringify({ emailOrUsername, password })
+        });
+        
+        authToken = data.token;
+        currentUser = data.user.username || data.user.email;
+        currentUserEmail = data.user.email;
+        // Cargar datos del perfil
+        userProfile = {
+            firstName: data.user.firstName || '',
+            lastName: data.user.lastName || '',
+            age: data.user.age || null,
+            phone: data.user.phone || '',
+            address: data.user.address || '',
+            city: data.user.city || '',
+            country: data.user.country || '',
+            birthDate: data.user.birthDate || null,
+            notes: data.user.notes || ''
+        };
+        localStorage.setItem('veedor_token', authToken);
+        
+        showMainApp();
+        // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
+        await loadUserData();
+        initializeDate();
+        initializeTabs();
+        initializeForms();
+        updateDisplay();
+        initializeCharts();
+        updateUserInfo();
+        // Mostrar mensaje de bienvenida después de un pequeño delay
+        setTimeout(() => {
+            showWelcomeMessage();
+        }, 300);
+        
+        document.getElementById('loginFormElement').reset();
+    } catch (error) {
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        errorMsg.textContent = error.message || getTranslation('auth.loginError', lang);
+    }
+}
+
+// Cerrar sesión
+function logout() {
+    currentUser = null;
+    authToken = null;
+    localStorage.removeItem('veedor_token');
+    transactions = [];
+    envelopes = [];
+    showAuthScreen();
+    document.getElementById('loginFormElement').reset();
+    document.getElementById('registerFormElement').reset();
+}
+
+// Mostrar pantalla de autenticación
+function showAuthScreen() {
+    const authScreen = document.getElementById('authScreen');
+    const mainApp = document.getElementById('mainApp');
+    if (authScreen) {
+        authScreen.style.display = 'flex';
+        // Ocultar footer en welcome page
+        const footer = document.getElementById('mainFooter');
+        if (footer) footer.style.display = 'none';
+    }
+    if (mainApp) {
+        mainApp.style.display = 'none';
+    }
+    
+    // Ocultar mensaje de bienvenida
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    if (welcomeMessage) {
+        welcomeMessage.style.display = 'none';
+    }
+    
+    // Asegurar que los formularios estén visibles
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    if (loginForm) loginForm.style.display = 'block';
+    if (registerForm) registerForm.style.display = 'none';
+}
+
+// Mostrar aplicación principal
+function showMainApp() {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    // Mostrar footer en la app principal
+    const footer = document.getElementById('mainFooter');
+    if (footer) footer.style.display = 'block';
+    // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
+}
+
+// Frases de bienvenida personalizadas (informales y casuales)
+const welcomeMessages = [
+    "¿Cómo te va el día, {nombre}?",
+    "¡Hola {nombre}! ¿Qué tal?",
+    "Ey {nombre}, ¿cómo estás?",
+    "¡Hey {nombre}! ¿Todo bien?",
+    "Hola {nombre}, ¿qué tal va todo?",
+    "¡Hola {nombre}! ¿Cómo andas?",
+    "Ey {nombre}, ¿cómo va?",
+    "¡Hey {nombre}! ¿Qué tal el día?",
+    "Hola {nombre}, ¿todo bien por ahí?",
+    "¡Hola {nombre}! ¿Cómo te va?",
+    "Ey {nombre}, ¿qué tal?",
+    "¡Hey {nombre}! ¿Todo en orden?",
+    "Hola {nombre}, ¿cómo va la cosa?",
+    "¡Hola {nombre}! ¿Qué tal todo?"
+];
+
+// Mostrar mensaje de bienvenida personalizado
+function showWelcomeMessage() {
+    const welcomeMessageEl = document.getElementById('welcomeMessage');
+    const welcomeMessageTextEl = document.getElementById('welcomeMessageText');
+    
+    if (!welcomeMessageEl || !welcomeMessageTextEl) return;
+    
+    // Obtener solo el nombre (firstName) del usuario
+    let displayName = 'Usuario';
+    if (userProfile && userProfile.firstName) {
+        displayName = userProfile.firstName.trim();
+    } else if (currentUser) {
+        // Si no hay firstName, usar el username pero solo la primera parte antes de espacios/@
+        displayName = currentUser.split(' ')[0].split('@')[0];
+    }
+    
+    // Seleccionar frase aleatoria
+    const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+    const personalizedMessage = randomMessage.replace('{nombre}', displayName);
+    
+    // Mostrar mensaje
+    welcomeMessageTextEl.textContent = personalizedMessage;
+    welcomeMessageEl.style.display = 'block';
+    
+    // Fade in
+    setTimeout(() => {
+        welcomeMessageEl.style.opacity = '1';
+    }, 100);
+}
+
+// Actualizar información del usuario
+function updateUserInfo() {
+    const currentUserTextEl = document.getElementById('currentUserText');
+    if (currentUserTextEl) {
+        let displayName = 'Usuario';
+        if (userProfile && (userProfile.firstName || userProfile.lastName)) {
+            displayName = `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim();
+        } else if (currentUser) {
+            displayName = currentUser;
+        }
+        currentUserTextEl.textContent = displayName;
+        console.log('✅ Nombre de usuario actualizado:', displayName);
+    } else {
+        console.warn('⚠️ Elemento currentUserText no encontrado');
+    }
+    
+    // Mostrar mensaje de bienvenida
+    showWelcomeMessage();
+}
+
+// Cargar datos del usuario actual
+async function loadUserData() {
+    try {
+        // Intentar cargar desde caché primero
+        const cacheKey = `veedor_data_cache_${currentUser}`;
+        const cachedData = sessionStorage.getItem(cacheKey);
+        if (cachedData) {
+            try {
+                const parsed = JSON.parse(cachedData);
+                const cacheAge = Date.now() - parsed.timestamp;
+                // Usar caché si tiene menos de 30 segundos
+                if (cacheAge < 30000 && parsed.data) {
+                    transactions = parsed.data.transactions || [];
+                    envelopes = parsed.data.envelopes || [];
+                    loans = parsed.data.loans || [];
+                    investments = parsed.data.investments || [];
+                    budgets = parsed.data.budgets || [];
+                    accounts = parsed.data.accounts || [];
+                    patrimonio = parsed.data.patrimonio || [];
+                    properties = parsed.data.properties || [];
+                    
+                    // Actualizar selectores
+                    updateAccountSelect();
+                    updateAccountSelect('transactionFromAccount');
+                    updateAccountSelect('transactionToAccount');
+                    updatePropertySelect();
+                    updatePatrimonioSelect();
+                    updateLoanSelect();
+                    updateInvestmentSelect();
+                    
+                    // Cargar datos frescos en segundo plano
+                    loadUserDataFresh();
+                    return;
+                }
+            } catch (e) {
+                // Si hay error con el caché, continuar con carga normal
+            }
+        }
+        
+        // Cargar todos los datos en paralelo para mejor rendimiento
+        await loadUserDataFresh();
+    } catch (error) {
+        console.error('Error cargando datos:', error);
+        transactions = [];
+        envelopes = [];
+    }
+}
+
+// Cargar datos frescos del servidor
+let isLoadingUserData = false;
+async function loadUserDataFresh() {
+    // Prevenir llamadas múltiples simultáneas
+    if (isLoadingUserData) {
+        console.log('⚠️ loadUserDataFresh: Ya se está cargando, ignorando llamada duplicada...');
+        return;
+    }
+    isLoadingUserData = true;
+    console.log('🔄 loadUserDataFresh: INICIANDO carga de datos...');
+    try {
+        // Hacer todas las llamadas en paralelo
+        const [
+            transactionsData,
+            envelopesData,
+            loansData,
+            investmentsData,
+            budgetsData,
+            accountsData,
+            patrimonioData,
+            propertiesData,
+            recurringExpensesData,
+            profileData
+        ] = await Promise.allSettled([
+            apiRequest('/transactions'),
+            apiRequest('/envelopes'),
+            apiRequest('/loans'),
+            apiRequest('/investments').catch(() => []),
+            apiRequest('/budgets').catch(() => []),
+            apiRequest('/accounts').catch(() => []),
+            apiRequest('/patrimonio').catch(() => []),
+            apiRequest('/properties').catch(() => []),
+            apiRequest('/recurring-expenses').catch(() => []),
+            apiRequest('/user/profile').catch(() => null)
+        ]);
+        
+        // Procesar transacciones
+        transactions = transactionsData.status === 'fulfilled' 
+            ? transactionsData.value.map(t => ({
+            ...t,
+            categoryGeneral: t.category_general,
+            categorySpecific: t.category_specific
+            }))
+            : [];
+        
+        console.log('📥 loadUserDataFresh: Transacciones cargadas', {
+            status: transactionsData.status,
+            count: transactions.length,
+            hasError: transactionsData.status === 'rejected'
+        });
+        
+        if (transactionsData.status === 'rejected') {
+            console.error('❌ Error cargando transacciones:', transactionsData.reason);
+        }
+        
+        envelopes = envelopesData.status === 'fulfilled' ? envelopesData.value : [];
+        loans = loansData.status === 'fulfilled' ? loansData.value : [];
+        investments = investmentsData.status === 'fulfilled' ? (investmentsData.value || []) : [];
+        budgets = budgetsData.status === 'fulfilled' ? (budgetsData.value || []) : [];
+        accounts = accountsData.status === 'fulfilled' ? (accountsData.value || []) : [];
+        patrimonio = patrimonioData.status === 'fulfilled' ? (patrimonioData.value || []) : [];
+        properties = propertiesData.status === 'fulfilled' ? (propertiesData.value || []) : [];
+        recurringExpenses = recurringExpensesData.status === 'fulfilled' ? (recurringExpensesData.value || []) : [];
+        
+        // Generar transacciones automáticas desde gastos recurrentes - DESACTIVADO
+        // await generateRecurringExpenseTransactions();
+        
+        // Procesar perfil
+        if (profileData.status === 'fulfilled' && profileData.value) {
+            if (profileData.value.savingsGoal !== undefined) {
+                savingsGoal = profileData.value.savingsGoal;
+            }
+            if (profileData.value.baseFund !== undefined) {
+                baseFund = profileData.value.baseFund;
+            }
+        } else {
+            // Fallback a localStorage si existe (migración)
+            const savedGoal = localStorage.getItem('veedor_savingsGoal');
+            if (savedGoal) {
+                try {
+                    savingsGoal = parseFloat(savedGoal);
+                    // Migrar a la BD en segundo plano
+                    apiRequest('/user/profile', {
+                        method: 'PUT',
+                        body: JSON.stringify({ savingsGoal })
+                    }).then(() => {
+                        localStorage.removeItem('veedor_savingsGoal');
+                    }).catch(() => {});
+                } catch (e) {
+                    savingsGoal = null;
+                }
+            }
+        }
+        
+        // Actualizar selectores después de cargar datos
+        updateAccountSelect();
+        updateAccountSelect('transactionFromAccount');
+        updateAccountSelect('transactionToAccount');
+        updatePropertySelect();
+        updatePropertySelect('loanProperty');
+        updatePropertySelect('recurringExpenseProperty');
+        updatePatrimonioSelect();
+        updateLoanSelect();
+        updateAccountSelect('recurringExpenseAccount');
+        updateInvestmentSelect();
+        updateBudgetSelectForTransaction();
+        
+        // Guardar en cache
+        const cacheKey = `veedor_data_cache_${currentUser}`;
+        const cacheData = {
+            transactions,
+            envelopes,
+            loans,
+            investments,
+            budgets,
+            accounts,
+            patrimonio,
+            properties
+        };
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+            data: cacheData,
+            timestamp: Date.now()
+        }));
+        
+        // Actualizar la visualización después de cargar los datos
+        console.log('🔄 loadUserDataFresh: Llamando a updateDisplay después de cargar datos...');
+        console.log('🔄 loadUserDataFresh: updateDisplay es función?', typeof updateDisplay);
+        console.log('🔄 loadUserDataFresh: mainApp existe?', !!document.getElementById('mainApp'));
+        if (typeof updateDisplay === 'function') {
+            setTimeout(() => {
+                console.log('🔄 loadUserDataFresh: Ejecutando updateDisplay ahora...');
+                try {
+                    updateDisplay();
+                } catch (err) {
+                    console.error('❌ Error ejecutando updateDisplay desde loadUserDataFresh:', err);
+                }
+            }, 100);
+        } else {
+            console.error('❌ updateDisplay no es una función!');
+        }
+        } catch (error) {
+        console.error('❌ Error cargando datos frescos:', error);
+    } finally {
+        isLoadingUserData = false;
+        console.log('✅ loadUserDataFresh: FINALIZADO');
+    }
+}
+
+// Guardar datos del usuario actual (ya no necesario, se guarda automáticamente)
+function saveData() {
+    // Los datos se guardan automáticamente al crear/eliminar
+}
+
+// Inicializar fecha por defecto
+function initializeDate() {
+    const dateInput = document.getElementById('transactionDate');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    }
+    
+    // Actualizar indicador de fecha actual en el header
+    // updateCurrentDateDisplay(); // Removido - fecha ya no se muestra
+}
+
+// Actualizar fecha actual en el header
+function updateCurrentDateDisplay() {
+    const dateDisplay = document.getElementById('currentDateText');
+    if (dateDisplay) {
+        const now = new Date();
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        };
+        dateDisplay.textContent = now.toLocaleDateString('es-ES', options);
+    }
+}
+
+// Toggle del menú desplegable principal de navegación
+function toggleSettingsDropdown() {
+    const dropdown = document.getElementById('settingsDropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Toggle del menú desplegable de Resumen (ya no necesario, pero mantener para compatibilidad)
+function toggleDashboardDropdown() {
+    // Función vacía - menú hamburguesa eliminado
+}
+
+// Toggle de filtros de transacciones en móvil
+function toggleTransactionFilters() {
+    const filters = document.getElementById('transactionFilters');
+    const toggleBtn = document.getElementById('toggleFiltersBtn');
+    const toggleText = document.getElementById('toggleFiltersText');
+    const toggleIcon = document.getElementById('toggleFiltersIcon');
+    
+    if (filters && toggleBtn && toggleText && toggleIcon) {
+        const isExpanded = filters.classList.contains('expanded');
+        
+        if (isExpanded) {
+            filters.classList.remove('expanded');
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            toggleText.textContent = getTranslation('common.showFilters', lang);
+            toggleIcon.style.transform = 'rotate(0deg)';
+        } else {
+            filters.classList.add('expanded');
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            toggleText.textContent = getTranslation('common.hideFilters', lang);
+            toggleIcon.style.transform = 'rotate(180deg)';
+    }
+}
+}
+
+// Mostrar/ocultar botón de filtros según el tamaño de pantalla
+function updateFiltersButtonVisibility() {
+    const toggleBtn = document.getElementById('toggleFiltersBtn');
+    const filters = document.getElementById('transactionFilters');
+    
+    if (toggleBtn && filters) {
+        if (window.innerWidth <= 768) {
+            toggleBtn.style.display = 'flex';
+            // Asegurar que esté colapsado en móvil
+            if (!filters.classList.contains('expanded')) {
+                filters.classList.remove('expanded');
+            }
+        } else {
+            toggleBtn.style.display = 'none';
+            // Asegurar que esté expandido en desktop
+            filters.classList.add('expanded');
+    }
+    }
+}
+
+// Exponer funciones globalmente
+window.toggleTransactionFilters = toggleTransactionFilters;
+
+// Toggle de filtros de transacciones en móvil
+function toggleTransactionFilters() {
+    const filters = document.getElementById('transactionFilters');
+    const toggleBtn = document.getElementById('toggleFiltersBtn');
+    const toggleText = document.getElementById('toggleFiltersText');
+    const toggleIcon = document.getElementById('toggleFiltersIcon');
+    
+    if (filters && toggleBtn && toggleText && toggleIcon) {
+        const isExpanded = filters.classList.contains('expanded');
+        
+        if (isExpanded) {
+            filters.classList.remove('expanded');
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            toggleText.textContent = getTranslation('common.showFilters', lang);
+            toggleIcon.style.transform = 'rotate(0deg)';
+        } else {
+            filters.classList.add('expanded');
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            toggleText.textContent = getTranslation('common.hideFilters', lang);
+            toggleIcon.style.transform = 'rotate(180deg)';
+        }
+    }
+}
+
+// Exponer función globalmente
+window.toggleTransactionFilters = toggleTransactionFilters;
+
+// Cerrar dropdown al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const mainDropdown = document.getElementById('mainNavDropdown');
+    const mainBtn = document.getElementById('mainNavDropdownBtn');
+    const dashboardDropdown = document.getElementById('dashboardDropdown');
+    const dashboardBtn = document.getElementById('dashboardDropdownBtn');
+    
+    if (mainDropdown && mainBtn && !mainDropdown.contains(event.target) && !mainBtn.contains(event.target)) {
+        mainDropdown.style.display = 'none';
+    }
+    
+    const settingsDropdown = document.getElementById('settingsDropdown');
+    const settingsBtn = document.getElementById('settingsDropdownBtn');
+    
+    if (settingsDropdown && settingsBtn && !settingsDropdown.contains(event.target) && !settingsBtn.contains(event.target)) {
+        settingsDropdown.style.display = 'none';
+    }
+    
+    if (dashboardDropdown && dashboardBtn && !dashboardDropdown.contains(event.target) && !dashboardBtn.contains(event.target)) {
+        dashboardDropdown.style.display = 'none';
+    }
+    
+    // Cerrar dropdowns de idioma
+    const languageDropdown = document.getElementById('languageDropdown');
+    const languageBtn = document.getElementById('languageDropdownBtn');
+    if (languageDropdown && languageBtn && !languageDropdown.contains(event.target) && !languageBtn.contains(event.target)) {
+        languageDropdown.style.display = 'none';
+    }
+    
+    const authLanguageDropdown = document.getElementById('authLanguageDropdown');
+    const authLanguageBtn = document.getElementById('authLanguageDropdownBtn');
+    if (authLanguageDropdown && authLanguageBtn && !authLanguageDropdown.contains(event.target) && !authLanguageBtn.contains(event.target)) {
+        authLanguageDropdown.style.display = 'none';
+    }
+});
+
+// Mostrar análisis del mes seleccionado
+function showMonthDashboard() {
+    const monthDashboard = document.getElementById('monthDashboard');
+    const monthAnalysisSelector = document.getElementById('monthAnalysisSelector');
+    const dashboardMonthInput = document.getElementById('dashboardMonth');
+    
+    if (!monthDashboard || !dashboardMonthInput) {
+        console.error('No se encontró monthDashboard o dashboardMonthInput');
+        return;
+    }
+    
+    // Mostrar el selector de análisis del mes
+    if (monthAnalysisSelector) {
+        monthAnalysisSelector.style.display = 'block';
+    }
+    
+    // Si no hay mes seleccionado, establecer el mes actual
+    if (!dashboardMonthInput.value) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        dashboardMonthInput.value = `${year}-${month}`;
+    }
+    
+    // Mostrar el panel
+    monthDashboard.style.display = 'block';
+    
+    // Actualizar el contenido del panel
+    updateMonthDashboard();
+    
+    // Hacer scroll al dashboard
+    setTimeout(() => {
+        const dashboard = document.querySelector('.dashboard');
+        if (dashboard) {
+            const rect = dashboard.getBoundingClientRect();
+            const header = document.querySelector('header');
+            const headerHeight = header ? header.offsetHeight : 80;
+            const scrollPosition = rect.top + window.pageYOffset - headerHeight - 20;
+            window.scrollTo({ 
+                top: Math.max(0, scrollPosition), 
+                behavior: 'smooth' 
+            });
+        }
+    }, 300);
+}
+
+// Scroll al dashboard principal
+function scrollToDashboard() {
+    const dashboard = document.querySelector('.dashboard');
+    if (dashboard) {
+        dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Exponer funciones globalmente
+window.toggleDashboardDropdown = toggleDashboardDropdown;
+window.showMonthDashboard = showMonthDashboard;
+window.scrollToDashboard = scrollToDashboard;
+window.switchToTab = switchToTab;
+window.updateQuickAddButton = updateQuickAddButton;
+window.closeQuickAddMenu = closeQuickAddMenu;
+
+// Inicializar categorías
+function initializeCategories() {
+    const generalSelect = document.getElementById('categoryGeneral');
+    const specificSelect = document.getElementById('categorySpecific');
+    const filterCategory = document.getElementById('filterCategory');
+    const transactionType = document.getElementById('transactionType');
+    
+    if (!generalSelect || !specificSelect) return;
+    
+    function updateGeneralCategories() {
+        const type = transactionType ? transactionType.value : 'expense';
+        
+        // Manejar campos de transferencia
+        const transferAccountsRow = document.getElementById('transferAccountsRow');
+        const categoryGeneralEl = document.getElementById('categoryGeneral');
+        const categoryRow = categoryGeneralEl ? categoryGeneralEl.closest('.form-row') : null;
+        const accountIdEl = document.getElementById('transactionAccount');
+        const accountRow = accountIdEl ? accountIdEl.closest('.form-row') : null;
+        
+        if (type === 'transfer') {
+            // Mostrar campos de transferencia y ocultar categorías
+            if (transferAccountsRow) transferAccountsRow.style.display = 'flex';
+            if (categoryRow) categoryRow.style.display = 'none';
+            if (accountRow) accountRow.style.display = 'none';
+            
+            // Hacer campos de transferencia requeridos
+            const fromAccount = document.getElementById('transactionFromAccount');
+            const toAccount = document.getElementById('transactionToAccount');
+            if (fromAccount) {
+                fromAccount.required = true;
+                // Actualizar selector de cuenta origen
+                updateAccountSelect('transactionFromAccount');
+            }
+            if (toAccount) {
+                toAccount.required = true;
+                // Actualizar selector de cuenta destino
+                updateAccountSelect('transactionToAccount');
+            }
+            
+            // Hacer campos de categoría no requeridos
+            if (generalSelect) generalSelect.required = false;
+            if (specificSelect) specificSelect.required = false;
+        } else {
+            // Ocultar campos de transferencia y mostrar categorías
+            if (transferAccountsRow) transferAccountsRow.style.display = 'none';
+            if (categoryRow) categoryRow.style.display = 'flex';
+            if (accountRow) accountRow.style.display = 'flex';
+            
+            // Hacer campos de transferencia no requeridos
+            const fromAccount = document.getElementById('transactionFromAccount');
+            const toAccount = document.getElementById('transactionToAccount');
+            if (fromAccount) fromAccount.required = false;
+            if (toAccount) toAccount.required = false;
+            
+            // Hacer campos de categoría requeridos
+            if (generalSelect) generalSelect.required = true;
+            if (specificSelect) specificSelect.required = true;
+            
+        const categoryList = type === 'income' ? categories.income : categories.expense;
+        
+        generalSelect.innerHTML = '<option value="">Seleccionar...</option>';
+        specificSelect.innerHTML = '<option value="">Seleccionar...</option>';
+        
+        categoryList.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            generalSelect.appendChild(option);
+        });
+        
+        if (filterCategory) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            filterCategory.innerHTML = `<option value="">${getTranslation('help.allCategories', lang)}</option>`;
+            categoryList.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                filterCategory.appendChild(option);
+            });
+            }
+        }
+    }
+    
+    function updateSpecificCategories() {
+        const selectedGeneral = generalSelect.value;
+        specificSelect.innerHTML = '<option value="">Seleccionar...</option>';
+        
+        if (!selectedGeneral) return;
+        
+        const type = transactionType ? transactionType.value : 'expense';
+        const categoryList = type === 'income' ? categories.income : categories.expense;
+        const category = categoryList.find(c => c.id === selectedGeneral);
+        
+        if (category && category.subcategories && category.subcategories.length > 0) {
+            category.subcategories.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.textContent = sub;
+                specificSelect.appendChild(option);
+            });
+        }
+    }
+    
+    if (transactionType) {
+        transactionType.onchange = updateGeneralCategories;
+    }
+    
+    generalSelect.onchange = updateSpecificCategories;
+    
+    updateGeneralCategories();
+}
+
+// Función para cambiar de tab (reutilizable)
+function switchToTab(targetTab, doScroll = false) {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    // Actualizar tabs principales
+    tabButtons.forEach(b => b.classList.remove('active'));
+    tabContents.forEach(c => c.classList.remove('active'));
+    
+    const targetTabBtn = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
+    const targetTabContent = document.getElementById(`${targetTab}-tab`);
+    
+    if (targetTabBtn) targetTabBtn.classList.add('active');
+    
+    // Actualizar también la barra inferior móvil
+    const mobileBottomTabs = document.getElementById('mobileBottomTabs');
+    if (mobileBottomTabs) {
+        const mobileTabButtons = mobileBottomTabs.querySelectorAll('.tab-btn');
+        mobileTabButtons.forEach(b => b.classList.remove('active'));
+        const targetMobileTabBtn = mobileBottomTabs.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
+        if (targetMobileTabBtn) targetMobileTabBtn.classList.add('active');
+    }
+    if (targetTabContent) {
+        targetTabContent.classList.add('active');
+        // Solo hacer scroll si se solicita explícitamente (doScroll = true)
+        if (doScroll) {
+        // Scroll suave a la sección - esperar a que el DOM se actualice y el tab esté visible
+        setTimeout(() => {
+                if (targetTabContent) {
+                // Obtener altura del header sticky
+                const header = document.querySelector('header');
+                const headerHeight = header ? header.offsetHeight : 80;
+                
+                    // Obtener posición del tab content
+                    const tabRect = targetTabContent.getBoundingClientRect();
+                    const scrollPosition = tabRect.top + window.pageYOffset - headerHeight - 20; // 20px de margen adicional
+                
+                    // Hacer scroll suave
+                window.scrollTo({ 
+                    top: Math.max(0, scrollPosition), 
+                    behavior: 'smooth' 
+                });
+            }
+            }, 100);
+        }
+    }
+    
+    // Actualizar items del dropdown
+    const dropdownItems = document.querySelectorAll('.nav-dropdown-item[data-tab]');
+    dropdownItems.forEach(item => {
+        if (item.getAttribute('data-tab') === targetTab) {
+            item.style.background = 'var(--primary-light)';
+            item.style.color = 'var(--primary)';
+            item.style.fontWeight = '600';
+        } else {
+            item.style.background = 'transparent';
+            item.style.color = 'var(--gray-900)';
+            item.style.fontWeight = '400';
+        }
+    });
+    
+    // Actualizar gráficas y análisis cuando se cambia al tab de análisis
+    if (targetTab === 'charts') {
+        setTimeout(() => {
+            updateCharts();
+        }, 100);
+    }
+    
+    // Actualizar presupuestos cuando se cambia al tab de presupuestos
+    if (targetTab === 'budgets') {
+        setTimeout(() => {
+            updateBudgets();
+        }, 100);
+    }
+    
+    // Actualizar cuentas cuando se cambia al tab de cuentas
+    if (targetTab === 'accounts') {
+        setTimeout(() => {
+            updateAccounts();
+        }, 100);
+    }
+    
+    // Actualizar propiedades cuando se cambia al tab de propiedades
+    if (targetTab === 'properties') {
+        setTimeout(() => {
+            updateProperties();
+        }, 100);
+    }
+    
+    // Actualizar patrimonio cuando se cambia al tab de patrimonio
+    if (targetTab === 'assets') {
+        setTimeout(() => {
+            updatePatrimonio();
+        }, 100);
+    }
+    
+    // Actualizar préstamos cuando se cambia al tab de préstamos
+    if (targetTab === 'loans') {
+        setTimeout(() => {
+            updateLoans();
+            // Actualizar selectores en el formulario de préstamos
+            updateAccountSelect('loanAccount');
+            updatePatrimonioSelect('loanPatrimonio');
+        }, 100);
+    }
+    
+    // Actualizar inversiones cuando se cambia al tab de inversiones
+    if (targetTab === 'investments') {
+        setTimeout(() => {
+            updateInvestments();
+            // Actualizar selector de cuentas en el formulario de inversiones (aportes periódicos)
+            updateAccountSelect('contributionAccount');
+        }, 100);
+    }
+    
+    // Actualizar botón flotante según la sección activa
+    updateQuickAddButton(targetTab);
+}
+
+// Función para actualizar el botón flotante según la sección activa
+function updateQuickAddButton(activeTab) {
+    const quickAddBtn = document.getElementById('quickAddTransactionBtnMobile');
+    if (!quickAddBtn) return;
+    
+    // Mapeo de secciones a sus formularios y títulos
+    const tabConfig = {
+        'transactions': {
+            formButtonId: 'toggleTransactionFormBtn',
+            title: 'Nueva Transacción',
+            action: () => {
+                switchToTab('transactions', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('toggleTransactionFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        },
+        'investments': {
+            formButtonId: 'toggleInvestmentFormBtn',
+            title: 'Nueva Inversión',
+            action: () => {
+                switchToTab('investments', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('toggleInvestmentFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        },
+        'loans': {
+            formButtonId: 'toggleLoanFormBtn',
+            title: 'Nuevo Préstamo',
+            action: () => {
+                switchToTab('loans', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('toggleLoanFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        },
+        'envelopes': {
+            formButtonId: 'toggleEnvelopeFormBtn',
+            title: 'Presupuestos',
+            hasMultipleOptions: true,
+            options: [
+                {
+                    title: 'Nuevo Presupuesto',
+                    action: () => {
+                        switchToTab('envelopes', true);
+                        setTimeout(() => {
+                            const btn = document.getElementById('toggleBudgetFormBtn');
+                            if (btn) btn.click();
+                        }, 100);
+                    }
+                },
+                {
+                    title: 'Nuevo Sobre',
+                    action: () => {
+                        switchToTab('envelopes', true);
+                        setTimeout(() => {
+                            const btn = document.getElementById('toggleEnvelopeFormBtn');
+                            if (btn) btn.click();
+                        }, 100);
+                    }
+                }
+            ]
+        },
+        'accounts': {
+            formButtonId: 'toggleAccountFormBtn',
+            title: 'Nueva Cuenta',
+            action: () => {
+                switchToTab('accounts', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('toggleAccountFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        },
+        'assets': {
+            formButtonId: 'togglePatrimonioFormBtn',
+            title: 'Nueva Propiedad',
+            action: () => {
+                switchToTab('assets', true);
+                setTimeout(() => {
+                    const btn = document.getElementById('togglePatrimonioFormBtn');
+                    if (btn) btn.click();
+                }, 100);
+            }
+        }
+    };
+    
+    // Lista de secciones sin formulario donde NO debe aparecer el botón
+    const sectionsWithoutForms = ['summary', 'charts'];
+    
+    if (sectionsWithoutForms.includes(activeTab)) {
+        // Sección sin formulario - ocultar botón completamente
+        quickAddBtn.style.display = 'none';
+        quickAddBtn.style.visibility = 'hidden';
+        quickAddBtn.style.opacity = '0';
+        quickAddBtn.style.pointerEvents = 'none';
+        // Cerrar menú desplegable si existe
+        closeQuickAddMenu();
+        return;
+    }
+    
+    const config = tabConfig[activeTab];
+    
+    if (config) {
+        // Sección con formulario - mostrar botón
+        quickAddBtn.style.display = 'flex';
+        quickAddBtn.style.visibility = 'visible';
+        quickAddBtn.style.opacity = '1';
+        quickAddBtn.style.pointerEvents = 'auto';
+        quickAddBtn.setAttribute('title', config.title);
+        
+        // Si tiene múltiples opciones (presupuestos), mostrar menú desplegable
+        if (config.hasMultipleOptions && config.options) {
+            quickAddBtn.onclick = () => toggleQuickAddMenu(config.options);
+        } else {
+            // Opción única - acción directa
+            quickAddBtn.onclick = config.action;
+        }
+    } else {
+        // Sección no reconocida - ocultar botón por seguridad
+        quickAddBtn.style.display = 'none';
+        quickAddBtn.style.visibility = 'hidden';
+        quickAddBtn.style.opacity = '0';
+        quickAddBtn.style.pointerEvents = 'none';
+    }
+    
+    // Cerrar menú desplegable si existe
+    closeQuickAddMenu();
+}
+
+// Función para mostrar/ocultar el menú desplegable del botón flotante
+function toggleQuickAddMenu(options) {
+    let menu = document.getElementById('quickAddMenu');
+    
+    if (menu && menu.style.display === 'flex') {
+        // Si el menú está visible, cerrarlo
+        closeQuickAddMenu();
+        return;
+    }
+    
+    // Si no existe, crearlo
+    if (!menu) {
+        menu = document.createElement('div');
+        menu.id = 'quickAddMenu';
+        menu.style.cssText = `
+            position: fixed;
+            bottom: calc(100px + env(safe-area-inset-bottom));
+            right: 24px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1002 !important;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+            gap: 4px;
+        `;
+        document.body.appendChild(menu);
+    }
+    
+    // Limpiar opciones anteriores
+    menu.innerHTML = '';
+    
+    // Añadir opciones
+    options.forEach((option, index) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.textContent = option.title;
+        optionBtn.style.cssText = `
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        `;
+        optionBtn.onmouseover = () => {
+            optionBtn.style.background = 'var(--primary-light)';
+            optionBtn.style.color = 'var(--primary)';
+        };
+        optionBtn.onmouseout = () => {
+            optionBtn.style.background = 'transparent';
+            optionBtn.style.color = 'var(--text-primary)';
+        };
+        optionBtn.onclick = () => {
+            closeQuickAddMenu();
+            option.action();
+        };
+        menu.appendChild(optionBtn);
+    });
+    
+    // Mostrar menú
+    menu.style.display = 'flex';
+    
+    // Cerrar al hacer clic fuera
+    setTimeout(() => {
+        document.addEventListener('click', closeQuickAddMenuOnClick, { once: true });
+    }, 100);
+}
+
+function closeQuickAddMenuOnClick(e) {
+    const menu = document.getElementById('quickAddMenu');
+    const btn = document.getElementById('quickAddTransactionBtnMobile');
+    if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+        closeQuickAddMenu();
+    }
+}
+
+function closeQuickAddMenu() {
+    const menu = document.getElementById('quickAddMenu');
+    if (menu) {
+        menu.style.display = 'none';
+    }
+}
+
+// Toggle del menú "Más" tabs
+function toggleMoreTabs() {
+    const dropdown = document.getElementById('moreTabsDropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Cerrar menú "Más" al hacer clic fuera
+document.addEventListener('click', (e) => {
+    const moreBtn = document.getElementById('moreTabsBtn');
+    const dropdown = document.getElementById('moreTabsDropdown');
+    if (moreBtn && dropdown && !moreBtn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = 'none';
+    }
+});
+
+// Exponer función global
+window.toggleMoreTabs = toggleMoreTabs;
+
+// Inicializar tabs
+function initializeTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn:not(.tab-more-btn)');
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    // Event listeners para tabs principales (excluyendo el botón "Más")
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetTab = btn.getAttribute('data-tab');
+            if (targetTab) {
+            switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
+            }
+        });
+    });
+    
+    // Event listeners para la barra inferior móvil
+    const mobileBottomTabs = document.getElementById('mobileBottomTabs');
+    if (mobileBottomTabs) {
+        const mobileTabButtons = mobileBottomTabs.querySelectorAll('.tab-btn');
+        mobileTabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.getAttribute('data-tab');
+                if (targetTab) {
+                    switchToTab(targetTab, true);
+                }
+            });
+        });
+    }
+    
+    // Inicializar botón flotante según la sección activa por defecto
+    const activeTab = document.querySelector('.tab-btn.active');
+    if (activeTab) {
+        const defaultTab = activeTab.getAttribute('data-tab');
+        if (defaultTab) {
+            updateQuickAddButton(defaultTab);
+        }
+    } else {
+        // Si no hay tab activo, usar 'transactions' por defecto
+        updateQuickAddButton('transactions');
+    }
+    
+    // Event listeners para navegación del header
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetTab = item.getAttribute('data-tab');
+            switchToTab(targetTab, true); // Permitir scroll cuando el usuario hace clic manualmente
+            // Scroll suave hacia el contenido
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+    
+    // Inicializar estado activo - Transacciones por defecto
+    if (tabButtons.length > 0) {
+        // Activar tab de Transacciones por defecto
+        const transactionsTabBtn = document.querySelector('.tab-btn[data-tab="transactions"]');
+        const transactionsTabContent = document.getElementById('transactions-tab');
+        
+        if (transactionsTabBtn) transactionsTabBtn.classList.add('active');
+        if (transactionsTabContent) {
+            transactionsTabContent.classList.add('active');
+        }
+        
+        // Ocultar otros tabs
+        tabButtons.forEach(btn => {
+            if (btn.getAttribute('data-tab') !== 'transactions') {
+                btn.classList.remove('active');
+            }
+        });
+        
+        document.querySelectorAll('.tab-content').forEach(content => {
+            if (content.id !== 'transactions-tab') {
+                content.classList.remove('active');
+            }
+        });
+    }
+}
+
+// Inicializar formularios
+function initializeForms() {
+    console.log('🔧 initializeForms() - Iniciando...');
+    
+    // Formulario de transacciones - Remover listeners anteriores para evitar duplicados
+    const transactionForm = document.getElementById('transactionForm');
+    console.log('🔍 Buscando formulario transactionForm:', transactionForm ? '✅ Encontrado' : '❌ NO ENCONTRADO');
+    
+    if (transactionForm) {
+        // Clonar formulario para remover listeners anteriores
+        const newForm = transactionForm.cloneNode(true);
+        transactionForm.parentNode.replaceChild(newForm, transactionForm);
+        const cleanForm = document.getElementById('transactionForm');
+        
+        // Inicializar categorías DESPUÉS de clonar el formulario
+        initializeCategories();
+        
+        console.log('✅ Formulario encontrado, agregando event listener...');
+        cleanForm.addEventListener('submit', async (e) => {
+            console.log('🎯 EVENTO SUBMIT DISPARADO!');
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🔄 Llamando a updateTransaction()...');
+            try {
+                await updateTransaction();
+            } catch (error) {
+                console.error('❌ Error en updateTransaction desde event listener:', error);
+            }
+        });
+        console.log('✅ Event listener agregado al formulario');
+    } else {
+        console.error('❌ ERROR: No se encontró el formulario transactionForm');
+        console.error('❌ Elementos disponibles:', document.querySelectorAll('form').length, 'formularios encontrados');
+    }
+    
+    // Formulario de sobres
+    const envelopeForm = document.getElementById('envelopeForm');
+    if (envelopeForm) {
+        envelopeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await updateEnvelope();
+        });
+        
+        // Inicializar categorías para sobres (solo gastos)
+        const envelopeCategoryGeneral = document.getElementById('envelopeCategoryGeneral');
+        const envelopeCategorySpecific = document.getElementById('envelopeCategorySpecific');
+        
+        const updateEnvelopeGeneralCategories = () => {
+            if (!envelopeCategoryGeneral) return;
+            envelopeCategoryGeneral.innerHTML = '<option value="">Seleccionar categoría...</option>';
+            
+            categories.expense.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                envelopeCategoryGeneral.appendChild(option);
+            });
+            
+            // Limpiar subcategorías cuando cambia la categoría general
+            if (envelopeCategorySpecific) {
+                envelopeCategorySpecific.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+            }
+        };
+        
+        const updateEnvelopeSpecificCategories = () => {
+            if (!envelopeCategorySpecific || !envelopeCategoryGeneral) return;
+            const selectedGeneral = envelopeCategoryGeneral.value;
+            envelopeCategorySpecific.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+            
+            if (!selectedGeneral) return;
+            
+            const category = categories.expense.find(c => c.id === selectedGeneral);
+            
+            if (category && category.subcategories && category.subcategories.length > 0) {
+                category.subcategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    envelopeCategorySpecific.appendChild(option);
+                });
+            }
+        };
+        
+        if (envelopeCategoryGeneral) {
+            envelopeCategoryGeneral.addEventListener('change', updateEnvelopeSpecificCategories);
+            updateEnvelopeGeneralCategories();
+        }
+    }
+    
+    // Formulario de inversiones
+    const investmentForm = document.getElementById('investmentForm');
+    if (investmentForm) {
+        investmentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addInvestment();
+        });
+    }
+    
+    // Formulario de cuentas bancarias - Remover listeners anteriores para evitar duplicados
+    const accountForm = document.getElementById('accountForm');
+    if (accountForm) {
+        // Clonar formulario para remover listeners anteriores
+        const newForm = accountForm.cloneNode(true);
+        accountForm.parentNode.replaceChild(newForm, accountForm);
+        const cleanForm = document.getElementById('accountForm');
+        
+        cleanForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            await addAccount();
+        });
+        
+        // Ya no necesitamos calcular rentabilidad automáticamente en el formulario
+        // La rentabilidad se calcula en base a los aportes acumulados
+    }
+    
+    // Formulario de patrimonio
+    const patrimonioForm = document.getElementById('patrimonioForm');
+    if (patrimonioForm) {
+        patrimonioForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addPatrimonio();
+        });
+        
+        // Inicializar fecha de adquisición con hoy
+        const patrimonioPurchaseDate = document.getElementById('patrimonioPurchaseDate');
+        if (patrimonioPurchaseDate) {
+            const today = new Date().toISOString().split('T')[0];
+            patrimonioPurchaseDate.value = today;
+        }
+    }
+    
+    // Toggle de aportes periódicos en inversiones
+    const enablePeriodicContribution = document.getElementById('enablePeriodicContribution');
+    const periodicContributionFields = document.getElementById('periodicContributionFields');
+    if (enablePeriodicContribution && periodicContributionFields) {
+        enablePeriodicContribution.addEventListener('change', (e) => {
+            periodicContributionFields.style.display = e.target.checked ? 'block' : 'none';
+            
+            // Inicializar fechas si se activa
+            if (e.target.checked) {
+                const contributionStartDate = document.getElementById('contributionStartDate');
+                const contributionEndDate = document.getElementById('contributionEndDate');
+                if (contributionStartDate) {
+                    const today = new Date().toISOString().split('T')[0];
+                    contributionStartDate.value = today;
+                }
+                // Actualizar selector de cuentas cuando se muestran los campos
+                updateAccountSelect('contributionAccount');
+            }
+        });
+    }
+    
+    // Formulario de propiedades
+    const propertyForm = document.getElementById('propertyForm');
+    if (propertyForm) {
+        console.log('🔧 Inicializando formulario de propiedades');
+        propertyForm.addEventListener('submit', async (e) => {
+            console.log('🎯 Evento submit de propiedad disparado');
+            e.preventDefault();
+            e.stopPropagation();
+            try {
+                await addProperty();
+            } catch (error) {
+                console.error('❌ Error en addProperty desde event listener:', error);
+                alert('Error al crear propiedad: ' + (error.message || 'Error desconocido'));
+            }
+        });
+        console.log('✅ Event listener agregado al formulario de propiedades');
+    } else {
+        console.error('❌ ERROR: No se encontró el formulario propertyForm');
+    }
+    
+    // Formulario de gastos recurrentes
+    const recurringExpenseForm = document.getElementById('recurringExpenseForm');
+    if (recurringExpenseForm) {
+        // Inicializar categorías cuando se muestra el formulario
+        const categoryGeneralSelect = document.getElementById('recurringExpenseCategoryGeneral');
+        const categorySpecificSelect = document.getElementById('recurringExpenseCategorySpecific');
+        
+        if (categoryGeneralSelect) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            categoryGeneralSelect.innerHTML = '<option value="">Seleccionar categoría...</option>';
+            categories.expense.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categoryGeneralSelect.appendChild(option);
+            });
+            
+            categoryGeneralSelect.addEventListener('change', () => {
+                if (categorySpecificSelect) {
+                    categorySpecificSelect.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+                    const selectedGeneral = categoryGeneralSelect.value;
+                    if (selectedGeneral) {
+                        const category = categories.expense.find(c => c.id === selectedGeneral);
+                        if (category && category.subcategories) {
+                            category.subcategories.forEach(sub => {
+                                const option = document.createElement('option');
+                                option.value = sub;
+                                option.textContent = sub;
+                                categorySpecificSelect.appendChild(option);
+                            });
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Inicializar fecha de inicio con hoy
+        const startDateInput = document.getElementById('recurringExpenseStartDate');
+        if (startDateInput) {
+            const today = new Date();
+            startDateInput.value = today.toISOString().split('T')[0];
+        }
+        
+        recurringExpenseForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addRecurringExpense();
+        });
+    }
+    
+    // Formulario de préstamos
+    const loanForm = document.getElementById('loanForm');
+    if (loanForm) {
+        // Actualizar selectores cuando se muestra el formulario
+        updatePatrimonioSelect('loanPatrimonio');
+        updatePropertySelect('loanProperty');
+        updateAccountSelect('loanAccount');
+        
+        loanForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addLoan();
+        });
+        
+        // Calcular cuota mensual automáticamente
+        const loanPrincipal = document.getElementById('loanPrincipal');
+        const loanInterestRate = document.getElementById('loanInterestRate');
+        const loanStartDate = document.getElementById('loanStartDate');
+        const loanEndDate = document.getElementById('loanEndDate');
+        const loanMonthlyPayment = document.getElementById('loanMonthlyPayment');
+        
+        if (loanPrincipal && loanInterestRate && loanStartDate && loanEndDate && loanMonthlyPayment) {
+            const calculatePayment = () => {
+                const principal = parseFloat(loanPrincipal.value) || 0;
+                const rate = parseFloat(loanInterestRate.value) || 0;
+                const start = new Date(loanStartDate.value);
+                const end = new Date(loanEndDate.value);
+                
+                if (principal > 0 && rate >= 0 && end > start && !isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                    const months = Math.ceil((end - start) / (1000 * 60 * 60 * 24 * 30.44));
+                    if (months > 0) {
+                        const payment = calculateMonthlyPayment(principal, rate, months);
+                        loanMonthlyPayment.value = payment.toFixed(2);
+                    }
+                }
+            };
+            
+            loanPrincipal.addEventListener('input', calculatePayment);
+            loanInterestRate.addEventListener('input', calculatePayment);
+            loanStartDate.addEventListener('change', calculatePayment);
+            loanEndDate.addEventListener('change', calculatePayment);
+        }
+        
+        // Inicializar fecha de inicio
+        if (loanStartDate) {
+            const today = new Date().toISOString().split('T')[0];
+            loanStartDate.value = today;
+        }
+    }
+    
+    // Búsqueda y filtros
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            currentPage = 1;
+            updateDisplay();
+        });
+    }
+    
+    const filterCategory = document.getElementById('filterCategory');
+    if (filterCategory) {
+        filterCategory.addEventListener('change', () => {
+            currentPage = 1;
+            updateDisplay();
+        });
+    }
+    
+    const filterMonth = document.getElementById('filterMonth');
+    if (filterMonth) {
+        filterMonth.addEventListener('change', () => {
+            currentPage = 1;
+            updateDisplay();
+        });
+    }
+    
+    const filterStartDate = document.getElementById('filterStartDate');
+    if (filterStartDate) {
+        filterStartDate.addEventListener('change', () => {
+            currentPage = 1;
+            updateDisplay();
+        });
+    }
+    
+    const filterEndDateEl = document.getElementById('filterEndDate');
+    if (filterEndDateEl) {
+        filterEndDateEl.addEventListener('change', () => {
+            currentPage = 1;
+            updateDisplay();
+        });
+    }
+    
+    // Eliminado: selector de filas por página - mostrar todas las transacciones
+    
+    // Selector de período para gráficas (global - mantener para compatibilidad)
+    const chartPeriod = document.getElementById('chartPeriod');
+    if (chartPeriod) {
+        chartPeriod.addEventListener('change', updateCharts);
+    }
+    
+    // Selectores individuales de período para cada gráfico
+    document.querySelectorAll('.chart-period-select').forEach(select => {
+        select.addEventListener('change', () => {
+            const chartName = select.getAttribute('data-chart');
+            const value = select.value;
+            
+            // Mostrar/ocultar selector de fecha personalizada
+            const customDateRange = document.getElementById(`${chartName}CustomDateRange`);
+            if (customDateRange) {
+                if (value === 'custom') {
+                    customDateRange.style.display = 'flex';
+                } else {
+                    customDateRange.style.display = 'none';
+                }
+            }
+            
+            updateSingleChart(chartName);
+        });
+    });
+    
+    // Listeners para fechas personalizadas
+    document.querySelectorAll('[id$="StartDate"], [id$="EndDate"]').forEach(input => {
+        input.addEventListener('change', () => {
+            // Extraer el nombre del gráfico del ID
+            const id = input.id;
+            const chartName = id.replace(/StartDate|EndDate/, '');
+            if (chartName) {
+                updateSingleChart(chartName);
+            }
+        });
+    });
+    
+    // Selectores de filtros de categorías/tipos
+    document.querySelectorAll('.chart-category-filter').forEach(select => {
+        select.addEventListener('change', () => {
+            const chartName = select.getAttribute('data-chart');
+            updateSingleChart(chartName);
+        });
+    });
+    
+    document.querySelectorAll('.chart-loan-filter').forEach(select => {
+        select.addEventListener('change', () => {
+            updateSingleChart('loansPending');
+        });
+    });
+    
+    document.querySelectorAll('.chart-asset-filter').forEach(select => {
+        select.addEventListener('change', () => {
+            updateSingleChart('assetsEvolution');
+        });
+    });
+    
+    document.querySelectorAll('.chart-account-filter').forEach(select => {
+        select.addEventListener('change', () => {
+            updateSingleChart('accountsBalance');
+        });
+    });
+    
+    // Poblar filtros cuando se cargan los datos
+    updateChartFilters();
+    
+    
+    // Modal de amortización - añadir a la lista de modales que se cierran al hacer clic fuera
+    const amortizationModal = document.getElementById('amortizationModal');
+    if (amortizationModal) {
+        amortizationModal.addEventListener('click', (e) => {
+            if (e.target === amortizationModal) {
+                amortizationModal.style.display = 'none';
+            }
+        });
+    }
+    
+    // Modal de amortización anticipada - añadir listener para cerrar al hacer clic fuera
+    const earlyPaymentModal = document.getElementById('earlyPaymentModal');
+    if (earlyPaymentModal) {
+        earlyPaymentModal.addEventListener('click', (e) => {
+            if (e.target === earlyPaymentModal) {
+                closeEarlyPaymentModal();
+            }
+        });
+    }
+    
+    // Botón para establecer fondo base
+    const setBaseFundBtn = document.getElementById('setBaseFundBtn');
+    if (setBaseFundBtn) {
+        setBaseFundBtn.addEventListener('click', () => {
+            showBaseFundModal();
+        });
+    }
+    
+    // Inicializar formulario de meta de ahorro
+    const savingsGoalForm = document.getElementById('savingsGoalForm');
+    if (savingsGoalForm) {
+        // Remover listeners anteriores si existen
+        const newForm = savingsGoalForm.cloneNode(true);
+        savingsGoalForm.parentNode.replaceChild(newForm, savingsGoalForm);
+        
+        document.getElementById('savingsGoalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('savingsGoalInput');
+            if (!input) {
+                alert('Error: No se encontró el campo de entrada');
+                return;
+            }
+            
+            const value = input.value.trim();
+            if (!value) {
+                alert('Por favor ingresa una cantidad válida');
+                return;
+            }
+            
+            const numValue = parseFloat(value);
+            if (isNaN(numValue) || numValue < 0) {
+                alert('Por favor ingresa un número válido mayor o igual a 0');
+                return;
+            }
+            
+            try {
+                savingsGoal = numValue > 0 ? numValue : null;
+                const response = await apiRequest('/user/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify({ savingsGoal: savingsGoal })
+                });
+                
+                // Verificar que se guardó correctamente
+                if (response && response.savingsGoal !== undefined) {
+                    savingsGoal = response.savingsGoal;
+                }
+                
+                updateSummary();
+                closeSavingsGoalModal();
+                alert('✅ Fondo de emergencia guardado exitosamente');
+            } catch (error) {
+                console.error('Error al guardar el fondo de emergencia:', error);
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                alert(getTranslation('messages.emergencyFundError', lang) + ': ' + (error.message || getTranslation('messages.error', lang)));
+            }
+        });
+    }
+    
+    // Inicializar formulario de fondo base
+    const baseFundForm = document.getElementById('baseFundForm');
+    if (baseFundForm) {
+        // Remover listeners anteriores si existen
+        const newForm = baseFundForm.cloneNode(true);
+        baseFundForm.parentNode.replaceChild(newForm, baseFundForm);
+        
+        document.getElementById('baseFundForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('baseFundInput');
+            if (!input) {
+                alert('Error: No se encontró el campo de entrada');
+                return;
+            }
+            
+            const value = input.value.trim();
+            if (!value) {
+                alert('Por favor ingresa una cantidad válida');
+                return;
+            }
+            
+            const numValue = parseFloat(value);
+            if (isNaN(numValue) || numValue < 0) {
+                alert('Por favor ingresa un número válido mayor o igual a 0');
+                return;
+            }
+            
+            try {
+                baseFund = numValue > 0 ? numValue : null;
+                const response = await apiRequest('/user/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify({ baseFund: baseFund })
+                });
+                
+                // Verificar que se guardó correctamente
+                if (response && response.baseFund !== undefined) {
+                    baseFund = response.baseFund;
+                }
+                
+                closeBaseFundModal();
+                updateSummary(); // Actualizar la card del fondo base
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                showToast(getTranslation('messages.baseFundSaved', lang));
+            } catch (error) {
+                console.error('Error al guardar el fondo base:', error);
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                alert(getTranslation('messages.baseFundError', lang) + ': ' + (error.message || getTranslation('messages.error', lang)));
+            }
+        });
+    }
+    
+    // Inicializar formulario de añadir dinero a inversión
+    const addMoneyInvestmentForm = document.getElementById('addMoneyInvestmentForm');
+    if (addMoneyInvestmentForm) {
+        addMoneyInvestmentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processAddMoneyToInvestment();
+        });
+    }
+    
+    // Inicializar formulario de actualizar valor de inversión
+    const updateInvestmentValueForm = document.getElementById('updateInvestmentValueForm');
+    if (updateInvestmentValueForm) {
+        updateInvestmentValueForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processUpdateInvestmentValue();
+        });
+    }
+    
+    // Inicializar formulario de actualizar saldo de cuenta
+    const updateAccountBalanceForm = document.getElementById('updateAccountBalanceForm');
+    if (updateAccountBalanceForm) {
+        updateAccountBalanceForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processUpdateAccountBalance();
+        });
+    }
+    
+    // Inicializar formulario de actualizar valor de bien
+    const updateAssetValueForm = document.getElementById('updateAssetValueForm');
+    if (updateAssetValueForm) {
+        updateAssetValueForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processUpdatePatrimonioValue();
+        });
+    }
+    
+    // Inicializar formulario de actualizar valor de propiedad
+    const updatePropertyValueForm = document.getElementById('updatePropertyValueForm');
+    if (updatePropertyValueForm) {
+        updatePropertyValueForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await processUpdatePropertyValue();
+        });
+    }
+    
+    // Botón de perfil de usuario ya se maneja con onclick en HTML
+    
+    // Inicializar ordenamiento de tabla de transacciones
+    const sortableHeaders = document.querySelectorAll('#transactionsTable th.sortable');
+    sortableHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+            const sortColumn = header.getAttribute('data-sort');
+            
+            // Si se hace clic en la misma columna, cambiar dirección
+            if (transactionsSortColumn === sortColumn) {
+                transactionsSortDirection = transactionsSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                transactionsSortColumn = sortColumn;
+                transactionsSortDirection = 'asc';
+            }
+            
+            // Actualizar indicadores visuales
+            sortableHeaders.forEach(h => {
+                const indicator = h.querySelector('.sort-indicator');
+                if (indicator) {
+                    indicator.textContent = '';
+                }
+                h.style.color = '';
+            });
+            
+            const indicator = header.querySelector('.sort-indicator');
+            if (indicator) {
+                indicator.textContent = transactionsSortDirection === 'asc' ? ' ▲' : ' ▼';
+            }
+            header.style.color = 'var(--primary)';
+            
+            // Actualizar tabla
+            updateTransactionsTable();
+        });
+    });
+    
+    // Establecer ordenamiento inicial (por fecha descendente)
+    const dateHeader = document.querySelector('#transactionsTable th[data-sort="date"]');
+    if (dateHeader) {
+        const indicator = dateHeader.querySelector('.sort-indicator');
+        if (indicator) {
+            indicator.textContent = ' ▼';
+        }
+        dateHeader.style.color = 'var(--primary)';
+    }
+    
+    // Selector de período en dashboard
+    const summaryPeriodSelect = document.getElementById('summaryPeriod');
+    const summaryYearInput = document.getElementById('summaryYear');
+    if (summaryPeriodSelect) {
+        // Inicializar con valor por defecto "Este año"
+        summaryPeriodSelect.value = 'year';
+        summaryPeriod = 'year';
+        
+        // Inicializar mes y año actual
+        const summaryMonthContainer = document.getElementById('summaryMonthContainer');
+        const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+        const summaryMonthYear = document.getElementById('summaryMonthYear');
+        if (summaryMonthContainer && summaryMonthSelect && summaryMonthYear) {
+            const now = new Date();
+            summaryMonthSelect.value = now.getMonth() + 1;
+            summaryMonthYear.value = now.getFullYear();
+            // Asegurar que esté oculto por defecto
+            summaryMonthContainer.style.display = 'none';
+        }
+        if (summaryYearInput) {
+            summaryYearInput.value = new Date().getFullYear();
+            // Asegurar que esté oculto por defecto
+            summaryYearInput.style.display = 'none';
+            summaryYearInput.style.visibility = 'hidden';
+        }
+        
+        summaryPeriodSelect.addEventListener('change', (e) => {
+            const value = e.target.value;
+            summaryPeriod = value;
+            
+            // Mostrar/ocultar selector de mes
+            if (summaryMonthContainer) {
+                if (value === 'month-select') {
+                    summaryMonthContainer.style.display = 'flex';
+                    summaryMonthContainer.style.marginTop = 'clamp(12px, 3vw, 16px)';
+                    summaryMonthContainer.style.marginBottom = '0';
+                    if (summaryMonthSelect) summaryMonthSelect.focus();
+                } else {
+                    summaryMonthContainer.style.display = 'none';
+                    summaryMonthContainer.style.marginTop = '0';
+                    summaryMonthContainer.style.marginBottom = '0';
+                }
+            }
+            
+            // Mostrar/ocultar selector de año
+            if (summaryYearInput) {
+                if (value === 'year-select') {
+                    summaryYearInput.style.display = 'block';
+                    summaryYearInput.style.visibility = 'visible';
+                    summaryYearInput.style.height = 'auto';
+                    summaryYearInput.style.marginTop = 'clamp(12px, 3vw, 16px)';
+                    summaryYearInput.style.marginBottom = '0';
+                    summaryYearInput.style.marginLeft = '0';
+                    summaryYearInput.style.marginRight = '0';
+                    summaryYearInput.style.padding = 'clamp(10px, 2.5vw, 12px)';
+                    summaryYearInput.style.minHeight = 'clamp(40px, 10vw, 44px)';
+                    summaryYearInput.style.fontSize = 'clamp(14px, 3.5vw, 16px)';
+                    summaryYearInput.style.border = '1.5px solid var(--border-color)';
+                    summaryYearInput.style.width = '100%';
+                    summaryYearInput.style.maxWidth = '100%';
+                    summaryYearInput.style.minWidth = '100%';
+                    summaryYearInput.style.boxSizing = 'border-box';
+                    summaryYearInput.style.overflow = 'visible';
+                    summaryYearInput.focus();
+                } else {
+                    summaryYearInput.style.display = 'none';
+                    summaryYearInput.style.visibility = 'hidden';
+                    summaryYearInput.style.height = '0';
+                    summaryYearInput.style.marginTop = '0';
+                    summaryYearInput.style.marginBottom = '0';
+                    summaryYearInput.style.marginLeft = '0';
+                    summaryYearInput.style.marginRight = '0';
+                    summaryYearInput.style.padding = '0';
+                    summaryYearInput.style.border = 'none';
+                }
+            }
+            
+            updateSummary();
+            updateMonthDashboard();
+            updateDashboardCharts();
+        });
+        
+        // Listener para cambio de mes (usar las variables ya declaradas arriba)
+        if (summaryMonthSelect) {
+            summaryMonthSelect.addEventListener('change', () => {
+                if (summaryPeriod === 'month-select') {
+                    updateSummary();
+                    updateMonthDashboard();
+                    updateDashboardCharts();
+                }
+            });
+        }
+        if (summaryMonthYear) {
+            summaryMonthYear.addEventListener('change', () => {
+                if (summaryPeriod === 'month-select') {
+                    updateSummary();
+                    updateMonthDashboard();
+                    updateDashboardCharts();
+                }
+            });
+            summaryMonthYear.addEventListener('input', () => {
+                if (summaryPeriod === 'month-select') {
+                    const yearValue = parseInt(summaryMonthYear.value);
+                    if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
+                        updateSummary();
+                        updateMonthDashboard();
+                        updateDashboardCharts();
+                    }
+                }
+            });
+        }
+        
+        // Listener para cambio de año
+        if (summaryYearInput) {
+            summaryYearInput.addEventListener('change', () => {
+                if (summaryPeriod === 'year-select') {
+                    const yearValue = parseInt(summaryYearInput.value);
+                    if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
+                        updateSummary();
+                        updateMonthDashboard();
+                        updateDashboardCharts();
+                    }
+                }
+            });
+            
+            summaryYearInput.addEventListener('input', () => {
+                if (summaryPeriod === 'year-select') {
+                    const yearValue = parseInt(summaryYearInput.value);
+                    if (yearValue && yearValue >= 2000 && yearValue <= 2100) {
+                        updateSummary();
+                        updateMonthDashboard();
+                        updateDashboardCharts();
+                    }
+                }
+            });
+        }
+    }
+    
+    // Selector de mes para el análisis del mes
+    const dashboardMonthInput = document.getElementById('dashboardMonth');
+    if (dashboardMonthInput) {
+        // Establecer mes actual por defecto
+        const now = new Date();
+        dashboardMonthInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        
+        dashboardMonthInput.addEventListener('change', (e) => {
+            updateMonthDashboard();
+        });
+        
+        // Actualizar panel al cargar
+        setTimeout(() => updateMonthDashboard(), 500);
+    }
+    
+    // Formulario de presupuestos
+    const budgetForm = document.getElementById('budgetForm');
+    if (budgetForm) {
+        budgetForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addBudget();
+        });
+        
+        // Inicializar período actual
+        const budgetPeriodType = document.getElementById('budgetPeriodType');
+        const budgetPeriodValue = document.getElementById('budgetPeriodValue');
+        const budgetPeriodValueLabel = document.getElementById('budgetPeriodValueLabel');
+        const budgetPeriodValueHelp = document.getElementById('budgetPeriodValueHelp');
+        const budgetAmountLabel = document.getElementById('budgetAmountLabel');
+        const budgetAmountHelp = document.getElementById('budgetAmountHelp');
+        const budgetDurationGroup = document.getElementById('budgetDurationGroup');
+        const budgetDuration = document.getElementById('budgetDuration');
+        const budgetDurationLabel = document.getElementById('budgetDurationLabel');
+        const budgetDurationHelp = document.getElementById('budgetDurationHelp');
+        
+        if (budgetPeriodType && budgetPeriodValue) {
+            const now = new Date();
+            const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const currentYear = now.getFullYear().toString();
+            const currentWeek = getWeekStartDate(now);
+            
+            budgetPeriodValue.value = currentMonth;
+            
+            // Actualizar campos según tipo de período
+            budgetPeriodType.addEventListener('change', (e) => {
+                const periodType = e.target.value;
+                updateBudgetPeriodFields(periodType, budgetPeriodValue, budgetPeriodValueLabel, budgetPeriodValueHelp, budgetAmountLabel, budgetAmountHelp, budgetDurationGroup, budgetDuration, budgetDurationLabel, budgetDurationHelp, now);
+            });
+            
+            // Inicializar campos
+            updateBudgetPeriodFields(budgetPeriodType.value, budgetPeriodValue, budgetPeriodValueLabel, budgetPeriodValueHelp, budgetAmountLabel, budgetAmountHelp, budgetDurationGroup, budgetDuration, budgetDurationLabel, budgetDurationHelp, now);
+        }
+        
+        // Función para actualizar campos según período
+        function updateBudgetPeriodFields(periodType, periodValueInput, periodValueLabel, periodValueHelp, amountLabel, amountHelp, durationGroup, durationSelect, durationLabel, durationHelp, now) {
+            if (periodType === 'weekly') {
+                periodValueInput.type = 'date';
+                periodValueInput.value = getWeekStartDate(now);
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                periodValueLabel.textContent = getTranslation('budget.weekStart', lang);
+                periodValueHelp.textContent = getTranslation('budget.selectWeekStart', lang);
+                amountLabel.textContent = getTranslation('budget.weeklyBudget', lang);
+                amountHelp.textContent = getTranslation('help.weeklyLimit', lang);
+                if (durationGroup) durationGroup.style.display = 'none';
+            } else if (periodType === 'monthly') {
+                periodValueInput.type = 'month';
+                periodValueInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                periodValueLabel.textContent = getTranslation('budget.monthStart', lang);
+                periodValueHelp.textContent = getTranslation('budget.monthStartHelp', lang);
+                amountLabel.textContent = getTranslation('budget.monthlyBudget', lang);
+                amountHelp.textContent = getTranslation('help.monthlyLimit', lang);
+                if (durationGroup) {
+                    durationGroup.style.display = 'block';
+                    const lang = localStorage.getItem('veedor_language') || 'es';
+                    if (durationLabel) durationLabel.textContent = getTranslation('help.duration', lang);
+                    if (durationHelp) durationHelp.textContent = getTranslation('help.durationHelp', lang);
+                }
+            } else if (periodType === 'yearly') {
+                periodValueInput.type = 'number';
+                periodValueInput.min = '2000';
+                periodValueInput.max = '2100';
+                periodValueInput.value = now.getFullYear();
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                periodValueLabel.textContent = getTranslation('help.year', lang);
+                periodValueHelp.textContent = getTranslation('help.selectYear', lang);
+                amountLabel.textContent = getTranslation('budget.yearlyBudget', lang);
+                amountHelp.textContent = getTranslation('help.yearlyLimit', lang);
+                if (durationGroup) durationGroup.style.display = 'none';
+            }
+        }
+        
+        // Función para obtener el lunes de la semana
+        function getWeekStartDate(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Ajustar al lunes
+            const monday = new Date(d.setDate(diff));
+            return monday.toISOString().split('T')[0];
+        }
+        
+        // Actualizar categorías según tipo de presupuesto
+        const budgetType = document.getElementById('budgetType');
+        const budgetCategoryGeneral = document.getElementById('budgetCategoryGeneral');
+        const budgetCategorySpecific = document.getElementById('budgetCategorySpecific');
+        
+        const updateBudgetGeneralCategories = () => {
+            if (!budgetCategoryGeneral || !budgetType) return;
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            budgetCategoryGeneral.innerHTML = `<option value="">${getTranslation('help.selectCategory', lang)}</option>`;
+            
+            const type = budgetType.value;
+            const categoryList = type === 'income' ? categories.income : categories.expense;
+            
+            categoryList.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                budgetCategoryGeneral.appendChild(option);
+            });
+            
+            // Limpiar subcategorías cuando cambia la categoría general
+            if (budgetCategorySpecific) {
+                budgetCategorySpecific.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+            }
+        };
+        
+        const updateBudgetSpecificCategories = () => {
+            if (!budgetCategorySpecific || !budgetCategoryGeneral) return;
+            const selectedGeneral = budgetCategoryGeneral.value;
+            budgetCategorySpecific.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+            
+            if (!selectedGeneral) return;
+            
+            const type = budgetType ? budgetType.value : 'expense';
+            const categoryList = type === 'income' ? categories.income : categories.expense;
+            const category = categoryList.find(c => c.id === selectedGeneral);
+            
+            if (category && category.subcategories && category.subcategories.length > 0) {
+                category.subcategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    budgetCategorySpecific.appendChild(option);
+                });
+            }
+        };
+        
+        if (budgetType) {
+            budgetType.addEventListener('change', updateBudgetGeneralCategories);
+        }
+        
+        if (budgetCategoryGeneral) {
+            budgetCategoryGeneral.addEventListener('change', updateBudgetSpecificCategories);
+        }
+        
+        // Inicializar categorías
+        updateBudgetGeneralCategories();
+    }
+    
+    // Formulario de perfil de usuario
+    const userProfileForm = document.getElementById('userProfileForm');
+    if (userProfileForm) {
+        userProfileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveUserProfile();
+        });
+    }
+    
+    // Event listener para cerrar modal de perfil al hacer clic fuera
+    const userProfileModal = document.getElementById('userProfileModal');
+    if (userProfileModal) {
+        userProfileModal.addEventListener('click', (e) => {
+            if (e.target === userProfileModal) {
+                closeUserProfile();
+            }
+        });
+    }
+    
+    const closeUserProfileModalBtn = document.getElementById('closeUserProfileModal');
+    if (closeUserProfileModalBtn) {
+        closeUserProfileModalBtn.addEventListener('click', closeUserProfile);
+    }
+}
+
+// Agregar transacción
+async function addTransaction() {
+    console.log('🔄 ========================================');
+    console.log('🔄 addTransaction() - INICIANDO');
+    console.log('🔄 ========================================');
+    
+    try {
+        // Obtener valores del formulario
+        console.log('📋 Obteniendo valores del formulario...');
+        const typeEl = document.getElementById('transactionType');
+        const dateEl = document.getElementById('transactionDate');
+        const amountEl = document.getElementById('transactionAmount');
+        const categoryGeneralEl = document.getElementById('categoryGeneral');
+        const categorySpecificEl = document.getElementById('categorySpecific');
+        const envelopeEl = document.getElementById('envelope');
+        const budgetIdEl = document.getElementById('transactionBudget');
+        const budgetItemIndexEl = document.getElementById('transactionBudgetItem');
+        const accountIdEl = document.getElementById('transactionAccount');
+        const investmentIdEl = document.getElementById('transactionInvestment');
+        const loanIdEl = document.getElementById('transactionLoan');
+        const propertyIdEl = document.getElementById('transactionProperty');
+        const descriptionEl = document.getElementById('transactionDescription');
+        const fromAccountEl = document.getElementById('transactionFromAccount');
+        const toAccountEl = document.getElementById('transactionToAccount');
+        
+        console.log('📋 Elementos encontrados:', {
+            typeEl: !!typeEl,
+            dateEl: !!dateEl,
+            amountEl: !!amountEl,
+            categoryGeneralEl: !!categoryGeneralEl,
+            categorySpecificEl: !!categorySpecificEl,
+            envelopeEl: !!envelopeEl,
+            budgetIdEl: !!budgetIdEl,
+            accountIdEl: !!accountIdEl,
+            investmentIdEl: !!investmentIdEl,
+            loanIdEl: !!loanIdEl,
+            propertyIdEl: !!propertyIdEl,
+            descriptionEl: !!descriptionEl,
+            fromAccountEl: !!fromAccountEl,
+            toAccountEl: !!toAccountEl
+        });
+        
+        if (!typeEl || !dateEl || !amountEl) {
+            console.error('❌ ERROR: Faltan elementos básicos del formulario');
+            alert('Error: No se encontraron todos los campos del formulario. Recarga la página.');
+            return;
+        }
+        
+        const type = typeEl.value;
+        const date = dateEl.value;
+        const amountInput = amountEl.value;
+        const categoryGeneral = categoryGeneralEl ? categoryGeneralEl.value : '';
+        const categorySpecific = categorySpecificEl ? categorySpecificEl.value : '';
+        const envelope = envelopeEl ? envelopeEl.value : '';
+        const budgetId = budgetIdEl ? budgetIdEl.value : '';
+        const budgetItemIndex = budgetItemIndexEl && budgetItemIndexEl.value !== '' ? parseInt(budgetItemIndexEl.value) : null;
+        const accountId = accountIdEl ? accountIdEl.value : '';
+        const investmentId = investmentIdEl ? investmentIdEl.value : '';
+        const loanId = loanIdEl ? loanIdEl.value : '';
+        const propertyId = propertyIdEl ? propertyIdEl.value : '';
+        const description = descriptionEl ? descriptionEl.value : '';
+        const fromAccountId = fromAccountEl ? fromAccountEl.value : '';
+        const toAccountId = toAccountEl ? toAccountEl.value : '';
+        
+        console.log('📋 Datos del formulario:', {
+            type, date, amountInput, categoryGeneral, categorySpecific,
+            envelope, budgetId, budgetItemIndex, accountId, investmentId, loanId, propertyId, description,
+            fromAccountId, toAccountId
+        });
+    
+        // Validaciones básicas
+        console.log('✅ Validando campos requeridos...');
+        
+        // Si es transferencia, validar cuentas origen y destino
+        if (type === 'transfer') {
+            if (!fromAccountId || !toAccountId) {
+                console.error('❌ Validación fallida - cuentas de transferencia faltantes');
+                showToast('Por favor selecciona cuenta origen y cuenta destino', 'warning');
+                return;
+            }
+            if (fromAccountId === toAccountId) {
+                console.error('❌ Validación fallida - cuentas iguales');
+                showToast('La cuenta origen y destino deben ser diferentes', 'warning');
+                return;
+            }
+        } else {
+            // Para income/expense, validar categorías
+            if (!categoryGeneralEl || !categorySpecificEl || !categoryGeneral || !categorySpecific) {
+                console.error('❌ Validación fallida - categorías faltantes');
+                showToast('Por favor completa todos los campos requeridos', 'warning');
+                return;
+            }
+        }
+        
+        if (!type || !date || !amountInput) {
+            console.error('❌ Validación fallida - campos básicos faltantes');
+            showToast('Por favor completa todos los campos requeridos', 'warning');
+            return;
+        }
+        
+        console.log('✅ Validando monto...');
+        // Normalizar el monto: reemplazar comas por puntos para parseFloat
+        const normalizedAmountInput = normalizeNumber(amountInput);
+        const amount = parseFloat(normalizedAmountInput);
+        if (isNaN(amount) || amount <= 0) {
+            console.error('❌ Validación fallida - monto inválido:', amountInput);
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            showToast(getTranslation('messages.validAmount', lang), 'warning');
+            return;
+        }
+        console.log('✅ Monto válido:', amount);
+    
+        // Normalizar campos opcionales (convertir strings vacíos a null)
+        console.log('✅ Normalizando campos opcionales...');
+        const normalizedEnvelope = (envelope && envelope.trim() !== '') ? envelope.trim() : null;
+        const normalizedBudgetId = (budgetId && budgetId.trim() !== '') ? budgetId.trim() : null;
+        const normalizedBudgetItemIndex = (budgetItemIndex !== null && budgetItemIndex !== undefined && !isNaN(budgetItemIndex)) ? budgetItemIndex : null;
+        const normalizedAccountId = (accountId && accountId.trim() !== '') ? accountId.trim() : null;
+        const normalizedInvestmentId = (investmentId && investmentId.trim() !== '') ? investmentId.trim() : null;
+        const normalizedLoanId = (loanId && loanId.trim() !== '') ? loanId.trim() : null;
+        const normalizedPropertyId = (propertyId && propertyId.trim() !== '') ? propertyId.trim() : null;
+        const normalizedDescription = (description && description.trim() !== '') ? description.trim() : null;
+        const normalizedFromAccountId = (fromAccountId && fromAccountId.trim() !== '') ? fromAccountId.trim() : null;
+        const normalizedToAccountId = (toAccountId && toAccountId.trim() !== '') ? toAccountId.trim() : null;
+        
+        // Si es transferencia, crear dos transacciones
+        if (type === 'transfer') {
+            console.log('💸 Procesando transferencia entre cuentas...');
+            
+            const transferDescription = normalizedDescription || `Transferencia entre cuentas`;
+            
+            // Crear transacción de salida (expense) desde cuenta origen
+            const expenseTransaction = {
+                type: 'expense',
+                date: date,
+                amount: Math.abs(amount),
+                categoryGeneral: 'other',
+                categorySpecific: 'Transferencias',
+                envelope: null,
+                budget_id: null, // Las transferencias no se asignan a presupuestos
+                budget_item_index: null,
+                account_id: normalizedFromAccountId,
+                investment_id: null,
+                loan_id: null,
+                property_id: null,
+                description: `${transferDescription} → ${getAccountName(normalizedToAccountId)}`
+            };
+            
+            // Crear transacción de entrada (income) a cuenta destino
+            const incomeTransaction = {
+                type: 'income',
+                date: date,
+                amount: Math.abs(amount),
+                categoryGeneral: 'other',
+                categorySpecific: 'Transferencias recibidas',
+                envelope: null,
+                budget_id: null, // Las transferencias no se asignan a presupuestos
+                budget_item_index: null,
+                account_id: normalizedToAccountId,
+                investment_id: null,
+                loan_id: null,
+                property_id: null,
+                description: `${transferDescription} ← ${getAccountName(normalizedFromAccountId)}`
+            };
+            
+            console.log('📤 ========================================');
+            console.log('📤 Enviando transferencia al servidor:');
+            console.log('📤 Expense:', JSON.stringify(expenseTransaction, null, 2));
+            console.log('📤 Income:', JSON.stringify(incomeTransaction, null, 2));
+            console.log('📤 ========================================');
+            
+            // Enviar ambas transacciones
+            const expenseResult = await apiRequest('/transactions', {
+                method: 'POST',
+                body: JSON.stringify(expenseTransaction)
+            });
+            
+            const incomeResult = await apiRequest('/transactions', {
+                method: 'POST',
+                body: JSON.stringify(incomeTransaction)
+            });
+            
+            console.log('✅ ========================================');
+            console.log('✅ Transferencia creada exitosamente:');
+            console.log('✅ Expense:', expenseResult);
+            console.log('✅ Income:', incomeResult);
+            console.log('✅ ========================================');
+            
+            // Actualizar saldos de ambas cuentas
+            try {
+                const fromAccount = accounts.find(acc => (acc._id || acc.id) === normalizedFromAccountId);
+                const toAccount = accounts.find(acc => (acc._id || acc.id) === normalizedToAccountId);
+                
+                if (fromAccount) {
+                    const newFromBalance = (fromAccount.balance || 0) - Math.abs(amount);
+                    await apiRequest(`/accounts/${normalizedFromAccountId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ balance: newFromBalance })
+                    });
+                    fromAccount.balance = newFromBalance;
+                }
+                
+                if (toAccount) {
+                    const newToBalance = (toAccount.balance || 0) + Math.abs(amount);
+                    await apiRequest(`/accounts/${normalizedToAccountId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ balance: newToBalance })
+                    });
+                    toAccount.balance = newToBalance;
+                }
+            } catch (error) {
+                console.error('❌ Error al actualizar saldos de cuentas:', error);
+            }
+            
+            // Recargar datos para mostrar ambas transacciones
+            await loadUserData();
+            updateDisplay();
+            
+            // Limpiar formulario
+            const transactionForm = document.getElementById('transactionForm');
+            if (transactionForm) {
+                transactionForm.reset();
+                toggleForm('transactionForm', 'toggleTransactionFormBtn');
+            }
+            
+            initializeDate();
+            initializeCategories();
+            updateEnvelopeSelect();
+            updateAccountSelect();
+            updateAccountSelect('transactionFromAccount');
+            updateAccountSelect('transactionToAccount');
+            updatePropertySelect();
+            
+            showToast('Transferencia realizada exitosamente', 'success');
+            return;
+        }
+        
+        // Preparar datos para enviar (transacciones normales)
+        const transactionData = {
+            type: type,
+            date: date,
+            amount: Math.abs(amount),
+            categoryGeneral: categoryGeneral,
+            categorySpecific: categorySpecific,
+            envelope: normalizedEnvelope,
+            budget_id: normalizedBudgetId,
+            budget_item_index: normalizedBudgetItemIndex,
+            account_id: normalizedAccountId,
+            investment_id: normalizedInvestmentId,
+            loan_id: normalizedLoanId,
+            property_id: normalizedPropertyId,
+            description: normalizedDescription
+        };
+        
+        console.log('📤 ========================================');
+        console.log('📤 Enviando datos al servidor:');
+        console.log('📤', JSON.stringify(transactionData, null, 2));
+        console.log('📤 ========================================');
+        
+        // Enviar al servidor
+        console.log('📡 Llamando a apiRequest...');
+        const transaction = await apiRequest('/transactions', {
+            method: 'POST',
+            body: JSON.stringify(transactionData)
+        });
+        
+        console.log('✅ ========================================');
+        console.log('✅ Transacción creada exitosamente:');
+        console.log('✅', transaction);
+        console.log('✅ ========================================');
+        
+        // Si está asociada a una inversión o préstamo, recargar datos
+        console.log('✅ Actualizando interfaz...');
+        if ((normalizedInvestmentId && type === 'expense') || (normalizedLoanId && type === 'expense')) {
+            console.log('✅ Recargando datos completos (transacción asociada a inversión o préstamo)...');
+            
+            // Si hay un préstamo asociado, descontar el importe
+            if (normalizedLoanId && type === 'expense') {
+                try {
+                    console.log('✅ Descontando importe del préstamo...');
+                    await apiRequest(`/loans/${normalizedLoanId}/payment`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            amount: Math.abs(amount),
+                            date: date,
+                            is_early_payment: false
+                        })
+                    });
+                    console.log('✅ Importe descontado del préstamo exitosamente');
+                } catch (error) {
+                    console.error('❌ Error al descontar del préstamo:', error);
+                    // No fallar la transacción si falla el descuento del préstamo
+                }
+            }
+            
+            await loadUserData();
+        } else {
+            console.log('✅ Agregando transacción a lista local...');
+            // Agregar a la lista local
+            transactions.push({
+                ...transaction,
+                categoryGeneral: transaction.category_general,
+                categorySpecific: transaction.category_specific
+            });
+            transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            updateDisplay();
+        }
+        
+        // Limpiar formulario y ocultarlo
+        console.log('✅ Limpiando formulario...');
+        const transactionForm = document.getElementById('transactionForm');
+        if (transactionForm) {
+            transactionForm.reset();
+            // Ocultar formulario después de agregar exitosamente
+            toggleForm('transactionForm', 'toggleTransactionFormBtn');
+        }
+        // Actualizar saldo de cuenta si la transacción está asociada a una cuenta
+        if (normalizedAccountId) {
+            try {
+                console.log('💰 Actualizando saldo de cuenta...');
+                const account = accounts.find(acc => (acc._id || acc.id) === normalizedAccountId);
+                if (account) {
+                    // Calcular nuevo saldo: si es ingreso suma, si es gasto resta
+                    const amountChange = type === 'income' ? Math.abs(amount) : -Math.abs(amount);
+                    const newBalance = (account.balance || 0) + amountChange;
+                    
+                    // Actualizar saldo en el servidor
+                    await apiRequest(`/accounts/${normalizedAccountId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ balance: newBalance })
+                    });
+                    
+                    // Actualizar saldo localmente
+                    account.balance = newBalance;
+                    console.log('✅ Saldo de cuenta actualizado:', newBalance);
+                }
+            } catch (error) {
+                console.error('❌ Error al actualizar saldo de cuenta:', error);
+                // No fallar la transacción si falla la actualización del saldo
+            }
+        }
+        
+        initializeDate();
+        initializeCategories();
+        updateEnvelopeSelect();
+        updateBudgetSelectForTransaction();
+        updateAccountSelect();
+        updatePropertySelect();
+        
+        console.log('✅ ========================================');
+        console.log('✅ Proceso completado exitosamente');
+        console.log('✅ ========================================');
+        
+    } catch (error) {
+        console.error('❌ ========================================');
+        console.error('❌ ERROR COMPLETO al agregar transacción:');
+        console.error('❌ Error name:', error.name);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error stack:', error.stack);
+        if (error.response) {
+            console.error('❌ Error response:', error.response);
+        }
+        console.error('❌ ========================================');
+        
+        let errorMsg = 'Error al crear transacción';
+        if (error.message) {
+            errorMsg = error.message;
+        } else if (error.response && error.response.error) {
+            errorMsg = error.response.error;
+        }
+        
+        alert('Error al agregar transacción:\n\n' + errorMsg + '\n\nRevisa la consola para más detalles.');
+    }
+}
+
+// Agregar sobre
+async function addEnvelope() {
+    const nameEl = document.getElementById('envelopeName');
+    const budgetEl = document.getElementById('envelopeBudget');
+    const categoryGeneralEl = document.getElementById('envelopeCategoryGeneral');
+    const categorySpecificEl = document.getElementById('envelopeCategorySpecific');
+    
+    if (!nameEl || !budgetEl || !categoryGeneralEl || !categorySpecificEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
+        return;
+    }
+    
+    const name = nameEl.value.trim();
+    const budget = parseFloat(budgetEl.value);
+    const category_general = categoryGeneralEl.value;
+    const category_specific = categorySpecificEl.value;
+    
+    if (!name || isNaN(budget) || budget < 0) {
+        showToast('Por favor completa todos los campos correctamente', 'warning');
+        return;
+    }
+    
+    if (!category_general || !category_specific) {
+        showToast('Por favor selecciona categoría general y específica', 'warning');
+        return;
+    }
+    
+    try {
+        showLoader('Creando sobre...');
+        const envelope = await apiRequest('/envelopes', {
+            method: 'POST',
+            body: JSON.stringify({ 
+                name, 
+                budget,
+                category_general,
+                category_specific
+            })
+        });
+        
+        // Recargar datos desde el servidor para asegurar sincronización
+        await loadUserData();
+        updateDisplay();
+        resetEnvelopeForm();
+        hideLoader();
+        showToast('Sobre creado exitosamente', 'success');
+        
+        // Ocultar formulario después de agregar exitosamente
+        const envelopeForm = document.getElementById('envelopeForm');
+        if (envelopeForm && envelopeForm.style.display !== 'none') {
+            toggleForm('envelopeForm', 'toggleEnvelopeFormBtn');
+        }
+        updateEnvelopeSelect();
+    } catch (error) {
+        hideLoader();
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        const errorMsg = error.message || 'Error desconocido';
+        showToast('Error al crear sobre: ' + errorMsg, 'error');
+        console.error('Error al crear sobre:', error);
+    }
+}
+
+// Actualizar visualización
+function updateDisplay() {
+    console.log('🔄 updateDisplay: FUNCIÓN LLAMADA - Iniciando...');
+    try {
+        console.log('🔄 updateDisplay: Llamando a updateSummary...');
+        updateSummary().catch(err => {
+            console.error('❌ Error en updateSummary:', err);
+        });
+        console.log('🔄 updateDisplay: Llamando a updateTransactionsTable...');
+        updateTransactionsTable();
+        updateEnvelopes();
+        updateEnvelopeSelect();
+        updateBudgetSelectForTransaction(); // Actualizar selector de presupuestos en transacciones
+        updateAccountSelect(); // Actualizar selector de cuentas
+        updateAccountSelect('transactionFromAccount'); // Actualizar selector de cuenta origen
+        updateAccountSelect('transactionToAccount'); // Actualizar selector de cuenta destino
+        updateInvestmentSelect(); // Actualizar selector de inversiones
+        updatePropertySelect(); // Actualizar selector de propiedades en transacciones
+        updatePropertySelect('loanProperty'); // Actualizar selector de propiedades en préstamos
+        updatePatrimonioSelect(); // Actualizar selector de patrimonio (para préstamos)
+        updateLoanSelect(); // Actualizar selector de préstamos
+        updateLoans();
+        updateRecurringExpenses();
+        updateInvestments();
+        updateBudgets(); // Asegurar que los presupuestos se actualicen
+        updatePatrimonio(); // Actualizar patrimonio
+        updateProperties(); // Actualizar propiedades
+        updateMonthFilter();
+        updateMonthDashboard();
+        
+        // Actualizar filtros de gráficos
+        updateChartFilters();
+        
+        // Actualizar gráficas siempre (no solo cuando el tab está activo)
+        updateCharts();
+        
+        // Actualizar escenarios de ahorro
+        updateSavingsScenarios();
+    } catch (error) {
+        console.error('Error en updateDisplay:', error);
+    }
+}
+
+// Actualizar resumen
+async function updateSummary() {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Cargar meta de ahorro desde el perfil del usuario
+    try {
+        const profileData = await apiRequest('/user/profile');
+        if (profileData && profileData.savingsGoal !== undefined) {
+            savingsGoal = profileData.savingsGoal;
+        }
+    } catch (error) {
+        console.warn('No se pudo cargar la meta de ahorro:', error);
+    }
+    
+    // Obtener mes y año seleccionados si aplica
+    const summaryYearInput = document.getElementById('summaryYear');
+    let selectedMonth = currentMonth;
+    let selectedYear = currentYear;
+    
+    if (summaryPeriod === 'month-select') {
+        const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+        const summaryMonthYear = document.getElementById('summaryMonthYear');
+        if (summaryMonthSelect && summaryMonthYear) {
+            const month = parseInt(summaryMonthSelect.value);
+            const year = parseInt(summaryMonthYear.value);
+            if (month && year) {
+            selectedYear = year;
+            selectedMonth = month - 1; // Los meses en JS son 0-indexed
+            }
+        }
+    }
+    
+    if (summaryYearInput && summaryPeriod === 'year-select') {
+        selectedYear = parseInt(summaryYearInput.value) || currentYear;
+    }
+    
+    const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+    });
+    
+    // Transacciones del mes específico seleccionado
+    const selectedMonthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === selectedMonth && tDate.getFullYear() === selectedYear;
+    });
+    
+    // Transacciones del año (actual o seleccionado)
+    const yearTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getFullYear() === selectedYear;
+    });
+    
+    // Cálculos del mes
+    // Balance total = transacciones + valor actual de inversiones - capital restante de préstamos
+    const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    const patrimonioValue = patrimonio.reduce((sum, prop) => sum + (prop.current_value || 0), 0);
+    const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt + patrimonioValue;
+    // Calcular según período seleccionado
+    let periodIncome, periodExpenses, periodSavings, periodLabel;
+    
+    if (summaryPeriod === 'month') {
+        periodIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        periodExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        periodSavings = periodIncome - periodExpenses;
+        periodLabel = 'Este mes';
+    } else if (summaryPeriod === 'month-select') {
+        // Usar mes seleccionado cuando se selecciona "Mes Específico"
+        periodIncome = selectedMonthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        periodExpenses = Math.abs(selectedMonthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        periodSavings = periodIncome - periodExpenses;
+        const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        periodLabel = `${monthNames[selectedMonth]} ${selectedYear}`;
+    } else if (summaryPeriod === 'year') {
+        // Usar año actual cuando se selecciona "Este Año"
+        const yearForCalculation = currentYear;
+        const yearTransactionsForPeriod = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getFullYear() === yearForCalculation;
+        });
+        periodIncome = yearTransactionsForPeriod.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        periodExpenses = Math.abs(yearTransactionsForPeriod.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        periodSavings = periodIncome - periodExpenses;
+        periodLabel = 'Este año';
+    } else if (summaryPeriod === 'year-select') {
+        // Usar año seleccionado cuando se selecciona "Año Específico"
+        periodIncome = yearTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        periodExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        periodSavings = periodIncome - periodExpenses;
+        periodLabel = `Año ${selectedYear}`;
+    } else { // 'all'
+        periodIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        periodExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        periodSavings = periodIncome - periodExpenses;
+        periodLabel = 'Historial completo';
+    }
+    
+    // Actualizar elementos según período
+    const totalBalanceEl = document.getElementById('totalBalance');
+    const totalBalancePeriodEl = document.getElementById('totalBalancePeriod');
+    const periodIncomeEl = document.getElementById('periodIncome');
+    const periodIncomeLabelEl = document.getElementById('periodIncomeLabel');
+    const periodIncomeSubLabelEl = document.getElementById('periodIncomeSubLabel');
+    const periodExpensesEl = document.getElementById('periodExpenses');
+    const periodExpensesLabelEl = document.getElementById('periodExpensesLabel');
+    const periodExpensesSubLabelEl = document.getElementById('periodExpensesSubLabel');
+    const periodSavingsEl = document.getElementById('periodSavings');
+    const periodSavingsLabelEl = document.getElementById('periodSavingsLabel');
+    const periodSavingsSubLabelEl = document.getElementById('periodSavingsSubLabel');
+    
+    // Calcular saldo total de cuentas
+    const totalAccountsBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+    
+    if (totalBalanceEl) totalBalanceEl.textContent = formatCurrency(totalBalance);
+    if (totalBalancePeriodEl) totalBalancePeriodEl.textContent = periodLabel;
+    
+    // Actualizar saldo de cuentas en el resumen
+    const totalAccountsBalanceEl = document.getElementById('totalAccountsBalance');
+    if (totalAccountsBalanceEl) {
+        totalAccountsBalanceEl.textContent = formatCurrency(totalAccountsBalance);
+    }
+    
+    if (periodIncomeEl) periodIncomeEl.textContent = formatCurrency(periodIncome);
+    if (periodIncomeLabelEl) periodIncomeLabelEl.textContent = `Ingresos ${periodLabel}`;
+    if (periodIncomeSubLabelEl) periodIncomeSubLabelEl.textContent = periodLabel;
+    
+    if (periodExpensesEl) periodExpensesEl.textContent = formatCurrency(periodExpenses);
+    if (periodExpensesLabelEl) periodExpensesLabelEl.textContent = `Gastos ${periodLabel}`;
+    if (periodExpensesSubLabelEl) periodExpensesSubLabelEl.textContent = periodLabel;
+    
+    if (periodSavingsEl) {
+        periodSavingsEl.textContent = formatCurrency(periodSavings);
+        periodSavingsEl.className = periodSavings >= 0 ? 'amount positive' : 'amount negative';
+    }
+    if (periodSavingsLabelEl) periodSavingsLabelEl.textContent = `Ahorro ${periodLabel}`;
+    if (periodSavingsSubLabelEl) periodSavingsSubLabelEl.textContent = periodLabel;
+    
+    // Actualizar fondo base
+    const baseFundDisplayEl = document.getElementById('baseFundDisplay');
+    const baseFundProgress = document.getElementById('baseFundProgress');
+    const baseFundProgressBar = document.getElementById('baseFundProgressBar');
+    const baseFundProgressText = document.getElementById('baseFundProgressText');
+    
+    // Mostrar siempre la barra de progreso
+    if (baseFundProgress) {
+        baseFundProgress.style.display = 'block';
+    }
+    
+    if (baseFundDisplayEl) {
+        if (baseFund && baseFund > 0) {
+            baseFundDisplayEl.textContent = formatCurrency(baseFund);
+            
+            // Calcular progreso basado en el saldo de cuentas
+            const progress = Math.min((totalAccountsBalance / baseFund) * 100, 100);
+            const isAchieved = totalAccountsBalance >= baseFund;
+            
+            if (baseFundProgress) {
+                baseFundProgress.style.display = 'block';
+                if (baseFundProgressBar) {
+                    baseFundProgressBar.style.width = `${Math.max(0, progress)}%`;
+                    baseFundProgressBar.style.background = isAchieved ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.7)';
+                }
+                if (baseFundProgressText) {
+                    if (isAchieved) {
+                        baseFundProgressText.textContent = `Fondo base alcanzado`;
+                        baseFundProgressText.style.color = 'rgba(255,255,255,1)';
+            } else {
+                        const remaining = baseFund - totalAccountsBalance;
+                        baseFundProgressText.textContent = `${progress.toFixed(1)}% - Faltan ${formatCurrency(remaining)}`;
+                        baseFundProgressText.style.color = 'rgba(255,255,255,0.9)';
+                    }
+                }
+            }
+        } else {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            baseFundDisplayEl.textContent = getTranslation('dashboard.noFund', lang);
+            if (baseFundProgress) {
+                baseFundProgress.style.display = 'block';
+                if (baseFundProgressBar) {
+                    baseFundProgressBar.style.width = '0%';
+                }
+                if (baseFundProgressText) {
+                    baseFundProgressText.textContent = '';
+                }
+            }
+        }
+    }
+    
+    // Actualizar gráficas del dashboard
+    updateDashboardCharts();
+}
+
+// Actualizar tabla de transacciones
+// Variables globales para ordenamiento
+let transactionsSortColumn = 'date';
+let transactionsSortDirection = 'desc'; // 'asc' o 'desc'
+
+// Variables para modo edición
+let currentEditingTransactionId = null;
+let currentEditingEnvelopeId = null;
+let currentEditingInvestmentId = null;
+let currentEditingLoanId = null;
+let currentEditingPropertyId = null;
+let currentEditingAccountId = null;
+let currentEditingAssetId = null;
+let currentEditingBudgetId = null;
+
+let currentPage = 1;
+let rowsPerPage = 0; // Mostrar todas las transacciones
+
+function updateTransactionsTable() {
+    console.log('🔄 updateTransactionsTable: FUNCIÓN LLAMADA');
+    const tbody = document.getElementById('transactionsBody');
+    if (!tbody) {
+        console.error('❌ updateTransactionsTable: transactionsBody no encontrado');
+        console.error('❌ Buscando elemento con id="transactionsBody"');
+        console.error('❌ Elementos con id que contienen "transaction":', 
+            Array.from(document.querySelectorAll('[id*="transaction"]')).map(el => el.id));
+        return;
+    }
+    
+    console.log('🔄 updateTransactionsTable: Iniciando...', {
+        transactionsCount: transactions?.length || 0,
+        tbodyExists: !!tbody,
+        tbodyParent: tbody.parentElement?.id || 'sin parent'
+    });
+    
+    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    const filterCategory = document.getElementById('filterCategory')?.value || '';
+    const filterMonth = document.getElementById('filterMonth')?.value || '';
+    const filterStartDate = document.getElementById('filterStartDate')?.value || '';
+    const filterEndDate = document.getElementById('filterEndDate')?.value || '';
+    // Eliminado: selector de filas por página - mostrar todas las transacciones
+    rowsPerPage = 0;
+    
+    let filtered = transactions || [];
+    
+    if (searchTerm) {
+        filtered = filtered.filter(t => 
+            (t.description || '').toLowerCase().includes(searchTerm) ||
+            (t.categorySpecific || '').toLowerCase().includes(searchTerm)
+        );
+    }
+    
+    if (filterCategory) {
+        filtered = filtered.filter(t => t.categoryGeneral === filterCategory);
+    }
+    
+    if (filterMonth) {
+        filtered = filtered.filter(t => {
+            const tDate = new Date(t.date);
+            return `${tDate.getFullYear()}-${String(tDate.getMonth() + 1).padStart(2, '0')}` === filterMonth;
+        });
+    }
+    
+    // Filtro por rango de fechas
+    if (filterStartDate) {
+        const startDate = new Date(filterStartDate);
+        filtered = filtered.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate >= startDate;
+        });
+    }
+    
+    if (filterEndDate) {
+        const endDate = new Date(filterEndDate);
+        endDate.setHours(23, 59, 59, 999); // Incluir todo el día final
+        filtered = filtered.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate <= endDate;
+        });
+    }
+    
+    // Ordenar transacciones
+    filtered.sort((a, b) => {
+        let aValue, bValue;
+        
+        switch(transactionsSortColumn) {
+            case 'date':
+                aValue = new Date(a.date).getTime();
+                bValue = new Date(b.date).getTime();
+                break;
+            case 'type':
+                aValue = a.type;
+                bValue = b.type;
+                break;
+            case 'category':
+                aValue = `${a.categoryGeneral} - ${a.categorySpecific}`.toLowerCase();
+                bValue = `${b.categoryGeneral} - ${b.categorySpecific}`.toLowerCase();
+                break;
+            case 'description':
+                aValue = (a.description || '').toLowerCase();
+                bValue = (b.description || '').toLowerCase();
+                break;
+            case 'account':
+                const accountA = accounts.find(acc => (acc._id || acc.id) === a.account_id);
+                const accountB = accounts.find(acc => (acc._id || acc.id) === b.account_id);
+                aValue = accountA ? accountA.name.toLowerCase() : '';
+                bValue = accountB ? accountB.name.toLowerCase() : '';
+                break;
+            case 'property':
+                const propertyA = patrimonio.find(prop => (prop._id || prop.id) === a.property_id);
+                const propertyB = patrimonio.find(prop => (prop._id || prop.id) === b.property_id);
+                aValue = propertyA ? propertyA.name.toLowerCase() : '';
+                bValue = propertyB ? propertyB.name.toLowerCase() : '';
+                break;
+            case 'envelope':
+                aValue = (a.envelope || '').toLowerCase();
+                bValue = (b.envelope || '').toLowerCase();
+                break;
+            case 'amount':
+                aValue = a.amount;
+                bValue = b.amount;
+                break;
+            default:
+                return 0;
+        }
+        
+        if (aValue < bValue) return transactionsSortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return transactionsSortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+    
+    tbody.innerHTML = '';
+    
+    console.log('🔄 updateTransactionsTable: Filtrado completado', {
+        filteredCount: filtered.length,
+        originalCount: transactions?.length || 0
+    });
+    
+    if (filtered.length === 0) {
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">${getTranslation('transactions.noTransactions', lang)}</td></tr>`;
+        console.log('⚠️ updateTransactionsTable: No hay transacciones para mostrar');
+        return;
+    }
+    
+    // Aplicar paginación si rowsPerPage > 0
+    let transactionsToShow = filtered;
+    if (rowsPerPage > 0) {
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+        transactionsToShow = filtered.slice(startIndex, endIndex);
+    }
+    
+    transactionsToShow.forEach(transaction => {
+        const row = document.createElement('tr');
+        const date = new Date(transaction.date);
+        
+        // Buscar nombre de categoría
+        let categoryName = transaction.categoryGeneral;
+        if (transaction.type === 'expense') {
+            const expenseCat = categories.expense.find(c => c.id === transaction.categoryGeneral);
+            if (expenseCat) {
+                categoryName = expenseCat.name;
+            } else {
+                categoryName = transaction.categoryGeneral;
+            }
+        } else {
+            const incomeCat = categories.income.find(c => c.id === transaction.categoryGeneral);
+            if (incomeCat) {
+                categoryName = incomeCat.name;
+            } else {
+                categoryName = transaction.categoryGeneral;
+            }
+        }
+        
+        // Buscar nombre de cuenta
+        let accountName = '-';
+        if (transaction.account_id) {
+            const account = accounts.find(a => (a._id || a.id) === transaction.account_id);
+            accountName = account ? account.name : '-';
+        }
+        
+        // Buscar nombre de propiedad en patrimonio
+        let propertyName = '-';
+        if (transaction.property_id) {
+            const property = patrimonio.find(p => (p._id || p.id) === transaction.property_id);
+            propertyName = property ? property.name : '-';
+        }
+        
+        row.innerHTML = `
+            <td>${formatDate(date)}</td>
+            <td><span class="badge badge-${transaction.type}">${transaction.type === 'income' ? 'Ingreso' : 'Gasto'}</span></td>
+            <td>${categoryName} - ${transaction.categorySpecific}</td>
+            <td>${transaction.description || '-'}</td>
+            <td>${accountName}</td>
+            <td>${propertyName}</td>
+            <td>${transaction.envelope || '-'}</td>
+            <td style="font-weight: 600; color: ${transaction.amount >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(transaction.amount)}</td>
+            <td class="transaction-actions">
+                <button class="btn-secondary" onclick="editTransaction('${transaction._id || transaction.id}')">
+                    <span class="btn-text" style="display: none;">${getTranslation('transactions.edit', localStorage.getItem('veedor_language') || 'es')}</span>
+                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                </button>
+                <button class="btn-danger" onclick="deleteTransaction('${transaction._id || transaction.id}')">
+                    <span class="btn-text" style="display: none;">${getTranslation('transactions.delete', localStorage.getItem('veedor_language') || 'es')}</span>
+                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+    
+    console.log('✅ updateTransactionsTable: Completado', {
+        rowsAdded: transactionsToShow.length
+    });
+    
+    // Mostrar información de paginación si hay más filas que las mostradas
+    if (rowsPerPage > 0 && filtered.length > rowsPerPage) {
+        const totalPages = Math.ceil(filtered.length / rowsPerPage);
+        const infoRow = document.createElement('tr');
+        infoRow.innerHTML = `
+            <td colspan="9" style="text-align: center; padding: 16px; background: var(--bg-secondary); color: var(--text-secondary); font-size: 13px;">
+                Mostrando ${(currentPage - 1) * rowsPerPage + 1} - ${Math.min(currentPage * rowsPerPage, filtered.length)} de ${filtered.length} transacciones
+                ${totalPages > 1 ? ` | Página ${currentPage} de ${totalPages}` : ''}
+            </td>
+        `;
+        tbody.appendChild(infoRow);
+    }
+}
+
+// Actualizar sobres
+function updateEnvelopes() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const grid = document.getElementById('envelopesGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (envelopes.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay sobres creados</p>`;
+        return;
+    }
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    envelopes.forEach(envelope => {
+        const monthTransactions = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return t.envelope === envelope.name &&
+                   t.type === 'expense' &&
+                   tDate.getMonth() === currentMonth &&
+                   tDate.getFullYear() === currentYear;
+        });
+        
+        const spent = Math.abs(monthTransactions.reduce((sum, t) => sum + t.amount, 0));
+        const remaining = envelope.budget - spent;
+        const percentage = (spent / envelope.budget) * 100;
+        
+        // Obtener nombre del patrimonio si está asociado
+        const patrimonioItem = envelope.patrimonio_id ? patrimonio.find(p => (p._id || p.id) === envelope.patrimonio_id) : null;
+        const patrimonioName = patrimonioItem ? patrimonioItem.name : null;
+        
+        // Obtener nombre de categoría si está asociada
+        let categoryDisplay = '';
+        if (envelope.category_general && envelope.category_specific) {
+            const category = categories.expense.find(c => c.id === envelope.category_general);
+            const categoryName = category ? category.name : envelope.category_general;
+            categoryDisplay = `<small style="font-size: 11px; color: var(--gray-500); display: block; margin-top: 4px;">${categoryName} - ${envelope.category_specific}</small>`;
+        }
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.innerHTML = `
+            <div style="margin-bottom: 8px;">
+                <h3 style="margin: 0 0 4px 0;">${envelope.name}</h3>
+                ${categoryDisplay}
+                ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500); display: block; margin-top: 4px;">${getTranslation('envelope.associatedTo', lang)}: ${patrimonioName}</small>` : ''}
+            </div>
+            <div class="envelope-budget">${formatCurrency(envelope.budget)}</div>
+            <div class="envelope-spent">${getTranslation('envelope.spent', lang)}: ${formatCurrency(spent)}</div>
+            <div class="envelope-remaining ${remaining < 0 ? 'negative' : ''}">
+                ${getTranslation('envelope.remaining', lang)}: ${formatCurrency(remaining)}
+            </div>
+            <div class="envelope-progress">
+                <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%"></div>
+            </div>
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deleteEnvelope('${envelope._id || envelope.id}')" style="flex: 1;">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Actualizar selector de sobres
+function updateEnvelopeSelect(selectId = 'envelope') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Ninguno</option>';
+    envelopes.forEach(envelope => {
+        const option = document.createElement('option');
+        option.value = envelope._id || envelope.id || envelope.name;
+        option.textContent = envelope.name;
+        select.appendChild(option);
+    });
+}
+
+// Actualizar selector de cuentas bancarias
+function updateAccountSelect(selectId = 'transactionAccount') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    const isTransferSelect = selectId === 'transactionFromAccount' || selectId === 'transactionToAccount';
+    select.innerHTML = isTransferSelect ? '<option value="">Seleccionar...</option>' : '<option value="">Ninguna</option>';
+    
+    accounts.forEach(account => {
+        const option = document.createElement('option');
+        option.value = account._id || account.id;
+        option.textContent = `${account.name}${account.bank ? ` (${account.bank})` : ''}`;
+        select.appendChild(option);
+    });
+}
+
+// Función auxiliar para obtener el nombre de una cuenta
+function getAccountName(accountId) {
+    if (!accountId) return 'Cuenta desconocida';
+    const account = accounts.find(acc => (acc._id || acc.id) === accountId);
+    if (!account) return 'Cuenta desconocida';
+    return `${account.name}${account.bank ? ` (${account.bank})` : ''}`;
+}
+
+// Actualizar selector de inversiones
+function updateInvestmentSelect(selectId = 'transactionInvestment') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Ninguna</option>';
+    investments.forEach(investment => {
+        const option = document.createElement('option');
+        option.value = investment._id || investment.id;
+        option.textContent = investment.name;
+        select.appendChild(option);
+    });
+}
+
+// Actualizar selector de propiedades/patrimonio en transacciones
+function updatePropertySelect(selectId = 'transactionProperty') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Ninguna</option>';
+    patrimonio.forEach(prop => {
+        const option = document.createElement('option');
+        option.value = prop._id || prop.id;
+        const typeNames = {
+            apartment: 'Apartamento',
+            house: 'Casa',
+            office: 'Oficina',
+            commercial: 'Comercial',
+            vehicle: 'Vehículo',
+            jewelry: 'Joyas',
+            art: 'Arte',
+            electronics: 'Electrónica',
+            other: 'Otro'
+        };
+        option.textContent = `${prop.name} (${typeNames[prop.type] || prop.type})`;
+        select.appendChild(option);
+    });
+    
+    // Restaurar valor seleccionado si existe
+    if (currentValue) {
+        select.value = currentValue;
+    }
+}
+
+// Actualizar selector de préstamos
+function updateLoanSelect(selectId = 'transactionLoan') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Ninguno</option>';
+    loans.filter(loan => loan.type === 'debt').forEach(loan => {
+        const option = document.createElement('option');
+        option.value = loan._id || loan.id;
+        option.textContent = `${loan.name} (${formatCurrency(loan.principal)})`;
+        select.appendChild(option);
+    });
+}
+
+// Actualizar selector de presupuestos para transacciones
+function updateBudgetSelectForTransaction(selectId = 'transactionBudget') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const currentYear = now.getFullYear().toString();
+    const currentWeek = getWeekStartDate(now);
+    
+    // Filtrar presupuestos activos (del período actual)
+    const activeBudgets = budgets.filter(b => {
+        if (b.period_type === 'monthly') {
+            return b.period_value === currentMonth;
+        } else if (b.period_type === 'yearly') {
+            return b.period_value === currentYear;
+        } else if (b.period_type === 'weekly') {
+            return b.period_value === currentWeek;
+        }
+        return false;
+    });
+    
+    select.innerHTML = '<option value="">Ninguno</option>';
+    
+    activeBudgets.forEach(budget => {
+        let displayName = '';
+        
+        if (budget.property_id) {
+            const property = properties.find(p => (p._id || p.id) === budget.property_id);
+            displayName = property ? property.name : 'Propiedad desconocida';
+        } else if (budget.patrimonio_id) {
+            const patrimonioItem = patrimonio.find(p => (p._id || p.id) === budget.patrimonio_id);
+            displayName = patrimonioItem ? patrimonioItem.name : 'Patrimonio desconocido';
+        } else if (budget.category_general && budget.category_specific) {
+            let category = categories.expense.find(c => c.id === budget.category_general);
+            if (!category) {
+                category = categories.income.find(c => c.id === budget.category_general);
+            }
+            const categoryName = category ? category.name : budget.category_general;
+            displayName = `${categoryName} - ${budget.category_specific}`;
+        } else if (budget.category_id) {
+            let category = categories.expense.find(c => c.id === budget.category_id);
+            if (!category) {
+                category = categories.income.find(c => c.id === budget.category_id);
+            }
+            displayName = category ? category.name : budget.category_id;
+        }
+        
+        if (displayName) {
+            const option = document.createElement('option');
+            option.value = budget._id || budget.id;
+            const itemsCount = budget.items && budget.items.length > 0 ? ` (${budget.items.length} partidas)` : '';
+            option.textContent = `${displayName} (${formatCurrency(budget.amount)})${itemsCount}`;
+            select.appendChild(option);
+        }
+    });
+}
+
+// Actualizar selector de partidas cuando se selecciona un presupuesto
+function updateBudgetItemSelect() {
+    const budgetSelect = document.getElementById('transactionBudget');
+    const itemSelect = document.getElementById('transactionBudgetItem');
+    const itemGroup = document.getElementById('transactionBudgetItemGroup');
+    
+    if (!budgetSelect || !itemSelect || !itemGroup) return;
+    
+    const selectedBudgetId = budgetSelect.value;
+    
+    if (!selectedBudgetId) {
+        itemGroup.style.display = 'none';
+        itemSelect.innerHTML = '<option value="">Todas las partidas</option>';
+        return;
+    }
+    
+    const budget = budgets.find(b => (b._id || b.id) === selectedBudgetId);
+    
+    if (budget && budget.items && budget.items.length > 0) {
+        itemGroup.style.display = 'block';
+        itemSelect.innerHTML = '<option value="">Todas las partidas</option>';
+        
+        budget.items.forEach((item, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `${item.name} (${formatCurrency(item.amount)})`;
+            itemSelect.appendChild(option);
+        });
+    } else {
+        itemGroup.style.display = 'none';
+        itemSelect.innerHTML = '<option value="">Todas las partidas</option>';
+    }
+}
+
+// Actualizar selector de patrimonio (para préstamos)
+function updatePatrimonioSelect(selectId = 'loanPatrimonio') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Ninguna</option>';
+    patrimonio.forEach(prop => {
+        const option = document.createElement('option');
+        option.value = prop._id || prop.id;
+        const typeNames = {
+            apartment: 'Apartamento',
+            house: 'Casa',
+            office: 'Oficina',
+            commercial: 'Comercial',
+            vehicle: 'Vehículo',
+            jewelry: 'Joyas',
+            art: 'Arte',
+            electronics: 'Electrónica',
+            other: 'Otro'
+        };
+        option.textContent = `${prop.name} (${typeNames[prop.type] || prop.type})`;
+        select.appendChild(option);
+    });
+    
+    // Restaurar valor seleccionado si existe
+    if (currentValue) {
+        select.value = currentValue;
+    }
+}
+
+// Actualizar selector de propiedades para presupuestos
+function updatePropertySelectForBudget(selectId = 'budgetProperty') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    const currentValue = select.value;
+    select.innerHTML = '<option value="">Seleccionar propiedad...</option>';
+    
+    // Solo mostrar propiedades inmobiliarias (apartment, house, office, commercial)
+    properties.filter(prop => 
+        ['apartment', 'house', 'office', 'commercial'].includes(prop.type)
+    ).forEach(prop => {
+        const option = document.createElement('option');
+        option.value = prop._id || prop.id;
+        const typeNames = {
+            apartment: 'Piso/Apartamento',
+            house: 'Casa',
+            office: 'Oficina',
+            commercial: 'Local Comercial',
+            other: 'Otro'
+        };
+        option.textContent = `${prop.name} (${typeNames[prop.type] || prop.type})`;
+        select.appendChild(option);
+    });
+    
+    // Restaurar valor seleccionado si existe
+    if (currentValue) {
+        select.value = currentValue;
+    }
+}
+
+// Función para alternar entre categoría, propiedad y patrimonio en presupuestos
+function toggleBudgetTarget() {
+    const targetType = document.getElementById('budgetTargetType').value;
+    const categoryGroup = document.getElementById('budgetCategoryGroup');
+    const categorySpecificGroup = document.getElementById('budgetCategorySpecificGroup');
+    const propertyGroup = document.getElementById('budgetPropertyGroup');
+    const patrimonioGroup = document.getElementById('budgetPatrimonioGroup');
+    const categoryGeneralSelect = document.getElementById('budgetCategoryGeneral');
+    const categorySpecificSelect = document.getElementById('budgetCategorySpecific');
+    const propertySelect = document.getElementById('budgetProperty');
+    const patrimonioSelect = document.getElementById('budgetPatrimonio');
+    
+    // Ocultar todos los grupos primero
+    if (categoryGroup) categoryGroup.style.display = 'none';
+    if (categorySpecificGroup) categorySpecificGroup.style.display = 'none';
+    if (propertyGroup) propertyGroup.style.display = 'none';
+    if (patrimonioGroup) patrimonioGroup.style.display = 'none';
+    
+    // Desactivar todos los campos requeridos
+    if (categoryGeneralSelect) categoryGeneralSelect.required = false;
+    if (categorySpecificSelect) categorySpecificSelect.required = false;
+    if (propertySelect) propertySelect.required = false;
+    if (patrimonioSelect) patrimonioSelect.required = false;
+    
+    // Limpiar valores
+    if (categoryGeneralSelect) categoryGeneralSelect.value = '';
+    if (categorySpecificSelect) categorySpecificSelect.value = '';
+    if (propertySelect) propertySelect.value = '';
+    if (patrimonioSelect) patrimonioSelect.value = '';
+    
+    if (targetType === 'category') {
+        if (categoryGroup) categoryGroup.style.display = 'block';
+        if (categorySpecificGroup) categorySpecificGroup.style.display = 'block';
+        if (categoryGeneralSelect) categoryGeneralSelect.required = true;
+        if (categorySpecificSelect) categorySpecificSelect.required = false; // Opcional
+    } else if (targetType === 'patrimonio') {
+        if (patrimonioGroup) patrimonioGroup.style.display = 'block';
+        if (patrimonioSelect) {
+        patrimonioSelect.required = true;
+        // Actualizar selector de patrimonio
+        updatePatrimonioSelect('budgetPatrimonio');
+        }
+    }
+}
+
+// ==================== PRESUPUESTOS ====================
+
+// Contador de partidas de presupuesto
+let budgetItemCounter = 0;
+
+// Agregar partida al presupuesto
+function addBudgetItem() {
+    const container = document.getElementById('budgetItemsContainer');
+    if (!container) return;
+    
+    const itemId = `budgetItem_${budgetItemCounter++}`;
+    const itemDiv = document.createElement('div');
+    itemDiv.id = itemId;
+    itemDiv.style.padding = '12px';
+    itemDiv.style.background = 'var(--bg-secondary)';
+    itemDiv.style.border = '1px solid var(--border-color)';
+    itemDiv.style.borderRadius = 'var(--radius)';
+    itemDiv.style.display = 'grid';
+    itemDiv.style.gridTemplateColumns = '2fr 1fr 1fr auto';
+    itemDiv.style.gap = '8px';
+    itemDiv.style.alignItems = 'end';
+    
+    itemDiv.innerHTML = `
+        <div>
+            <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Nombre de la Partida</label>
+            <input type="text" class="budget-item-name" placeholder="Ej: Alquiler" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius);">
+        </div>
+        <div>
+            <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Categoría General</label>
+            <select class="budget-item-category-general" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius);">
+                <option value="">Opcional</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; display: block;">Monto</label>
+            <input type="number" class="budget-item-amount" step="0.01" min="0" placeholder="0.00" required style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--radius);">
+        </div>
+        <div>
+            <button type="button" class="btn-danger" onclick="removeBudgetItem('${itemId}')" style="padding: 8px 12px; font-size: 12px;">×</button>
+        </div>
+    `;
+    
+    container.appendChild(itemDiv);
+    
+    // Inicializar categorías en el selector
+    const categorySelect = itemDiv.querySelector('.budget-item-category-general');
+    if (categorySelect) {
+        const budgetType = document.getElementById('budgetType')?.value || 'expense';
+        const categoryList = budgetType === 'income' ? categories.income : categories.expense;
+        categoryList.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            categorySelect.appendChild(option);
+        });
+    }
+    
+    // Actualizar total cuando cambie el monto
+    const amountInput = itemDiv.querySelector('.budget-item-amount');
+    if (amountInput) {
+        amountInput.addEventListener('input', updateBudgetItemsTotal);
+    }
+    
+    updateBudgetItemsTotal();
+    
+    // Mostrar total si hay partidas
+    const totalDiv = document.getElementById('budgetItemsTotal');
+    if (totalDiv) {
+        totalDiv.style.display = 'block';
+    }
+}
+
+// Eliminar partida del presupuesto
+function removeBudgetItem(itemId) {
+    const item = document.getElementById(itemId);
+    if (item) {
+        item.remove();
+        updateBudgetItemsTotal();
+        
+        // Ocultar total si no hay partidas
+        const container = document.getElementById('budgetItemsContainer');
+        const totalDiv = document.getElementById('budgetItemsTotal');
+        if (container && totalDiv && container.children.length === 0) {
+            totalDiv.style.display = 'none';
+        }
+    }
+}
+
+// Actualizar total de partidas
+function updateBudgetItemsTotal() {
+    const container = document.getElementById('budgetItemsContainer');
+    if (!container) return;
+    
+    let total = 0;
+    const amountInputs = container.querySelectorAll('.budget-item-amount');
+    amountInputs.forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        total += value;
+    });
+    
+    const totalAmountSpan = document.getElementById('budgetItemsTotalAmount');
+    if (totalAmountSpan) {
+        totalAmountSpan.textContent = formatCurrency(total);
+    }
+}
+
+// Agregar presupuesto
+async function addBudget() {
+    const targetType = document.getElementById('budgetTargetType').value;
+    const category_general = targetType === 'category' ? document.getElementById('budgetCategoryGeneral')?.value : null;
+    const category_specific = targetType === 'category' ? document.getElementById('budgetCategorySpecific')?.value : null;
+    const patrimonio_id = targetType === 'patrimonio' ? document.getElementById('budgetPatrimonio')?.value : null;
+    const amount = parseFloat(document.getElementById('budgetAmount').value);
+    const period_type = document.getElementById('budgetPeriodType').value;
+    const period_value = document.getElementById('budgetPeriodValue').value;
+    const duration = period_type === 'monthly' ? parseInt(document.getElementById('budgetDuration')?.value || '1') : 1;
+    
+    // Recopilar partidas del presupuesto
+    const items = [];
+    const itemsContainer = document.getElementById('budgetItemsContainer');
+    if (itemsContainer) {
+        const itemDivs = itemsContainer.querySelectorAll('[id^="budgetItem_"]');
+        itemDivs.forEach(itemDiv => {
+            const name = itemDiv.querySelector('.budget-item-name')?.value.trim();
+            const categoryGeneral = itemDiv.querySelector('.budget-item-category-general')?.value || null;
+            const itemAmount = parseFloat(itemDiv.querySelector('.budget-item-amount')?.value || 0);
+            
+            if (name && itemAmount > 0) {
+                // Buscar subcategoría si hay categoría general
+                let categorySpecific = null;
+                if (categoryGeneral) {
+                    const budgetType = document.getElementById('budgetType')?.value || 'expense';
+                    const categoryList = budgetType === 'income' ? categories.income : categories.expense;
+                    const category = categoryList.find(c => c.id === categoryGeneral);
+                    if (category && category.subcategories && category.subcategories.length > 0) {
+                        categorySpecific = category.subcategories[0]; // Usar primera subcategoría por defecto
+                    }
+                }
+                
+                items.push({
+                    name,
+                    category_general: categoryGeneral,
+                    category_specific: categorySpecific,
+                    amount: itemAmount
+                });
+            }
+        });
+    }
+    
+    // Validar campos requeridos
+    if (targetType === 'category') {
+        if (!category_general) {
+            showToast('Por favor selecciona categoría general', 'warning');
+            return;
+        }
+    } else if (targetType === 'patrimonio') {
+        if (!patrimonio_id) {
+            showToast('Por favor selecciona un patrimonio', 'warning');
+            return;
+        }
+    }
+    
+    if (!amount || !period_type || !period_value) {
+        showToast('Por favor completa todos los campos', 'warning');
+        return;
+    }
+    
+    if (isNaN(amount) || amount <= 0) {
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        showToast(getTranslation('messages.positiveAmount', lang), 'warning');
+        return;
+    }
+    
+    try {
+        // Si es mensual, crear presupuestos según la duración
+        if (period_type === 'monthly') {
+            if (duration === 0) {
+                // Duración indefinida: crear presupuesto solo para el mes inicial
+                const budget = await apiRequest('/budgets', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        category_general: category_general || null,
+                        category_specific: category_specific || null,
+                        patrimonio_id: patrimonio_id || null,
+                        amount,
+                        period_type,
+                        period_value,
+                        items: items.length > 0 ? items : undefined
+                    })
+                });
+                
+                await loadUserData();
+                updateDisplay();
+                
+                alert(`✅ Presupuesto mensual establecido indefinidamente desde ${period_value}`);
+            } else {
+                // Duración específica: crear múltiples presupuestos
+                const startDate = new Date(period_value + '-01');
+                const budgetsCreated = [];
+                
+                for (let i = 0; i < duration; i++) {
+                    const currentDate = new Date(startDate);
+                    currentDate.setMonth(startDate.getMonth() + i);
+                    const monthValue = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+                    
+                    try {
+                        const budget = await apiRequest('/budgets', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                category_general: category_general || null,
+                                category_specific: category_specific || null,
+                                property_id: property_id || null,
+                                patrimonio_id: patrimonio_id || null,
+                                amount,
+                                period_type,
+                                period_value: monthValue,
+                                items: items.length > 0 ? items : undefined
+                            })
+                        });
+                        budgetsCreated.push(monthValue);
+                    } catch (error) {
+                        console.error(`Error creando presupuesto para ${monthValue}:`, error);
+                        alert(`Error al crear presupuesto para ${monthValue}: ${error.message}`);
+                    }
+                }
+                
+                await loadUserData();
+                updateDisplay();
+                
+                alert(`✅ Presupuesto establecido para ${budgetsCreated.length} mes(es) exitosamente`);
+            }
+            
+            // Resetear formulario y ocultarlo
+            const budgetForm = document.getElementById('budgetForm');
+            if (budgetForm) {
+                budgetForm.reset();
+                const budgetPeriodType = document.getElementById('budgetPeriodType');
+                if (budgetPeriodType) budgetPeriodType.value = 'monthly';
+                const budgetPeriodValue = document.getElementById('budgetPeriodValue');
+                if (budgetPeriodValue) {
+                    const now = new Date();
+                    budgetPeriodValue.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                }
+                const budgetDuration = document.getElementById('budgetDuration');
+                if (budgetDuration) budgetDuration.value = '1';
+                // Ocultar formulario después de agregar exitosamente
+                if (budgetForm.style.display !== 'none') {
+                    toggleForm('budgetForm', 'toggleBudgetFormBtn');
+                }
+            }
+        } else {
+            // Para otros tipos de período o duración 0 (indefinido), crear uno solo
+            const budget = await apiRequest('/budgets', {
+                method: 'POST',
+                body: JSON.stringify({
+                    category_general: category_general || null,
+                    category_specific: category_specific || null,
+                    property_id: property_id || null,
+                    patrimonio_id: patrimonio_id || null,
+                    amount,
+                    period_type,
+                    period_value,
+                    items: items.length > 0 ? items : undefined
+                })
+            });
+            
+            await loadUserData();
+            updateDisplay();
+            
+            // Resetear formulario y ocultarlo
+            const budgetForm = document.getElementById('budgetForm');
+            if (budgetForm) {
+                budgetForm.reset();
+                const budgetPeriodType = document.getElementById('budgetPeriodType');
+                if (budgetPeriodType) budgetPeriodType.value = 'monthly';
+                const budgetPeriodValue = document.getElementById('budgetPeriodValue');
+                if (budgetPeriodValue) {
+                    const now = new Date();
+                    budgetPeriodValue.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                }
+                // Ocultar formulario después de agregar exitosamente
+                if (budgetForm.style.display !== 'none') {
+                    toggleForm('budgetForm', 'toggleBudgetFormBtn');
+                }
+            }
+            
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            alert('✅ ' + getTranslation('messages.budgetCreated', lang));
+        }
+    } catch (error) {
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        alert(getTranslation('messages.budgetCreateError', lang) + ': ' + error.message);
+    }
+}
+
+// Función auxiliar para obtener el lunes de la semana
+function getWeekStartDate(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Ajustar al lunes
+    const monday = new Date(d.setDate(diff));
+    return monday.toISOString().split('T')[0];
+}
+
+// Actualizar presupuestos
+function updateBudgets() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const grid = document.getElementById('budgetsGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const currentYear = now.getFullYear().toString();
+    const currentWeek = getWeekStartDate(now);
+    
+    // Filtrar presupuestos activos (del período actual)
+    const activeBudgets = budgets.filter(b => {
+        if (b.period_type === 'monthly') {
+            return b.period_value === currentMonth;
+        } else if (b.period_type === 'yearly') {
+            return b.period_value === currentYear;
+        } else if (b.period_type === 'weekly') {
+            return b.period_value === currentWeek;
+        }
+        return false;
+    });
+    
+    if (activeBudgets.length === 0) {
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay presupuestos activos</p>`;
+        return;
+    }
+    
+    // Calcular transacciones por categoría según período (ingresos y gastos)
+    const transactionsByCategory = {};
+    transactions.forEach(t => {
+        const tDate = new Date(t.date);
+        
+        // Verificar si la transacción está en algún período activo
+        const isInActivePeriod = activeBudgets.some(b => {
+            if (b.period_type === 'monthly') {
+                return tDate.toISOString().startsWith(b.period_value);
+            } else if (b.period_type === 'yearly') {
+                return tDate.getFullYear().toString() === b.period_value;
+            } else if (b.period_type === 'weekly') {
+                const weekStart = new Date(b.period_value);
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                return tDate >= weekStart && tDate <= weekEnd;
+            }
+            return false;
+        });
+        
+        if (isInActivePeriod) {
+            // Usar combinación de categoría general y específica como clave
+            const catKey = `${t.categoryGeneral || ''}_${t.categorySpecific || ''}`;
+            if (!transactionsByCategory[catKey]) {
+                transactionsByCategory[catKey] = { income: 0, expense: 0, categoryGeneral: t.categoryGeneral, categorySpecific: t.categorySpecific };
+            }
+            if (t.type === 'income') {
+                transactionsByCategory[catKey].income += t.amount;
+            } else {
+                transactionsByCategory[catKey].expense += Math.abs(t.amount);
+            }
+        }
+    });
+    
+    activeBudgets.forEach(budget => {
+        // Determinar si es presupuesto de categoría, propiedad o patrimonio
+        let categoryName = '';
+        let propertyName = '';
+        let patrimonioName = '';
+        let isIncome = false;
+        
+        if (budget.property_id) {
+            // Presupuesto asociado a propiedad específica
+            const propertyItem = properties.find(p => (p._id || p.id) === budget.property_id);
+            propertyName = propertyItem ? propertyItem.name : 'Propiedad desconocida';
+        } else if (budget.patrimonio_id) {
+            // Presupuesto asociado a patrimonio
+            const patrimonioItem = patrimonio.find(p => (p._id || p.id) === budget.patrimonio_id);
+            patrimonioName = patrimonioItem ? patrimonioItem.name : 'Patrimonio desconocido';
+        } else if (budget.category_general && budget.category_specific) {
+            // Presupuesto asociado a categoría general y específica
+            let category = categories.expense.find(c => c.id === budget.category_general);
+            if (!category) {
+                category = categories.income.find(c => c.id === budget.category_general);
+                isIncome = true;
+            }
+            const categoryNameBase = category ? category.name : budget.category_general;
+            categoryName = `${categoryNameBase} - ${budget.category_specific}`;
+        } else if (budget.category_id) {
+            // Compatibilidad con presupuestos antiguos que solo tienen category_id
+            let category = categories.expense.find(c => c.id === budget.category_id);
+        if (!category) {
+            category = categories.income.find(c => c.id === budget.category_id);
+            isIncome = true;
+        }
+            categoryName = category ? category.name : budget.category_id;
+        }
+        
+        const displayName = propertyName || patrimonioName || categoryName;
+        // Calcular transacciones según tipo de presupuesto
+        // PRIORIDAD: Usar transacciones asociadas directamente al presupuesto (budget_id)
+        const budgetId = budget._id || budget.id;
+        const budgetTransactions = transactions.filter(t => {
+            const tBudgetId = t.budget_id || t.budgetId;
+            // Comparar como strings para evitar problemas con ObjectId
+            if (!tBudgetId) return false;
+            const budgetIdStr = budgetId ? budgetId.toString() : '';
+            const tBudgetIdStr = tBudgetId ? tBudgetId.toString() : '';
+            if (budgetIdStr !== tBudgetIdStr) return false;
+            
+            // Verificar que esté en el período correcto
+                const tDate = new Date(t.date);
+                if (budget.period_type === 'monthly') {
+                    const budgetMonth = new Date(budget.period_value + '-01');
+                return tDate.getMonth() === budgetMonth.getMonth() && 
+                                      tDate.getFullYear() === budgetMonth.getFullYear();
+                } else if (budget.period_type === 'yearly') {
+                return tDate.getFullYear() === parseInt(budget.period_value);
+                } else if (budget.period_type === 'weekly') {
+                    const weekStart = new Date(budget.period_value);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                return tDate >= weekStart && tDate <= weekEnd;
+                }
+            return false;
+        });
+        
+        let actual = 0;
+        
+        // SIEMPRE usar solo transacciones asociadas directamente al presupuesto (budget_id)
+        // No usar fallback por categoría para evitar confusión
+        actual = Math.abs(budgetTransactions
+            .filter(t => (isIncome ? t.type === 'income' : t.type === 'expense'))
+            .reduce((sum, t) => sum + Math.abs(t.amount), 0));
+        
+        // NOTA: Se eliminó el fallback por categoría para que solo cuente transacciones explícitamente asociadas
+        // Si no hay transacciones asociadas, actual será 0
+        const difference = isIncome ? (actual - budget.amount) : (budget.amount - actual);
+        const percentage = budget.amount > 0 ? (actual / budget.amount) * 100 : 0;
+        const isOverBudget = isIncome ? (actual < budget.amount) : (actual > budget.amount);
+        
+        // Obtener etiqueta del período
+        let periodLabel = '';
+        if (budget.period_type === 'weekly') {
+            periodLabel = getTranslation('budget.weekly', lang);
+        } else if (budget.period_type === 'monthly') {
+            periodLabel = getTranslation('budget.monthly', lang);
+        } else if (budget.period_type === 'yearly') {
+            periodLabel = getTranslation('budget.yearly', lang);
+        }
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.borderLeft = `4px solid ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'}`;
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; gap: 12px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
+                <div style="flex: 1 1 auto; min-width: 60%; max-width: 100%;">
+                    <h3 style="margin: 0 !important; padding: 0 !important; font-size: clamp(16px, 4vw, 20px) !important; font-weight: 700 !important; color: var(--text-primary) !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important; max-width: 100% !important; box-sizing: border-box !important;">${displayName || 'Sin nombre'}</h3>
+                    ${propertyName ? `<small style="font-size: 11px; color: var(--gray-500); margin-top: 4px; display: block;">Propiedad</small>` : ''}
+                    ${patrimonioName ? `<small style="font-size: 11px; color: var(--gray-500); margin-top: 4px; display: block;">${getTranslation('common.patrimony', lang)}</small>` : ''}
+                </div>
+                <span style="font-size: 11px; padding: 4px 8px; background: var(--gray-100); border-radius: var(--radius); color: var(--gray-700); font-weight: 600; flex-shrink: 0; white-space: nowrap; margin-top: 2px;">${periodLabel}</span>
+            </div>
+            <div style="margin: 12px 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 13px; color: var(--gray-600);">${getTranslation('budgets.budget', lang)}:</span>
+                    <span style="font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 13px; color: var(--gray-600);">${isIncome ? 'Ingresado:' : 'Gastado:'}</span>
+                    <span style="font-weight: 600; color: ${isOverBudget ? 'var(--danger)' : 'var(--gray-900)'};">${formatCurrency(actual)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                    <span style="font-size: 13px; color: var(--gray-600);">${isIncome ? getTranslation('budget.missing', lang) + ':' : getTranslation('budget.remaining', lang) + ':'}</span>
+                    <span style="font-weight: 700; font-size: 16px; color: ${difference >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                        ${formatCurrency(Math.abs(difference))}
+                    </span>
+                </div>
+            </div>
+            <div style="margin: 12px 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 12px; color: var(--gray-600);">Progreso:</span>
+                    <span style="font-size: 12px; font-weight: 600; color: ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--gray-700)'};">
+                        ${percentage.toFixed(1)}%
+                    </span>
+                </div>
+                <div class="envelope-progress">
+                    <div class="envelope-progress-bar" style="width: ${Math.min(percentage, 100)}%; background: ${isOverBudget ? 'var(--danger)' : percentage > 80 ? 'var(--warning)' : 'var(--success)'};"></div>
+                </div>
+            </div>
+            ${isOverBudget ? `
+                <div style="margin-top: 12px; padding: 12px 16px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.15) 100%); border: 1.5px solid rgba(239, 68, 68, 0.3); border-left: 4px solid var(--danger); border-radius: 10px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);">
+                    <span style="color: var(--danger); font-size: 13px; font-weight: 700; flex: 1;">${isIncome ? 'Por debajo del presupuesto' : 'Presupuesto excedido'}</span>
+                </div>
+            ` : ''}
+            ${budget.items && budget.items.length > 0 ? `
+                <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">📋 Partidas del Presupuesto:</div>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        ${budget.items.map(item => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: var(--bg-primary); border-radius: 4px;">
+                                <span style="font-size: 12px; color: var(--text-secondary);">${item.name}</span>
+                                <span style="font-size: 12px; font-weight: 600; color: var(--text-primary);">${formatCurrency(item.amount)}</span>
+                            </div>
+                        `).join('')}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; margin-top: 4px; border-top: 1px solid var(--border-color); font-weight: 600;">
+                            <span style="font-size: 12px; color: var(--text-primary);">Total Partidas:</span>
+                            <span style="font-size: 13px; color: var(--primary);">${formatCurrency(budget.items.reduce((sum, item) => sum + item.amount, 0))}</span>
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
+            <div style="margin-top: 8px; padding: 6px; background: ${isIncome ? 'var(--success-light)' : 'var(--gray-50)'}; border-radius: var(--radius); font-size: 11px; color: var(--gray-700);">
+                ${isIncome ? 'Ingreso' : 'Gasto'}
+            </div>
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editBudget('${budget._id || budget.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deleteBudget('${budget._id || budget.id}')" style="flex: 1;">Eliminar</button>
+            </div>
+            ${getBudgetTransactionsSection(budget, isIncome)}
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Obtener sección de transacciones del presupuesto
+function getBudgetTransactionsSection(budget, isIncome) {
+    const budgetId = budget._id || budget.id;
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Filtrar transacciones asociadas a este presupuesto
+    const budgetTransactions = transactions.filter(t => {
+        const tBudgetId = t.budget_id || t.budgetId;
+        if (!tBudgetId || tBudgetId.toString() !== budgetId.toString()) return false;
+        
+        // Verificar que esté en el período correcto
+        const tDate = new Date(t.date);
+        if (budget.period_type === 'monthly') {
+            const budgetMonth = new Date(budget.period_value + '-01');
+            return tDate.getMonth() === budgetMonth.getMonth() && 
+                   tDate.getFullYear() === budgetMonth.getFullYear();
+        } else if (budget.period_type === 'yearly') {
+            return tDate.getFullYear() === parseInt(budget.period_value);
+        } else if (budget.period_type === 'weekly') {
+            const weekStart = new Date(budget.period_value);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            return tDate >= weekStart && tDate <= weekEnd;
+        }
+        return false;
+    });
+    
+    // Agregar información de si es del mes actual
+    const transactionsWithMonthInfo = budgetTransactions.map(t => {
+        const tDate = new Date(t.date);
+        const isCurrentMonth = tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+        return { ...t, isCurrentMonth, transactionDate: tDate };
+    });
+    
+    // Ordenar por fecha (más recientes primero)
+    transactionsWithMonthInfo.sort((a, b) => b.transactionDate - a.transactionDate);
+    
+    if (transactionsWithMonthInfo.length === 0) {
+        return `
+            <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">📊 Transacciones</div>
+                <div style="font-size: 12px; color: var(--text-secondary); text-align: center; padding: 8px;">No hay transacciones asociadas a este presupuesto</div>
+                <div style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 8px; font-style: italic;">
+                    Asigna transacciones a este presupuesto desde el formulario de transacciones
+                </div>
+            </div>
+        `;
+    }
+    
+    // Si hay partidas, agrupar por partida
+    if (budget.items && budget.items.length > 0) {
+        const transactionsByItem = {};
+        const transactionsWithoutItem = [];
+        
+        transactionsWithMonthInfo.forEach(t => {
+            const itemIndex = t.budget_item_index !== null && t.budget_item_index !== undefined ? parseInt(t.budget_item_index) : null;
+            if (itemIndex !== null && budget.items[itemIndex]) {
+                if (!transactionsByItem[itemIndex]) {
+                    transactionsByItem[itemIndex] = [];
+                }
+                transactionsByItem[itemIndex].push(t);
+            } else {
+                transactionsWithoutItem.push(t);
+            }
+        });
+        
+        let html = `
+            <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <span style="flex: 1; min-width: 200px;">📊 Transacciones (${transactionsWithMonthInfo.length})</span>
+                    <button onclick="toggleBudgetTransactions('${budgetId}')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; min-height: 36px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'" ontouchstart="this.style.background='var(--primary-dark)'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--primary)'; this.style.transform='scale(1)'">Ver/Ocultar</button>
+                </div>
+                <div id="budgetTransactions_${budgetId}" style="display: block;">
+        `;
+        
+        // Mostrar transacciones agrupadas por partida
+        budget.items.forEach((item, index) => {
+            const itemTransactions = transactionsByItem[index] || [];
+            if (itemTransactions.length > 0) {
+                const itemTotal = itemTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                
+                // Agrupar por mes dentro de la partida
+                const itemTransactionsByMonth = {};
+                itemTransactions.forEach(t => {
+                    const monthKey = `${t.transactionDate.getFullYear()}-${String(t.transactionDate.getMonth() + 1).padStart(2, '0')}`;
+                    const monthName = t.transactionDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                    if (!itemTransactionsByMonth[monthKey]) {
+                        itemTransactionsByMonth[monthKey] = {
+                            name: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+                            transactions: [],
+                            isCurrentMonth: t.isCurrentMonth
+                        };
+                    }
+                    itemTransactionsByMonth[monthKey].transactions.push(t);
+                });
+                
+                html += `
+                    <div style="margin-bottom: 12px; padding: 8px; background: var(--bg-primary); border-radius: 4px; border-left: 3px solid var(--primary);">
+                        <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">
+                            ${item.name} (${itemTransactions.length} transacciones) - Total: ${formatCurrency(itemTotal)}
+                        </div>
+                `;
+                
+                // Ordenar meses (más reciente primero)
+                const sortedItemMonths = Object.keys(itemTransactionsByMonth).sort().reverse();
+                
+                sortedItemMonths.forEach(monthKey => {
+                    const monthData = itemTransactionsByMonth[monthKey];
+                    const monthTotal = monthData.transactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                    
+                    html += `
+                        <div style="margin-bottom: 6px; margin-left: 4px;">
+                            <div style="font-size: 11px; font-weight: 600; color: ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--text-secondary)'}; margin-bottom: 4px; padding: 3px 6px; background: ${monthData.isCurrentMonth ? 'rgba(var(--primary-rgb), 0.1)' : 'var(--bg-secondary)'}; border-radius: 3px; border-left: 2px solid ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'};">
+                                ${monthData.isCurrentMonth ? '📅 ' : ''}${monthData.name} (${monthData.transactions.length}) - ${formatCurrency(monthTotal)}
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 8px;">
+                    `;
+                    
+                    monthData.transactions.forEach(t => {
+                        html += getTransactionRow(t, budgetId);
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                    </div>
+                `;
+            }
+        });
+        
+        // Mostrar transacciones sin partida asignada
+        if (transactionsWithoutItem.length > 0) {
+            const noItemTotal = transactionsWithoutItem.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            
+            // Agrupar por mes
+            const noItemTransactionsByMonth = {};
+            transactionsWithoutItem.forEach(t => {
+                const monthKey = `${t.transactionDate.getFullYear()}-${String(t.transactionDate.getMonth() + 1).padStart(2, '0')}`;
+                const monthName = t.transactionDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                if (!noItemTransactionsByMonth[monthKey]) {
+                    noItemTransactionsByMonth[monthKey] = {
+                        name: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+                        transactions: [],
+                        isCurrentMonth: t.isCurrentMonth
+                    };
+                }
+                noItemTransactionsByMonth[monthKey].transactions.push(t);
+            });
+            
+            html += `
+                <div style="margin-bottom: 12px; padding: 8px; background: var(--bg-primary); border-radius: 4px; border-left: 3px solid var(--gray-400);">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">
+                        Sin partida asignada (${transactionsWithoutItem.length} transacciones) - Total: ${formatCurrency(noItemTotal)}
+                    </div>
+            `;
+            
+            // Ordenar meses (más reciente primero)
+            const sortedNoItemMonths = Object.keys(noItemTransactionsByMonth).sort().reverse();
+            
+            sortedNoItemMonths.forEach(monthKey => {
+                const monthData = noItemTransactionsByMonth[monthKey];
+                const monthTotal = monthData.transactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                
+                html += `
+                    <div style="margin-bottom: 6px; margin-left: 4px;">
+                        <div style="font-size: 11px; font-weight: 600; color: ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--text-secondary)'}; margin-bottom: 4px; padding: 3px 6px; background: ${monthData.isCurrentMonth ? 'rgba(var(--primary-rgb), 0.1)' : 'var(--bg-secondary)'}; border-radius: 3px; border-left: 2px solid ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'};">
+                            ${monthData.isCurrentMonth ? '📅 ' : ''}${monthData.name} (${monthData.transactions.length}) - ${formatCurrency(monthTotal)}
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 8px;">
+                `;
+                
+                monthData.transactions.forEach(t => {
+                    html += getTransactionRow(t, budgetId);
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                </div>
+            `;
+        }
+        
+        html += `
+                </div>
+            </div>
+        `;
+        
+        return html;
+    } else {
+        // Sin partidas, agrupar por mes y mostrar todas las transacciones
+        const total = transactionsWithMonthInfo.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+        
+        // Agrupar transacciones por mes
+        const transactionsByMonth = {};
+        transactionsWithMonthInfo.forEach(t => {
+            const monthKey = `${t.transactionDate.getFullYear()}-${String(t.transactionDate.getMonth() + 1).padStart(2, '0')}`;
+            const monthName = t.transactionDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+            if (!transactionsByMonth[monthKey]) {
+                transactionsByMonth[monthKey] = {
+                    name: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+                    transactions: [],
+                    isCurrentMonth: t.isCurrentMonth
+                };
+            }
+            transactionsByMonth[monthKey].transactions.push(t);
+        });
+        
+        let html = `
+            <div style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius); border: 1px solid var(--border-color);">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <span style="flex: 1; min-width: 200px;">📊 Transacciones (${transactionsWithMonthInfo.length}) - Total: ${formatCurrency(total)}</span>
+                    <button onclick="toggleBudgetTransactions('${budgetId}')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; min-height: 36px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'" ontouchstart="this.style.background='var(--primary-dark)'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--primary)'; this.style.transform='scale(1)'">Ver/Ocultar</button>
+                </div>
+                <div id="budgetTransactions_${budgetId}" style="display: block;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+        `;
+        
+        // Ordenar meses (más reciente primero)
+        const sortedMonths = Object.keys(transactionsByMonth).sort().reverse();
+        
+        sortedMonths.forEach(monthKey => {
+            const monthData = transactionsByMonth[monthKey];
+            const monthTotal = monthData.transactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            
+            html += `
+                <div style="margin-bottom: 8px;">
+                    <div style="font-size: 12px; font-weight: 600; color: ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--text-secondary)'}; margin-bottom: 6px; padding: 4px 8px; background: ${monthData.isCurrentMonth ? 'rgba(var(--primary-rgb), 0.1)' : 'var(--bg-primary)'}; border-radius: 4px; border-left: 3px solid ${monthData.isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'};">
+                        ${monthData.isCurrentMonth ? '📅 ' : ''}${monthData.name} (${monthData.transactions.length} transacciones) - ${formatCurrency(monthTotal)}
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 8px;">
+            `;
+            
+            monthData.transactions.forEach(t => {
+                html += getTransactionRow(t, budgetId);
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return html;
+    }
+}
+
+// Obtener fila de transacción para mostrar en presupuesto
+function getTransactionRow(transaction, budgetId) {
+    const date = transaction.transactionDate || new Date(transaction.date);
+    const amount = Math.abs(transaction.amount);
+    const isExpense = transaction.type === 'expense';
+    const isCurrentMonth = transaction.isCurrentMonth !== undefined ? transaction.isCurrentMonth : 
+        (date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear());
+    
+    // Buscar nombre de categoría
+    let categoryName = transaction.categorySpecific || transaction.category_specific || 'Sin categoría';
+    
+    // Buscar nombre de cuenta
+    let accountName = '-';
+    if (transaction.account_id) {
+        const account = accounts.find(a => (a._id || a.id) === transaction.account_id);
+        accountName = account ? account.name : '-';
+    }
+    
+    // Formatear fecha
+    const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    
+    return `
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: ${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}; border-radius: 8px; border: 1px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}; border-left: 3px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'}; margin-bottom: 6px; transition: all 0.2s;" onmouseover="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.08)' : 'var(--bg-primary)'}'; this.style.borderColor='var(--primary)'" onmouseout="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}'; this.style.borderColor='${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}'">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; width: 100%;">
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
+                        ${dateStr}
+                        ${isCurrentMonth ? '<span style="font-size: 10px; background: var(--primary); color: white; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Este mes</span>' : ''}
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">${categoryName}</div>
+                    ${transaction.description ? `<div style="font-size: 11px; color: var(--text-secondary); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">${transaction.description}</div>` : ''}
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;">
+                    <span style="font-size: 14px; font-weight: 700; color: ${isExpense ? 'var(--danger)' : 'var(--success)'}; white-space: nowrap;">
+                        ${isExpense ? '-' : '+'}${formatCurrency(amount)}
+                    </span>
+                    <button onclick="editTransaction('${transaction._id || transaction.id}')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); min-width: 80px; min-height: 36px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.2)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.15)'" ontouchstart="this.style.background='var(--primary-dark)'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--primary)'; this.style.transform='scale(1)'">Editar</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Toggle para mostrar/ocultar transacciones del presupuesto
+function toggleBudgetTransactions(budgetId) {
+    const transactionsDiv = document.getElementById(`budgetTransactions_${budgetId}`);
+    if (transactionsDiv) {
+        transactionsDiv.style.display = transactionsDiv.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Editar presupuesto - Abre modal con formulario pre-rellenado
+async function editBudget(id) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const budget = budgets.find(b => (b._id || b.id) === id);
+    if (!budget) return;
+    
+    currentEditingBudgetId = id;
+    
+    // Crear o obtener modal
+    let modal = document.getElementById('editBudgetModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editBudgetModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Presupuesto</h2>
+                        <button onclick="closeEditBudgetModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editBudgetForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px;">
+                    <div class="form-group">
+                        <label for="editBudgetAmount">Monto del Presupuesto (€)</label>
+                        <input type="number" id="editBudgetAmount" step="0.01" min="0" required>
+                        <small>Monto del presupuesto para esta categoría</small>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditBudgetModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">${getTranslation('forms.updateBudget', lang)}</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditBudgetModal();
+            }
+        });
+        
+        const form = document.getElementById('editBudgetForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateBudgetFromModal();
+            });
+        }
+    }
+    
+    // Pre-llenar formulario
+    const amountEl = document.getElementById('editBudgetAmount');
+    if (!amountEl) {
+        showToast('Error: No se encontró el campo del formulario', 'error');
+        return;
+    }
+    
+    amountEl.value = budget.amount || 0;
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de presupuesto
+function closeEditBudgetModal() {
+    const modal = document.getElementById('editBudgetModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingBudgetId = null;
+    }
+}
+
+// Actualizar presupuesto desde modal
+async function updateBudgetFromModal() {
+    if (!currentEditingBudgetId) return;
+    
+    try {
+        const budget = budgets.find(b => (b._id || b.id) === currentEditingBudgetId);
+        if (!budget) return;
+        
+        const amountEl = document.getElementById('editBudgetAmount');
+        if (!amountEl) {
+            showToast('Error: No se encontró el campo del formulario', 'error');
+            return;
+        }
+        
+        const amountValue = parseFloat(amountEl.value);
+        if (isNaN(amountValue) || amountValue <= 0) {
+            showToast('Por favor ingresa un monto válido', 'warning');
+            return;
+        }
+        
+        showLoader('Actualizando presupuesto...');
+        await apiRequest(`/budgets/${currentEditingBudgetId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                amount: amountValue,
+                category: budget.category,
+                period_type: budget.period_type,
+                period_value: budget.period_value
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        closeEditBudgetModal();
+        showToast('Presupuesto actualizado exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar presupuesto: ' + error.message, 'error');
+    }
+}
+
+window.closeEditBudgetModal = closeEditBudgetModal;
+
+// Eliminar presupuesto
+async function deleteBudget(id) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const confirmed = await showConfirm(
+        getTranslation('budgets.deleteBudget', lang),
+        getTranslation('budgets.deleteConfirm', lang),
+        getTranslation('budgets.delete', lang),
+        getTranslation('common.cancel', lang) || 'Cancelar'
+    );
+    if (!confirmed) return;
+    
+    try {
+        showLoader('Eliminando presupuesto...');
+        await apiRequest(`/budgets/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        showToast(getTranslation('messages.budgetDeleted', lang), 'success');
+    } catch (error) {
+        hideLoader();
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        showToast(getTranslation('messages.budgetError', lang) + ': ' + error.message, 'error');
+    }
+}
+
+// Exponer funciones globales
+window.deleteBudget = deleteBudget;
+window.editBudget = editBudget;
+
+// Actualizar filtro de meses
+function updateMonthFilter() {
+    const select = document.getElementById('filterMonth');
+    if (!select) return;
+    
+    const months = new Set();
+    
+    transactions.forEach(t => {
+        const date = new Date(t.date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        months.add(monthKey);
+    });
+    
+    const sortedMonths = Array.from(months).sort().reverse();
+    select.innerHTML = '<option value="">Todos los meses</option>';
+    
+    sortedMonths.forEach(month => {
+        const [year, monthNum] = month.split('-');
+        const date = new Date(year, parseInt(monthNum) - 1);
+        const option = document.createElement('option');
+        option.value = month;
+        option.textContent = date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long' });
+        select.appendChild(option);
+    });
+}
+
+// Eliminar transacción
+async function deleteTransaction(id) {
+    const confirmed = await showConfirm(
+        getTranslation('transactions.deleteTransaction', localStorage.getItem('veedor_language') || 'es'),
+        getTranslation('transactions.deleteConfirm', localStorage.getItem('veedor_language') || 'es'),
+        getTranslation('transactions.delete', localStorage.getItem('veedor_language') || 'es'),
+        getTranslation('common.cancel', localStorage.getItem('veedor_language') || 'es') || 'Cancelar'
+    );
+    if (!confirmed) return;
+    
+    try {
+        // Obtener transacción antes de eliminarla para revertir cambio en saldo
+        const transaction = transactions.find(t => (t._id || t.id) === id);
+        
+        showLoader('Eliminando transacción...');
+        await apiRequest(`/transactions/${id}`, { method: 'DELETE' });
+        
+        // Revertir cambio en saldo de cuenta si la transacción estaba asociada a una cuenta
+        if (transaction && transaction.account_id) {
+            try {
+                const account = accounts.find(acc => (acc._id || acc.id) === transaction.account_id);
+                if (account) {
+                    // Revertir: si era ingreso resta, si era gasto suma
+                    const amountChange = transaction.type === 'income' ? -Math.abs(transaction.amount) : Math.abs(transaction.amount);
+                    const newBalance = (account.balance || 0) + amountChange;
+                    
+                    // Actualizar saldo en el servidor
+                    await apiRequest(`/accounts/${transaction.account_id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ balance: newBalance })
+                    });
+                    
+                    // Actualizar saldo localmente
+                    account.balance = newBalance;
+                }
+            } catch (error) {
+                console.error('Error al revertir saldo de cuenta:', error);
+                // No fallar la eliminación si falla la actualización del saldo
+            }
+        }
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Transacción eliminada exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al eliminar transacción: ' + error.message, 'error');
+    }
+}
+
+// Editar transacción - Abre modal con formulario pre-rellenado
+async function editTransaction(id) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const transaction = transactions.find(t => (t._id || t.id) === id);
+    if (!transaction) return;
+    
+    currentEditingTransactionId = id;
+    
+    // Crear o obtener modal
+    let modal = document.getElementById('editTransactionModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editTransactionModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px;">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Transacción</h2>
+                        <button onclick="closeEditTransactionModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editTransactionForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editTransactionType">Tipo</label>
+                            <select id="editTransactionType" required>
+                                <option value="income">Ingreso</option>
+                                <option value="expense">Gasto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editTransactionDate">Fecha</label>
+                            <input type="date" id="editTransactionDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editTransactionAmount">Monto (€)</label>
+                            <input type="number" id="editTransactionAmount" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editTransactionCategoryGeneral">Categoría General</label>
+                            <select id="editTransactionCategoryGeneral" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editTransactionCategorySpecific">Categoría Específica</label>
+                            <select id="editTransactionCategorySpecific" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editTransactionEnvelope">Sobre (Opcional)</label>
+                            <select id="editTransactionEnvelope">
+                                <option value="">Ninguno</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editTransactionAccount">Cuenta Bancaria (Opcional)</label>
+                            <select id="editTransactionAccount">
+                                <option value="">Ninguna</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editTransactionInvestment">Inversión (Opcional)</label>
+                            <select id="editTransactionInvestment">
+                                <option value="">Ninguna</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editTransactionProperty">Propiedad (Opcional)</label>
+                            <select id="editTransactionProperty">
+                                <option value="">Ninguna</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editTransactionLoan">Préstamo (Opcional)</label>
+                            <select id="editTransactionLoan">
+                                <option value="">Ninguno</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="editTransactionDescription">Descripción</label>
+                            <input type="text" id="editTransactionDescription" placeholder="Ej: Compra en supermercado">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditTransactionModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">${getTranslation('forms.updateTransaction', lang)}</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Event listener para cerrar al hacer clic fuera
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditTransactionModal();
+            }
+        });
+        
+        // Event listener para el formulario
+        const form = document.getElementById('editTransactionForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateTransactionFromModal();
+            });
+        }
+    }
+    
+    // Pre-llenar formulario
+    const typeEl = document.getElementById('editTransactionType');
+    const dateEl = document.getElementById('editTransactionDate');
+    const amountEl = document.getElementById('editTransactionAmount');
+    const categoryGeneralEl = document.getElementById('editTransactionCategoryGeneral');
+    const categorySpecificEl = document.getElementById('editTransactionCategorySpecific');
+    const envelopeEl = document.getElementById('editTransactionEnvelope');
+    const accountIdEl = document.getElementById('editTransactionAccount');
+    const investmentIdEl = document.getElementById('editTransactionInvestment');
+    const propertyIdEl = document.getElementById('editTransactionProperty');
+    const descriptionEl = document.getElementById('editTransactionDescription');
+    
+    if (!typeEl || !dateEl || !amountEl || !categoryGeneralEl || !categorySpecificEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
+        return;
+    }
+    
+    // Pre-llenar campos básicos
+    typeEl.value = transaction.type;
+    dateEl.value = transaction.date;
+    amountEl.value = Math.abs(transaction.amount);
+    
+    // Llenar categorías
+    initializeCategories();
+    setTimeout(() => {
+        const type = transaction.type;
+        const cats = type === 'income' ? categories.income : categories.expense;
+        
+        categoryGeneralEl.innerHTML = '<option value="">Seleccionar...</option>';
+        cats.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            if (cat.id === transaction.categoryGeneral) option.selected = true;
+            categoryGeneralEl.appendChild(option);
+        });
+        
+        // Actualizar categorías específicas
+        const selectedCat = cats.find(c => c.id === transaction.categoryGeneral);
+        if (selectedCat) {
+            categorySpecificEl.innerHTML = '<option value="">Seleccionar...</option>';
+            selectedCat.subcategories.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.textContent = sub;
+                if (sub === transaction.categorySpecific) option.selected = true;
+                categorySpecificEl.appendChild(option);
+            });
+        }
+        
+        // Llenar selectores opcionales
+        updateEnvelopeSelect('editTransactionEnvelope');
+        updateAccountSelect('editTransactionAccount');
+        updateInvestmentSelect('editTransactionInvestment');
+        updatePropertySelect('editTransactionProperty');
+        updateLoanSelect('editTransactionLoan');
+        
+        setTimeout(() => {
+            if (transaction.envelope_id && envelopeEl) {
+                envelopeEl.value = transaction.envelope_id;
+            }
+            if (transaction.account_id && accountIdEl) {
+                accountIdEl.value = transaction.account_id;
+            }
+            if (transaction.investment_id && investmentIdEl) {
+                investmentIdEl.value = transaction.investment_id;
+            }
+            if (transaction.property_id && propertyIdEl) {
+                propertyIdEl.value = transaction.property_id;
+            }
+            const loanIdEl = document.getElementById('editTransactionLoan');
+            if (transaction.loan_id && loanIdEl) {
+                loanIdEl.value = transaction.loan_id;
+            }
+            if (descriptionEl) {
+                descriptionEl.value = transaction.description || '';
+            }
+        }, 200);
+        
+        // Listener para cambiar categorías específicas cuando cambia la general
+        typeEl.addEventListener('change', () => {
+            const newType = typeEl.value;
+            const newCats = newType === 'income' ? categories.income : categories.expense;
+            categoryGeneralEl.innerHTML = '<option value="">Seleccionar...</option>';
+            newCats.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categoryGeneralEl.appendChild(option);
+            });
+        });
+        
+        categoryGeneralEl.addEventListener('change', () => {
+            const selectedCatId = categoryGeneralEl.value;
+            const type = typeEl.value;
+            const cats = type === 'income' ? categories.income : categories.expense;
+            const selectedCat = cats.find(c => c.id === selectedCatId);
+            if (selectedCat) {
+                categorySpecificEl.innerHTML = '<option value="">Seleccionar...</option>';
+                selectedCat.subcategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    categorySpecificEl.appendChild(option);
+                });
+            }
+        });
+    }, 100);
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de transacción
+function closeEditTransactionModal() {
+    const modal = document.getElementById('editTransactionModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingTransactionId = null;
+    }
+}
+
+// Función auxiliar para normalizar números (reemplazar comas por puntos)
+function normalizeNumber(value) {
+    if (typeof value === 'string') {
+        // Reemplazar comas por puntos y eliminar espacios
+        return value.replace(',', '.').replace(/\s/g, '');
+    }
+    return value;
+}
+
+// Actualizar transacción desde modal
+async function updateTransactionFromModal() {
+    if (!currentEditingTransactionId) return;
+    
+    try {
+        const typeEl = document.getElementById('editTransactionType');
+        const dateEl = document.getElementById('editTransactionDate');
+        const amountEl = document.getElementById('editTransactionAmount');
+        const categoryGeneralEl = document.getElementById('editTransactionCategoryGeneral');
+        const categorySpecificEl = document.getElementById('editTransactionCategorySpecific');
+        const envelopeEl = document.getElementById('editTransactionEnvelope');
+        const accountIdEl = document.getElementById('editTransactionAccount');
+        const investmentIdEl = document.getElementById('editTransactionInvestment');
+        const propertyIdEl = document.getElementById('editTransactionProperty');
+        const descriptionEl = document.getElementById('editTransactionDescription');
+        
+        if (!typeEl || !dateEl || !amountEl || !categoryGeneralEl || !categorySpecificEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const type = typeEl.value;
+        const date = dateEl.value;
+        // Normalizar el monto: reemplazar comas por puntos para parseFloat
+        const amountValue = normalizeNumber(amountEl.value);
+        const amount = parseFloat(amountValue);
+        const categoryGeneral = categoryGeneralEl.value;
+        const categorySpecific = categorySpecificEl.value;
+        const envelope = envelopeEl ? envelopeEl.value : '';
+        const accountId = accountIdEl ? accountIdEl.value : '';
+        const investmentId = investmentIdEl ? investmentIdEl.value : '';
+        const propertyId = propertyIdEl ? propertyIdEl.value : '';
+        const description = descriptionEl ? descriptionEl.value : '';
+        
+        if (!type || !date || isNaN(amount) || amount <= 0 || !categoryGeneral || !categorySpecific) {
+            showToast('Por favor completa todos los campos requeridos correctamente', 'warning');
+            return;
+        }
+        
+        showLoader('Actualizando transacción...');
+        
+        // Obtener transacción original para revertir cambios en saldo de cuenta
+        const originalTransaction = transactions.find(t => (t._id || t.id) === currentEditingTransactionId);
+        
+        // Actualizar transacción en el servidor
+        await apiRequest(`/transactions/${currentEditingTransactionId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                type,
+                date,
+                amount: type === 'expense' ? -Math.abs(amount) : Math.abs(amount),
+                categoryGeneral,
+                categorySpecific,
+                envelope: envelope || null,
+                account_id: accountId || null,
+                investment_id: investmentId || null,
+                property_id: propertyId || null,
+                description: description || null
+            })
+        });
+        
+        // Actualizar saldo de cuenta si cambió la cuenta o el monto
+        if (originalTransaction) {
+            const oldAccountId = originalTransaction.account_id;
+            const oldAmount = originalTransaction.amount;
+            const oldType = originalTransaction.type;
+            
+            // Revertir cambio en cuenta antigua si existía
+            if (oldAccountId && oldAccountId !== accountId) {
+                try {
+                    const oldAccount = accounts.find(acc => (acc._id || acc.id) === oldAccountId);
+                    if (oldAccount) {
+                        const oldAmountChange = oldType === 'income' ? -Math.abs(oldAmount) : Math.abs(oldAmount);
+                        const oldNewBalance = (oldAccount.balance || 0) + oldAmountChange;
+                        await apiRequest(`/accounts/${oldAccountId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({ balance: oldNewBalance })
+                        });
+                        oldAccount.balance = oldNewBalance;
+                    }
+                } catch (error) {
+                    console.error('Error al revertir saldo de cuenta antigua:', error);
+                }
+            }
+            
+            // Aplicar cambio en cuenta nueva o actualizada
+            if (accountId) {
+                try {
+                    const account = accounts.find(acc => (acc._id || acc.id) === accountId);
+                    if (account) {
+                        // Si es la misma cuenta, revertir el cambio anterior primero
+                        if (oldAccountId === accountId) {
+                            const oldAmountChange = oldType === 'income' ? -Math.abs(oldAmount) : Math.abs(oldAmount);
+                            account.balance = (account.balance || 0) + oldAmountChange;
+                        }
+                        
+                        // Aplicar nuevo cambio
+                        const newAmountChange = type === 'income' ? Math.abs(amount) : -Math.abs(amount);
+                        const newBalance = (account.balance || 0) + newAmountChange;
+                        await apiRequest(`/accounts/${accountId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({ balance: newBalance })
+                        });
+                        account.balance = newBalance;
+                    }
+                } catch (error) {
+                    console.error('Error al actualizar saldo de cuenta:', error);
+                }
+            }
+        }
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        closeEditTransactionModal();
+        showToast('Transacción actualizada exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar transacción: ' + error.message, 'error');
+    }
+}
+
+// Exponer funciones globalmente
+window.closeEditTransactionModal = closeEditTransactionModal;
+
+// Actualizar transacción
+async function updateTransaction() {
+    if (!currentEditingTransactionId) {
+        // Modo crear
+        await addTransaction();
+        return;
+    }
+    
+    try {
+        const typeEl = document.getElementById('transactionType');
+        const dateEl = document.getElementById('transactionDate');
+        const amountEl = document.getElementById('transactionAmount');
+        const categoryGeneralEl = document.getElementById('categoryGeneral');
+        const categorySpecificEl = document.getElementById('categorySpecific');
+        const envelopeEl = document.getElementById('envelope');
+        const accountIdEl = document.getElementById('transactionAccount');
+        const investmentIdEl = document.getElementById('transactionInvestment');
+        const loanIdEl = document.getElementById('editTransactionLoan');
+        const propertyIdEl = document.getElementById('transactionProperty');
+        const descriptionEl = document.getElementById('transactionDescription');
+        
+        if (!typeEl || !dateEl || !amountEl || !categoryGeneralEl || !categorySpecificEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const type = typeEl.value;
+        const date = dateEl.value;
+        const amount = parseFloat(amountEl.value);
+        const categoryGeneral = categoryGeneralEl.value;
+        const categorySpecific = categorySpecificEl.value;
+        const envelope = envelopeEl ? envelopeEl.value : '';
+        const accountId = accountIdEl ? accountIdEl.value : '';
+        const investmentId = investmentIdEl ? investmentIdEl.value : '';
+        const loanId = loanIdEl ? loanIdEl.value : '';
+        const propertyId = propertyIdEl ? propertyIdEl.value : '';
+        const description = descriptionEl ? descriptionEl.value : '';
+        
+        if (!type || !date || isNaN(amount) || amount <= 0 || !categoryGeneral || !categorySpecific) {
+            showToast('Por favor completa todos los campos requeridos', 'warning');
+            return;
+        }
+        
+        showLoader('Actualizando transacción...');
+        
+        // Obtener transacción original para revertir cambios en saldo de cuenta
+        const originalTransaction = transactions.find(t => (t._id || t.id) === currentEditingTransactionId);
+        
+        // Actualizar transacción en el servidor
+        await apiRequest(`/transactions/${currentEditingTransactionId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                type,
+                date,
+                amount: type === 'expense' ? -Math.abs(amount) : Math.abs(amount),
+                categoryGeneral,
+                categorySpecific,
+                envelope: envelope || null,
+                account_id: accountId || null,
+                investment_id: investmentId || null,
+                loan_id: loanId || null,
+                property_id: propertyId || null,
+                description: description || null
+            })
+        });
+        
+        // Actualizar saldo de cuenta si cambió la cuenta o el monto
+        if (originalTransaction) {
+            const oldAccountId = originalTransaction.account_id;
+            const oldAmount = originalTransaction.amount;
+            const oldType = originalTransaction.type;
+            
+            // Revertir cambio en cuenta antigua si existía y cambió
+            if (oldAccountId && oldAccountId !== accountId) {
+                try {
+                    const oldAccount = accounts.find(acc => (acc._id || acc.id) === oldAccountId);
+                    if (oldAccount) {
+                        const oldAmountChange = oldType === 'income' ? -Math.abs(oldAmount) : Math.abs(oldAmount);
+                        const oldNewBalance = (oldAccount.balance || 0) + oldAmountChange;
+                        await apiRequest(`/accounts/${oldAccountId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({ balance: oldNewBalance })
+                        });
+                        oldAccount.balance = oldNewBalance;
+                    }
+                } catch (error) {
+                    console.error('Error al revertir saldo de cuenta antigua:', error);
+                }
+            }
+            
+            // Aplicar cambio en cuenta nueva o actualizada
+            if (accountId) {
+                try {
+                    const account = accounts.find(acc => (acc._id || acc.id) === accountId);
+                    if (account) {
+                        // Si es la misma cuenta, revertir el cambio anterior primero
+                        if (oldAccountId === accountId) {
+                            const oldAmountChange = oldType === 'income' ? -Math.abs(oldAmount) : Math.abs(oldAmount);
+                            account.balance = (account.balance || 0) + oldAmountChange;
+                        }
+                        
+                        // Aplicar nuevo cambio
+                        const newAmountChange = type === 'income' ? Math.abs(amount) : -Math.abs(amount);
+                        const newBalance = (account.balance || 0) + newAmountChange;
+                        await apiRequest(`/accounts/${accountId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({ balance: newBalance })
+                        });
+                        account.balance = newBalance;
+                    }
+                } catch (error) {
+                    console.error('Error al actualizar saldo de cuenta:', error);
+                }
+            }
+        }
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Transacción actualizada exitosamente', 'success');
+        
+        // Restaurar formulario a modo crear
+        resetTransactionForm();
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar transacción: ' + error.message, 'error');
+    }
+}
+
+// Restaurar formulario de transacciones a modo crear
+function resetTransactionForm() {
+    currentEditingTransactionId = null;
+    const form = document.getElementById('transactionForm');
+    if (form) {
+        form.reset();
+        initializeDate();
+        initializeCategories();
+        updateEnvelopeSelect();
+        updateAccountSelect();
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            submitBtn.textContent = getTranslation('forms.addTransaction', lang);
+            submitBtn.classList.remove('btn-secondary');
+            submitBtn.classList.add('btn-primary');
+        }
+    }
+}
+
+// Exponer funciones al scope global para onclick handlers
+window.deleteTransaction = deleteTransaction;
+window.editTransaction = editTransaction;
+
+// Eliminar sobre
+async function deleteEnvelope(id) {
+    if (!confirm('¿Estás seguro de eliminar este sobre? Esto no eliminará las transacciones asociadas.')) return;
+    
+    try {
+        await apiRequest(`/envelopes/${id}`, { method: 'DELETE' });
+        // Recargar datos desde el servidor
+        await loadUserData();
+        updateDisplay();
+    } catch (error) {
+        console.error('Error eliminando sobre:', error);
+        alert('Error al eliminar sobre: ' + (error.message || 'Error desconocido'));
+    }
+}
+
+// Editar sobre - Abre modal con formulario pre-rellenado
+async function editEnvelope(id) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const envelope = envelopes.find(e => (e._id || e.id) === id);
+    if (!envelope) return;
+    
+    currentEditingEnvelopeId = id;
+    
+    // Crear o obtener modal
+    let modal = document.getElementById('editEnvelopeModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editEnvelopeModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Sobre</h2>
+                        <button onclick="closeEditEnvelopeModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editEnvelopeForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px;">
+                    <div class="form-group">
+                        <label for="editEnvelopeName">Nombre del Sobre</label>
+                        <input type="text" id="editEnvelopeName" placeholder="Ej: Vacaciones, Emergencias, Regalos..." required>
+                        <small>Un nombre descriptivo para tu objetivo</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEnvelopeCategoryGeneral">Categoría General</label>
+                        <select id="editEnvelopeCategoryGeneral" required>
+                            <option value="">Seleccionar categoría...</option>
+                        </select>
+                        <small>Elige la categoría general del sobre</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEnvelopeCategorySpecific">Categoría Específica</label>
+                        <select id="editEnvelopeCategorySpecific" required>
+                            <option value="">Seleccionar subcategoría...</option>
+                        </select>
+                        <small>Elige la subcategoría específica</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEnvelopeBudget">${getTranslation('budget.monthlyBudget', lang)}</label>
+                        <input type="number" id="editEnvelopeBudget" step="0.01" min="0" required placeholder="0.00">
+                        <small>Cuánto planeas ahorrar cada mes en este sobre</small>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditEnvelopeModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">${getTranslation('forms.updateEnvelope', lang)}</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditEnvelopeModal();
+            }
+        });
+        
+        const form = document.getElementById('editEnvelopeForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateEnvelopeFromModal();
+            });
+        }
+    }
+    
+    // Pre-llenar formulario
+    const nameEl = document.getElementById('editEnvelopeName');
+    const budgetEl = document.getElementById('editEnvelopeBudget');
+    const categoryGeneralEl = document.getElementById('editEnvelopeCategoryGeneral');
+    const categorySpecificEl = document.getElementById('editEnvelopeCategorySpecific');
+    
+    if (!nameEl || !budgetEl || !categoryGeneralEl || !categorySpecificEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
+        return;
+    }
+    
+    nameEl.value = envelope.name;
+    budgetEl.value = envelope.budget || 0;
+    
+    // Inicializar categorías en el modal
+    categoryGeneralEl.innerHTML = '<option value="">Seleccionar categoría...</option>';
+    categories.expense.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.name;
+        if (envelope.category_general === cat.id) {
+            option.selected = true;
+        }
+        categoryGeneralEl.appendChild(option);
+    });
+    
+    // Actualizar subcategorías según la categoría general seleccionada
+    const updateEditEnvelopeSpecificCategories = () => {
+        const selectedGeneral = categoryGeneralEl.value;
+        categorySpecificEl.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+        
+        if (!selectedGeneral) return;
+        
+        const category = categories.expense.find(c => c.id === selectedGeneral);
+        
+        if (category && category.subcategories && category.subcategories.length > 0) {
+            category.subcategories.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.textContent = sub;
+                if (envelope.category_specific === sub) {
+                    option.selected = true;
+                }
+                categorySpecificEl.appendChild(option);
+            });
+        }
+    };
+    
+    categoryGeneralEl.addEventListener('change', updateEditEnvelopeSpecificCategories);
+    updateEditEnvelopeSpecificCategories();
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de sobre
+function closeEditEnvelopeModal() {
+    const modal = document.getElementById('editEnvelopeModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingEnvelopeId = null;
+    }
+}
+
+// Actualizar sobre desde modal
+async function updateEnvelopeFromModal() {
+    if (!currentEditingEnvelopeId) return;
+    
+    try {
+        const nameEl = document.getElementById('editEnvelopeName');
+        const budgetEl = document.getElementById('editEnvelopeBudget');
+        const categoryGeneralEl = document.getElementById('editEnvelopeCategoryGeneral');
+        const categorySpecificEl = document.getElementById('editEnvelopeCategorySpecific');
+        
+        if (!nameEl || !budgetEl || !categoryGeneralEl || !categorySpecificEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const budget = parseFloat(budgetEl.value);
+        const category_general = categoryGeneralEl.value;
+        const category_specific = categorySpecificEl.value;
+        
+        if (!name || isNaN(budget) || budget < 0) {
+            showToast('Por favor completa todos los campos correctamente', 'warning');
+            return;
+        }
+        
+        if (!category_general || !category_specific) {
+            showToast('Por favor selecciona categoría general y específica', 'warning');
+            return;
+        }
+        
+        showLoader('Actualizando sobre...');
+        await apiRequest(`/envelopes/${currentEditingEnvelopeId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ 
+                name, 
+                budget,
+                category_general,
+                category_specific
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        closeEditEnvelopeModal();
+        showToast('Sobre actualizado exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar sobre: ' + error.message, 'error');
+    }
+}
+
+window.closeEditEnvelopeModal = closeEditEnvelopeModal;
+
+// Actualizar sobre
+async function updateEnvelope() {
+    if (!currentEditingEnvelopeId) {
+        await addEnvelope();
+        return;
+    }
+    
+    try {
+        const nameEl = document.getElementById('envelopeName');
+        const budgetEl = document.getElementById('envelopeBudget');
+        const categoryGeneralEl = document.getElementById('envelopeCategoryGeneral');
+        const categorySpecificEl = document.getElementById('envelopeCategorySpecific');
+        
+        if (!nameEl || !budgetEl || !categoryGeneralEl || !categorySpecificEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const budget = parseFloat(budgetEl.value);
+        const category_general = categoryGeneralEl.value;
+        const category_specific = categorySpecificEl.value;
+        
+        if (!name || isNaN(budget) || budget < 0) {
+            showToast('Por favor completa todos los campos correctamente', 'warning');
+            return;
+        }
+        
+        if (!category_general || !category_specific) {
+            showToast('Por favor selecciona categoría general y específica', 'warning');
+            return;
+        }
+        
+        showLoader('Actualizando sobre...');
+        await apiRequest(`/envelopes/${currentEditingEnvelopeId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ 
+                name, 
+                budget,
+                category_general,
+                category_specific
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Sobre actualizado exitosamente', 'success');
+        
+        resetEnvelopeForm();
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar sobre: ' + error.message, 'error');
+    }
+}
+
+// Restaurar formulario de sobres
+function resetEnvelopeForm() {
+    currentEditingEnvelopeId = null;
+    const form = document.getElementById('envelopeForm');
+    if (form) {
+        form.reset();
+        
+        // Reinicializar categorías
+        const categoryGeneralEl = document.getElementById('envelopeCategoryGeneral');
+        const categorySpecificEl = document.getElementById('envelopeCategorySpecific');
+        
+        if (categoryGeneralEl) {
+            categoryGeneralEl.innerHTML = '<option value="">Seleccionar categoría...</option>';
+            categories.expense.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categoryGeneralEl.appendChild(option);
+            });
+        }
+        
+        if (categorySpecificEl) {
+            categorySpecificEl.innerHTML = '<option value="">Seleccionar subcategoría...</option>';
+        }
+        
+        const submitBtn = document.getElementById('envelopeSubmitBtn') || form.querySelector('button[type="submit"]');
+        const cancelBtn = document.getElementById('envelopeCancelBtn');
+        
+        if (submitBtn) {
+            submitBtn.textContent = 'Agregar Sobre';
+            submitBtn.classList.remove('btn-secondary');
+            submitBtn.classList.add('btn-primary');
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.style.display = 'none';
+        }
+    }
+}
+
+window.resetEnvelopeForm = resetEnvelopeForm;
+
+// Exponer funciones al scope global para onclick handlers
+window.deleteEnvelope = deleteEnvelope;
+window.editEnvelope = editEnvelope;
+
+// Agregar préstamo
+// Calcular cuota mensual usando fórmula de amortización francesa
+function calculateMonthlyPayment(principal, annualRate, months) {
+    if (annualRate === 0) return principal / months;
+    if (months <= 0) return 0;
+    const monthlyRate = annualRate / 100 / 12;
+    const denominator = Math.pow(1 + monthlyRate, months) - 1;
+    if (denominator === 0) return principal / months;
+    return principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) / denominator;
+}
+
+// Exponer función globalmente
+window.calculateMonthlyPayment = calculateMonthlyPayment;
+
+// Calcular tabla de amortización
+function calculateAmortizationTable(principal, annualRate, monthlyPayment, startDate, totalPaid = 0, earlyPayments = [], currentDateOverride = null) {
+    const monthlyRate = annualRate / 100 / 12;
+    let balance = principal;
+    let totalInterest = 0;
+    const table = [];
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const today = currentDateOverride ? new Date(currentDateOverride) : new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Si la fecha de inicio es futura, retornar balance completo
+    if (start > today) {
+        return { table, totalInterest: 0, finalBalance: principal };
+    }
+    
+    // Ordenar pagos anticipados por fecha y crear mapa de aplicados
+    const sortedEarlyPayments = [...earlyPayments].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const appliedPayments = new Set();
+    
+    // Calcular fecha de primer pago (un mes después del inicio)
+    let paymentDate = new Date(start);
+    paymentDate.setMonth(paymentDate.getMonth() + 1);
+    paymentDate.setHours(0, 0, 0, 0);
+    
+    let monthNumber = 0;
+    let currentBalance = principal;
+    
+    // Procesar pagos hasta la fecha actual
+    while (paymentDate <= today && currentBalance > 0.01) {
+        monthNumber++;
+        const paymentKey = `${paymentDate.getTime()}`;
+        
+        // Aplicar pagos anticipados que ocurrieron antes de esta fecha de pago
+        sortedEarlyPayments.forEach((ep, index) => {
+            const epDate = new Date(ep.date);
+            epDate.setHours(0, 0, 0, 0);
+            const epKey = `${epDate.getTime()}-${index}`;
+            if (epDate < paymentDate && epDate > start && !appliedPayments.has(epKey)) {
+                currentBalance -= ep.amount;
+                totalInterest += ep.commission || 0;
+                appliedPayments.add(epKey);
+            }
+        });
+        
+        // Aplicar pago mensual
+        const interest = currentBalance * monthlyRate;
+        const principalPayment = Math.min(monthlyPayment - interest, currentBalance);
+        currentBalance -= principalPayment;
+        totalInterest += interest;
+        
+        table.push({
+            month: monthNumber,
+            date: new Date(paymentDate),
+            payment: monthlyPayment,
+            principal: principalPayment,
+            interest,
+            balance: Math.max(0, currentBalance)
+        });
+        
+        // Avanzar al siguiente mes
+        paymentDate.setMonth(paymentDate.getMonth() + 1);
+    }
+    
+    // Aplicar pagos anticipados que ocurrieron después del último pago mensual pero antes de hoy
+    const lastPaymentDate = monthNumber > 0 ? new Date(start) : new Date(start);
+    if (monthNumber > 0) {
+        lastPaymentDate.setMonth(lastPaymentDate.getMonth() + monthNumber);
+    }
+    sortedEarlyPayments.forEach((ep, index) => {
+        const epDate = new Date(ep.date);
+        epDate.setHours(0, 0, 0, 0);
+        const epKey = `${epDate.getTime()}-${index}`;
+        if (epDate > lastPaymentDate && epDate <= today && !appliedPayments.has(epKey)) {
+            currentBalance -= ep.amount;
+            totalInterest += ep.commission || 0;
+            appliedPayments.add(epKey);
+        }
+    });
+    
+    // Calcular pagos futuros (solo para la tabla completa, no afecta el balance actual)
+    let futureBalance = currentBalance;
+    let futureMonth = monthNumber;
+    let futureDate = new Date(paymentDate);
+    while (futureBalance > 0.01 && futureMonth < 600) { // Máximo 50 años
+        futureMonth++;
+        
+        const interest = futureBalance * monthlyRate;
+        const principalPayment = Math.min(monthlyPayment - interest, futureBalance);
+        futureBalance -= principalPayment;
+        
+        table.push({
+            month: futureMonth,
+            date: new Date(futureDate),
+            payment: monthlyPayment,
+            principal: principalPayment,
+            interest,
+            balance: Math.max(0, futureBalance)
+        });
+        
+        futureDate.setMonth(futureDate.getMonth() + 1);
+    }
+    
+    return { table, totalInterest, finalBalance: Math.max(0, currentBalance) };
+}
+
+async function addLoan() {
+    const name = document.getElementById('loanName').value.trim();
+    const principal = parseFloat(document.getElementById('loanPrincipal').value);
+    const interestRate = parseFloat(document.getElementById('loanInterestRate').value);
+    const taeInput = document.getElementById('loanTAE').value;
+    const tae = taeInput !== '' ? parseFloat(taeInput) : null;
+    const startDate = document.getElementById('loanStartDate').value;
+    const endDate = document.getElementById('loanEndDate').value;
+    const monthlyPayment = parseFloat(document.getElementById('loanMonthlyPayment').value);
+    const type = document.getElementById('loanType').value;
+    const accountId = document.getElementById('loanAccount') ? document.getElementById('loanAccount').value : '';
+    const propertyId = document.getElementById('loanProperty') ? document.getElementById('loanProperty').value : '';
+    const patrimonioId = document.getElementById('loanPatrimonio') ? document.getElementById('loanPatrimonio').value : '';
+    const description = document.getElementById('loanDescription').value.trim();
+    const openingCommission = parseFloat(document.getElementById('loanOpeningCommission').value) || 0;
+    const earlyPaymentCommission = parseFloat(document.getElementById('loanEarlyPaymentCommission').value) || 0;
+    const paymentDay = parseInt(document.getElementById('loanPaymentDay').value) || 1;
+    
+    if (!name || !principal || principal <= 0 || isNaN(interestRate) || interestRate < 0 || !startDate || !endDate || !monthlyPayment || monthlyPayment <= 0 || !type) {
+        alert('Por favor completa todos los campos requeridos correctamente');
+        return;
+    }
+    
+    try {
+        const loan = await apiRequest('/loans', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                principal,
+                interest_rate: interestRate,
+                tae: tae,
+                start_date: startDate,
+                end_date: endDate,
+                monthly_payment: monthlyPayment,
+                type,
+                account_id: accountId || null,
+                property_id: propertyId || null,
+                patrimonio_id: patrimonioId || null,
+                description: description || null,
+                opening_commission: openingCommission,
+                early_payment_commission: earlyPaymentCommission,
+                payment_day: paymentDay
+            })
+        });
+        
+        loans.push(loan);
+        updateDisplay();
+        updateLoanSelect(); // Actualizar selector de préstamos en transacciones
+        const loanForm = document.getElementById('loanForm');
+        if (loanForm) {
+            loanForm.reset();
+            const loanStartDate = document.getElementById('loanStartDate');
+            if (loanStartDate) {
+                const today = new Date().toISOString().split('T')[0];
+                loanStartDate.value = today;
+            }
+            // Ocultar formulario después de agregar exitosamente
+            if (loanForm.style.display !== 'none') {
+                toggleForm('loanForm', 'toggleLoanFormBtn');
+            }
+        }
+        alert('✅ Préstamo agregado exitosamente');
+    } catch (error) {
+        alert('Error al crear préstamo: ' + error.message);
+    }
+}
+
+// Actualizar préstamos con cálculos avanzados
+function updateLoans() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const grid = document.getElementById('loansGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (loans.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay préstamos registrados</p>`;
+        return;
+    }
+    
+    loans.forEach(loan => {
+        const startDate = new Date(loan.start_date);
+        const endDate = new Date(loan.end_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Calcular meses
+        const totalMonths = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 30.44));
+        const monthsElapsed = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24 * 30.44)));
+        const monthsRemaining = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24 * 30.44)));
+        
+        // Calcular amortización basada en el mes actual (no en total_paid)
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
+            loan.early_payments || []
+        );
+        
+        // Calcular totales basados en los pagos hasta la fecha actual
+        const remainingPrincipal = amortization.finalBalance;
+        const capitalPaid = loan.principal - remainingPrincipal; // Capital realmente pagado
+        const totalInterestPaid = amortization.totalInterest; // Intereses pagados hasta hoy
+        const totalPaidIncludingInterest = amortization.table.reduce((sum, row) => sum + row.payment, 0) + 
+                                          (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
+        
+        // Calcular costo real usando TAE si está disponible, sino TIN
+        const effectiveRate = loan.tae || loan.interest_rate;
+        const monthlyEffectiveRate = effectiveRate / 100 / 12;
+        
+        // Calcular interés total proyectado con TAE
+        let totalInterestProjected = 0;
+        let testBalance = loan.principal;
+        for (let i = 0; i < totalMonths && testBalance > 0.01; i++) {
+            const interest = testBalance * monthlyEffectiveRate;
+            const principalPayment = Math.min(loan.monthly_payment - interest, testBalance);
+            testBalance -= principalPayment;
+            totalInterestProjected += interest;
+        }
+        
+        const totalAmount = loan.principal + totalInterestProjected + (loan.opening_commission || 0);
+        const totalCommissions = (loan.opening_commission || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + (ep.commission || 0), 0);
+        const realCost = totalInterestProjected + totalCommissions; // Costo real del préstamo
+        const totalCost = totalAmount - loan.principal; // Costo total (intereses + comisiones)
+        
+        // Calcular progreso basado en capital pagado vs capital total
+        const progressPercentage = (capitalPaid / loan.principal) * 100;
+        
+        // Calcular próximo pago
+        const nextPaymentDate = new Date(startDate);
+        nextPaymentDate.setMonth(nextPaymentDate.getMonth() + monthsElapsed + 1);
+        nextPaymentDate.setDate(loan.payment_day || 1);
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.border = loan.type === 'debt' ? '2px solid var(--danger)' : '2px solid var(--success)';
+        card.style.position = 'relative';
+        card.innerHTML = `
+            <h3 style="color: var(--text-primary);">${loan.name} <span style="font-size: 12px; color: ${loan.type === 'debt' ? 'var(--danger)' : 'var(--success)'}">(${loan.type === 'debt' ? 'Debo' : 'Me deben'})</span></h3>
+            
+            <div style="margin: 10px 0; padding: 12px; background: ${loan.type === 'debt' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)'}; border-radius: 6px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; margin-bottom: 12px;">
+                    <div style="color: var(--text-secondary);"><strong>Principal:</strong></div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${formatCurrency(loan.principal)}</div>
+                    <div style="color: var(--text-secondary);"><strong>TIN (Interés Nominal):</strong></div>
+                    <div style="color: var(--text-primary);">${loan.interest_rate}%</div>
+                    ${loan.tae ? `
+                        <div style="color: var(--text-secondary);"><strong>TAE (Costo Real):</strong></div>
+                        <div style="color: ${loan.tae > loan.interest_rate ? 'var(--danger)' : 'var(--success)'}; font-weight: 700;">${loan.tae}%</div>
+                        <div style="grid-column: 1/-1; font-size: 11px; color: var(--text-tertiary); margin-top: 4px; padding: 6px; background: var(--bg-tertiary); border-radius: 4px; border: 1px solid var(--border-color);">
+                            Diferencia: ${(loan.tae - loan.interest_rate).toFixed(2)}% adicional por comisiones y gastos
+                        </div>
+                    ` : ''}
+                    <div style="color: var(--text-secondary);"><strong>Cuota Mensual:</strong></div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${formatCurrency(loan.monthly_payment)}</div>
+                    ${loan.opening_commission > 0 ? `<div style="color: var(--text-secondary);"><strong>${getTranslation('common.openingCommission', lang)}:</strong></div><div style="color: var(--text-primary);">${formatCurrency(loan.opening_commission)}</div>` : ''}
+                </div>
+            </div>
+            
+            <div style="margin: 10px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px;">
+                <div style="font-size: 13px; line-height: 1.8;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <strong style="color: var(--text-primary);">Capital Restante:</strong>
+                        <span style="color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'}; font-size: 18px; font-weight: bold;">${formatCurrency(remainingPrincipal)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: var(--text-secondary);">Capital Pagado:</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(capitalPaid)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: var(--text-secondary);">Total Pagado (con intereses):</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(totalPaidIncludingInterest)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: var(--text-secondary);">Intereses Pagados:</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(totalInterestPaid)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: var(--text-secondary);">Intereses Totales (proyectados):</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(totalInterestProjected)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: var(--text-secondary);">Comisiones Totales:</strong>
+                        <span style="color: var(--text-primary);">${formatCurrency(totalCommissions)}</span>
+                    </div>
+                    <div style="margin-top: 8px; padding: 8px; background: ${loan.type === 'debt' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)'}; border-radius: 4px; border-left: 3px solid ${loan.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; border: 1px solid var(--border-color);">
+                        <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 4px;">
+                            <span style="color: var(--text-primary);">Costo Real del Préstamo:</span>
+                            <span style="color: ${loan.type === 'debt' ? 'var(--danger)' : 'var(--success)'}; font-size: 16px;">${formatCurrency(realCost)}</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-tertiary);">
+                            Intereses (${formatCurrency(totalInterestProjected)}) + Comisiones (${formatCurrency(totalCommissions)})
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                        <strong style="color: var(--text-primary);">Total a Pagar:</strong>
+                        <span style="font-weight: 700; color: var(--text-primary);">${formatCurrency(totalAmount)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: var(--text-primary);">Progreso:</strong>
+                        <span style="color: var(--text-primary);">${progressPercentage.toFixed(1)}%</span>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong style="color: var(--text-primary);">Meses Transcurridos:</strong>
+                            <span style="color: var(--text-primary);">${monthsElapsed} / ${totalMonths}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong style="color: var(--text-primary);">${getTranslation('loan.monthsRemaining', lang)}:</strong>
+                            <span style="color: var(--text-primary);">${monthsRemaining}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong style="color: var(--text-primary);">Próximo Pago:</strong>
+                            <span style="color: var(--text-primary);">${formatDate(nextPaymentDate)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            ${loan.early_payments && loan.early_payments.length > 0 ? `
+                <div style="margin: 10px 0; padding: 12px; background: var(--bg-tertiary); border-radius: 6px; font-size: 12px; border-left: 3px solid var(--warning); border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: var(--text-primary);">${getTranslation('loan.earlyPayments', lang)}:</strong> <span style="color: var(--text-primary);">${loan.early_payments.length}</span>
+                    </div>
+                    <div style="display: grid; gap: 6px; margin-top: 8px;">
+                        ${loan.early_payments.map((ep, index) => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: var(--bg-primary); border-radius: 4px; border: 1px solid var(--border-color);">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--text-primary);">${formatDate(new Date(ep.date))}</div>
+                                    <div style="font-size: 11px; color: var(--text-secondary);">${formatCurrency(ep.amount)}${ep.commission > 0 ? ` + ${formatCurrency(ep.commission)} comisión` : ''}</div>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <button onclick="editEarlyPayment('${loan._id || loan.id}', ${index})" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">Editar</button>
+                                    <button onclick="deleteEarlyPayment('${loan._id || loan.id}', ${index})" style="background: var(--danger); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">Borrar</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            ${loan.description ? `<div style="margin: 10px 0; font-size: 12px; color: var(--text-tertiary); font-style: italic;">${loan.description}</div>` : ''}
+            
+            <!-- Cuadro de amortización - Próximas cuotas -->
+            <div style="margin: 16px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-color);">
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">Próximas Cuotas</h4>
+                <div style="max-height: 200px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <thead>
+                            <tr style="background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color);">
+                                <th style="padding: 6px; text-align: left; font-weight: 600; color: var(--text-primary);">Mes</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Fecha</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Cuota</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Capital</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">Interés</th>
+                                <th style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">${getTranslation('budget.remaining', lang)}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${amortization.table.slice(0, 12).map((row, idx) => `
+                                <tr style="border-bottom: 1px solid var(--border-color); background: ${idx % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-tertiary)'};">
+                                    <td style="padding: 6px; font-weight: 600; color: var(--text-primary);">${row.month}</td>
+                                    <td style="padding: 6px; text-align: right; color: var(--text-secondary);">${formatDate(row.date)}</td>
+                                    <td style="padding: 6px; text-align: right; font-weight: 600; color: var(--text-primary);">${formatCurrency(row.payment)}</td>
+                                    <td style="padding: 6px; text-align: right; color: var(--success);">${formatCurrency(row.principal)}</td>
+                                    <td style="padding: 6px; text-align: right; color: var(--danger);">${formatCurrency(row.interest)}</td>
+                                    <td style="padding: 6px; text-align: right; font-weight: 600; color: ${row.balance > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(row.balance)}</td>
+                                </tr>
+                            `).join('')}
+                            ${amortization.table.length > 12 ? `
+                                <tr>
+                                    <td colspan="6" style="padding: 8px; text-align: center; color: var(--text-tertiary); font-size: 11px; font-style: italic;">
+                                        ... y ${amortization.table.length - 12} cuota(s) más
+                                    </td>
+                                </tr>
+                            ` : ''}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+                    <button onclick="showLoanDetails('${loan._id || loan.id}')" class="btn-secondary" style="flex: 1; min-width: 100px; font-size: 13px; padding: 8px;">
+                        Ver Cuadro
+                </button>
+                </div>
+            </div>
+            
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+                <button class="btn-secondary" onclick="editLoan('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Editar</button>
+                <button class="btn-secondary" onclick="showLoanDetails('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Detalles</button>
+                <button class="btn-secondary" onclick="showEarlyPaymentModal('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Amortizar</button>
+                <button class="btn-danger" onclick="deleteLoan('${loan._id || loan.id}')" style="flex: 1; min-width: 100px;">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+    
+    // Actualizar gráfico de evolución de deuda
+    if (typeof updateLoansOutstandingChart === 'function') {
+        updateLoansOutstandingChart();
+    }
+}
+
+// Mostrar detalles del préstamo con tabla de amortización completa
+function showLoanDetails(loanId) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const loan = loans.find(l => (l._id || l.id) === loanId);
+    if (!loan) return;
+    
+    const amortization = calculateAmortizationTable(
+        loan.principal,
+        loan.interest_rate,
+        loan.monthly_payment,
+        loan.start_date,
+        loan.total_paid || 0,
+        loan.early_payments || []
+    );
+    
+    const modal = document.getElementById('amortizationModal');
+    const modalTitle = document.getElementById('amortizationModalTitle');
+    const modalContent = document.getElementById('amortizationModalContent');
+    
+    if (!modal || !modalTitle || !modalContent) return;
+    
+    // Título del modal
+    modalTitle.textContent = `Tabla de Amortización - ${loan.name}`;
+    
+    // Calcular resumen basado en el mes actual
+    const amortizationForSummary = calculateAmortizationTable(
+        loan.principal,
+        loan.interest_rate,
+        loan.monthly_payment,
+        loan.start_date,
+        0, // No usar total_paid
+        loan.early_payments || []
+    );
+    const remainingPrincipal = amortization.finalBalance;
+    const capitalPaid = loan.principal - remainingPrincipal;
+    const totalPaidIncludingInterest = amortizationForSummary.table.reduce((sum, row) => sum + row.payment, 0) + 
+                                       (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
+    const totalInterest = amortization.totalInterest;
+    const totalCommissions = (loan.opening_commission || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + (ep.commission || 0), 0);
+    const totalCost = totalInterest + totalCommissions;
+    const progressPercentage = (capitalPaid / loan.principal) * 100;
+    
+    // Crear contenido del modal
+    let contentHTML = `
+        <div style="margin-bottom: 24px; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                <div>
+                    <strong style="color: var(--gray-600); font-size: 12px;">${getTranslation('common.initialCapital', lang)}</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--gray-900);">${formatCurrency(loan.principal)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--gray-600); font-size: 12px;">${getTranslation('loan.remainingCapital', lang)}</strong>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <input type="number" id="editRemainingPrincipal" value="${remainingPrincipal.toFixed(2)}" step="0.01" min="0" style="font-size: 18px; font-weight: 700; color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'}; border: 2px solid var(--border-color); border-radius: 6px; padding: 8px 12px; width: 100%; background: var(--bg-primary); box-sizing: border-box;">
+                        <button id="saveRemainingPrincipal" onclick="saveRemainingPrincipal('${loan._id || loan.id}')" style="background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; width: 100%; box-sizing: border-box;" onmouseover="this.style.opacity='0.9'; this.style.transform='translateY(-1px)'" onmouseout="this.style.opacity='1'; this.style.transform='translateY(0)'">Guardar</button>
+                    </div>
+                </div>
+                <div>
+                    <strong style="color: var(--text-secondary); font-size: 12px;">Capital Pagado</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-primary);">${formatCurrency(capitalPaid)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--text-secondary); font-size: 12px;">Total Pagado (con intereses)</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-primary);">${formatCurrency(totalPaidIncludingInterest)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--text-secondary); font-size: 12px;">Intereses Totales</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(totalInterest)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--text-secondary); font-size: 12px;">Comisiones Totales</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--warning);">${formatCurrency(totalCommissions)}</div>
+                </div>
+                <div>
+                    <strong style="color: var(--gray-600); font-size: 12px;">Costo Total</strong>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(totalCost)}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 18px; font-weight: 700;">Cuadro de Amortización Completo</h3>
+            <span style="color: var(--gray-600); font-size: 14px;">${amortization.table.length} cuotas</span>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; background: var(--bg-primary); border-radius: var(--radius); overflow: hidden; color: var(--text-primary);">
+                <thead>
+                    <tr style="background: var(--primary); color: white;">
+                        <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px;">Mes</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Fecha</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Cuota</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Capital</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">Interés</th>
+                        <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px;">${getTranslation('loan.remainingCapital', lang)}</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    amortization.table.forEach((row, index) => {
+        const isEven = index % 2 === 0;
+        contentHTML += `
+            <tr style="border-bottom: 1px solid var(--border-color); background: ${isEven ? 'var(--bg-primary)' : 'var(--bg-tertiary)'};">
+                <td style="padding: 10px; font-weight: 600; color: var(--text-primary);">${row.month}</td>
+                <td style="padding: 10px; text-align: right; color: var(--text-secondary);">${formatDate(row.date)}</td>
+                <td style="padding: 10px; text-align: right; font-weight: 600; color: var(--text-primary);">${formatCurrency(row.payment)}</td>
+                <td style="padding: 10px; text-align: right; color: var(--success);">${formatCurrency(row.principal)}</td>
+                <td style="padding: 10px; text-align: right; color: var(--danger);">${formatCurrency(row.interest)}</td>
+                <td style="padding: 10px; text-align: right; font-weight: 600; color: ${row.balance > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(row.balance)}</td>
+            </tr>
+        `;
+    });
+    
+    contentHTML += `
+                </tbody>
+                <tfoot style="background: var(--bg-tertiary); font-weight: 700; border-top: 2px solid var(--border-color);">
+                    <tr>
+                        <td colspan="2" style="padding: 12px; text-align: left; color: var(--text-primary);">TOTALES</td>
+                        <td style="padding: 12px; text-align: right; color: var(--text-primary);">${formatCurrency(amortization.table.reduce((sum, r) => sum + r.payment, 0))}</td>
+                        <td style="padding: 12px; text-align: right; color: var(--success);">${formatCurrency(loan.principal - remainingPrincipal)}</td>
+                        <td style="padding: 12px; text-align: right; color: var(--danger);">${formatCurrency(totalInterest)}</td>
+                        <td style="padding: 12px; text-align: right; color: ${remainingPrincipal > 0 ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(remainingPrincipal)}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    `;
+    
+    modalContent.innerHTML = contentHTML;
+    modal.style.display = 'flex';
+    
+    // Prevenir que el contenido del modal cierre el modal al hacer clic
+    const modalContentDiv = modal.querySelector('.modal-content');
+    if (modalContentDiv) {
+        // Asegurar que el modal tenga la estructura correcta
+        modalContentDiv.style.display = 'flex';
+        modalContentDiv.style.flexDirection = 'column';
+        modalContentDiv.style.maxHeight = '90vh';
+        modalContentDiv.style.padding = '0';
+        modalContentDiv.style.overflow = 'hidden';
+        
+        modalContentDiv.onclick = (e) => {
+            e.stopPropagation();
+        };
+    }
+}
+
+// Cerrar modal de amortización
+function closeAmortizationModal() {
+    const modal = document.getElementById('amortizationModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Exponer función globalmente
+window.closeAmortizationModal = closeAmortizationModal;
+
+// Guardar capital pendiente modificado
+async function saveRemainingPrincipal(loanId) {
+    const loan = loans.find(l => (l._id || l.id) === loanId);
+    if (!loan) return;
+    
+    const input = document.getElementById('editRemainingPrincipal');
+    if (!input) return;
+    
+    const newRemainingPrincipal = parseFloat(input.value);
+    if (isNaN(newRemainingPrincipal) || newRemainingPrincipal < 0) {
+        showToast('Por favor ingresa un valor válido', 'warning');
+        return;
+    }
+    
+    // Calcular la diferencia para ajustar total_paid
+    const amortization = calculateAmortizationTable(
+        loan.principal,
+        loan.interest_rate,
+        loan.monthly_payment,
+        loan.start_date,
+        0, // No usar total_paid, calcular desde el inicio hasta hoy
+        loan.early_payments || []
+    );
+    
+    const currentRemaining = amortization.finalBalance;
+    const difference = currentRemaining - newRemainingPrincipal;
+    
+    // Ajustar total_paid según la diferencia
+    const newTotalPaid = (loan.total_paid || 0) + difference;
+    
+    showLoader('Actualizando capital pendiente...');
+    
+    try {
+        const response = await apiRequest(`/loans/${loanId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                ...loan,
+                total_paid: Math.max(0, newTotalPaid)
+            })
+        });
+        
+        if (response.success) {
+            loan.total_paid = Math.max(0, newTotalPaid);
+            showToast('Capital pendiente actualizado correctamente', 'success');
+            updateLoans();
+            showLoanDetails(loanId);
+        } else {
+            showToast('Error al actualizar el capital pendiente', 'error');
+        }
+    } catch (error) {
+        console.error('Error actualizando capital pendiente:', error);
+        showToast('Error al actualizar el capital pendiente', 'error');
+    } finally {
+        hideLoader();
+    }
+}
+
+// Exponer función globalmente
+window.saveRemainingPrincipal = saveRemainingPrincipal;
+
+// Cerrar modal de amortización anticipada
+function closeEarlyPaymentModal() {
+    const modal = document.getElementById('earlyPaymentModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Mostrar modal de amortización anticipada - NUEVA VERSIÓN
+function showEarlyPaymentModal(loanId) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const loan = loans.find(l => (l._id || l.id) === loanId);
+    if (!loan) {
+        showToast('Préstamo no encontrado', 'error');
+        return;
+    }
+    
+    const modal = document.getElementById('earlyPaymentModal');
+    if (!modal) {
+        showToast('Modal no encontrado', 'error');
+        return;
+    }
+    
+    // Calcular capital restante actual basado en el mes actual
+    const amortization = calculateAmortizationTable(
+        loan.principal,
+        loan.interest_rate,
+        loan.monthly_payment,
+        loan.start_date,
+        0, // No usar total_paid, calcular desde el inicio hasta hoy
+        loan.early_payments || []
+    );
+    const remainingCapital = amortization.finalBalance;
+    
+    // Actualizar información del préstamo
+    const loanInfo = document.getElementById('earlyPaymentLoanInfo');
+    if (loanInfo) {
+        loanInfo.innerHTML = `
+            <div style="margin-bottom: 8px;">
+                <strong style="color: var(--gray-700);">${getTranslation('common.loan', lang)}:</strong> 
+                <span style="font-weight: 700; color: var(--gray-900);">${loan.name}</span>
+            </div>
+            <div>
+                <strong style="color: var(--gray-700);">${getTranslation('loan.remainingCapital', lang)}:</strong> 
+                <span style="font-weight: 700; color: ${remainingCapital > 0 ? 'var(--danger)' : 'var(--success)'}; font-size: 18px;">${formatCurrency(remainingCapital)}</span>
+            </div>
+        `;
+    }
+    
+    // Obtener elementos del formulario
+    const form = document.getElementById('earlyPaymentForm');
+    const amountInput = document.getElementById('earlyPaymentAmount');
+    const commissionInfo = document.getElementById('earlyPaymentCommissionInfo');
+    const commissionAmount = document.getElementById('earlyPaymentCommissionAmount');
+    
+    if (!form || !amountInput) {
+        showToast('Formulario no encontrado', 'error');
+        return;
+    }
+    
+    // Resetear formulario
+    form.reset();
+    if (commissionInfo) commissionInfo.style.display = 'none';
+    
+    // Remover listeners anteriores clonando el formulario
+    const newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+    
+    // Obtener referencias nuevas
+    const updatedForm = document.getElementById('earlyPaymentForm');
+    const updatedAmountInput = document.getElementById('earlyPaymentAmount');
+    const updatedCommissionInfo = document.getElementById('earlyPaymentCommissionInfo');
+    const updatedCommissionAmount = document.getElementById('earlyPaymentCommissionAmount');
+    
+    if (!updatedForm || !updatedAmountInput) return;
+    
+    // Calcular y mostrar comisión y efecto cuando cambia el monto
+    const effectDiv = document.getElementById('earlyPaymentEffect');
+    const newRemainingCapitalDiv = document.getElementById('newRemainingCapital');
+    const interestSavingsDiv = document.getElementById('interestSavings');
+    const reducedPaymentsDiv = document.getElementById('reducedPayments');
+    const newMonthlyPaymentDiv = document.getElementById('newMonthlyPayment');
+    
+    updatedAmountInput.addEventListener('input', () => {
+        const amount = parseFloat(updatedAmountInput.value) || 0;
+        
+        // Calcular y mostrar comisión
+        if (amount > 0 && loan.early_payment_commission > 0 && updatedCommissionInfo && updatedCommissionAmount) {
+            const commission = amount * (loan.early_payment_commission / 100);
+            updatedCommissionAmount.textContent = formatCurrency(commission);
+            updatedCommissionInfo.style.display = 'block';
+        } else if (updatedCommissionInfo) {
+            updatedCommissionInfo.style.display = 'none';
+        }
+        
+        // Calcular y mostrar efecto de la amortización
+        if (amount > 0 && amount <= remainingCapital && effectDiv) {
+            // Simular amortización con el nuevo monto
+            const simulatedEarlyPayments = [...(loan.early_payments || []), {
+                date: new Date().toISOString().split('T')[0],
+                amount: amount,
+                commission: loan.early_payment_commission > 0 ? amount * (loan.early_payment_commission / 100) : 0
+            }];
+            
+            // Calcular amortización sin el pago anticipado (escenario actual)
+            const currentAmortization = calculateAmortizationTable(
+                loan.principal,
+                loan.interest_rate,
+                loan.monthly_payment,
+                loan.start_date,
+                0,
+                loan.early_payments || []
+            );
+            
+            // Calcular amortización con el pago anticipado (escenario futuro)
+            const futureAmortization = calculateAmortizationTable(
+                loan.principal,
+                loan.interest_rate,
+                loan.monthly_payment,
+                loan.start_date,
+                0,
+                simulatedEarlyPayments
+            );
+            
+            // Calcular diferencias
+            const newRemainingCapital = futureAmortization.finalBalance;
+            const currentTotalInterest = currentAmortization.totalInterest;
+            const futureTotalInterest = futureAmortization.totalInterest;
+            const interestSavings = currentTotalInterest - futureTotalInterest;
+            
+            // Contar cuotas reducidas
+            const currentPayments = currentAmortization.table.filter(r => r.balance > 0.01).length;
+            const futurePayments = futureAmortization.table.filter(r => r.balance > 0.01).length;
+            const reducedPayments = Math.max(0, currentPayments - futurePayments);
+            
+            // Calcular nueva cuota mensual (si se reduce el plazo, la cuota puede mantenerse igual)
+            // O si se mantiene el plazo, la cuota se reduce
+            const newMonthlyPayment = loan.monthly_payment; // Por defecto se mantiene igual
+            
+            // Actualizar UI
+            if (newRemainingCapitalDiv) {
+                newRemainingCapitalDiv.textContent = formatCurrency(newRemainingCapital);
+            }
+            if (interestSavingsDiv) {
+                interestSavingsDiv.textContent = formatCurrency(Math.max(0, interestSavings));
+            }
+            if (reducedPaymentsDiv) {
+                reducedPaymentsDiv.textContent = `${reducedPayments} cuota${reducedPayments !== 1 ? 's' : ''}`;
+            }
+            if (newMonthlyPaymentDiv) {
+                newMonthlyPaymentDiv.textContent = formatCurrency(newMonthlyPayment);
+            }
+            
+            effectDiv.style.display = 'block';
+        } else if (effectDiv) {
+            effectDiv.style.display = 'none';
+        }
+    });
+    
+    // Manejar envío del formulario
+    updatedForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const amount = parseFloat(updatedAmountInput.value);
+        
+        if (!amount || amount <= 0) {
+            showToast('Por favor ingresa un monto válido', 'warning');
+            return;
+        }
+        
+        if (amount > remainingCapital) {
+            showToast(`El monto no puede ser mayor al capital restante (${formatCurrency(remainingCapital)})`, 'warning');
+            return;
+        }
+        
+        try {
+            showLoader();
+            
+            // Registrar el pago en el servidor
+            await apiRequest(`/loans/${loanId}/payment`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    amount,
+                    date: new Date().toISOString().split('T')[0],
+                    is_early_payment: true
+                })
+            });
+            
+            // Recargar datos
+            await loadUserData();
+            updateDisplay();
+            
+            showToast('✅ Amortización anticipada registrada exitosamente', 'success');
+            closeEarlyPaymentModal();
+        } catch (error) {
+            console.error('Error al registrar amortización:', error);
+            showToast('Error al registrar la amortización: ' + (error.message || 'Error desconocido'), 'error');
+        } finally {
+            hideLoader();
+        }
+    });
+    
+    // Prevenir que el contenido del modal cierre el modal al hacer clic
+    const modalContentDiv = modal.querySelector('.modal-content');
+    if (modalContentDiv) {
+        modalContentDiv.onclick = (e) => {
+            e.stopPropagation();
+        };
+    }
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        if (updatedAmountInput) updatedAmountInput.focus();
+    }, 100);
+}
+
+// Exponer funciones globales
+window.showLoanDetails = showLoanDetails;
+window.showEarlyPaymentModal = showEarlyPaymentModal;
+window.closeEarlyPaymentModal = closeEarlyPaymentModal;
+
+// Editar amortización anticipada
+async function editEarlyPayment(loanId, index) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const loan = loans.find(l => (l._id || l.id) === loanId);
+    if (!loan || !loan.early_payments || index >= loan.early_payments.length) {
+        showToast('Amortización no encontrada', 'error');
+        return;
+    }
+    
+    const ep = loan.early_payments[index];
+    
+    // Crear modal de edición
+    let modal = document.getElementById('editEarlyPaymentModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editEarlyPaymentModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 500px;">
+                <div style="background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 50%, #6366F1 100%); padding: 24px; color: white; border-radius: var(--radius) var(--radius) 0 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 22px; font-weight: 700;">Editar Amortización</h2>
+                        <button onclick="closeEditEarlyPaymentModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 18px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editEarlyPaymentForm" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                    <div class="form-group">
+                        <label for="editEarlyPaymentDate">Fecha</label>
+                        <input type="date" id="editEarlyPaymentDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEarlyPaymentAmount">Monto (€)</label>
+                        <input type="number" id="editEarlyPaymentAmount" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEarlyPaymentCommission">Comisión (€)</label>
+                        <input type="number" id="editEarlyPaymentCommission" step="0.01" min="0" value="0">
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditEarlyPaymentModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">${getTranslation('common.save', lang)}</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditEarlyPaymentModal();
+            }
+        });
+    }
+    
+    // Pre-llenar formulario
+    document.getElementById('editEarlyPaymentDate').value = ep.date;
+    document.getElementById('editEarlyPaymentAmount').value = ep.amount;
+    document.getElementById('editEarlyPaymentCommission').value = ep.commission || 0;
+    
+    // Guardar loanId e index
+    modal.dataset.loanId = loanId;
+    modal.dataset.index = index;
+    
+    // Manejar envío
+    const form = document.getElementById('editEarlyPaymentForm');
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const date = document.getElementById('editEarlyPaymentDate').value;
+        const amount = parseFloat(document.getElementById('editEarlyPaymentAmount').value);
+        const commission = parseFloat(document.getElementById('editEarlyPaymentCommission').value) || 0;
+        
+        if (!date || !amount || amount <= 0) {
+            showToast('Por favor completa todos los campos correctamente', 'warning');
+            return;
+        }
+        
+        try {
+            showLoader('Actualizando amortización...');
+            await apiRequest(`/loans/${loanId}/early-payment/${index}`, {
+                method: 'PUT',
+                body: JSON.stringify({ date, amount, commission })
+            });
+            
+            await loadUserData();
+            updateDisplay();
+            closeEditEarlyPaymentModal();
+            // Reabrir el modal de detalles para mostrar los cambios
+            showLoanDetails(loanId);
+            showToast('Amortización actualizada exitosamente', 'success');
+        } catch (error) {
+            showToast('Error al actualizar amortización: ' + error.message, 'error');
+        } finally {
+            hideLoader();
+        }
+    };
+    
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de amortización
+function closeEditEarlyPaymentModal() {
+    const modal = document.getElementById('editEarlyPaymentModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Eliminar amortización anticipada
+async function deleteEarlyPayment(loanId, index) {
+    if (!confirm('¿Estás seguro de que quieres eliminar esta amortización anticipada?')) {
+        return;
+    }
+    
+    try {
+        showLoader('Eliminando amortización...');
+        await apiRequest(`/loans/${loanId}/early-payment/${index}`, {
+            method: 'DELETE'
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        // Reabrir el modal de detalles para mostrar los cambios
+        showLoanDetails(loanId);
+        showToast('Amortización eliminada exitosamente', 'success');
+    } catch (error) {
+        showToast('Error al eliminar amortización: ' + error.message, 'error');
+    } finally {
+        hideLoader();
+    }
+}
+
+window.editEarlyPayment = editEarlyPayment;
+window.deleteEarlyPayment = deleteEarlyPayment;
+window.closeEditEarlyPaymentModal = closeEditEarlyPaymentModal;
+
+// ==================== GASTOS RECURRENTES ====================
+
+// Agregar gasto recurrente
+async function addRecurringExpense() {
+    const name = document.getElementById('recurringExpenseName').value.trim();
+    const amount = parseFloat(document.getElementById('recurringExpenseAmount').value);
+    const categoryGeneral = document.getElementById('recurringExpenseCategoryGeneral').value;
+    const categorySpecific = document.getElementById('recurringExpenseCategorySpecific').value;
+    const frequency = document.getElementById('recurringExpenseFrequency').value;
+    const paymentDay = parseInt(document.getElementById('recurringExpensePaymentDay').value) || 1;
+    const startDate = document.getElementById('recurringExpenseStartDate').value;
+    const endDateInput = document.getElementById('recurringExpenseEndDate');
+    const endDate = endDateInput && endDateInput.value ? endDateInput.value : null;
+    const expenseGroup = ''; // Campo eliminado - siempre vacío
+    const propertyId = document.getElementById('recurringExpenseProperty') ? document.getElementById('recurringExpenseProperty').value : '';
+    const accountId = document.getElementById('recurringExpenseAccount') ? document.getElementById('recurringExpenseAccount').value : '';
+    const description = document.getElementById('recurringExpenseDescription') ? document.getElementById('recurringExpenseDescription').value.trim() : '';
+    
+    if (!name || !amount || amount <= 0 || !categoryGeneral || !categorySpecific || !frequency || !startDate) {
+        showToast('Por favor completa todos los campos requeridos', 'warning');
+        return;
+    }
+    
+    try {
+        const expense = await apiRequest('/recurring-expenses', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                amount,
+                category_general: categoryGeneral,
+                category_specific: categorySpecific,
+                frequency,
+                payment_day: paymentDay,
+                start_date: startDate,
+                end_date: endDate,
+                property_id: propertyId || null,
+                expense_group: expenseGroup || null,
+                account_id: accountId || null,
+                description: description || null,
+                is_active: true
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        // Limpiar formulario
+        const form = document.getElementById('recurringExpenseForm');
+        if (form) {
+            form.reset();
+            const startDateInput = document.getElementById('recurringExpenseStartDate');
+            if (startDateInput) {
+                const today = new Date();
+                startDateInput.value = today.toISOString().split('T')[0];
+            }
+            toggleForm('recurringExpenseForm', 'toggleRecurringExpenseFormBtn');
+        }
+        
+        showToast('Gasto recurrente agregado exitosamente', 'success');
+    } catch (error) {
+        console.error('Error al crear gasto recurrente:', error);
+        showToast('Error al crear gasto recurrente: ' + (error.message || 'Error desconocido'), 'error');
+    }
+}
+
+// Actualizar visualización de gastos recurrentes
+function updateRecurringExpenses() {
+    console.log('🔄 updateRecurringExpenses: Iniciando...', { count: recurringExpenses?.length || 0 });
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const grid = document.getElementById('recurringExpensesGrid');
+    if (!grid) {
+        console.error('❌ updateRecurringExpenses: recurringExpensesGrid no encontrado');
+        return;
+    }
+    console.log('✅ updateRecurringExpenses: Grid encontrado');
+    
+    grid.innerHTML = '';
+    
+    if (recurringExpenses.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos recurrentes registrados</p>';
+        return;
+    }
+    
+    // Calcular resumen anual y agrupar por grupos
+    const now = new Date();
+    let totalAnnual = 0;
+    const activeExpenses = [];
+    const expensesByGroup = {}; // Agrupar por expense_group
+    
+    recurringExpenses.forEach(expense => {
+        const startDate = new Date(expense.start_date);
+        const endDate = expense.end_date ? new Date(expense.end_date) : null;
+        // Un gasto está activo si: está marcado como activo Y (no tiene fecha de fin O la fecha de fin es futura) Y la fecha de inicio es pasada o hoy
+        const isActive = expense.is_active !== false && (!endDate || endDate >= now) && startDate <= now;
+        console.log('🔄 Gasto recurrente:', {
+            name: expense.name,
+            is_active: expense.is_active,
+            start_date: expense.start_date,
+            end_date: expense.end_date,
+            isActive: isActive,
+            startDateValid: startDate <= now,
+            endDateValid: !endDate || endDate >= now
+        });
+        
+        if (isActive) {
+            let annualAmount = 0;
+            
+            if (expense.frequency === 'monthly') {
+                annualAmount = expense.amount * 12;
+            } else if (expense.frequency === 'weekly') {
+                annualAmount = expense.amount * 52;
+            } else if (expense.frequency === 'yearly') {
+                annualAmount = expense.amount;
+            }
+            
+            // Si tiene fecha de fin, calcular solo hasta esa fecha
+            if (endDate) {
+                const monthsRemaining = Math.max(0, (endDate.getFullYear() - now.getFullYear()) * 12 + (endDate.getMonth() - now.getMonth()));
+                if (expense.frequency === 'monthly') {
+                    annualAmount = expense.amount * Math.min(12, monthsRemaining);
+                } else if (expense.frequency === 'weekly') {
+                    const weeksRemaining = Math.max(0, Math.ceil((endDate - now) / (1000 * 60 * 60 * 24 * 7)));
+                    annualAmount = expense.amount * Math.min(52, weeksRemaining);
+                }
+            }
+            
+            totalAnnual += annualAmount;
+            activeExpenses.push({ expense, annualAmount });
+            
+            // Agrupar por expense_group
+            const groupKey = expense.expense_group || 'Sin grupo';
+            if (!expensesByGroup[groupKey]) {
+                expensesByGroup[groupKey] = { expenses: [], totalAnnual: 0 };
+            }
+            expensesByGroup[groupKey].expenses.push({ expense, annualAmount });
+            expensesByGroup[groupKey].totalAnnual += annualAmount;
+        }
+    });
+    
+    // Mostrar resumen anual
+    if (activeExpenses.length > 0) {
+        const summaryCard = document.createElement('div');
+        summaryCard.style.gridColumn = '1 / -1';
+        summaryCard.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
+        summaryCard.style.color = 'white';
+        summaryCard.style.borderRadius = 'var(--radius-md)';
+        summaryCard.style.padding = '24px';
+        summaryCard.style.boxShadow = 'var(--shadow-md)';
+        summaryCard.style.marginBottom = '20px';
+        
+        summaryCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; opacity: 0.9;">Resumen Anual de Gastos Recurrentes</h3>
+                    <p style="margin: 0; font-size: 13px; opacity: 0.8;">${activeExpenses.length} gasto${activeExpenses.length !== 1 ? 's' : ''} activo${activeExpenses.length !== 1 ? 's' : ''}</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">${formatCurrency(totalAnnual)}</div>
+                    <div style="font-size: 12px; opacity: 0.9;">Costo anual estimado</div>
+                </div>
+            </div>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 13px;">
+                    <div>
+                        <div style="opacity: 0.8; margin-bottom: 4px;">Mensual</div>
+                        <div style="font-weight: 600; font-size: 16px;">${formatCurrency(totalAnnual / 12)}</div>
+                    </div>
+                    <div>
+                        <div style="opacity: 0.8; margin-bottom: 4px;">Semanal</div>
+                        <div style="font-weight: 600; font-size: 16px;">${formatCurrency(totalAnnual / 52)}</div>
+                    </div>
+                    <div>
+                        <div style="opacity: 0.8; margin-bottom: 4px;">Diario</div>
+                        <div style="font-weight: 600; font-size: 16px;">${formatCurrency(totalAnnual / 365)}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        grid.appendChild(summaryCard);
+        
+        // Mostrar resúmenes por grupo si hay grupos
+        const groupsWithExpenses = Object.keys(expensesByGroup).filter(key => key !== 'Sin grupo' && expensesByGroup[key].expenses.length > 0);
+        if (groupsWithExpenses.length > 0) {
+            groupsWithExpenses.forEach(groupName => {
+                const groupData = expensesByGroup[groupName];
+                const groupCard = document.createElement('div');
+                groupCard.style.gridColumn = '1 / -1';
+                groupCard.style.background = 'var(--bg-secondary)';
+                groupCard.style.border = '1px solid var(--border-color)';
+                groupCard.style.borderRadius = 'var(--radius-md)';
+                groupCard.style.padding = '20px';
+                groupCard.style.marginBottom = '16px';
+                
+                groupCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary);">📁 ${groupName}</h4>
+                        <div style="text-align: right;">
+                            <div style="font-size: 20px; font-weight: 700; color: var(--primary);">${formatCurrency(groupData.totalAnnual)}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">Anual</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary);">
+                        ${groupData.expenses.length} gasto${groupData.expenses.length !== 1 ? 's' : ''} • 
+                        Mensual: ${formatCurrency(groupData.totalAnnual / 12)}
+                    </div>
+                `;
+                grid.appendChild(groupCard);
+            });
+        }
+    }
+    
+    // Agrupar gastos para mostrar (TODOS los gastos, no solo activos)
+    const groupedExpenses = {};
+    console.log('🔄 updateRecurringExpenses: Agrupando gastos...', { total: recurringExpenses.length });
+    recurringExpenses.forEach(expense => {
+        const groupKey = expense.expense_group || 'Sin grupo';
+        if (!groupedExpenses[groupKey]) {
+            groupedExpenses[groupKey] = [];
+        }
+        groupedExpenses[groupKey].push(expense);
+    });
+    console.log('🔄 updateRecurringExpenses: Grupos creados', Object.keys(groupedExpenses));
+    
+    // Mostrar gastos agrupados
+    Object.keys(groupedExpenses).sort((a, b) => {
+        // Mostrar grupos primero, luego "Sin grupo"
+        if (a === 'Sin grupo') return 1;
+        if (b === 'Sin grupo') return -1;
+        return a.localeCompare(b);
+    }).forEach(groupName => {
+        const groupExpenses = groupedExpenses[groupName];
+        
+        // Título del grupo si no es "Sin grupo"
+        if (groupName !== 'Sin grupo' && groupExpenses.length > 0) {
+            const groupHeader = document.createElement('div');
+            groupHeader.style.gridColumn = '1 / -1';
+            groupHeader.style.marginTop = '20px';
+            groupHeader.style.marginBottom = '12px';
+            groupHeader.innerHTML = `
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary); padding: 8px 12px; background: var(--bg-secondary); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                    📁 ${groupName}
+                </h3>
+            `;
+            grid.appendChild(groupHeader);
+        }
+        
+        groupExpenses.forEach(expense => {
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.background = 'var(--bg-primary)';
+        card.style.color = 'var(--text-primary)';
+        card.style.border = '1px solid var(--border-color)';
+        card.style.borderRadius = 'var(--radius-md)';
+        card.style.padding = '20px';
+        card.style.boxShadow = 'var(--shadow-sm)';
+        
+        const frequencyNames = {
+            weekly: 'Semanal',
+            monthly: 'Mensual',
+            yearly: 'Anual'
+        };
+        
+        let categoryName = '';
+        const category = categories.expense.find(c => c.id === expense.category_general);
+        if (category) {
+            categoryName = `${category.name} - ${expense.category_specific}`;
+        } else {
+            categoryName = `${expense.category_general} - ${expense.category_specific}`;
+        }
+        
+        let propertyName = '';
+        if (expense.property_id) {
+            const property = properties.find(p => (p._id || p.id) === expense.property_id);
+            propertyName = property ? property.name : 'Propiedad desconocida';
+        }
+        
+        const now = new Date();
+        const startDate = new Date(expense.start_date);
+        const endDate = expense.end_date ? new Date(expense.end_date) : null;
+        // Un gasto está activo si: está marcado como activo Y (no tiene fecha de fin O la fecha de fin es futura) Y la fecha de inicio es pasada o hoy
+        const isActive = expense.is_active !== false && (!endDate || endDate >= now) && startDate <= now;
+        
+        // Calcular costo anual de este gasto
+        let annualAmount = 0;
+        if (isActive) {
+            if (expense.frequency === 'monthly') {
+                annualAmount = expense.amount * 12;
+            } else if (expense.frequency === 'weekly') {
+                annualAmount = expense.amount * 52;
+            } else if (expense.frequency === 'yearly') {
+                annualAmount = expense.amount;
+            }
+            
+            // Si tiene fecha de fin, calcular solo hasta esa fecha
+            if (endDate) {
+                const monthsRemaining = Math.max(0, (endDate.getFullYear() - now.getFullYear()) * 12 + (endDate.getMonth() - now.getMonth()));
+                if (expense.frequency === 'monthly') {
+                    annualAmount = expense.amount * Math.min(12, monthsRemaining);
+                } else if (expense.frequency === 'weekly') {
+                    const weeksRemaining = Math.max(0, Math.ceil((endDate - now) / (1000 * 60 * 60 * 24 * 7)));
+                    annualAmount = expense.amount * Math.min(52, weeksRemaining);
+                }
+            }
+        }
+        
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: var(--text-primary);">${expense.name}</h3>
+                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">${categoryName}</div>
+                    ${expense.expense_group ? `<div style="font-size: 12px; color: var(--primary); margin-top: 4px; font-weight: 500;">📁 ${expense.expense_group}</div>` : ''}
+                    ${propertyName ? `<div style="font-size: 12px; color: var(--text-tertiary); margin-top: 4px;">🏠 ${propertyName}</div>` : ''}
+                </div>
+                <span style="font-size: 11px; padding: 4px 8px; background: ${isActive ? 'var(--success)' : 'var(--gray-300)'}; border-radius: var(--radius); color: ${isActive ? 'white' : 'var(--text-secondary)'}; font-weight: 600;">
+                    ${isActive ? 'Activo' : 'Inactivo'}
+                </span>
+            </div>
+            <div style="margin: 12px 0; padding: 12px; background: var(--bg-secondary); border-radius: 6px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                    <div style="color: var(--text-secondary);"><strong>Monto:</strong></div>
+                    <div style="font-weight: 600; color: var(--text-primary); text-align: right;">${formatCurrency(expense.amount)}</div>
+                    <div style="color: var(--text-secondary);"><strong>Frecuencia:</strong></div>
+                    <div style="color: var(--text-primary); text-align: right;">${frequencyNames[expense.frequency] || expense.frequency}</div>
+                    <div style="color: var(--text-secondary);"><strong>Día de pago:</strong></div>
+                    <div style="color: var(--text-primary); text-align: right;">Día ${expense.payment_day}</div>
+                    ${isActive && annualAmount > 0 ? `
+                        <div style="color: var(--text-secondary);"><strong>Costo Anual:</strong></div>
+                        <div style="font-weight: 700; color: var(--primary); text-align: right; font-size: 14px;">${formatCurrency(annualAmount)}</div>
+                    ` : ''}
+                    <div style="color: var(--text-secondary);"><strong>Inicio:</strong></div>
+                    <div style="color: var(--text-primary); text-align: right;">${formatDate(expense.start_date)}</div>
+                    ${expense.end_date ? `
+                        <div style="color: var(--text-secondary);"><strong>Fin:</strong></div>
+                        <div style="color: var(--text-primary); text-align: right;">${formatDate(expense.end_date)}</div>
+                    ` : `
+                        <div style="color: var(--text-secondary);"><strong>Fin:</strong></div>
+                        <div style="color: var(--text-primary); text-align: right;">Indefinido</div>
+                    `}
+                </div>
+            </div>
+            ${expense.description ? `<div style="margin: 12px 0; font-size: 12px; color: var(--text-tertiary); font-style: italic;">${expense.description}</div>` : ''}
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
+                <button class="btn-secondary" onclick="editRecurringExpense('${expense._id || expense.id}')" style="flex: 1; min-width: 80px;">Editar</button>
+                <button class="btn-secondary" onclick="toggleRecurringExpense('${expense._id || expense.id}', ${!isActive})" style="flex: 1; min-width: 80px;">
+                    ${isActive ? 'Pausar' : 'Activar'}
+                </button>
+                <button class="btn-danger" onclick="deleteRecurringExpense('${expense._id || expense.id}')" style="flex: 1; min-width: 80px;">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+        });
+    });
+    
+    console.log('✅ updateRecurringExpenses: Completado', { cardsAdded: grid.children.length });
+}
+
+// Editar gasto recurrente
+async function editRecurringExpense(id) {
+    const expense = recurringExpenses.find(e => (e._id || e.id) === id);
+    if (!expense) return;
+    
+    // Llenar formulario con datos existentes
+    document.getElementById('recurringExpenseName').value = expense.name;
+    document.getElementById('recurringExpenseAmount').value = expense.amount;
+    document.getElementById('recurringExpenseCategoryGeneral').value = expense.category_general;
+    
+    // Actualizar subcategorías
+    const categoryGeneralSelect = document.getElementById('recurringExpenseCategoryGeneral');
+    if (categoryGeneralSelect) {
+        categoryGeneralSelect.dispatchEvent(new Event('change'));
+        setTimeout(() => {
+            document.getElementById('recurringExpenseCategorySpecific').value = expense.category_specific;
+        }, 100);
+    }
+    
+    document.getElementById('recurringExpenseFrequency').value = expense.frequency;
+    document.getElementById('recurringExpensePaymentDay').value = expense.payment_day;
+    document.getElementById('recurringExpenseStartDate').value = expense.start_date;
+    if (expense.end_date) {
+        document.getElementById('recurringExpenseEndDate').value = expense.end_date;
+    }
+    // Campo expense_group eliminado - no se edita
+    if (expense.property_id) {
+        const propertySelect = document.getElementById('recurringExpenseProperty');
+        if (propertySelect) {
+            updatePropertySelect('recurringExpenseProperty');
+            setTimeout(() => {
+                propertySelect.value = expense.property_id;
+            }, 100);
+        }
+    }
+    if (expense.account_id) {
+        const accountSelect = document.getElementById('recurringExpenseAccount');
+        if (accountSelect) {
+            updateAccountSelect('recurringExpenseAccount');
+            setTimeout(() => {
+                accountSelect.value = expense.account_id;
+            }, 100);
+        }
+    }
+    if (expense.description) {
+        document.getElementById('recurringExpenseDescription').value = expense.description;
+    }
+    
+    // Mostrar formulario
+    toggleForm('recurringExpenseForm', 'toggleRecurringExpenseFormBtn');
+    
+    // Cambiar el botón submit para actualizar en lugar de crear
+    const form = document.getElementById('recurringExpenseForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.textContent = 'Actualizar Gasto Recurrente';
+        submitBtn.onclick = async (e) => {
+            e.preventDefault();
+            await updateRecurringExpense(id);
+        };
+    }
+}
+
+// Actualizar gasto recurrente
+async function updateRecurringExpense(id) {
+    const name = document.getElementById('recurringExpenseName').value.trim();
+    const amount = parseFloat(document.getElementById('recurringExpenseAmount').value);
+    const categoryGeneral = document.getElementById('recurringExpenseCategoryGeneral').value;
+    const categorySpecific = document.getElementById('recurringExpenseCategorySpecific').value;
+    const frequency = document.getElementById('recurringExpenseFrequency').value;
+    const paymentDay = parseInt(document.getElementById('recurringExpensePaymentDay').value) || 1;
+    const startDate = document.getElementById('recurringExpenseStartDate').value;
+    const endDateInput = document.getElementById('recurringExpenseEndDate');
+    const endDate = endDateInput && endDateInput.value ? endDateInput.value : null;
+    const propertyId = document.getElementById('recurringExpenseProperty') ? document.getElementById('recurringExpenseProperty').value : '';
+    const accountId = document.getElementById('recurringExpenseAccount') ? document.getElementById('recurringExpenseAccount').value : '';
+    const description = document.getElementById('recurringExpenseDescription') ? document.getElementById('recurringExpenseDescription').value.trim() : '';
+    
+    if (!name || !amount || amount <= 0 || !categoryGeneral || !categorySpecific || !frequency || !startDate) {
+        showToast('Por favor completa todos los campos requeridos', 'warning');
+        return;
+    }
+    
+    try {
+        await apiRequest(`/recurring-expenses/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name,
+                amount,
+                category_general: categoryGeneral,
+                category_specific: categorySpecific,
+                frequency,
+                payment_day: paymentDay,
+                start_date: startDate,
+                end_date: endDate,
+                property_id: propertyId || null,
+                account_id: accountId || null,
+                description: description || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        // Restaurar botón submit
+        const form = document.getElementById('recurringExpenseForm');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.textContent = 'Agregar Gasto Recurrente';
+            submitBtn.onclick = null;
+        }
+        
+        form.reset();
+        toggleForm('recurringExpenseForm', 'toggleRecurringExpenseFormBtn');
+        
+        showToast('Gasto recurrente actualizado exitosamente', 'success');
+    } catch (error) {
+        console.error('Error al actualizar gasto recurrente:', error);
+        showToast('Error al actualizar gasto recurrente: ' + (error.message || 'Error desconocido'), 'error');
+    }
+}
+
+// Activar/Pausar gasto recurrente
+async function toggleRecurringExpense(id, activate) {
+    try {
+        const expense = recurringExpenses.find(e => (e._id || e.id) === id);
+        if (!expense) {
+            console.error('❌ toggleRecurringExpense: Gasto no encontrado', id);
+            return;
+        }
+        
+        await apiRequest(`/recurring-expenses/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                is_active: activate
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        showToast(activate ? 'Gasto recurrente activado' : 'Gasto recurrente pausado', 'success');
+    } catch (error) {
+        console.error('Error al cambiar estado del gasto recurrente:', error);
+        showToast('Error al cambiar estado: ' + (error.message || 'Error desconocido'), 'error');
+    }
+}
+
+// Eliminar gasto recurrente
+async function deleteRecurringExpense(id) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este gasto recurrente?')) {
+        return;
+    }
+    
+    try {
+        await apiRequest(`/recurring-expenses/${id}`, {
+            method: 'DELETE'
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        
+        showToast('Gasto recurrente eliminado exitosamente', 'success');
+    } catch (error) {
+        console.error('Error al eliminar gasto recurrente:', error);
+        showToast('Error al eliminar gasto recurrente: ' + (error.message || 'Error desconocido'), 'error');
+    }
+}
+
+// Exponer funciones globalmente
+window.deleteRecurringExpense = deleteRecurringExpense;
+window.editRecurringExpense = editRecurringExpense;
+window.toggleRecurringExpense = toggleRecurringExpense;
+
+// Generar transacciones automáticas desde gastos recurrentes - DESACTIVADO
+// Esta función ya no se ejecuta - los gastos recurrentes no generan transacciones automáticas
+async function generateRecurringExpenseTransactions_DISABLED() {
+    return; // Función desactivada - no generar transacciones automáticas
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    
+    for (const expense of recurringExpenses) {
+        if (!expense.is_active) continue;
+        
+        const startDate = new Date(expense.start_date);
+        startDate.setHours(0, 0, 0, 0);
+        
+        // Verificar si el gasto ya comenzó
+        if (startDate > now) continue;
+        
+        // Verificar si el gasto ya terminó
+        if (expense.end_date) {
+            const endDate = new Date(expense.end_date);
+            endDate.setHours(23, 59, 59, 999);
+            if (endDate < now) continue;
+        }
+        
+        // Calcular la próxima fecha de pago según la frecuencia
+        let nextPaymentDate = calculateNextPaymentDate(expense, now);
+        
+        if (!nextPaymentDate) continue;
+        
+        // Verificar si ya existe una transacción para esta fecha
+        const existingTransaction = transactions.find(t => {
+            const tDate = new Date(t.date);
+            tDate.setHours(0, 0, 0, 0);
+            return tDate.getTime() === nextPaymentDate.getTime() &&
+                   t.category_general === expense.category_general &&
+                   t.category_specific === expense.category_specific &&
+                   Math.abs(t.amount) === expense.amount;
+        });
+        
+        if (existingTransaction) continue;
+        
+        // Crear la transacción
+        try {
+            const transactionData = {
+                type: 'expense',
+                date: nextPaymentDate.toISOString().split('T')[0],
+                amount: Math.abs(expense.amount),
+                categoryGeneral: expense.category_general,
+                categorySpecific: expense.category_specific,
+                envelope: null,
+                budget_id: expense.budget_id || null,
+                account_id: expense.account_id || null,
+                property_id: expense.property_id || null,
+                description: expense.description || expense.name,
+                is_recurring: true,
+                recurring_frequency: expense.frequency
+            };
+            
+            await apiRequest('/transactions', {
+                method: 'POST',
+                body: JSON.stringify(transactionData)
+            });
+            
+            // Actualizar last_generated_date del gasto recurrente
+            await apiRequest(`/recurring-expenses/${expense._id || expense.id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    last_generated_date: nextPaymentDate.toISOString().split('T')[0]
+                })
+            });
+            
+        } catch (error) {
+            console.error(`Error generando transacción para gasto recurrente ${expense.name}:`, error);
+            // Continuar con el siguiente gasto aunque falle uno
+        }
+    }
+    
+    // Recargar transacciones después de generar
+    if (recurringExpenses.length > 0) {
+        await loadUserDataFresh();
+    }
+}
+
+// Calcular la próxima fecha de pago para un gasto recurrente
+function calculateNextPaymentDate(expense, referenceDate = new Date()) {
+    const now = new Date(referenceDate);
+    now.setHours(0, 0, 0, 0);
+    
+    const startDate = new Date(expense.start_date);
+    startDate.setHours(0, 0, 0, 0);
+    
+    if (expense.frequency === 'monthly') {
+        // Calcular el próximo día de pago del mes
+        const paymentDay = expense.payment_day || 1;
+        let nextDate = new Date(now.getFullYear(), now.getMonth(), paymentDay);
+        
+        // Si ya pasó el día de pago este mes, usar el próximo mes
+        if (nextDate < now) {
+            nextDate = new Date(now.getFullYear(), now.getMonth() + 1, paymentDay);
+        }
+        
+        // Asegurar que no sea antes de la fecha de inicio
+        if (nextDate < startDate) {
+            nextDate = new Date(startDate.getFullYear(), startDate.getMonth(), paymentDay);
+            if (nextDate < startDate) {
+                nextDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, paymentDay);
+            }
+        }
+        
+        return nextDate;
+    } else if (expense.frequency === 'weekly') {
+        // Calcular el próximo día de la semana (asumiendo que payment_day es 1-7, donde 1 = lunes)
+        const paymentDay = expense.payment_day || 1;
+        const daysUntilNext = (paymentDay - now.getDay() + 7) % 7 || 7;
+        let nextDate = new Date(now);
+        nextDate.setDate(now.getDate() + daysUntilNext);
+        
+        // Asegurar que no sea antes de la fecha de inicio
+        if (nextDate < startDate) {
+            nextDate = new Date(startDate);
+            const daysUntilPayment = (paymentDay - startDate.getDay() + 7) % 7 || 7;
+            nextDate.setDate(startDate.getDate() + daysUntilPayment);
+        }
+        
+        return nextDate;
+    } else if (expense.frequency === 'yearly') {
+        // Calcular el próximo día del año
+        const paymentDay = expense.payment_day || 1;
+        const paymentMonth = Math.floor((paymentDay - 1) / 31); // Aproximación
+        let nextDate = new Date(now.getFullYear(), paymentMonth, paymentDay % 31 || 31);
+        
+        // Si ya pasó este año, usar el próximo año
+        if (nextDate < now) {
+            nextDate = new Date(now.getFullYear() + 1, paymentMonth, paymentDay % 31 || 31);
+        }
+        
+        // Asegurar que no sea antes de la fecha de inicio
+        if (nextDate < startDate) {
+            nextDate = new Date(startDate.getFullYear(), paymentMonth, paymentDay % 31 || 31);
+            if (nextDate < startDate) {
+                nextDate = new Date(startDate.getFullYear() + 1, paymentMonth, paymentDay % 31 || 31);
+            }
+        }
+        
+        return nextDate;
+    }
+    
+    return null;
+}
+
+// ==================== INVERSIONES ====================
+
+// Agregar inversión
+async function addInvestment() {
+    const name = document.getElementById('investmentName').value.trim();
+    const type = document.getElementById('investmentType').value;
+    const currentValue = parseFloat(document.getElementById('investmentCurrentValue').value);
+    const description = document.getElementById('investmentDescription').value.trim();
+    
+    // Aportes periódicos
+    const enablePeriodic = document.getElementById('enablePeriodicContribution')?.checked || false;
+    const contributionFrequency = document.getElementById('contributionFrequency')?.value || 'monthly';
+    const contributionAmount = parseFloat(document.getElementById('contributionAmount')?.value || 0);
+    const contributionStartDate = document.getElementById('contributionStartDate')?.value || null;
+    const contributionEndDate = document.getElementById('contributionEndDate')?.value || null;
+    const contributionAccountId = document.getElementById('contributionAccount')?.value || '';
+    
+    if (!name || isNaN(currentValue) || !type) {
+        alert('Por favor completa todos los campos requeridos');
+        return;
+    }
+    
+    if (enablePeriodic && (!contributionAmount || contributionAmount <= 0 || !contributionStartDate)) {
+        alert('Si activas aportes periódicos, debes especificar el monto y la fecha de inicio');
+        return;
+    }
+    
+    try {
+        const investmentData = {
+            name,
+            type,
+            current_value: currentValue || 0,
+            description: description || null,
+            contributions: [], // Inicialmente vacío, se irá llenando con aportes
+            periodic_contribution: {
+                enabled: enablePeriodic,
+                frequency: enablePeriodic ? contributionFrequency : 'monthly',
+                amount: enablePeriodic ? contributionAmount : 0,
+                start_date: enablePeriodic ? contributionStartDate : null,
+                end_date: enablePeriodic ? (contributionEndDate || null) : null,
+                account_id: enablePeriodic ? (contributionAccountId || null) : null, // Cuenta para aportes periódicos
+                completed_contributions: []
+            }
+        };
+        
+        const investment = await apiRequest('/investments', {
+            method: 'POST',
+            body: JSON.stringify(investmentData)
+        });
+        
+        investments.push(investment);
+        updateDisplay();
+        const investmentForm = document.getElementById('investmentForm');
+        if (investmentForm) {
+            investmentForm.reset();
+            // Resetear campos de aportes periódicos
+            const enablePeriodicCheckbox = document.getElementById('enablePeriodicContribution');
+            const periodicFields = document.getElementById('periodicContributionFields');
+            if (enablePeriodicCheckbox) enablePeriodicCheckbox.checked = false;
+            if (periodicFields) periodicFields.style.display = 'none';
+            // Ocultar formulario después de agregar exitosamente
+            if (investmentForm.style.display !== 'none') {
+                toggleForm('investmentForm', 'toggleInvestmentFormBtn');
+            }
+        }
+        alert('✅ Inversión creada. Ahora puedes añadir dinero a tu hucha.');
+    } catch (error) {
+        alert('Error al crear inversión: ' + error.message);
+    }
+}
+
+// Actualizar inversiones
+function updateInvestments() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const grid = document.getElementById('investmentsGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (investments.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay inversiones registradas</p>';
+        return;
+    }
+    
+    const totalInvested = investments.reduce((sum, inv) => {
+        return sum + ((inv.contributions || []).reduce((contribSum, c) => contribSum + c.amount, 0));
+    }, 0);
+    const totalCurrentValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const totalProfit = totalCurrentValue - totalInvested;
+    const totalReturn = totalInvested > 0 ? ((totalProfit / totalInvested) * 100) : 0;
+    
+    investments.forEach(investment => {
+        // Calcular total invertido (suma de todos los aportes)
+        const totalInvested = (investment.contributions || []).reduce((sum, c) => sum + c.amount, 0);
+        const profit = investment.current_value - totalInvested;
+        const returnPercent = totalInvested > 0 ? ((profit / totalInvested) * 100) : 0;
+        
+        // Calcular días desde el primer aporte
+        const firstContribution = investment.contributions && investment.contributions.length > 0 
+            ? new Date(investment.contributions[0].date)
+            : new Date(investment.created_at);
+        const daysHeld = Math.floor((new Date() - firstContribution) / (1000 * 60 * 60 * 24));
+        
+        const typeNames = {
+            stocks: 'Acciones',
+            bonds: 'Bonos',
+            crypto: 'Criptomonedas',
+            funds: 'Fondos',
+            real_estate: 'Inmuebles',
+            other: 'Otros'
+        };
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.borderLeft = `4px solid ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}`;
+        card.style.overflow = 'visible';
+        card.style.wordWrap = 'break-word';
+        card.style.overflowWrap = 'break-word';
+        card.style.boxSizing = 'border-box';
+        card.innerHTML = `
+            <h3>${investment.name} <span style="font-size: 12px; color: var(--gray-500); font-weight: normal;">(${typeNames[investment.type] || investment.type})</span></h3>
+            
+            <div style="margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
+                    <div><strong>Total Invertido:</strong></div>
+                    <div style="text-align: right; font-weight: 600;">${formatCurrency(totalInvested)}</div>
+                    <div><strong>Valor Actual:</strong></div>
+                    <div style="text-align: right; font-weight: 600; font-size: 16px;">${formatCurrency(investment.current_value)}</div>
+                    <div><strong>Ganancia/Pérdida:</strong></div>
+                    <div style="text-align: right; color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 18px;">
+                        ${profit >= 0 ? '+' : ''}${formatCurrency(profit)}
+                    </div>
+                    <div><strong>Rentabilidad:</strong></div>
+                    <div style="text-align: right; color: ${returnPercent >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 16px;">
+                        ${returnPercent >= 0 ? '+' : ''}${returnPercent.toFixed(2)}%
+                    </div>
+                    ${investment.contributions && investment.contributions.length > 0 ? `
+                        <div><strong>🔢 Aportes:</strong></div>
+                        <div style="text-align: right; color: var(--gray-600);">${investment.contributions.length}</div>
+                    ` : ''}
+                </div>
+            </div>
+            
+            ${investment.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${investment.description}</div>` : ''}
+            
+            ${investment.contributions && investment.contributions.length > 0 ? `
+                <div style="margin: 12px 0; padding: 12px; background: rgba(16, 185, 129, 0.05); border-radius: var(--radius); border-left: 3px solid var(--success);">
+                    <div style="font-size: 12px; font-weight: 600; color: var(--success); margin-bottom: 8px;">Historial de Aportes</div>
+                    <div style="max-height: 120px; overflow-y: auto; font-size: 12px;">
+                        ${investment.contributions.slice().reverse().slice(0, 5).map(c => `
+                            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.1);">
+                                <span>${formatDate(new Date(c.date))}</span>
+                                <span style="font-weight: 600; color: var(--success);">+${formatCurrency(c.amount)}</span>
+                            </div>
+                        `).join('')}
+                        ${investment.contributions.length > 5 ? `
+                            <div style="text-align: center; padding-top: 6px; color: var(--gray-500); font-size: 11px;">
+                                +${investment.contributions.length - 5} aportes más
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            ` : `
+                <div style="margin: 12px 0; padding: 12px; background: rgba(147, 51, 234, 0.05); border-radius: var(--radius); border-left: 3px solid var(--primary);">
+                    <div style="font-size: 12px; color: var(--gray-600); text-align: center;">
+                        ${investment.current_value > 0 ? 
+                            '💡 Tienes un valor actual pero no hay aportes registrados. Usa "Añadir Dinero" para registrar aportes retroactivos y mantener un historial correcto.' :
+                            '💡 Aún no has añadido dinero. Haz clic en "Añadir Dinero" para empezar.'
+                        }
+                    </div>
+                </div>
+            `}
+            
+            ${investment.periodic_contribution && investment.periodic_contribution.enabled ? `
+                <div class="periodic-contribution-container">
+                    <div class="periodic-contribution-title">Aporte Periódico</div>
+                    <div class="periodic-contribution-grid">
+                        <div class="periodic-contribution-label"><strong>Frecuencia:</strong></div>
+                        <div class="periodic-contribution-value">${investment.periodic_contribution.frequency === 'weekly' ? 'Semanal' : investment.periodic_contribution.frequency === 'monthly' ? 'Mensual' : 'Anual'}</div>
+                        <div class="periodic-contribution-label"><strong>Monto:</strong></div>
+                        <div class="periodic-contribution-value periodic-contribution-amount">${formatCurrency(investment.periodic_contribution.amount)}</div>
+                        <div class="periodic-contribution-label"><strong>Inicio:</strong></div>
+                        <div class="periodic-contribution-value">${formatDate(new Date(investment.periodic_contribution.start_date))}</div>
+                        ${investment.periodic_contribution.end_date ? `
+                            <div class="periodic-contribution-label"><strong>Fin:</strong></div>
+                            <div class="periodic-contribution-value">${formatDate(new Date(investment.periodic_contribution.end_date))}</div>
+                        ` : `
+                            <div class="periodic-contribution-label"><strong>Fin:</strong></div>
+                            <div class="periodic-contribution-value periodic-contribution-indefinite">Indefinido</div>
+                        `}
+                    </div>
+                    ${investment.periodic_contribution.completed_contributions && investment.periodic_contribution.completed_contributions.length > 0 ? `
+                        <div class="periodic-contribution-completed">
+                            <div class="periodic-contribution-completed-title">Aportes Realizados (${investment.periodic_contribution.completed_contributions.length})</div>
+                            <div class="periodic-contribution-completed-list">
+                                ${investment.periodic_contribution.completed_contributions.slice(-5).map((c, idx) => {
+                                    const contributionIndex = investment.periodic_contribution.completed_contributions.length - 5 + idx;
+                                    return `
+                                    <div class="periodic-contribution-completed-item">
+                                        <span class="periodic-contribution-completed-amount">${formatCurrency(-Math.abs(c.amount))}</span>
+                                        <div class="periodic-contribution-completed-actions">
+                                            <button class="btn-secondary" onclick="editCompletedContribution('${investment._id || investment.id}', ${contributionIndex})" style="padding: 6px 12px; font-size: 12px; min-height: 32px;">Editar</button>
+                                            <button class="btn-danger" onclick="deleteCompletedContribution('${investment._id || investment.id}', ${contributionIndex})" style="padding: 6px 12px; font-size: 12px; min-height: 32px;">Eliminar</button>
+                                    </div>
+                                    </div>
+                                `;
+                                }).join('')}
+                                ${investment.periodic_contribution.completed_contributions.length > 5 ? `
+                                    <div class="periodic-contribution-completed-more">
+                                        +${investment.periodic_contribution.completed_contributions.length - 5} más
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="periodic-contribution-empty">
+                            <div class="periodic-contribution-empty-text">
+                                Asocia un gasto a esta inversión para registrar el aporte
+                            </div>
+                        </div>
+                    `}
+                </div>
+            ` : ''}
+            
+            <div class="envelope-actions" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editInvestment('${investment._id || investment.id}')" style="width: 100%; padding: 10px 16px; font-size: 14px; min-height: 40px; border-radius: 8px;">Editar</button>
+                <button class="btn-primary" onclick="addMoneyToInvestment('${investment._id || investment.id}')" style="width: 100%; padding: 10px 16px; font-size: 14px; min-height: 40px; border-radius: 8px;">Añadir Dinero</button>
+                <button class="btn-secondary" onclick="updateInvestmentValue('${investment._id || investment.id}')" style="width: 100%; padding: 10px 16px; font-size: 14px; min-height: 40px; border-radius: 8px;">Actualizar Valor</button>
+                <button class="btn-danger" onclick="deleteInvestment('${investment._id || investment.id}')" style="width: 100%; padding: 10px 16px; font-size: 14px; min-height: 40px; border-radius: 8px;">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+    
+    // Agregar resumen total
+    const summaryCard = document.createElement('div');
+    summaryCard.className = 'envelope-card rainbow-bg';
+    summaryCard.style.gridColumn = '1 / -1';
+    summaryCard.style.color = '#0F172A';
+    summaryCard.style.border = 'none';
+    summaryCard.innerHTML = `
+        <h3 style="color: #0F172A; margin-bottom: 16px; font-weight: 700;">Resumen de Inversiones</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div>
+                <div style="font-size: 13px; opacity: 0.85; margin-bottom: 4px; color: #0F172A;">Total Invertido</div>
+                <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalInvested)}</div>
+            </div>
+            <div>
+                <div style="font-size: 13px; opacity: 0.85; margin-bottom: 4px; color: #0F172A;">Valor Actual</div>
+                <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalCurrentValue)}</div>
+            </div>
+            <div>
+                <div style="font-size: 13px; opacity: 0.85; margin-bottom: 4px; color: #0F172A;">Ganancia/Pérdida</div>
+                <div style="font-size: 24px; font-weight: 700; color: #0F172A;">
+                    ${totalProfit >= 0 ? '+' : ''}${formatCurrency(totalProfit)}
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 13px; opacity: 0.85; margin-bottom: 4px; color: #0F172A;">Rentabilidad Total</div>
+                <div style="font-size: 24px; font-weight: 700; color: #0F172A;">
+                    ${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%
+                </div>
+            </div>
+        </div>
+    `;
+    grid.insertBefore(summaryCard, grid.firstChild);
+}
+
+// Variable global para almacenar el ID de la inversión actual
+let currentInvestmentId = null;
+
+// Mostrar modal para añadir dinero a inversión
+function showAddMoneyInvestmentModal(id) {
+    currentInvestmentId = id;
+    const modal = document.getElementById('addMoneyInvestmentModal');
+    const titleEl = document.getElementById('addMoneyInvestmentTitle');
+    const infoEl = document.getElementById('addMoneyInvestmentInfo');
+    const dateInput = document.getElementById('addMoneyDate');
+    
+    if (!modal || !titleEl || !infoEl) return;
+    
+    // Buscar la inversión
+    const investment = investments.find(inv => (inv._id || inv.id) === id);
+    if (investment) {
+        titleEl.textContent = `Añadir Dinero a ${investment.name}`;
+        const totalInvested = (investment.contributions || []).reduce((sum, c) => sum + c.amount, 0);
+        const hasContributions = investment.contributions && investment.contributions.length > 0;
+        const hasValueButNoContributions = investment.current_value > 0 && !hasContributions;
+        
+        infoEl.innerHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px; margin-bottom: ${hasValueButNoContributions ? '12px' : '0'};">
+                <div><strong>Valor Actual:</strong></div>
+                <div style="text-align: right; font-weight: 600;">${formatCurrency(investment.current_value || 0)}</div>
+                <div><strong>Total Invertido:</strong></div>
+                <div style="text-align: right; font-weight: 600; color: ${totalInvested === 0 ? 'var(--danger)' : 'inherit'};">
+                    ${formatCurrency(totalInvested)}
+            </div>
+            </div>
+            ${hasValueButNoContributions ? `
+                <div style="margin-top: 12px; padding: 12px; background: rgba(255, 193, 7, 0.1); border-radius: var(--radius); border-left: 3px solid #FFC107;">
+                    <div style="font-size: 13px; color: #856404; font-weight: 600; margin-bottom: 4px;">💡 Aviso</div>
+                    <div style="font-size: 12px; color: #856404;">
+                        Tienes un valor actual pero no hay aportes registrados. Puedes añadir aportes retroactivos seleccionando fechas pasadas para registrar el historial de tus inversiones.
+                    </div>
+                </div>
+            ` : ''}
+        `;
+    }
+    
+    // Establecer fecha por defecto (hoy)
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+        dateInput.max = today; // No permitir fechas futuras
+    }
+    
+    modal.style.display = 'flex';
+    document.getElementById('addMoneyAmount').value = '';
+}
+
+// Cerrar modal de añadir dinero
+function closeAddMoneyInvestmentModal() {
+    const modal = document.getElementById('addMoneyInvestmentModal');
+    if (modal) modal.style.display = 'none';
+    currentInvestmentId = null;
+}
+
+// Mostrar modal para actualizar valor de inversión
+function showUpdateInvestmentValueModal(id) {
+    currentInvestmentId = id;
+    const modal = document.getElementById('updateInvestmentValueModal');
+    const titleEl = document.getElementById('updateInvestmentValueTitle');
+    
+    if (!modal || !titleEl) return;
+    
+    // Buscar la inversión
+    const investment = investments.find(inv => (inv._id || inv.id) === id);
+    if (investment) {
+        titleEl.textContent = `Actualizar Valor de ${investment.name}`;
+        const input = document.getElementById('updateInvestmentValueInput');
+        if (input) {
+            input.value = investment.current_value || 0;
+        }
+    }
+    
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de actualizar valor
+function closeUpdateInvestmentValueModal() {
+    const modal = document.getElementById('updateInvestmentValueModal');
+    if (modal) modal.style.display = 'none';
+    currentInvestmentId = null;
+}
+
+// Añadir dinero a una inversión (hucha)
+async function addMoneyToInvestment(id) {
+    showAddMoneyInvestmentModal(id);
+}
+
+// Actualizar valor actual de la inversión
+async function updateInvestmentValue(id) {
+    showUpdateInvestmentValueModal(id);
+}
+
+// Procesar añadir dinero a inversión desde el modal
+async function processAddMoneyToInvestment() {
+    if (!currentInvestmentId) return;
+    
+    const input = document.getElementById('addMoneyAmount');
+    const dateInput = document.getElementById('addMoneyDate');
+    
+    if (!input || !input.value || isNaN(input.value) || parseFloat(input.value) <= 0) {
+        alert('Por favor ingresa una cantidad válida mayor a 0');
+        return;
+    }
+    
+    if (!dateInput || !dateInput.value) {
+        alert('Por favor selecciona una fecha para el aporte');
+        return;
+    }
+    
+    // Validar que la fecha no sea futura
+    const selectedDate = new Date(dateInput.value);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // Fin del día de hoy
+    
+    if (selectedDate > today) {
+        alert('No puedes registrar aportes con fechas futuras');
+        return;
+    }
+    
+    const amount = parseFloat(input.value);
+    const date = dateInput.value;
+    
+    try {
+        await apiRequest(`/investments/${currentInvestmentId}/contribution`, {
+            method: 'POST',
+            body: JSON.stringify({
+                amount: amount,
+                date: date
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        closeAddMoneyInvestmentModal();
+        alert('✅ Aporte registrado exitosamente');
+    } catch (error) {
+        alert('Error al añadir dinero: ' + error.message);
+    }
+}
+
+// Procesar actualización de valor de inversión desde el modal
+async function processUpdateInvestmentValue() {
+    if (!currentInvestmentId) return;
+    
+    const input = document.getElementById('updateInvestmentValueInput');
+    if (!input || !input.value || isNaN(input.value)) {
+        alert('Por favor ingresa un valor válido');
+        return;
+    }
+    
+    try {
+        await apiRequest(`/investments/${currentInvestmentId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                current_value: parseFloat(input.value)
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        closeUpdateInvestmentValueModal();
+    } catch (error) {
+        alert('Error al actualizar valor: ' + error.message);
+    }
+}
+
+// Editar aporte completado de inversión
+async function editCompletedContribution(investmentId, contributionIndex) {
+    const investment = investments.find(inv => (inv._id || inv.id) === investmentId);
+    if (!investment || !investment.periodic_contribution || !investment.periodic_contribution.completed_contributions) {
+        alert('No se encontró el aporte');
+        return;
+    }
+    
+    const contribution = investment.periodic_contribution.completed_contributions[contributionIndex];
+    if (!contribution) {
+        alert('No se encontró el aporte');
+        return;
+    }
+    
+    const newAmount = prompt(`Editar monto del aporte (fecha: ${formatDate(new Date(contribution.date))}):`, contribution.amount);
+    if (newAmount === null || isNaN(newAmount) || parseFloat(newAmount) <= 0) {
+        return;
+    }
+    
+    try {
+        // Actualizar el aporte en el array
+        investment.periodic_contribution.completed_contributions[contributionIndex].amount = parseFloat(newAmount);
+        
+        await apiRequest(`/investments/${investmentId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                periodic_contribution: investment.periodic_contribution
+            })
+        });
+        
+        // Si hay una transacción asociada, actualizarla también
+        if (contribution.transaction_id) {
+            try {
+                await apiRequest(`/transactions/${contribution.transaction_id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        amount: -Math.abs(parseFloat(newAmount))
+                    })
+                });
+            } catch (err) {
+                console.error('Error al actualizar transacción:', err);
+            }
+        }
+        
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Aporte actualizado exitosamente');
+    } catch (error) {
+        alert('Error al actualizar aporte: ' + error.message);
+    }
+}
+
+// Eliminar aporte completado de inversión
+async function deleteCompletedContribution(investmentId, contributionIndex) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este aporte?')) {
+        return;
+    }
+    
+    const investment = investments.find(inv => (inv._id || inv.id) === investmentId);
+    if (!investment || !investment.periodic_contribution || !investment.periodic_contribution.completed_contributions) {
+        alert('No se encontró el aporte');
+        return;
+    }
+    
+    const contribution = investment.periodic_contribution.completed_contributions[contributionIndex];
+    if (!contribution) {
+        alert('No se encontró el aporte');
+        return;
+    }
+    
+    try {
+        // Eliminar la transacción asociada si existe
+        if (contribution.transaction_id) {
+            try {
+                await apiRequest(`/transactions/${contribution.transaction_id}`, {
+                    method: 'DELETE'
+                });
+            } catch (err) {
+                console.error('Error al eliminar transacción:', err);
+            }
+        }
+        
+        // Eliminar el aporte del array
+        investment.periodic_contribution.completed_contributions.splice(contributionIndex, 1);
+        
+        await apiRequest(`/investments/${investmentId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                periodic_contribution: investment.periodic_contribution
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Aporte eliminado exitosamente');
+    } catch (error) {
+        alert('Error al eliminar aporte: ' + error.message);
+    }
+}
+
+// Editar inversión - Abre modal con formulario pre-rellenado
+async function editInvestment(id) {
+    const investment = investments.find(inv => (inv._id || inv.id) === id);
+    if (!investment) return;
+    
+    currentEditingInvestmentId = id;
+    
+    // Crear o obtener modal
+    let modal = document.getElementById('editInvestmentModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editInvestmentModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px;">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Inversión</h2>
+                        <button onclick="closeEditInvestmentModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editInvestmentForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; max-height: calc(90vh - 100px); overflow-y: auto;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editInvestmentName">Nombre de la Inversión</label>
+                            <input type="text" id="editInvestmentName" placeholder="Ej: Acciones Apple, Plan de Pensiones" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editInvestmentType">Tipo</label>
+                            <select id="editInvestmentType" required>
+                                <option value="stocks">Acciones</option>
+                                <option value="bonds">Bonos</option>
+                                <option value="crypto">Criptomonedas</option>
+                                <option value="funds">Fondos</option>
+                                <option value="real_estate">Inmuebles</option>
+                                <option value="other">Otros</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="editInvestmentDescription">Descripción (Opcional)</label>
+                            <input type="text" id="editInvestmentDescription" placeholder="Ej: Inversión a largo plazo">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditInvestmentModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Inversión</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditInvestmentModal();
+            }
+        });
+        
+        const form = document.getElementById('editInvestmentForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateInvestmentFromModal();
+            });
+        }
+    }
+    
+    // Pre-llenar formulario
+    const nameEl = document.getElementById('editInvestmentName');
+    const typeEl = document.getElementById('editInvestmentType');
+    const descriptionEl = document.getElementById('editInvestmentDescription');
+    
+    if (!nameEl || !typeEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
+        return;
+    }
+    
+    nameEl.value = investment.name;
+    typeEl.value = investment.type;
+    if (descriptionEl) {
+        descriptionEl.value = investment.description || '';
+    }
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de inversión
+function closeEditInvestmentModal() {
+    const modal = document.getElementById('editInvestmentModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingInvestmentId = null;
+    }
+}
+
+// Actualizar inversión desde modal
+async function updateInvestmentFromModal() {
+    if (!currentEditingInvestmentId) return;
+    
+    try {
+        const nameEl = document.getElementById('editInvestmentName');
+        const typeEl = document.getElementById('editInvestmentType');
+        const descriptionEl = document.getElementById('editInvestmentDescription');
+        
+        if (!nameEl || !typeEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const type = typeEl.value;
+        const description = descriptionEl ? descriptionEl.value.trim() : '';
+        
+        if (!name || !type) {
+            showToast('Por favor completa todos los campos requeridos', 'warning');
+            return;
+        }
+        
+        showLoader('Actualizando inversión...');
+        await apiRequest(`/investments/${currentEditingInvestmentId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name,
+                type,
+                description: description || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        closeEditInvestmentModal();
+        showToast('Inversión actualizada exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar inversión: ' + error.message, 'error');
+    }
+}
+
+window.closeEditInvestmentModal = closeEditInvestmentModal;
+
+// Eliminar inversión
+async function deleteInvestment(id) {
+    const confirmed = await showConfirm(
+        'Eliminar Inversión',
+        '¿Estás seguro de eliminar esta inversión? Esta acción no se puede deshacer.',
+        'Eliminar',
+        'Cancelar'
+    );
+    if (!confirmed) return;
+    
+    try {
+        showLoader('Eliminando inversión...');
+        await apiRequest(`/investments/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Inversión eliminada exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al eliminar inversión: ' + error.message, 'error');
+    }
+}
+
+// Exponer funciones globales
+window.editInvestment = editInvestment;
+
+// ==================== PROPIEDADES/PISOS ====================
+
+// Agregar propiedad
+async function addProperty() {
+    const nameEl = document.getElementById('propertyName');
+    const typeEl = document.getElementById('propertyType');
+    const addressEl = document.getElementById('propertyAddress');
+    const descriptionEl = document.getElementById('propertyDescription');
+    
+    if (!nameEl || !typeEl) {
+        alert('Error: No se encontraron todos los campos del formulario');
+        return;
+    }
+    
+    const name = nameEl.value.trim();
+    const type = typeEl.value;
+    const address = addressEl ? addressEl.value.trim() : '';
+    const description = descriptionEl ? descriptionEl.value.trim() : '';
+    
+    if (!name || !type) {
+        alert('Por favor completa todos los campos requeridos');
+        return;
+    }
+    
+    try {
+        const propertyData = {
+            name,
+            type,
+            address: address || null,
+            description: description || null
+        };
+        
+        console.log('📤 Enviando propiedad:', propertyData);
+        
+        const property = await apiRequest('/properties', {
+            method: 'POST',
+            body: JSON.stringify(propertyData)
+        });
+        
+        console.log('✅ Propiedad creada:', property);
+        
+        properties.push(property);
+        updateDisplay();
+        
+        const propertyForm = document.getElementById('propertyForm');
+        if (propertyForm) {
+            propertyForm.reset();
+            // Ocultar formulario después de agregar exitosamente
+            if (propertyForm.style.display !== 'none') {
+                toggleForm('propertyForm', 'togglePropertyFormBtn');
+            }
+        }
+        alert('✅ Propiedad agregada exitosamente');
+    } catch (error) {
+        console.error('❌ Error al crear propiedad:', error);
+        alert('Error al crear propiedad: ' + (error.message || 'Error desconocido'));
+    }
+}
+
+// Actualizar propiedades
+function updateProperties() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const grid = document.getElementById('propertiesGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (properties.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">No hay propiedades registradas</p>';
+        return;
+    }
+    
+    properties.forEach(property => {
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.background = 'var(--bg-primary)';
+        card.style.color = 'var(--text-primary)';
+        card.style.border = '1px solid var(--border-color)';
+        card.style.borderRadius = 'var(--radius-md)';
+        card.style.padding = '20px';
+        card.style.boxShadow = 'var(--shadow-sm)';
+        
+        const typeNames = {
+            apartment: 'Piso/Apartamento',
+            house: 'Casa',
+            office: 'Oficina',
+            commercial: 'Local Comercial',
+            other: 'Otro'
+        };
+        
+        // Calcular gastos asociados a esta propiedad
+        const propertyExpenses = transactions
+            .filter(t => t.property_id === (property._id || property.id) && t.type === 'expense')
+            .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+        
+        const propertyIncomes = transactions
+            .filter(t => t.property_id === (property._id || property.id) && t.type === 'income')
+            .reduce((sum, t) => sum + t.amount, 0);
+        
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: var(--gray-900);">${property.name}</h3>
+                    <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 4px;">
+                        <strong>Tipo:</strong> ${typeNames[property.type] || property.type}
+                    </div>
+                    ${property.address ? `
+                        <div style="font-size: 13px; color: var(--gray-600); margin-bottom: 4px;">
+                            <strong>Dirección:</strong> ${property.address}
+                        </div>
+                    ` : ''}
+                    ${property.description ? `
+                        <div style="font-size: 13px; color: var(--gray-600); margin-top: 8px;">
+                            ${property.description}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
+                <div>
+                    <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">${getTranslation('property.totalExpenses', lang)}</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(propertyExpenses)}</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">${getTranslation('property.totalIncome', lang)}</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--success);">${formatCurrency(propertyIncomes)}</div>
+                </div>
+            </div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
+                <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Valor Actual</div>
+                <div style="font-size: 18px; font-weight: 700; color: var(--primary);">${formatCurrency(property.current_value || 0)}</div>
+            </div>
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 16px;">
+                <button class="btn-secondary" onclick="editProperty('${property._id || property.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-secondary" onclick="showUpdatePropertyValueModal('${property._id || property.id}')" style="flex: 1;">Actualizar Valor</button>
+                <button class="btn-danger" onclick="deleteProperty('${property._id || property.id}')" style="flex: 1;">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Editar propiedad - Abre modal con formulario pre-rellenado
+async function editProperty(id) {
+    const property = properties.find(p => (p._id || p.id) === id);
+    if (!property) return;
+    
+    currentEditingPropertyId = id;
+    
+    // Crear o obtener modal
+    let modal = document.getElementById('editPropertyModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editPropertyModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px;">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Propiedad</h2>
+                        <button onclick="closeEditPropertyModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editPropertyForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; max-height: calc(90vh - 100px); overflow-y: auto;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editPropertyName">Nombre de la Propiedad</label>
+                            <input type="text" id="editPropertyName" placeholder="Ej: Piso Calle Mayor 5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPropertyType">Tipo</label>
+                            <select id="editPropertyType" required>
+                                <option value="apartment">Piso/Apartamento</option>
+                                <option value="house">Casa</option>
+                                <option value="office">Oficina</option>
+                                <option value="commercial">Local Comercial</option>
+                                <option value="other">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label for="editPropertyAddress">Dirección (Opcional)</label>
+                            <input type="text" id="editPropertyAddress" placeholder="Ej: Calle Mayor 5, 3ºB, Madrid">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="editPropertyDescription">Descripción (Opcional)</label>
+                            <input type="text" id="editPropertyDescription" placeholder="Ej: Piso principal, alquiler">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditPropertyModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Propiedad</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditPropertyModal();
+            }
+        });
+        
+        const form = document.getElementById('editPropertyForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updatePropertyFromModal();
+            });
+        }
+    }
+    
+    // Pre-llenar formulario
+    const nameEl = document.getElementById('editPropertyName');
+    const typeEl = document.getElementById('editPropertyType');
+    const addressEl = document.getElementById('editPropertyAddress');
+    const descriptionEl = document.getElementById('editPropertyDescription');
+    
+    if (!nameEl || !typeEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
+        return;
+    }
+    
+    nameEl.value = property.name;
+    typeEl.value = property.type;
+    if (addressEl) addressEl.value = property.address || '';
+    if (descriptionEl) descriptionEl.value = property.description || '';
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de propiedad
+function closeEditPropertyModal() {
+    const modal = document.getElementById('editPropertyModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingPropertyId = null;
+    }
+}
+
+// Actualizar propiedad desde modal
+async function updatePropertyFromModal() {
+    if (!currentEditingPropertyId) return;
+    
+    try {
+        const nameEl = document.getElementById('editPropertyName');
+        const typeEl = document.getElementById('editPropertyType');
+        const addressEl = document.getElementById('editPropertyAddress');
+        const descriptionEl = document.getElementById('editPropertyDescription');
+        
+        if (!nameEl || !typeEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const type = typeEl.value;
+        const address = addressEl ? addressEl.value.trim() : '';
+        const description = descriptionEl ? descriptionEl.value.trim() : '';
+        
+        if (!name || !type) {
+            showToast('Por favor completa todos los campos requeridos', 'warning');
+            return;
+        }
+        
+        showLoader('Actualizando propiedad...');
+        await apiRequest(`/properties/${currentEditingPropertyId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name,
+                type,
+                address: address || null,
+                description: description || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        closeEditPropertyModal();
+        showToast('Propiedad actualizada exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar propiedad: ' + error.message, 'error');
+    }
+}
+
+window.closeEditPropertyModal = closeEditPropertyModal;
+
+// Variable global para el ID de la propiedad que se está editando
+let currentPropertyId = null;
+
+// Mostrar modal de actualizar valor de propiedad
+function showUpdatePropertyValueModal(propertyId) {
+    const property = properties.find(p => (p._id || p.id) === propertyId);
+    if (!property) {
+        showToast('Propiedad no encontrada', 'error');
+        return;
+    }
+    
+    currentPropertyId = propertyId;
+    
+    const modal = document.getElementById('updatePropertyValueModal');
+    const title = document.getElementById('updatePropertyValueTitle');
+    const input = document.getElementById('updatePropertyValueInput');
+    
+    if (!modal || !title || !input) {
+        showToast('Modal no encontrado', 'error');
+        return;
+    }
+    
+    title.textContent = `Actualizar Valor de ${property.name}`;
+    input.value = property.current_value || 0;
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de actualizar valor de propiedad
+function closeUpdatePropertyValueModal() {
+    const modal = document.getElementById('updatePropertyValueModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentPropertyId = null;
+    }
+}
+
+// Procesar actualización de valor de propiedad
+async function processUpdatePropertyValue() {
+    if (!currentPropertyId) return;
+    
+    const property = properties.find(p => (p._id || p.id) === currentPropertyId);
+    if (!property) return;
+    
+    const input = document.getElementById('updatePropertyValueInput');
+    if (!input || input.value === '' || isNaN(input.value)) {
+        showToast('Por favor ingresa un número válido', 'warning');
+        return;
+    }
+    
+    const currentValue = parseFloat(input.value);
+    
+    try {
+        showLoader('Actualizando valor...');
+        const updatedProperty = await apiRequest(`/properties/${currentPropertyId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                current_value: currentValue
+            })
+        });
+        
+        // Actualizar la propiedad en el array local
+        const propertyIndex = properties.findIndex(p => (p._id || p.id) === currentPropertyId);
+        if (propertyIndex !== -1) {
+            properties[propertyIndex] = updatedProperty;
+        }
+        
+        await loadUserData();
+        updateDisplay();
+        closeUpdatePropertyValueModal();
+        showToast('Valor actualizado exitosamente', 'success');
+    } catch (error) {
+        console.error('Error actualizando valor de propiedad:', error);
+        showToast('Error al actualizar valor: ' + error.message, 'error');
+    } finally {
+        hideLoader();
+    }
+}
+
+window.showUpdatePropertyValueModal = showUpdatePropertyValueModal;
+window.closeUpdatePropertyValueModal = closeUpdatePropertyValueModal;
+
+// Eliminar propiedad
+async function deleteProperty(id) {
+    if (!confirm('¿Estás seguro de eliminar esta propiedad? Esto no eliminará las transacciones asociadas.')) return;
+    
+    try {
+        await apiRequest(`/properties/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+        alert('✅ Propiedad eliminada exitosamente');
+    } catch (error) {
+        alert('Error al eliminar propiedad: ' + error.message);
+    }
+}
+
+// Exponer funciones globalmente
+window.editProperty = editProperty;
+window.deleteProperty = deleteProperty;
+
+// ==================== CUENTAS BANCARIAS ====================
+
+// Agregar cuenta bancaria
+async function addAccount() {
+    const name = document.getElementById('accountName').value.trim();
+    const type = document.getElementById('accountType').value;
+    const bank = document.getElementById('accountBank').value.trim();
+    const accountNumber = document.getElementById('accountNumber').value.trim();
+    const balance = parseFloat(document.getElementById('accountBalance').value);
+    const description = document.getElementById('accountDescription').value.trim();
+    
+    if (!name || !type) {
+        alert('Por favor completa todos los campos requeridos');
+        return;
+    }
+    
+    if (isNaN(balance)) {
+        alert('El saldo debe ser un número válido');
+        return;
+    }
+    
+    try {
+        const account = await apiRequest('/accounts', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                type,
+                bank: bank || null,
+                account_number: accountNumber || null,
+                balance,
+                currency: 'EUR',
+                description: description || null
+            })
+        });
+        
+        accounts.push(account);
+        updateDisplay();
+        const accountForm = document.getElementById('accountForm');
+        if (accountForm) {
+            accountForm.reset();
+            // Ocultar formulario después de agregar exitosamente
+            if (accountForm.style.display !== 'none') {
+                toggleForm('accountForm', 'toggleAccountFormBtn');
+            }
+        }
+        alert('✅ Cuenta agregada exitosamente');
+    } catch (error) {
+        alert('Error al crear cuenta: ' + error.message);
+    }
+}
+
+// Actualizar cuentas
+function updateAccounts() {
+    const grid = document.getElementById('accountsGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (accounts.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay cuentas registradas</p>';
+        return;
+    }
+    
+    const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+    
+    accounts.forEach(account => {
+        const typeNames = {
+            checking: 'Cuenta Corriente',
+            savings: 'Cuenta de Ahorros',
+            credit: 'Tarjeta de Crédito',
+            investment: 'Cuenta de Inversión',
+            other: 'Otra'
+        };
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.borderLeft = `4px solid ${account.balance >= 0 ? 'var(--success)' : 'var(--danger)'}`;
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--gray-900);">${account.name}</h3>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--gray-600);">${typeNames[account.type] || account.type}</p>
+                    ${account.bank ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">🏦 ${account.bank}</p>` : ''}
+                    ${account.account_number ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">****${account.account_number}</p>` : ''}
+                </div>
+            </div>
+            
+            <div style="margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
+                <div style="text-align: center;">
+                    <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Saldo Actual</div>
+                    <div style="font-size: 32px; font-weight: 700; color: ${account.balance >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                        ${formatCurrency(account.balance)}
+                    </div>
+                    <div style="font-size: 11px; color: var(--gray-500); margin-top: 4px;">${account.currency}</div>
+                </div>
+            </div>
+            
+            ${account.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${account.description}</div>` : ''}
+            
+            ${getAccountTransactionsSection(account)}
+            
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editAccount('${account._id || account.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deleteAccount('${account._id || account.id}')" style="flex: 1;">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+    
+    // Agregar resumen total
+    const summaryCard = document.createElement('div');
+    summaryCard.className = 'envelope-card rainbow-bg';
+    summaryCard.style.gridColumn = '1 / -1';
+    summaryCard.style.color = '#0F172A';
+    summaryCard.style.border = 'none';
+    summaryCard.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0; color: #0F172A; font-size: 18px; font-weight: 700;">Saldo</h3>
+                <p style="margin: 8px 0 0 0; color: #0F172A; opacity: 0.85; font-size: 14px;">${accounts.length} cuenta${accounts.length !== 1 ? 's' : ''}</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 40px; font-weight: 700; color: #0F172A;">
+                    ${formatCurrency(totalBalance)}
+                </div>
+                <div style="font-size: 12px; color: #0F172A; opacity: 0.8;">EUR</div>
+            </div>
+        </div>
+    `;
+    grid.appendChild(summaryCard);
+}
+
+// Obtener sección de transacciones de una cuenta
+function getAccountTransactionsSection(account) {
+    const accountId = account._id || account.id;
+    
+    // Filtrar transacciones asociadas a esta cuenta
+    const accountTransactions = transactions.filter(t => {
+        const tAccountId = t.account_id || t.accountId;
+        if (!tAccountId) return false;
+        return tAccountId.toString() === accountId.toString();
+    });
+    
+    if (accountTransactions.length === 0) {
+        return `
+            <div style="margin: 12px 0; padding: 12px; background: rgba(147, 51, 234, 0.05); border-radius: var(--radius); border-left: 3px solid var(--primary);">
+                <div style="font-size: 12px; color: var(--gray-600); text-align: center;">
+                    💡 No hay transacciones asociadas a esta cuenta
+                </div>
+            </div>
+        `;
+    }
+    
+    // Ordenar por fecha (más recientes primero)
+    const sortedTransactions = [...accountTransactions].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+    });
+    
+    // Mostrar todas las transacciones
+    const transactionsToShow = sortedTransactions;
+    
+    // Calcular totales
+    const totalIncome = accountTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const totalExpenses = accountTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    return `
+        <div style="margin: 12px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">
+                    Transacciones (${accountTransactions.length})
+                </div>
+                <button onclick="showAccountTransactionsModal('${accountId}')" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">
+                    Ver Transacciones
+                </button>
+            </div>
+            <div style="margin-bottom: 8px; padding: 8px; background: var(--gray-50); border-radius: var(--radius); font-size: 12px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">Ingresos:</span>
+                    <span style="color: var(--success); font-weight: 600;">+${formatCurrency(totalIncome)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                    <span style="color: var(--text-secondary);">Gastos:</span>
+                    <span style="color: var(--danger); font-weight: 600;">-${formatCurrency(totalExpenses)}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Mostrar modal de transacciones de una cuenta
+function showAccountTransactionsModal(accountId) {
+    const account = accounts.find(acc => (acc._id || acc.id) === accountId);
+    if (!account) return;
+    
+    const modal = document.getElementById('accountTransactionsModal');
+    const titleEl = document.getElementById('accountTransactionsModalTitle');
+    const summaryEl = document.getElementById('accountTransactionsModalSummary');
+    const contentEl = document.getElementById('accountTransactionsModalContent');
+    
+    if (!modal || !titleEl || !summaryEl || !contentEl) return;
+    
+    // Filtrar transacciones asociadas a esta cuenta
+    const accountTransactions = transactions.filter(t => {
+        const tAccountId = t.account_id || t.accountId;
+        if (!tAccountId) return false;
+        return tAccountId.toString() === accountId.toString();
+    });
+    
+    // Ordenar por fecha (más recientes primero)
+    const sortedTransactions = [...accountTransactions].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+    });
+    
+    // Calcular totales
+    const totalIncome = accountTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const totalExpenses = accountTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Actualizar título
+    titleEl.textContent = `Transacciones - ${account.name}`;
+    
+    // Actualizar resumen
+    summaryEl.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+            <div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Total Transacciones</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">${accountTransactions.length}</div>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Ingresos</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--success);">+${formatCurrency(totalIncome)}</div>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Gastos</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--danger);">-${formatCurrency(totalExpenses)}</div>
+            </div>
+        </div>
+    `;
+    
+    // Actualizar contenido
+    if (sortedTransactions.length === 0) {
+        contentEl.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--text-tertiary);">
+                <p style="font-size: 16px;">No hay transacciones asociadas a esta cuenta</p>
+            </div>
+        `;
+    } else {
+        contentEl.innerHTML = sortedTransactions.map(t => {
+            const tDate = new Date(t.date);
+            const isCurrentMonth = tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            const isExpense = t.type === 'expense';
+            const amount = Math.abs(t.amount);
+            const categoryName = categories.general.find(c => c.id === t.categoryGeneral)?.name || t.categoryGeneral;
+            const dateStr = tDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            
+            return `
+                <div style="display: flex; flex-direction: column; gap: 8px; padding: 16px; background: ${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}; border-radius: 8px; border: 1px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}; border-left: 3px solid ${isCurrentMonth ? 'var(--primary)' : 'var(--gray-400)'}; margin-bottom: 12px; transition: all 0.2s; box-sizing: border-box; overflow: visible; position: relative;" onmouseover="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.08)' : 'var(--bg-primary)'}'; this.style.borderColor='var(--primary)'" onmouseout="this.style.background='${isCurrentMonth ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-secondary)'}'; this.style.borderColor='${isCurrentMonth ? 'var(--primary)' : 'var(--border-color)'}'">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; width: 100%;">
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                                ${dateStr}
+                                ${isCurrentMonth ? '<span style="font-size: 11px; background: var(--primary); color: white; padding: 4px 10px; border-radius: 4px; font-weight: 600;">Este mes</span>' : ''}
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 6px;">${categoryName} - ${t.categorySpecific}</div>
+                            ${t.description ? `<div style="font-size: 12px; color: var(--text-secondary); font-style: italic; word-wrap: break-word; overflow-wrap: break-word;">${t.description}</div>` : ''}
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0;">
+                            <span style="font-size: 16px; font-weight: 700; color: ${isExpense ? 'var(--danger)' : 'var(--success)'}; white-space: nowrap;">
+                                ${isExpense ? '-' : '+'}${formatCurrency(amount)}
+                            </span>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="editTransaction('${t._id || t.id}'); closeAccountTransactionsModal();" style="background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); min-width: 90px; min-height: 38px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onmouseover="this.style.background='var(--primary-dark)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.2)'" onmouseout="this.style.background='var(--primary)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.15)'" ontouchstart="this.style.background='var(--primary-dark)'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--primary)'; this.style.transform='scale(1)'">Editar</button>
+                                <button onclick="if(confirm('¿Estás seguro de que quieres eliminar esta transacción?')) { deleteTransaction('${t._id || t.id}'); }" style="background: var(--danger); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.15); min-width: 90px; min-height: 38px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;" onmouseover="this.style.background='#E02D21'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.2)'" onmouseout="this.style.background='var(--danger)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.15)'" ontouchstart="this.style.background='#E02D21'; this.style.transform='scale(0.98)'" ontouchend="this.style.background='var(--danger)'; this.style.transform='scale(1)'">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de transacciones de cuenta
+function closeAccountTransactionsModal() {
+    const modal = document.getElementById('accountTransactionsModal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Variable global para el ID de cuenta actual
+let currentAccountId = null;
+
+// Mostrar modal para actualizar saldo de cuenta
+function showUpdateAccountBalanceModal(id) {
+    currentAccountId = id;
+    const modal = document.getElementById('updateAccountBalanceModal');
+    const titleEl = document.getElementById('updateAccountBalanceTitle');
+    
+    if (!modal || !titleEl) return;
+    
+    // Buscar la cuenta
+    const account = accounts.find(acc => (acc._id || acc.id) === id);
+    if (account) {
+        titleEl.textContent = `Actualizar Saldo - ${account.name}`;
+        const input = document.getElementById('updateAccountBalanceInput');
+        if (input) {
+            input.value = account.balance || 0;
+        }
+    }
+    
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de actualizar saldo
+function closeUpdateAccountBalanceModal() {
+    const modal = document.getElementById('updateAccountBalanceModal');
+    if (modal) modal.style.display = 'none';
+    currentAccountId = null;
+}
+
+// Procesar actualización de saldo de cuenta
+async function processUpdateAccountBalance() {
+    if (!currentAccountId) return;
+    
+    const input = document.getElementById('updateAccountBalanceInput');
+    if (!input) return;
+    
+    const newBalance = parseFloat(input.value);
+    if (isNaN(newBalance)) {
+        showToast('Por favor ingresa un saldo válido', 'error');
+        return;
+    }
+    
+    try {
+        showLoader('Actualizando saldo...');
+        await apiRequest(`/accounts/${currentAccountId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ balance: newBalance })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        closeUpdateAccountBalanceModal();
+        showToast('Saldo actualizado exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar saldo: ' + error.message, 'error');
+    }
+}
+
+// Editar cuenta - Abre modal con formulario pre-rellenado
+async function editAccount(id) {
+    const account = accounts.find(a => (a._id || a.id) === id);
+    if (!account) return;
+    
+    currentEditingAccountId = id;
+    
+    // Crear o obtener modal
+    let modal = document.getElementById('editAccountModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editAccountModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px;">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Cuenta</h2>
+                        <button onclick="closeEditAccountModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editAccountForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; max-height: calc(90vh - 100px); overflow-y: auto;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editAccountName">Nombre de la Cuenta</label>
+                            <input type="text" id="editAccountName" placeholder="Ej: Cuenta Nómina BBVA" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editAccountType">Tipo de Cuenta</label>
+                            <select id="editAccountType" required>
+                                <option value="checking">Cuenta Corriente</option>
+                                <option value="savings">Cuenta de Ahorros</option>
+                                <option value="credit">Tarjeta de Crédito</option>
+                                <option value="investment">Cuenta de Inversión</option>
+                                <option value="other">Otra</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editAccountBank">Banco (Opcional)</label>
+                            <input type="text" id="editAccountBank" placeholder="Ej: BBVA, Santander, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label for="editAccountNumber">Número de Cuenta (Opcional)</label>
+                            <input type="text" id="editAccountNumber" placeholder="Últimos 4 dígitos o referencia">
+                        </div>
+                        <div class="form-group">
+                            <label for="editAccountBalance">Saldo Actual (€)</label>
+                            <input type="number" id="editAccountBalance" step="0.01" required placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="editAccountDescription">Descripción (Opcional)</label>
+                            <input type="text" id="editAccountDescription" placeholder="Ej: Cuenta principal para gastos diarios">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditAccountModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Cuenta</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditAccountModal();
+            }
+        });
+        
+        const form = document.getElementById('editAccountForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateAccountFromModal();
+            });
+        }
+    }
+    
+    // Pre-llenar formulario
+    const nameEl = document.getElementById('editAccountName');
+    const typeEl = document.getElementById('editAccountType');
+    const bankEl = document.getElementById('editAccountBank');
+    const accountNumberEl = document.getElementById('editAccountNumber');
+    const balanceEl = document.getElementById('editAccountBalance');
+    const descriptionEl = document.getElementById('editAccountDescription');
+    
+    if (!nameEl || !typeEl || !balanceEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
+        return;
+    }
+    
+    nameEl.value = account.name;
+    typeEl.value = account.type;
+    if (bankEl) bankEl.value = account.bank || '';
+    if (accountNumberEl) accountNumberEl.value = account.account_number || '';
+    balanceEl.value = account.balance || 0;
+    if (descriptionEl) descriptionEl.value = account.description || '';
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de cuenta
+function closeEditAccountModal() {
+    const modal = document.getElementById('editAccountModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingAccountId = null;
+    }
+}
+
+// Actualizar cuenta desde modal
+async function updateAccountFromModal() {
+    if (!currentEditingAccountId) return;
+    
+    try {
+        const nameEl = document.getElementById('editAccountName');
+        const typeEl = document.getElementById('editAccountType');
+        const bankEl = document.getElementById('editAccountBank');
+        const accountNumberEl = document.getElementById('editAccountNumber');
+        const balanceEl = document.getElementById('editAccountBalance');
+        const descriptionEl = document.getElementById('editAccountDescription');
+        
+        if (!nameEl || !typeEl || !balanceEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const type = typeEl.value;
+        const bank = bankEl ? bankEl.value.trim() : '';
+        const accountNumber = accountNumberEl ? accountNumberEl.value.trim() : '';
+        const balance = parseFloat(balanceEl.value);
+        const description = descriptionEl ? descriptionEl.value.trim() : '';
+        
+        if (!name || !type || isNaN(balance)) {
+            showToast('Por favor completa todos los campos requeridos correctamente', 'warning');
+            return;
+        }
+        
+        showLoader('Actualizando cuenta...');
+        await apiRequest(`/accounts/${currentEditingAccountId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name,
+                type,
+                balance,
+                bank: bank || null,
+                account_number: accountNumber || null,
+                description: description || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        closeEditAccountModal();
+        showToast('Cuenta actualizada exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar cuenta: ' + error.message, 'error');
+    }
+}
+
+window.closeEditAccountModal = closeEditAccountModal;
+
+// Eliminar cuenta
+async function deleteAccount(id) {
+    const confirmed = await showConfirm(
+        'Eliminar Cuenta',
+        '¿Estás seguro de eliminar esta cuenta? Esta acción no se puede deshacer.',
+        'Eliminar',
+        'Cancelar'
+    );
+    if (!confirmed) return;
+    
+    try {
+        showLoader('Eliminando cuenta...');
+        await apiRequest(`/accounts/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Cuenta eliminada exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al eliminar cuenta: ' + error.message, 'error');
+    }
+}
+
+// Exponer funciones globales
+window.addMoneyToInvestment = addMoneyToInvestment;
+window.updateInvestmentValue = updateInvestmentValue;
+window.editInvestment = editInvestment;
+window.deleteInvestment = deleteInvestment;
+window.editCompletedContribution = editCompletedContribution;
+window.deleteCompletedContribution = deleteCompletedContribution;
+window.editAccount = editAccount;
+window.deleteAccount = deleteAccount;
+window.showUpdateAccountBalanceModal = showUpdateAccountBalanceModal;
+window.closeUpdateAccountBalanceModal = closeUpdateAccountBalanceModal;
+window.showAccountTransactionsModal = showAccountTransactionsModal;
+window.closeAccountTransactionsModal = closeAccountTransactionsModal;
+
+// ==================== PATRIMONIO ====================
+
+// Agregar propiedad al patrimonio
+async function addPatrimonio() {
+    const name = document.getElementById('patrimonioName').value.trim();
+    const type = document.getElementById('patrimonioType').value;
+    const address = document.getElementById('patrimonioAddress').value.trim();
+    const location = document.getElementById('patrimonioLocation').value.trim();
+    const purchaseDate = document.getElementById('patrimonioPurchaseDate').value;
+    const purchasePrice = parseFloat(document.getElementById('patrimonioPurchasePrice').value) || 0;
+    const currentValue = parseFloat(document.getElementById('patrimonioCurrentValue').value);
+    const description = document.getElementById('patrimonioDescription').value.trim();
+    
+    if (!name || !type || isNaN(currentValue) || currentValue < 0) {
+        alert('Por favor completa todos los campos requeridos correctamente (nombre, tipo y valor actual)');
+        return;
+    }
+    
+    try {
+        const propiedad = await apiRequest('/patrimonio', {
+            method: 'POST',
+            body: JSON.stringify({
+                name,
+                type,
+                address: address || null,
+                location: location || null,
+                purchase_date: purchaseDate || null,
+                purchase_price: purchasePrice,
+                current_value: currentValue,
+                description: description || null
+            })
+        });
+        
+        patrimonio.push(propiedad);
+        updateDisplay();
+        updatePatrimonioSelect('loanPatrimonio');
+        const patrimonioForm = document.getElementById('patrimonioForm');
+        if (patrimonioForm) {
+            patrimonioForm.reset();
+            const patrimonioPurchaseDate = document.getElementById('patrimonioPurchaseDate');
+            if (patrimonioPurchaseDate) {
+                const today = new Date().toISOString().split('T')[0];
+                patrimonioPurchaseDate.value = today;
+            }
+            // Ocultar formulario después de agregar exitosamente
+            if (patrimonioForm.style.display !== 'none') {
+                toggleForm('patrimonioForm', 'togglePatrimonioFormBtn');
+            }
+        }
+        alert('✅ Propiedad agregada exitosamente');
+    } catch (error) {
+        alert('Error al crear propiedad: ' + error.message);
+    }
+}
+
+// Actualizar patrimonio
+function updatePatrimonio() {
+    const grid = document.getElementById('patrimonioGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (patrimonio.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay propiedades registradas</p>';
+        return;
+    }
+    
+    const totalPurchaseValue = patrimonio.reduce((sum, p) => sum + (p.purchase_price || 0), 0);
+    const totalCurrentValue = patrimonio.reduce((sum, p) => sum + (p.current_value || 0), 0);
+    const totalAppreciation = totalCurrentValue - totalPurchaseValue;
+    const totalAppreciationPercent = totalPurchaseValue > 0 ? ((totalAppreciation / totalPurchaseValue) * 100) : 0;
+    
+    patrimonio.forEach(prop => {
+        const appreciation = prop.current_value - (prop.purchase_price || 0);
+        const appreciationPercent = (prop.purchase_price || 0) > 0 ? ((appreciation / prop.purchase_price) * 100) : 0;
+        const purchaseDate = prop.purchase_date ? new Date(prop.purchase_date) : null;
+        const daysOwned = purchaseDate ? Math.floor((new Date() - purchaseDate) / (1000 * 60 * 60 * 24)) : null;
+        
+        const typeNames = {
+            apartment: 'Apartamento',
+            house: 'Casa',
+            office: 'Oficina',
+            commercial: 'Comercial',
+            vehicle: 'Vehículo',
+            jewelry: 'Joyas',
+            art: 'Arte',
+            electronics: 'Electrónica',
+            other: 'Otro'
+        };
+        
+        const card = document.createElement('div');
+        card.className = 'envelope-card';
+        card.style.borderLeft = `4px solid ${appreciation >= 0 ? 'var(--success)' : 'var(--danger)'}`;
+        
+        // Obtener préstamos asociados
+        const associatedLoans = prop.associated_loans || [];
+        const loansInfo = associatedLoans.length > 0 
+            ? `<div style="margin: 8px 0; padding: 8px; background: var(--primary-light); border-radius: var(--radius);">
+                <strong style="font-size: 11px; color: var(--primary);">Préstamos asociados: ${associatedLoans.length}</strong>
+                ${associatedLoans.map(loan => `<div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">• ${loan.name || 'Sin nombre'}</div>`).join('')}
+               </div>`
+            : '';
+        
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--gray-900);">${prop.name}</h3>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--gray-600);">${typeNames[prop.type] || prop.type}</p>
+                    ${prop.address ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">📍 ${prop.address}</p>` : ''}
+                    ${prop.location && !prop.address ? `<p style="margin: 2px 0 0 0; font-size: 12px; color: var(--gray-500);">📍 ${prop.location}</p>` : ''}
+                </div>
+            </div>
+            
+            <div style="margin: 16px 0; padding: 16px; background: var(--gray-50); border-radius: var(--radius);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
+                    <div><strong>Compra:</strong></div>
+                    <div style="text-align: right;">${formatCurrency(prop.purchase_price || 0)}</div>
+                    <div><strong>Valor Actual:</strong></div>
+                    <div style="text-align: right; font-weight: 600;">${formatCurrency(prop.current_value)}</div>
+                    <div><strong>Evolución:</strong></div>
+                    <div style="text-align: right; color: ${appreciation >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 16px;">
+                        ${appreciation >= 0 ? '+' : ''}${formatCurrency(appreciation)}
+                    </div>
+                    <div><strong>Porcentaje:</strong></div>
+                    <div style="text-align: right; color: ${appreciationPercent >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700;">
+                        ${appreciationPercent >= 0 ? '+' : ''}${appreciationPercent.toFixed(2)}%
+                    </div>
+                    ${daysOwned !== null ? `
+                    <div><strong>Días:</strong></div>
+                    <div style="text-align: right; color: var(--gray-600);">${daysOwned}</div>
+                    ` : ''}
+                </div>
+            </div>
+            
+            ${prop.description ? `<div style="margin: 12px 0; font-size: 13px; color: var(--gray-600); font-style: italic;">${prop.description}</div>` : ''}
+            
+            ${loansInfo}
+            
+            ${prop.value_history && prop.value_history.length > 2 ? `
+                <div style="margin: 12px 0; padding: 12px; background: var(--gray-100); border-radius: var(--radius);">
+                    <strong style="font-size: 12px; color: var(--gray-700);">Historial de Valores:</strong>
+                    <div style="margin-top: 8px; font-size: 11px; color: var(--gray-600); max-height: 100px; overflow-y: auto;">
+                        ${prop.value_history.slice(-5).map(h => `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>${h.date}</span>
+                                <span style="font-weight: 600;">${formatCurrency(h.value)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            <div class="envelope-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn-secondary" onclick="editPatrimonio('${prop._id || prop.id}')" style="flex: 1;">Editar</button>
+                <button class="btn-danger" onclick="deletePatrimonio('${prop._id || prop.id}')" style="flex: 1;">Eliminar</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+    
+    // Agregar resumen total
+    const summaryCard = document.createElement('div');
+    summaryCard.className = 'envelope-card rainbow-bg';
+    summaryCard.style.gridColumn = '1 / -1';
+    summaryCard.style.color = '#0F172A';
+    summaryCard.style.border = 'none';
+    summaryCard.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0; color: #0F172A; font-size: 18px; font-weight: 700;">Valor Total del Patrimonio</h3>
+                <p style="margin: 8px 0 0 0; color: #0F172A; opacity: 0.85; font-size: 14px;">${patrimonio.length} propiedad${patrimonio.length !== 1 ? 'es' : ''}</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 32px; font-weight: 700; color: #0F172A;">
+                    ${formatCurrency(totalCurrentValue)}
+                </div>
+                <div style="font-size: 12px; color: #0F172A; opacity: 0.8;">
+                    ${totalAppreciation >= 0 ? '+' : ''}${formatCurrency(totalAppreciation)} (${totalAppreciationPercent >= 0 ? '+' : ''}${totalAppreciationPercent.toFixed(2)}%)
+                </div>
+            </div>
+        </div>
+    `;
+    grid.appendChild(summaryCard);
+    
+    // Actualizar gráfico de evolución de patrimonio
+    if (typeof updateAssetsEvolutionChart === 'function') {
+        updateAssetsEvolutionChart();
+    }
+}
+
+// Editar propiedad del patrimonio - Abre modal con formulario pre-rellenado
+async function editPatrimonio(id) {
+    const prop = patrimonio.find(p => (p._id || p.id) === id);
+    if (!prop) {
+        showToast('Propiedad no encontrada', 'error');
+        return;
+    }
+    
+    currentPatrimonioId = id;
+    
+    // Abrir modal de actualización de valor (que ya existe)
+    const modal = document.getElementById('updateAssetValueModal');
+    const title = document.getElementById('updateAssetValueTitle');
+    if (modal) {
+        // Actualizar título del modal
+        if (title) {
+            title.textContent = `Actualizar Valor de ${prop.name}`;
+        }
+        // Pre-llenar el valor actual
+        const input = document.getElementById('updateAssetValueInput');
+        if (input) {
+            input.value = prop.current_value || prop.purchase_price || 0;
+        }
+        modal.style.display = 'flex';
+    } else {
+        showToast('Modal de edición no encontrado', 'error');
+    }
+}
+
+// Procesar actualización de valor de propiedad desde el modal
+async function processUpdatePatrimonioValue() {
+    if (!currentPatrimonioId) return;
+    
+    const prop = patrimonio.find(p => (p._id || p.id) === currentPatrimonioId);
+    if (!prop) return;
+    
+    const input = document.getElementById('updateAssetValueInput');
+    if (!input || !input.value || isNaN(input.value)) {
+        showToast('Por favor ingresa un número válido', 'warning');
+        return;
+    }
+    
+    const currentValue = parseFloat(input.value);
+    
+    try {
+        await apiRequest(`/patrimonio/${currentPatrimonioId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                ...prop,
+                current_value: currentValue,
+                update_value_history: true
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        closeUpdateAssetValueModal();
+        showToast('Valor actualizado exitosamente', 'success');
+    } catch (error) {
+        console.error('Error actualizando valor de patrimonio:', error);
+        showToast('Error al actualizar valor: ' + error.message, 'error');
+    }
+}
+
+// Cerrar modal de actualizar valor de patrimonio
+function closeUpdateAssetValueModal() {
+    const modal = document.getElementById('updateAssetValueModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentPatrimonioId = null;
+    }
+}
+
+window.closeUpdateAssetValueModal = closeUpdateAssetValueModal;
+
+// Eliminar propiedad del patrimonio
+async function deletePatrimonio(id) {
+    const confirmed = await showConfirm(
+        'Eliminar Propiedad',
+        '¿Estás seguro de eliminar esta propiedad? Esta acción no se puede deshacer. Los préstamos asociados se desasociarán automáticamente.',
+        'Eliminar',
+        'Cancelar'
+    );
+    if (!confirmed) return;
+    
+    try {
+        showLoader('Eliminando propiedad...');
+        await apiRequest(`/patrimonio/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Propiedad eliminada exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al eliminar propiedad: ' + error.message, 'error');
+    }
+}
+
+// Exponer funciones globales
+window.editPatrimonio = editPatrimonio;
+window.deletePatrimonio = deletePatrimonio;
+
+// Editar préstamo - Abre modal con formulario pre-rellenado
+async function editLoan(id) {
+    const loan = loans.find(l => (l._id || l.id) === id);
+    if (!loan) return;
+    
+    currentEditingLoanId = id;
+    
+    // Crear o obtener modal
+    let modal = document.getElementById('editLoanModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editLoanModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 800px;">
+                <div class="rainbow-bg" style="padding: 28px 32px; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Editar Préstamo</h2>
+                        <button onclick="closeEditLoanModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s; cursor: pointer; font-size: 20px; font-weight: 300;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+                    </div>
+                </div>
+                <form id="editLoanForm" style="padding: 32px; display: flex; flex-direction: column; gap: 20px; max-height: calc(90vh - 100px); overflow-y: auto;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLoanName">Nombre del Préstamo</label>
+                            <input type="text" id="editLoanName" placeholder="Ej: Hipoteca vivienda" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanType">Tipo</label>
+                            <select id="editLoanType" required>
+                                <option value="debt">Deuda (Debo)</option>
+                                <option value="credit">Crédito (Me deben)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLoanPrincipal">Monto Principal (€)</label>
+                            <input type="number" id="editLoanPrincipal" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanInterestRate">TIN - Tipo de Interés Nominal (%)</label>
+                            <input type="number" id="editLoanInterestRate" step="0.01" min="0" max="100" required>
+                            <small style="color: var(--text-tertiary);">Interés puro sin comisiones</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanTAE">TAE - Tasa Anual Equivalente (%)</label>
+                            <input type="number" id="editLoanTAE" step="0.01" min="0" max="100" placeholder="Opcional">
+                            <small style="color: var(--text-tertiary); font-weight: 600;">⚠️ IMPORTANTE: Incluye comisiones y gastos. Es el costo REAL del préstamo.</small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLoanStartDate">Fecha de Inicio</label>
+                            <input type="date" id="editLoanStartDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanEndDate">Fecha de Fin</label>
+                            <input type="date" id="editLoanEndDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanMonthlyPayment">Pago Mensual (€)</label>
+                            <input type="number" id="editLoanMonthlyPayment" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLoanOpeningCommission">Comisión de Apertura (€)</label>
+                            <input type="number" id="editLoanOpeningCommission" step="0.01" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanEarlyPaymentCommission">Comisión por Amortización Anticipada (%)</label>
+                            <input type="number" id="editLoanEarlyPaymentCommission" step="0.01" min="0" max="100" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanPaymentDay">Día de Pago (1-31)</label>
+                            <input type="number" id="editLoanPaymentDay" min="1" max="31" value="1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLoanAccount">Cuenta para Pagos (Opcional)</label>
+                            <select id="editLoanAccount">
+                                <option value="">Ninguna</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLoanPatrimonio">Propiedad del Patrimonio Asociada (Opcional)</label>
+                            <select id="editLoanPatrimonio">
+                                <option value="">Ninguna</option>
+                            </select>
+                            <small style="color: var(--text-tertiary);">Propiedad del patrimonio relacionada con este préstamo (ej: hipoteca)</small>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="editLoanDescription">Descripción (Opcional)</label>
+                            <input type="text" id="editLoanDescription" placeholder="Ej: Hipoteca principal">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button type="button" class="btn-secondary" onclick="closeEditLoanModal()" style="flex: 1;">Cancelar</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Actualizar Préstamo</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeEditLoanModal();
+            }
+        });
+        
+        const form = document.getElementById('editLoanForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateLoanFromModal();
+            });
+        }
+    }
+    
+    // Pre-llenar formulario
+    const nameEl = document.getElementById('editLoanName');
+    const typeEl = document.getElementById('editLoanType');
+    const principalEl = document.getElementById('editLoanPrincipal');
+    const interestRateEl = document.getElementById('editLoanInterestRate');
+    const taeEl = document.getElementById('editLoanTAE');
+    const startDateEl = document.getElementById('editLoanStartDate');
+    const endDateEl = document.getElementById('editLoanEndDate');
+    const monthlyPaymentEl = document.getElementById('editLoanMonthlyPayment');
+    const openingCommissionEl = document.getElementById('editLoanOpeningCommission');
+    const earlyPaymentCommissionEl = document.getElementById('editLoanEarlyPaymentCommission');
+    const paymentDayEl = document.getElementById('editLoanPaymentDay');
+    const descriptionEl = document.getElementById('editLoanDescription');
+    const accountEl = document.getElementById('editLoanAccount');
+    const patrimonioEl = document.getElementById('editLoanPatrimonio');
+    
+    // Actualizar selectores
+    updateAccountSelect('editLoanAccount');
+    updatePatrimonioSelect('editLoanPatrimonio');
+    
+    if (!nameEl || !typeEl || !principalEl || !interestRateEl || !startDateEl || !endDateEl || !monthlyPaymentEl) {
+        showToast('Error: No se encontraron todos los campos del formulario', 'error');
+        return;
+    }
+    
+    nameEl.value = loan.name;
+    typeEl.value = loan.type;
+    principalEl.value = loan.principal;
+    interestRateEl.value = loan.interest_rate;
+    if (taeEl) taeEl.value = loan.tae || '';
+    startDateEl.value = loan.start_date;
+    endDateEl.value = loan.end_date;
+    monthlyPaymentEl.value = loan.monthly_payment;
+    if (openingCommissionEl) openingCommissionEl.value = loan.opening_commission || 0;
+    if (earlyPaymentCommissionEl) earlyPaymentCommissionEl.value = loan.early_payment_commission || 0;
+    if (paymentDayEl) paymentDayEl.value = loan.payment_day || 1;
+    if (descriptionEl) descriptionEl.value = loan.description || '';
+    if (accountEl) accountEl.value = loan.account_id || '';
+    if (patrimonioEl) patrimonioEl.value = loan.patrimonio_id || '';
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de edición de préstamo
+function closeEditLoanModal() {
+    const modal = document.getElementById('editLoanModal');
+    if (modal) {
+        modal.style.display = 'none';
+        currentEditingLoanId = null;
+    }
+}
+
+// Actualizar préstamo desde modal
+async function updateLoanFromModal() {
+    if (!currentEditingLoanId) return;
+    
+    try {
+        const loan = loans.find(l => (l._id || l.id) === currentEditingLoanId);
+        if (!loan) return;
+        
+        const nameEl = document.getElementById('editLoanName');
+        const typeEl = document.getElementById('editLoanType');
+        const principalEl = document.getElementById('editLoanPrincipal');
+        const interestRateEl = document.getElementById('editLoanInterestRate');
+        const taeEl = document.getElementById('editLoanTAE');
+        const startDateEl = document.getElementById('editLoanStartDate');
+        const endDateEl = document.getElementById('editLoanEndDate');
+        const monthlyPaymentEl = document.getElementById('editLoanMonthlyPayment');
+        const openingCommissionEl = document.getElementById('editLoanOpeningCommission');
+        const earlyPaymentCommissionEl = document.getElementById('editLoanEarlyPaymentCommission');
+        const paymentDayEl = document.getElementById('editLoanPaymentDay');
+        const descriptionEl = document.getElementById('editLoanDescription');
+        
+        if (!nameEl || !typeEl || !principalEl || !interestRateEl || !startDateEl || !endDateEl || !monthlyPaymentEl) {
+            showToast('Error: No se encontraron todos los campos del formulario', 'error');
+            return;
+        }
+        
+        const name = nameEl.value.trim();
+        const type = typeEl.value;
+        const principal = parseFloat(principalEl.value);
+        const interestRate = parseFloat(interestRateEl.value);
+        const taeInput = taeEl ? taeEl.value : '';
+        const tae = taeInput !== '' ? parseFloat(taeInput) : null;
+        const startDate = startDateEl.value;
+        const endDate = endDateEl.value;
+        const monthlyPayment = parseFloat(monthlyPaymentEl.value);
+        const openingCommission = openingCommissionEl ? parseFloat(openingCommissionEl.value) || 0 : 0;
+        const earlyPaymentCommission = earlyPaymentCommissionEl ? parseFloat(earlyPaymentCommissionEl.value) || 0 : 0;
+        const paymentDay = paymentDayEl ? parseInt(paymentDayEl.value) || 1 : 1;
+        const description = descriptionEl ? descriptionEl.value.trim() : '';
+        const accountId = document.getElementById('editLoanAccount') ? document.getElementById('editLoanAccount').value : '';
+        const patrimonioId = document.getElementById('editLoanPatrimonio') ? document.getElementById('editLoanPatrimonio').value : '';
+        
+        if (!name || !type || !principal || principal <= 0 || isNaN(interestRate) || interestRate < 0 || !startDate || !endDate || !monthlyPayment || monthlyPayment <= 0) {
+            showToast('Por favor completa todos los campos requeridos correctamente', 'warning');
+            return;
+        }
+        
+        showLoader('Actualizando préstamo...');
+        await apiRequest(`/loans/${currentEditingLoanId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name,
+                type,
+                principal,
+                interest_rate: interestRate,
+                account_id: accountId || null,
+                patrimonio_id: patrimonioId || null,
+                tae: tae,
+                start_date: startDate,
+                end_date: endDate,
+                monthly_payment: monthlyPayment,
+                opening_commission: openingCommission,
+                early_payment_commission: earlyPaymentCommission,
+                payment_day: paymentDay,
+                description: description || null
+            })
+        });
+        
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        closeEditLoanModal();
+        showToast('Préstamo actualizado exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al actualizar préstamo: ' + error.message, 'error');
+    }
+}
+
+window.closeEditLoanModal = closeEditLoanModal;
+
+// Eliminar préstamo
+async function deleteLoan(id) {
+    const confirmed = await showConfirm(
+        'Eliminar Préstamo',
+        '¿Estás seguro de eliminar este préstamo? Esta acción no se puede deshacer.',
+        'Eliminar',
+        'Cancelar'
+    );
+    if (!confirmed) return;
+    
+    try {
+        showLoader('Eliminando préstamo...');
+        await apiRequest(`/loans/${id}`, { method: 'DELETE' });
+        await loadUserData();
+        updateDisplay();
+        hideLoader();
+        showToast('Préstamo eliminado exitosamente', 'success');
+    } catch (error) {
+        hideLoader();
+        showToast('Error al eliminar préstamo: ' + error.message, 'error');
+    }
+}
+
+// Exponer funciones al scope global para onclick handlers
+window.deleteLoan = deleteLoan;
+window.editLoan = editLoan;
+
+// Inicializar gráficas
+function initializeCharts() {
+    // Verificar que estamos en la aplicación principal, no en la página de login
+    const mainApp = document.getElementById('mainApp');
+    if (!mainApp || mainApp.style.display === 'none') {
+        return; // No inicializar gráficos si estamos en la página de login
+    }
+    
+    // Verificar que los elementos existan antes de crear los gráficos
+    const savingsChartEl = document.getElementById('savingsChart');
+    if (savingsChartEl && !charts.savings) {
+        charts.savings = new Chart(savingsChartEl, {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: true }
+            }
+        }
+    });
+    }
+    
+    const expensesChartEl = document.getElementById('expensesChart');
+    if (expensesChartEl && !charts.expenses) {
+        charts.expenses = new Chart(expensesChartEl, {
+        type: 'bar',
+        data: { labels: [], datasets: [] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+    }
+    
+    const incomeExpenseChartEl = document.getElementById('incomeExpenseChart');
+    if (incomeExpenseChartEl && !charts.incomeExpense) {
+        charts.incomeExpense = new Chart(incomeExpenseChartEl, {
+        type: 'bar',
+        data: { labels: [], datasets: [] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: true }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+    }
+    
+    const distributionChartEl = document.getElementById('distributionChart');
+    if (distributionChartEl && !charts.distribution) {
+        charts.distribution = new Chart(distributionChartEl, {
+        type: 'doughnut',
+        data: { labels: [], datasets: [] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { position: 'right' }
+            }
+        }
+    });
+    }
+    
+    // Nuevas gráficas
+    const incomeEvolutionEl = document.getElementById('incomeEvolutionChart');
+    if (incomeEvolutionEl && !charts.incomeEvolution) {
+        charts.incomeEvolution = new Chart(incomeEvolutionEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const expensesEvolutionEl = document.getElementById('expensesEvolutionChart');
+    if (expensesEvolutionEl && !charts.expensesEvolution) {
+        charts.expensesEvolution = new Chart(expensesEvolutionEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const loansPendingEl = document.getElementById('loansPendingChart');
+    if (loansPendingEl && !charts.loansPending) {
+        charts.loansPending = new Chart(loansPendingEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const assetsEvolutionEl = document.getElementById('assetsEvolutionChart');
+    if (assetsEvolutionEl && !charts.assetsEvolution) {
+        charts.assetsEvolution = new Chart(assetsEvolutionEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const accountsBalanceEl = document.getElementById('accountsBalanceChart');
+    if (accountsBalanceEl && !charts.accountsBalance) {
+        charts.accountsBalance = new Chart(accountsBalanceEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    // Gráficas del Dashboard
+    const dashboardSavingsChartEl = document.getElementById('dashboardSavingsChart');
+    if (dashboardSavingsChartEl && !charts.dashboardSavings) {
+        charts.dashboardSavings = new Chart(dashboardSavingsChartEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } }
+            }
+        });
+    }
+    
+    const dashboardIncomeExpenseChartEl = document.getElementById('dashboardIncomeExpenseChart');
+    if (dashboardIncomeExpenseChartEl && !charts.dashboardIncomeExpense) {
+        charts.dashboardIncomeExpense = new Chart(dashboardIncomeExpenseChartEl, {
+            type: 'bar',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const dashboardExpensesChartEl = document.getElementById('dashboardExpensesChart');
+    if (dashboardExpensesChartEl && !charts.dashboardExpenses) {
+        charts.dashboardExpenses = new Chart(dashboardExpensesChartEl, {
+            type: 'bar',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+    
+    const dashboardDistributionChartEl = document.getElementById('dashboardDistributionChart');
+    if (dashboardDistributionChartEl && !charts.dashboardDistribution) {
+        charts.dashboardDistribution = new Chart(dashboardDistributionChartEl, {
+            type: 'doughnut',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'right' } }
+            }
+        });
+    }
+    
+    const dashboardIncomeEvolutionChartEl = document.getElementById('dashboardIncomeEvolutionChart');
+    if (dashboardIncomeEvolutionChartEl && !charts.dashboardIncomeEvolution) {
+        charts.dashboardIncomeEvolution = new Chart(dashboardIncomeEvolutionChartEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+    
+    const dashboardExpensesEvolutionChartEl = document.getElementById('dashboardExpensesEvolutionChart');
+    if (dashboardExpensesEvolutionChartEl && !charts.dashboardExpensesEvolution) {
+        charts.dashboardExpensesEvolution = new Chart(dashboardExpensesEvolutionChartEl, {
+            type: 'line',
+            data: { labels: [], datasets: [] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+}
+
+// Obtener período seleccionado (global o específico de gráfico)
+function getSelectedPeriod(chartName = null) {
+    if (chartName) {
+        const chartSelect = document.querySelector(`.chart-period-select[data-chart="${chartName}"]`);
+        if (chartSelect) {
+            const value = chartSelect.value;
+            if (value === 'custom') {
+                return 'custom';
+            }
+            return value === 'all' ? 999 : parseInt(value) || 6;
+        }
+    }
+    const periodSelect = document.getElementById('chartPeriod');
+    if (!periodSelect) return 6;
+    const value = periodSelect.value;
+    return value === 'all' ? 999 : parseInt(value) || 6;
+}
+
+// Obtener transacciones filtradas por período
+function getTransactionsByPeriod(chartName = null) {
+    const period = getSelectedPeriod(chartName);
+    const now = new Date();
+    
+    if (period === 999) { // "all"
+        return transactions;
+    }
+    
+    if (period === 'custom') {
+        // Primero intentar obtener fechas del modal (si estamos en el modal)
+        const modalStartDate = document.getElementById('modalStartDate');
+        const modalEndDate = document.getElementById('modalEndDate');
+        
+        if (modalStartDate && modalEndDate && modalStartDate.value && modalEndDate.value) {
+            const startDate = new Date(modalStartDate.value);
+            const endDate = new Date(modalEndDate.value);
+            endDate.setHours(23, 59, 59, 999);
+            
+            return transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate >= startDate && tDate <= endDate;
+            });
+        }
+        
+        // Si no está en el modal, obtener fechas del gráfico pequeño
+        const startDateInput = document.getElementById(`${chartName}StartDate`) || 
+                              document.querySelector(`#${chartName}StartDate`);
+        const endDateInput = document.getElementById(`${chartName}EndDate`) || 
+                            document.querySelector(`#${chartName}EndDate`);
+        
+        if (startDateInput && endDateInput && startDateInput.value && endDateInput.value) {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            endDate.setHours(23, 59, 59, 999); // Incluir todo el día final
+            
+            return transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate >= startDate && tDate <= endDate;
+            });
+        }
+        // Si no hay fechas seleccionadas, usar período por defecto
+        const startDate = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate >= startDate;
+        });
+    }
+    
+    const startDate = new Date(now.getFullYear(), now.getMonth() - period, 1);
+    return transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate >= startDate;
+    });
+}
+
+// Actualizar un gráfico específico
+function updateSingleChart(chartName) {
+    switch(chartName) {
+        case 'savings':
+            updateSavingsChart();
+            break;
+        case 'expenses':
+            updateExpensesChart();
+            break;
+        case 'incomeExpense':
+            updateIncomeExpenseChart();
+            break;
+        case 'distribution':
+            updateDistributionChart();
+            break;
+        case 'incomeEvolution':
+            updateIncomeEvolutionChart();
+            break;
+        case 'expensesEvolution':
+            updateExpensesEvolutionChart();
+            break;
+        case 'loansPending':
+            updateLoansOutstandingChart();
+            break;
+        case 'assetsEvolution':
+            updateAssetsEvolutionChart();
+            break;
+        case 'accountsBalance':
+            updateAccountsBalanceChart();
+            break;
+    }
+}
+
+// Actualizar filtros de los gráficos
+function updateChartFilters() {
+    // Filtros de categorías de ingresos
+    const incomeFilter = document.querySelector('.chart-category-filter[data-chart="incomeEvolution"]');
+    if (incomeFilter) {
+        const currentValue = incomeFilter.value;
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        incomeFilter.innerHTML = `<option value="all">${getTranslation('help.allCategories', lang)}</option>`;
+        const incomeCats = [...categories.income];
+        incomeCats.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            incomeFilter.appendChild(option);
+        });
+        if (currentValue) incomeFilter.value = currentValue;
+    }
+    
+    // Filtros de categorías de gastos
+    const expenseFilter = document.querySelector('.chart-category-filter[data-chart="expensesEvolution"]');
+    if (expenseFilter) {
+        const currentValue = expenseFilter.value;
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        expenseFilter.innerHTML = `<option value="all">${getTranslation('help.allCategories', lang)}</option>`;
+        const expenseCats = [...categories.expense];
+        expenseCats.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            expenseFilter.appendChild(option);
+        });
+        if (currentValue) expenseFilter.value = currentValue;
+    }
+    
+    // Filtros de préstamos
+    const loanFilter = document.querySelector('.chart-loan-filter[data-chart="loansPending"]');
+    if (loanFilter) {
+        const currentValue = loanFilter.value;
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        loanFilter.innerHTML = `<option value="all">${getTranslation('help.allLoans', lang)}</option>`;
+        loans.forEach(loan => {
+            const option = document.createElement('option');
+            option.value = loan._id || loan.id;
+            option.textContent = loan.name || `Préstamo ${loan._id || loan.id}`;
+            loanFilter.appendChild(option);
+        });
+        if (currentValue) loanFilter.value = currentValue;
+    }
+    
+    // Filtros de patrimonio
+    const assetFilter = document.querySelector('.chart-asset-filter[data-chart="assetsEvolution"]');
+    if (assetFilter) {
+        const currentValue = assetFilter.value;
+        assetFilter.innerHTML = '<option value="all">Todas las propiedades</option>';
+        patrimonio.forEach(prop => {
+            const option = document.createElement('option');
+            option.value = prop._id || prop.id;
+            option.textContent = prop.name || `Propiedad ${prop._id || prop.id}`;
+            assetFilter.appendChild(option);
+        });
+        if (currentValue) assetFilter.value = currentValue;
+    }
+    
+    // Filtros de cuentas
+    const accountFilter = document.querySelector('.chart-account-filter[data-chart="accountsBalance"]');
+    if (accountFilter) {
+        const currentValue = accountFilter.value;
+        accountFilter.innerHTML = '<option value="all">Todas las cuentas</option>';
+        accounts.forEach(account => {
+            const option = document.createElement('option');
+            option.value = account._id || account.id;
+            option.textContent = account.name || `Cuenta ${account._id || account.id}`;
+            accountFilter.appendChild(option);
+        });
+        if (currentValue) accountFilter.value = currentValue;
+    }
+}
+
+// Actualizar gráficas
+function updateCharts() {
+    updateSavingsChart();
+    updateExpensesChart();
+    updateIncomeExpenseChart();
+    updateDistributionChart();
+    // Actualizar gráficas de evolución (si existen) - con manejo de errores
+    try {
+        if (typeof updateIncomeEvolutionChart === 'function') updateIncomeEvolutionChart();
+    } catch (e) { 
+        // Función no disponible, ignorar silenciosamente
+    }
+    try {
+        if (typeof updateExpensesEvolutionChart === 'function') updateExpensesEvolutionChart();
+    } catch (e) { 
+        // Función no disponible, ignorar silenciosamente
+    }
+    try {
+        if (typeof updateLoansOutstandingChart === 'function') updateLoansOutstandingChart();
+    } catch (e) { 
+        // Función no disponible, ignorar silenciosamente
+    }
+    try {
+        if (typeof updateAssetsEvolutionChart === 'function') updateAssetsEvolutionChart();
+    } catch (e) { 
+        // Función no disponible, ignorar silenciosamente
+    }
+    try {
+        if (typeof updateAccountsBalanceChart === 'function') updateAccountsBalanceChart();
+    } catch (e) { 
+        // Función no disponible, ignorar silenciosamente
+    }
+    updateFinancialHealthMetrics();
+    updateRecommendations();
+    updateAnalysisTables();
+}
+
+// Obtener transacciones filtradas por summaryPeriod
+function getTransactionsBySummaryPeriod() {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    const summaryYearInput = document.getElementById('summaryYear');
+    let selectedMonth = currentMonth;
+    let selectedYear = currentYear;
+    
+    if (summaryPeriod === 'month-select') {
+        const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+        const summaryMonthYear = document.getElementById('summaryMonthYear');
+        if (summaryMonthSelect && summaryMonthYear) {
+            const month = parseInt(summaryMonthSelect.value);
+            const year = parseInt(summaryMonthYear.value);
+            if (month && year) {
+            selectedYear = year;
+            selectedMonth = month - 1;
+            }
+        }
+    }
+    
+    if (summaryYearInput && summaryPeriod === 'year-select') {
+        selectedYear = parseInt(summaryYearInput.value) || currentYear;
+    }
+    
+    if (summaryPeriod === 'month') {
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+        });
+    } else if (summaryPeriod === 'month-select') {
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === selectedMonth && tDate.getFullYear() === selectedYear;
+        });
+    } else if (summaryPeriod === 'year') {
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getFullYear() === currentYear;
+        });
+    } else if (summaryPeriod === 'year-select') {
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getFullYear() === selectedYear;
+        });
+    } else { // 'all'
+        return transactions;
+    }
+}
+
+// Actualizar gráficas del dashboard
+function updateDashboardCharts() {
+    updateDashboardSavingsChart();
+    updateDashboardIncomeExpenseChart();
+    updateDashboardExpensesChart();
+    updateDashboardDistributionChart();
+    updateDashboardIncomeEvolutionChart();
+    updateDashboardExpensesEvolutionChart();
+}
+
+// Gráfica de ahorro del dashboard
+function updateDashboardSavingsChart() {
+    if (!charts.dashboardSavings) return;
+    
+    const now = new Date();
+    const months = [];
+    const savings = [];
+    let runningTotal = 0;
+    
+    const periodTransactions = getTransactionsBySummaryPeriod();
+    
+    if (summaryPeriod === 'all') {
+        if (periodTransactions.length === 0) {
+            charts.dashboardSavings.data.labels = [];
+            charts.dashboardSavings.data.datasets = [];
+            charts.dashboardSavings.update();
+            return;
+        }
+        
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        const startMonth = firstDate.getMonth();
+        const startYear = firstDate.getFullYear();
+        const endMonth = now.getMonth();
+        const endYear = now.getFullYear();
+        
+        let currentMonth = startMonth;
+        let currentYear = startYear;
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            });
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            const monthSavings = monthIncome - monthExpenses;
+            
+            runningTotal += monthSavings;
+            savings.push(runningTotal);
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    } else {
+        // Para períodos específicos, mostrar meses del período
+        const summaryYearInput = document.getElementById('summaryYear');
+        let startMonth, startYear, endMonth, endYear;
+        
+        if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
+            if (summaryPeriod === 'month-select') {
+                const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+                const summaryMonthYear = document.getElementById('summaryMonthYear');
+                if (summaryMonthSelect && summaryMonthYear) {
+                    const month = parseInt(summaryMonthSelect.value);
+                    const year = parseInt(summaryMonthYear.value);
+                    if (month && year) {
+                startMonth = month - 1;
+                startYear = year;
+                    } else {
+                        startMonth = now.getMonth();
+                        startYear = now.getFullYear();
+                    }
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+            }
+            endMonth = startMonth;
+            endYear = startYear;
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+                endMonth = startMonth;
+                endYear = startYear;
+            }
+        } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+            if (summaryPeriod === 'year-select' && summaryYearInput && summaryYearInput.value) {
+                startYear = parseInt(summaryYearInput.value);
+            } else {
+                startYear = now.getFullYear();
+            }
+            startMonth = 0;
+            endMonth = 11;
+            endYear = startYear;
+        } else {
+            startMonth = now.getMonth() - 5;
+            startYear = now.getFullYear();
+            if (startMonth < 0) {
+                startMonth += 12;
+                startYear--;
+            }
+            endMonth = now.getMonth();
+            endYear = now.getFullYear();
+        }
+        
+        let currentMonth = startMonth;
+        let currentYear = startYear;
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            });
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            const monthSavings = monthIncome - monthExpenses;
+            
+            runningTotal += monthSavings;
+            savings.push(runningTotal);
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    }
+    
+    charts.dashboardSavings.data.labels = months;
+    charts.dashboardSavings.data.datasets = [{
+        label: 'Ahorro Acumulado',
+        data: savings,
+        borderColor: '#3B82F6',
+        backgroundColor: 'rgba(59, 130, 246, 0.15)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.dashboardSavings.update();
+}
+
+// Gráfica de ingresos vs gastos del dashboard
+function updateDashboardIncomeExpenseChart() {
+    if (!charts.dashboardIncomeExpense) return;
+    
+    const periodTransactions = getTransactionsBySummaryPeriod();
+    const now = new Date();
+    const months = [];
+    const incomeData = [];
+    const expenseData = [];
+    
+    let startMonth, startYear, endMonth, endYear;
+    const summaryYearInput = document.getElementById('summaryYear');
+    
+    if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
+        if (summaryPeriod === 'month-select') {
+            const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+            const summaryMonthYear = document.getElementById('summaryMonthYear');
+            if (summaryMonthSelect && summaryMonthYear) {
+                const month = parseInt(summaryMonthSelect.value);
+                const year = parseInt(summaryMonthYear.value);
+                if (month && year) {
+            startMonth = month - 1;
+            startYear = year;
+                } else {
+                    startMonth = now.getMonth();
+                    startYear = now.getFullYear();
+                }
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+            }
+        } else {
+            startMonth = now.getMonth();
+            startYear = now.getFullYear();
+        }
+        endMonth = startMonth;
+        endYear = startYear;
+    } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+        if (summaryPeriod === 'year-select' && summaryYearInput && summaryYearInput.value) {
+            startYear = parseInt(summaryYearInput.value);
+        } else {
+            startYear = now.getFullYear();
+        }
+        startMonth = 0;
+        endMonth = 11;
+        endYear = startYear;
+    } else if (summaryPeriod === 'all') {
+        if (periodTransactions.length === 0) {
+            charts.dashboardIncomeExpense.data.labels = [];
+            charts.dashboardIncomeExpense.data.datasets = [];
+            charts.dashboardIncomeExpense.update();
+            return;
+        }
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        startMonth = firstDate.getMonth();
+        startYear = firstDate.getFullYear();
+        endMonth = now.getMonth();
+        endYear = now.getFullYear();
+    } else {
+        startMonth = now.getMonth() - 5;
+        startYear = now.getFullYear();
+        if (startMonth < 0) {
+            startMonth += 12;
+            startYear--;
+        }
+        endMonth = now.getMonth();
+        endYear = now.getFullYear();
+    }
+    
+    let currentMonth = startMonth;
+    let currentYear = startYear;
+    
+    while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+        const date = new Date(currentYear, currentMonth, 1);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        const monthTransactions = periodTransactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+        });
+        
+        const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        
+        incomeData.push(monthIncome);
+        expenseData.push(monthExpenses);
+        
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+    }
+    
+    charts.dashboardIncomeExpense.data.labels = months;
+    charts.dashboardIncomeExpense.data.datasets = [
+        {
+            label: 'Ingresos',
+            data: incomeData,
+            backgroundColor: '#3B82F6'
+        },
+        {
+            label: 'Gastos',
+            data: expenseData,
+            backgroundColor: '#EF4444'
+        }
+    ];
+    charts.dashboardIncomeExpense.update();
+}
+
+// Gráfica de gastos por categoría del dashboard
+function updateDashboardExpensesChart() {
+    if (!charts.dashboardExpenses) return;
+    
+    const periodTransactions = getTransactionsBySummaryPeriod();
+    const expenses = periodTransactions.filter(t => t.type === 'expense');
+    
+    const categoryTotals = {};
+    expenses.forEach(t => {
+        let catName;
+        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+        if (expenseCat) {
+            catName = expenseCat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        categoryTotals[catName] = (categoryTotals[catName] || 0) + Math.abs(t.amount);
+    });
+    
+    const sortedCategories = Object.entries(categoryTotals)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+    
+    const labels = sortedCategories.map(([name]) => name);
+    const data = sortedCategories.map(([, value]) => value);
+    
+    charts.dashboardExpenses.data.labels = labels;
+    charts.dashboardExpenses.data.datasets = [{
+        data: data,
+        backgroundColor: '#8B5CF6'
+    }];
+    charts.dashboardExpenses.update();
+}
+
+// Gráfica de distribución del dashboard
+function updateDashboardDistributionChart() {
+    if (!charts.dashboardDistribution) return;
+    
+    const periodTransactions = getTransactionsBySummaryPeriod();
+    const expenses = periodTransactions.filter(t => t.type === 'expense');
+    
+    const categoryTotals = {};
+    expenses.forEach(t => {
+        let catName;
+        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+        if (expenseCat) {
+            catName = expenseCat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        categoryTotals[catName] = (categoryTotals[catName] || 0) + Math.abs(t.amount);
+    });
+    
+    const labels = Object.keys(categoryTotals);
+    const data = Object.values(categoryTotals);
+    
+    charts.dashboardDistribution.data.labels = labels;
+    charts.dashboardDistribution.data.datasets = [{
+        data: data,
+        backgroundColor: [
+            '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
+            '#8B5CF6', '#06B6D4', '#84CC16', '#F97316',
+            '#EC4899', '#6366F1', '#3B82F6', '#10B981'
+        ]
+    }];
+    charts.dashboardDistribution.update();
+}
+
+// Gráfica de evolución de ingresos del dashboard
+function updateDashboardIncomeEvolutionChart() {
+    if (!charts.dashboardIncomeEvolution) return;
+    
+    const periodTransactions = getTransactionsBySummaryPeriod();
+    const now = new Date();
+    const months = [];
+    const incomeData = [];
+    
+    let startMonth, startYear, endMonth, endYear;
+    const summaryYearInput = document.getElementById('summaryYear');
+    
+    if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
+        if (summaryPeriod === 'month-select') {
+            const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+            const summaryMonthYear = document.getElementById('summaryMonthYear');
+            if (summaryMonthSelect && summaryMonthYear) {
+                const month = parseInt(summaryMonthSelect.value);
+                const year = parseInt(summaryMonthYear.value);
+                if (month && year) {
+            startMonth = month - 1;
+            startYear = year;
+                } else {
+                    startMonth = now.getMonth();
+                    startYear = now.getFullYear();
+                }
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+            }
+        } else {
+            startMonth = now.getMonth();
+            startYear = now.getFullYear();
+        }
+        endMonth = startMonth;
+        endYear = startYear;
+    } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+        if (summaryPeriod === 'year-select' && summaryYearInput && summaryYearInput.value) {
+            startYear = parseInt(summaryYearInput.value);
+        } else {
+            startYear = now.getFullYear();
+        }
+        startMonth = 0;
+        endMonth = 11;
+        endYear = startYear;
+    } else if (summaryPeriod === 'all') {
+        if (periodTransactions.length === 0) {
+            charts.dashboardIncomeEvolution.data.labels = [];
+            charts.dashboardIncomeEvolution.data.datasets = [];
+            charts.dashboardIncomeEvolution.update();
+            return;
+        }
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        startMonth = firstDate.getMonth();
+        startYear = firstDate.getFullYear();
+        endMonth = now.getMonth();
+        endYear = now.getFullYear();
+    } else {
+        startMonth = now.getMonth() - 5;
+        startYear = now.getFullYear();
+        if (startMonth < 0) {
+            startMonth += 12;
+            startYear--;
+        }
+        endMonth = now.getMonth();
+        endYear = now.getFullYear();
+    }
+    
+    let currentMonth = startMonth;
+    let currentYear = startYear;
+    
+    while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+        const date = new Date(currentYear, currentMonth, 1);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        const monthTransactions = periodTransactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'income';
+        });
+        
+        const monthIncome = monthTransactions.reduce((sum, t) => sum + t.amount, 0);
+        incomeData.push(monthIncome);
+        
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+    }
+    
+    charts.dashboardIncomeEvolution.data.labels = months;
+    charts.dashboardIncomeEvolution.data.datasets = [{
+        label: 'Ingresos',
+        data: incomeData,
+        borderColor: '#3B82F6',
+        backgroundColor: 'rgba(59, 130, 246, 0.15)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.dashboardIncomeEvolution.update();
+}
+
+// Gráfica de evolución de gastos del dashboard
+function updateDashboardExpensesEvolutionChart() {
+    if (!charts.dashboardExpensesEvolution) return;
+    
+    const periodTransactions = getTransactionsBySummaryPeriod();
+    const now = new Date();
+    const months = [];
+    const expensesData = [];
+    
+    let startMonth, startYear, endMonth, endYear;
+    const summaryYearInput = document.getElementById('summaryYear');
+    
+    if (summaryPeriod === 'month' || summaryPeriod === 'month-select') {
+        if (summaryPeriod === 'month-select') {
+            const summaryMonthSelect = document.getElementById('summaryMonthSelect');
+            const summaryMonthYear = document.getElementById('summaryMonthYear');
+            if (summaryMonthSelect && summaryMonthYear) {
+                const month = parseInt(summaryMonthSelect.value);
+                const year = parseInt(summaryMonthYear.value);
+                if (month && year) {
+            startMonth = month - 1;
+            startYear = year;
+                } else {
+                    startMonth = now.getMonth();
+                    startYear = now.getFullYear();
+                }
+            } else {
+                startMonth = now.getMonth();
+                startYear = now.getFullYear();
+            }
+        } else {
+            startMonth = now.getMonth();
+            startYear = now.getFullYear();
+        }
+        endMonth = startMonth;
+        endYear = startYear;
+    } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+        if (summaryPeriod === 'year-select' && summaryYearInput && summaryYearInput.value) {
+            startYear = parseInt(summaryYearInput.value);
+        } else {
+            startYear = now.getFullYear();
+        }
+        startMonth = 0;
+        endMonth = 11;
+        endYear = startYear;
+    } else if (summaryPeriod === 'all') {
+        if (periodTransactions.length === 0) {
+            charts.dashboardExpensesEvolution.data.labels = [];
+            charts.dashboardExpensesEvolution.data.datasets = [];
+            charts.dashboardExpensesEvolution.update();
+            return;
+        }
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        startMonth = firstDate.getMonth();
+        startYear = firstDate.getFullYear();
+        endMonth = now.getMonth();
+        endYear = now.getFullYear();
+    } else {
+        startMonth = now.getMonth() - 5;
+        startYear = now.getFullYear();
+        if (startMonth < 0) {
+            startMonth += 12;
+            startYear--;
+        }
+        endMonth = now.getMonth();
+        endYear = now.getFullYear();
+    }
+    
+    let currentMonth = startMonth;
+    let currentYear = startYear;
+    
+    while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+        const date = new Date(currentYear, currentMonth, 1);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        const monthTransactions = periodTransactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'expense';
+        });
+        
+        // Agregar pagos de préstamos desde su fecha de inicio
+        let loanPaymentsForMonth = 0;
+        loans.filter(loan => loan.type === 'debt').forEach(loan => {
+            const loanStartDate = new Date(loan.start_date);
+            const loanEndDate = new Date(loan.end_date);
+            const monthDate = new Date(currentYear, currentMonth, 1);
+            
+            // Si el préstamo está activo en este mes
+            if (monthDate >= loanStartDate && monthDate <= loanEndDate) {
+                // Calcular el número de mes del préstamo
+                const monthsSinceStart = (currentYear - loanStartDate.getFullYear()) * 12 + (currentMonth - loanStartDate.getMonth());
+                if (monthsSinceStart >= 0) {
+                    const amortization = calculateAmortizationTable(
+                        loan.principal,
+                        loan.interest_rate,
+                        loan.monthly_payment,
+                        loan.start_date,
+                        0,
+                        loan.early_payments || [],
+                        new Date(currentYear, currentMonth + 1, 0) // Fin del mes
+                    );
+                    
+                    // Obtener el pago de este mes específico
+                    if (amortization.table[monthsSinceStart]) {
+                        loanPaymentsForMonth += amortization.table[monthsSinceStart].payment;
+                    }
+                }
+            }
+        });
+        
+        const monthExpenses = Math.abs(monthTransactions.reduce((sum, t) => sum + t.amount, 0)) + loanPaymentsForMonth;
+        expensesData.push(monthExpenses);
+        
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+    }
+    
+    // Obtener todas las categorías de gastos únicas
+    const expenseCategories = {};
+    periodTransactions.filter(t => t.type === 'expense').forEach(t => {
+        let catName;
+        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+        if (expenseCat) {
+            catName = expenseCat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        if (!expenseCategories[catName]) {
+            expenseCategories[catName] = [];
+        }
+    });
+    
+    // Calcular gastos por categoría para cada mes
+    let currentMonthCalc = startMonth;
+    let currentYearCalc = startYear;
+    const categoryData = {};
+    
+    Object.keys(expenseCategories).forEach(catName => {
+        categoryData[catName] = [];
+    });
+    
+    let monthIndex = 0;
+    while (currentYearCalc < endYear || (currentYearCalc === endYear && currentMonthCalc <= endMonth)) {
+        const monthTransactions = periodTransactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === currentMonthCalc && tDate.getFullYear() === currentYearCalc && t.type === 'expense';
+        });
+        
+        Object.keys(expenseCategories).forEach(catName => {
+            const catExpenses = Math.abs(monthTransactions
+                .filter(t => {
+                    let tCatName;
+                    const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+                    if (expenseCat) {
+                        tCatName = expenseCat.name;
+                    } else {
+                        tCatName = t.categoryGeneral;
+                    }
+                    return tCatName === catName;
+                })
+                .reduce((sum, t) => sum + t.amount, 0));
+            categoryData[catName].push(catExpenses);
+        });
+        
+        currentMonthCalc++;
+        if (currentMonthCalc > 11) {
+            currentMonthCalc = 0;
+            currentYearCalc++;
+        }
+        monthIndex++;
+    }
+    
+    // Colores variados para las categorías
+    const colors = [
+        '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+        '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1',
+        '#14B8A6', '#FBBF24', '#FB7185', '#A78BFA', '#60A5FA'
+    ];
+    
+    // Crear datasets para cada categoría
+    const datasets = Object.keys(categoryData).map((catName, index) => {
+        const data = categoryData[catName];
+        const hasData = data.some(v => v > 0);
+        if (!hasData) return null;
+        
+        return {
+            label: catName,
+            data: data,
+            borderColor: colors[index % colors.length],
+            backgroundColor: colors[index % colors.length] + '20',
+            tension: 0.4,
+            fill: false
+        };
+    }).filter(d => d !== null);
+    
+    charts.dashboardExpensesEvolution.data.labels = months;
+    charts.dashboardExpensesEvolution.data.datasets = datasets.length > 0 ? datasets : [{
+        label: 'Gastos',
+        data: expensesData,
+        borderColor: '#EF4444',
+        backgroundColor: 'rgba(239, 68, 68, 0.15)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.dashboardExpensesEvolution.update();
+}
+
+// Gráfica de ahorro
+function updateSavingsChart() {
+    if (!charts.savings) return;
+    
+    const period = getSelectedPeriod('savings');
+    const now = new Date();
+    const months = [];
+    const savings = [];
+    let runningTotal = 0;
+    
+    const periodTransactions = getTransactionsByPeriod();
+    
+    // Si es "all", agrupar por mes desde la primera transacción
+    if (period === 999) {
+        if (periodTransactions.length === 0) {
+            charts.savings.data.labels = [];
+            charts.savings.data.datasets = [];
+            charts.savings.update();
+            return;
+        }
+        
+        // Encontrar la primera transacción
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        const startMonth = firstDate.getMonth();
+        const startYear = firstDate.getFullYear();
+        const endMonth = now.getMonth();
+        const endYear = now.getFullYear();
+        
+        let currentMonth = startMonth;
+        let currentYear = startYear;
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            });
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            const monthSavings = monthIncome - monthExpenses;
+            
+            runningTotal += monthSavings;
+            savings.push(runningTotal);
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    } else {
+        // Período fijo de meses
+        for (let i = period - 1; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear();
+            });
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            const monthSavings = monthIncome - monthExpenses;
+            
+            runningTotal += monthSavings;
+            savings.push(runningTotal);
+        }
+    }
+    
+    charts.savings.data.labels = months;
+    charts.savings.data.datasets = [{
+        label: 'Ahorro Acumulado',
+        data: savings,
+        borderColor: '#3B82F6',
+        backgroundColor: 'rgba(59, 130, 246, 0.15)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.savings.update();
+}
+
+// Gráfica de gastos por categoría
+function updateExpensesChart() {
+    if (!charts.expenses) return;
+    
+    const periodTransactions = getTransactionsByPeriod('expenses');
+    const expenses = periodTransactions.filter(t => t.type === 'expense');
+    
+    const categoryTotals = {};
+    expenses.forEach(t => {
+        let catName;
+        // Buscar en categorías de gastos
+        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+        if (expenseCat) {
+            catName = expenseCat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        categoryTotals[catName] = (categoryTotals[catName] || 0) + Math.abs(t.amount);
+    });
+    
+    const labels = Object.keys(categoryTotals);
+    const data = Object.values(categoryTotals);
+    
+    charts.expenses.data.labels = labels;
+    charts.expenses.data.datasets = [{
+        label: 'Gastos',
+        data: data,
+        backgroundColor: [
+            '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
+            '#8B5CF6', '#06B6D4', '#84CC16', '#F97316',
+            '#EC4899', '#6366F1', '#3B82F6', '#10B981'
+        ]
+    }];
+    charts.expenses.update();
+}
+
+// Gráfica de ingresos vs gastos
+function updateIncomeExpenseChart() {
+    if (!charts.incomeExpense) return;
+    
+    const period = getSelectedPeriod('incomeExpense');
+    const now = new Date();
+    const months = [];
+    const incomes = [];
+    const expenses = [];
+    
+    const periodTransactions = getTransactionsByPeriod('incomeExpense');
+    
+    if (period === 999) {
+        // Todo el historial
+        if (periodTransactions.length === 0) {
+            charts.incomeExpense.data.labels = [];
+            charts.incomeExpense.data.datasets = [];
+            charts.incomeExpense.update();
+            return;
+        }
+        
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        const startMonth = firstDate.getMonth();
+        const startYear = firstDate.getFullYear();
+        const endMonth = now.getMonth();
+        const endYear = now.getFullYear();
+        
+        let currentMonth = startMonth;
+        let currentYear = startYear;
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            });
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            
+            incomes.push(monthIncome);
+            expenses.push(monthExpenses);
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    } else {
+        // Período fijo
+        for (let i = period - 1; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear();
+            });
+            
+            const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+            
+            incomes.push(monthIncome);
+            expenses.push(monthExpenses);
+        }
+    }
+    
+    charts.incomeExpense.data.labels = months;
+    charts.incomeExpense.data.datasets = [
+        {
+            label: 'Ingresos',
+            data: incomes,
+            backgroundColor: '#3B82F6'
+        },
+        {
+            label: 'Gastos',
+            data: expenses,
+            backgroundColor: '#EF4444'
+        }
+    ];
+    charts.incomeExpense.update();
+}
+
+// Gráfica de distribución
+function updateDistributionChart() {
+    if (!charts.distribution) return;
+    
+    const periodTransactions = getTransactionsByPeriod('distribution');
+    const expenses = periodTransactions.filter(t => t.type === 'expense');
+    
+    const categoryTotals = {};
+    expenses.forEach(t => {
+        let catName;
+        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+        if (expenseCat) {
+            catName = expenseCat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        categoryTotals[catName] = (categoryTotals[catName] || 0) + Math.abs(t.amount);
+    });
+    
+    const labels = Object.keys(categoryTotals);
+    const data = Object.values(categoryTotals);
+    
+    charts.distribution.data.labels = labels;
+    charts.distribution.data.datasets = [{
+        data: data,
+        backgroundColor: [
+            '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
+            '#8B5CF6', '#06B6D4', '#84CC16', '#F97316',
+            '#EC4899', '#6366F1', '#3B82F6', '#10B981'
+        ]
+    }];
+    charts.distribution.update();
+}
+
+// Gráfica de evolución de ingresos por categoría
+function updateIncomeEvolutionChart() {
+    if (!charts.incomeEvolution) return;
+    
+    const period = getSelectedPeriod('incomeEvolution');
+    const categoryFilter = document.querySelector('.chart-category-filter[data-chart="incomeEvolution"]');
+    const selectedCategory = categoryFilter ? categoryFilter.value : 'all';
+    
+    let periodTransactions = getTransactionsByPeriod('incomeEvolution');
+    
+    // Filtrar por categoría si está seleccionada
+    if (selectedCategory !== 'all') {
+        periodTransactions = periodTransactions.filter(t => t.categoryGeneral === selectedCategory);
+    }
+    const now = new Date();
+    const months = [];
+    
+    if (periodTransactions.length === 0) {
+        charts.incomeEvolution.data.labels = [];
+        charts.incomeEvolution.data.datasets = [];
+        charts.incomeEvolution.update();
+        return;
+    }
+    
+    // Obtener todas las categorías de ingresos únicas
+    const incomeCategories = {};
+    periodTransactions.filter(t => t.type === 'income').forEach(t => {
+        let catName;
+        const incomeCat = categories.income.find(c => c.id === t.categoryGeneral);
+        if (incomeCat) {
+            catName = incomeCat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        if (!incomeCategories[catName]) {
+            incomeCategories[catName] = [];
+        }
+    });
+    
+    // Generar meses
+    if (period === 999) {
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        let currentMonth = firstDate.getMonth();
+        let currentYear = firstDate.getFullYear();
+        const endMonth = now.getMonth();
+        const endYear = now.getFullYear();
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            // Calcular ingresos por categoría para este mes
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'income';
+            });
+            
+            Object.keys(incomeCategories).forEach(catName => {
+                if (!incomeCategories[catName]) incomeCategories[catName] = [];
+                const catIncome = monthTransactions
+                    .filter(t => {
+                        let tCatName;
+                        const incomeCat = categories.income.find(c => c.id === t.categoryGeneral);
+                        if (incomeCat) {
+                            tCatName = incomeCat.name;
+                        } else {
+                            tCatName = t.categoryGeneral;
+                        }
+                        return tCatName === catName;
+                    })
+                    .reduce((sum, t) => sum + t.amount, 0);
+                incomeCategories[catName].push(catIncome);
+            });
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    } else {
+        for (let i = period - 1; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear() && t.type === 'income';
+            });
+            
+            Object.keys(incomeCategories).forEach(catName => {
+                if (!incomeCategories[catName]) incomeCategories[catName] = [];
+                const catIncome = monthTransactions
+                    .filter(t => {
+                        let tCatName;
+                        const incomeCat = categories.income.find(c => c.id === t.categoryGeneral);
+                        if (incomeCat) {
+                            tCatName = incomeCat.name;
+                        } else {
+                            tCatName = t.categoryGeneral;
+                        }
+                        return tCatName === catName;
+                    })
+                    .reduce((sum, t) => sum + t.amount, 0);
+                incomeCategories[catName].push(catIncome);
+            });
+        }
+    }
+    
+    // Paleta de colores variada para las categorías
+    const colors = [
+        '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+        '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1'
+    ];
+    
+    // Crear datasets para cada categoría
+    const datasets = Object.keys(incomeCategories).map((catName, index) => {
+        const data = incomeCategories[catName];
+        // Solo mostrar categorías que tengan al menos un valor > 0
+        const hasData = data.some(v => v > 0);
+        if (!hasData) return null;
+        
+        return {
+            label: catName,
+            data: data,
+            borderColor: colors[index % colors.length],
+            backgroundColor: colors[index % colors.length] + '20',
+            tension: 0.4,
+            fill: false
+        };
+    }).filter(d => d !== null);
+    
+    charts.incomeEvolution.data.labels = months;
+    charts.incomeEvolution.data.datasets = datasets.length > 0 ? datasets : [{
+        label: 'Ingresos',
+        data: new Array(months.length).fill(0),
+        borderColor: '#3B82F6',
+        backgroundColor: 'rgba(59, 130, 246, 0.15)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.incomeEvolution.update();
+}
+
+// Gráfica de evolución de gastos por categoría
+function updateExpensesEvolutionChart() {
+    if (!charts.expensesEvolution) return;
+    
+    const period = getSelectedPeriod('expensesEvolution');
+    const categoryFilter = document.querySelector('.chart-category-filter[data-chart="expensesEvolution"]');
+    const selectedCategory = categoryFilter ? categoryFilter.value : 'all';
+    
+    let periodTransactions = getTransactionsByPeriod('expensesEvolution');
+    
+    // Filtrar por categoría si está seleccionada
+    if (selectedCategory !== 'all') {
+        periodTransactions = periodTransactions.filter(t => t.categoryGeneral === selectedCategory);
+    }
+    const now = new Date();
+    const months = [];
+    
+    if (periodTransactions.length === 0) {
+        charts.expensesEvolution.data.labels = [];
+        charts.expensesEvolution.data.datasets = [];
+        charts.expensesEvolution.update();
+        return;
+    }
+    
+    // Obtener todas las categorías de gastos únicas
+    const expenseCategories = {};
+    periodTransactions.filter(t => t.type === 'expense').forEach(t => {
+        let catName;
+        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+        if (expenseCat) {
+            catName = expenseCat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        if (!expenseCategories[catName]) {
+            expenseCategories[catName] = [];
+        }
+    });
+    
+    // Generar meses
+    if (period === 999) {
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        let currentMonth = firstDate.getMonth();
+        let currentYear = firstDate.getFullYear();
+        const endMonth = now.getMonth();
+        const endYear = now.getFullYear();
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            // Calcular gastos por categoría para este mes
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'expense';
+            });
+            
+            // Agregar pagos de préstamos desde su fecha de inicio
+            let loanPaymentsForMonth = 0;
+            loans.filter(loan => loan.type === 'debt').forEach(loan => {
+                const loanStartDate = new Date(loan.start_date);
+                const loanEndDate = new Date(loan.end_date);
+                const monthDate = new Date(currentYear, currentMonth, 1);
+                
+                if (monthDate >= loanStartDate && monthDate <= loanEndDate) {
+                    const monthsSinceStart = (currentYear - loanStartDate.getFullYear()) * 12 + (currentMonth - loanStartDate.getMonth());
+                    if (monthsSinceStart >= 0) {
+                        const amortization = calculateAmortizationTable(
+                            loan.principal,
+                            loan.interest_rate,
+                            loan.monthly_payment,
+                            loan.start_date,
+                            0,
+                            loan.early_payments || [],
+                            new Date(currentYear, currentMonth + 1, 0)
+                        );
+                        
+                        if (amortization.table[monthsSinceStart]) {
+                            loanPaymentsForMonth += amortization.table[monthsSinceStart].payment;
+                        }
+                    }
+                }
+            });
+            
+            // Agregar préstamos a la categoría "Deudas y Préstamos" si existe
+            const debtCategory = categories.expense.find(c => c.id === 'debt');
+            if (debtCategory && loanPaymentsForMonth > 0) {
+                if (!expenseCategories[debtCategory.name]) {
+                    expenseCategories[debtCategory.name] = [];
+                }
+            }
+            
+            Object.keys(expenseCategories).forEach(catName => {
+                if (!expenseCategories[catName]) expenseCategories[catName] = [];
+                const catExpenses = Math.abs(monthTransactions
+                    .filter(t => {
+                        let tCatName;
+                        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+                        if (expenseCat) {
+                            tCatName = expenseCat.name;
+                        } else {
+                            tCatName = t.categoryGeneral;
+                        }
+                        return tCatName === catName;
+                    })
+                    .reduce((sum, t) => sum + t.amount, 0));
+                
+                // Si es la categoría de deudas, agregar los pagos de préstamos
+                if (debtCategory && catName === debtCategory.name) {
+                    expenseCategories[catName].push(catExpenses + loanPaymentsForMonth);
+                } else {
+                    expenseCategories[catName].push(catExpenses);
+                }
+            });
+            
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    } else {
+        for (let i = period - 1; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear() && t.type === 'expense';
+            });
+            
+            // Agregar pagos de préstamos desde su fecha de inicio
+            let loanPaymentsForMonth = 0;
+            loans.filter(loan => loan.type === 'debt').forEach(loan => {
+                const loanStartDate = new Date(loan.start_date);
+                const loanEndDate = new Date(loan.end_date);
+                const monthDate = new Date(date.getFullYear(), date.getMonth(), 1);
+                
+                if (monthDate >= loanStartDate && monthDate <= loanEndDate) {
+                    const monthsSinceStart = (date.getFullYear() - loanStartDate.getFullYear()) * 12 + (date.getMonth() - loanStartDate.getMonth());
+                    if (monthsSinceStart >= 0) {
+                        const amortization = calculateAmortizationTable(
+                            loan.principal,
+                            loan.interest_rate,
+                            loan.monthly_payment,
+                            loan.start_date,
+                            0,
+                            loan.early_payments || [],
+                            new Date(date.getFullYear(), date.getMonth() + 1, 0)
+                        );
+                        
+                        if (amortization.table[monthsSinceStart]) {
+                            loanPaymentsForMonth += amortization.table[monthsSinceStart].payment;
+                        }
+                    }
+                }
+            });
+            
+            // Agregar préstamos a la categoría "Deudas y Préstamos" si existe
+            const debtCategory = categories.expense.find(c => c.id === 'debt');
+            if (debtCategory && loanPaymentsForMonth > 0) {
+                if (!expenseCategories[debtCategory.name]) {
+                    expenseCategories[debtCategory.name] = [];
+                }
+            }
+            
+            Object.keys(expenseCategories).forEach(catName => {
+                if (!expenseCategories[catName]) expenseCategories[catName] = [];
+                const catExpenses = Math.abs(monthTransactions
+                    .filter(t => {
+                        let tCatName;
+                        const expenseCat = categories.expense.find(c => c.id === t.categoryGeneral);
+                        if (expenseCat) {
+                            tCatName = expenseCat.name;
+                        } else {
+                            tCatName = t.categoryGeneral;
+                        }
+                        return tCatName === catName;
+                    })
+                    .reduce((sum, t) => sum + t.amount, 0));
+                
+                // Si es la categoría de deudas, agregar los pagos de préstamos
+                if (debtCategory && catName === debtCategory.name) {
+                    expenseCategories[catName].push(catExpenses + loanPaymentsForMonth);
+                } else {
+                    expenseCategories[catName].push(catExpenses);
+                }
+            });
+        }
+    }
+    
+    // Colores variados para las categorías
+    const colors = [
+        '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+        '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1',
+        '#14B8A6', '#FBBF24', '#FB7185', '#A78BFA', '#60A5FA'
+    ];
+    
+    // Crear datasets para cada categoría
+    const datasets = Object.keys(expenseCategories).map((catName, index) => {
+        const data = expenseCategories[catName];
+        // Solo mostrar categorías que tengan al menos un valor > 0
+        const hasData = data.some(v => v > 0);
+        if (!hasData) return null;
+        
+        return {
+            label: catName,
+            data: data,
+            borderColor: colors[index % colors.length],
+            backgroundColor: colors[index % colors.length] + '20',
+            tension: 0.4,
+            fill: false
+        };
+    }).filter(d => d !== null);
+    
+    charts.expensesEvolution.data.labels = months;
+    charts.expensesEvolution.data.datasets = datasets.length > 0 ? datasets : [{
+        label: 'Gastos',
+        data: new Array(months.length).fill(0),
+        borderColor: '#EF4444',
+        backgroundColor: 'rgba(239, 68, 68, 0.15)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.expensesEvolution.update();
+}
+
+// Gráfica de préstamos pendientes
+function updateLoansOutstandingChart() {
+    if (!charts.loansPending) return;
+    
+    const period = getSelectedPeriod('loansPending');
+    const loanFilter = document.querySelector('.chart-loan-filter[data-chart="loansPending"]');
+    const selectedLoan = loanFilter ? loanFilter.value : 'all';
+    
+    let filteredLoans = loans.filter(loan => loan.type === 'debt'); // Solo deudas
+    if (selectedLoan !== 'all') {
+        filteredLoans = filteredLoans.filter(loan => (loan._id || loan.id) === selectedLoan);
+    }
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const months = [];
+    const outstandingData = [];
+    
+    if (filteredLoans.length === 0) {
+        charts.loansPending.data.labels = [];
+        charts.loansPending.data.datasets = [];
+        charts.loansPending.update();
+        return;
+    }
+    
+    // Calcular préstamos pendientes por mes
+    // Si period es 999 (all), usar 30 años (360 meses)
+    let periodMonths = period === 999 ? 360 : period;
+    // Limitar a máximo 30 años (360 meses) para evitar cálculos excesivos
+    periodMonths = Math.min(periodMonths, 360);
+    
+    // Calcular desde el pasado hasta el futuro
+    // Dividir el período: algunos meses pasados y el resto hacia el futuro
+    const pastMonths = Math.min(12, Math.floor(periodMonths / 4)); // Últimos 12 meses como máximo, o 1/4 del período
+    const futureMonths = periodMonths - pastMonths; // Resto hacia el futuro
+    
+    // Meses pasados (desde el pasado hasta hoy)
+    for (let i = pastMonths - 1; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        date.setHours(23, 59, 59, 999);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        let totalOutstanding = 0;
+        filteredLoans.forEach(loan => {
+            const loanDate = new Date(loan.start_date);
+            loanDate.setHours(0, 0, 0, 0);
+            if (loanDate <= date) {
+                const amortization = calculateAmortizationTable(
+                    loan.principal,
+                    loan.interest_rate,
+                    loan.monthly_payment,
+                    loan.start_date,
+                    0,
+                    loan.early_payments ? loan.early_payments.filter(ep => {
+                        const epDate = new Date(ep.date);
+                        epDate.setHours(0, 0, 0, 0);
+                        return epDate <= date;
+                    }) : [],
+                    date
+                );
+                totalOutstanding += Math.max(0, amortization.finalBalance);
+            } else {
+                totalOutstanding += loan.principal;
+            }
+        });
+        
+        outstandingData.push(totalOutstanding);
+    }
+    
+    // Meses futuros (desde hoy hacia el futuro)
+    for (let i = 1; i <= futureMonths; i++) {
+        const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
+        date.setHours(23, 59, 59, 999);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        let totalOutstanding = 0;
+        filteredLoans.forEach(loan => {
+            const loanDate = new Date(loan.start_date);
+            loanDate.setHours(0, 0, 0, 0);
+            const loanEndDate = new Date(loan.end_date);
+            loanEndDate.setHours(23, 59, 59, 999);
+            
+            if (loanDate <= date && date <= loanEndDate) {
+                // Calcular amortización proyectada hasta esa fecha futura
+                const amortization = calculateAmortizationTable(
+                    loan.principal,
+                    loan.interest_rate,
+                    loan.monthly_payment,
+                    loan.start_date,
+                    0,
+                    loan.early_payments || [],
+                    date
+                );
+                totalOutstanding += Math.max(0, amortization.finalBalance);
+            } else if (date > loanEndDate) {
+                // Si la fecha futura es después del fin del préstamo, no hay deuda pendiente
+                totalOutstanding += 0;
+            } else if (loanDate > date) {
+                // Si el préstamo aún no ha comenzado, el pendiente es el principal completo
+                totalOutstanding += loan.principal;
+            }
+        });
+        
+        outstandingData.push(totalOutstanding);
+    }
+    
+    charts.loansPending.data.labels = months;
+    charts.loansPending.data.datasets = [{
+        label: 'Préstamos Pendientes',
+        data: outstandingData,
+        borderColor: '#F59E0B',
+        backgroundColor: 'rgba(245, 158, 11, 0.15)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.loansPending.update();
+}
+
+// Gráfica de evolución del patrimonio
+function updateAssetsEvolutionChart() {
+    if (!charts.assetsEvolution) return;
+    
+    const period = getSelectedPeriod('assetsEvolution');
+    const assetFilter = document.querySelector('.chart-asset-filter[data-chart="assetsEvolution"]');
+    const selectedAsset = assetFilter ? assetFilter.value : 'all';
+    
+    let filteredPatrimonio = patrimonio;
+    if (selectedAsset !== 'all') {
+        filteredPatrimonio = patrimonio.filter(prop => (prop._id || prop.id) === selectedAsset);
+    }
+    const now = new Date();
+    const months = [];
+    const patrimonioData = [];
+    
+    if (filteredPatrimonio.length === 0) {
+        charts.assetsEvolution.data.labels = [];
+        charts.assetsEvolution.data.datasets = [];
+        charts.assetsEvolution.update();
+        return;
+    }
+    
+    const periodMonths = period === 999 ? 12 : period;
+    
+    for (let i = periodMonths - 1; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        date.setHours(23, 59, 59, 999); // Fin del mes
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        // Calcular patrimonio total en ese mes
+        let totalPatrimonio = 0;
+        filteredPatrimonio.forEach(prop => {
+            const purchaseDate = prop.purchase_date ? new Date(prop.purchase_date) : null;
+            if (!purchaseDate || purchaseDate <= date) {
+                // Si la propiedad fue comprada antes o en ese mes, calcular su valor
+                let propValue = prop.purchase_price || 0; // Valor inicial
+                
+                // Si hay historial de valores, buscar el más cercano a esa fecha
+                if (prop.value_history && prop.value_history.length > 0) {
+                    // Filtrar valores históricos hasta esa fecha
+                    const historicalValues = prop.value_history
+                        .filter(v => {
+                            const vDate = new Date(v.date);
+                            return vDate <= date;
+                        })
+                        .sort((a, b) => new Date(b.date) - new Date(a.date)); // Más reciente primero
+                    
+                    if (historicalValues.length > 0) {
+                        // Usar el valor histórico más reciente hasta esa fecha
+                        propValue = historicalValues[0].value || prop.purchase_price || 0;
+                    } else {
+                        // Si no hay valores históricos antes de esa fecha, usar el precio de compra
+                        propValue = prop.purchase_price || 0;
+                    }
+                } else {
+                    // Si no hay historial, usar el valor actual (asumiendo que es el valor en ese momento)
+                    // O mejor, interpolar entre purchase_price y current_value basado en el tiempo
+                    if (prop.current_value && prop.purchase_price && purchaseDate) {
+                        const daysSincePurchase = (date - purchaseDate) / (1000 * 60 * 60 * 24);
+                        const totalDays = (new Date() - purchaseDate) / (1000 * 60 * 60 * 24);
+                        if (totalDays > 0) {
+                            // Interpolación lineal simple
+                            const progress = Math.min(1, daysSincePurchase / totalDays);
+                            propValue = prop.purchase_price + (prop.current_value - prop.purchase_price) * progress;
+                        } else {
+                            propValue = prop.purchase_price;
+                        }
+                    } else {
+                        propValue = prop.current_value || prop.purchase_price || 0;
+                    }
+                }
+                
+                totalPatrimonio += propValue;
+            }
+        });
+        
+        patrimonioData.push(totalPatrimonio);
+    }
+    
+    charts.assetsEvolution.data.labels = months;
+    charts.assetsEvolution.data.datasets = [{
+        label: 'Patrimonio Total',
+        data: patrimonioData,
+        borderColor: '#10B981',
+        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.assetsEvolution.update();
+}
+
+// Gráfica de evolución de saldo en cuentas
+function updateAccountsBalanceChart() {
+    if (!charts.accountsBalance) return;
+    
+    const period = getSelectedPeriod('accountsBalance');
+    const accountFilter = document.querySelector('.chart-account-filter[data-chart="accountsBalance"]');
+    const selectedAccount = accountFilter ? accountFilter.value : 'all';
+    
+    let filteredAccounts = accounts;
+    if (selectedAccount !== 'all') {
+        filteredAccounts = accounts.filter(account => (account._id || account.id) === selectedAccount);
+    }
+    
+    const now = new Date();
+    const months = [];
+    const balanceData = [];
+    
+    if (filteredAccounts.length === 0) {
+        charts.accountsBalance.data.labels = [];
+        charts.accountsBalance.data.datasets = [];
+        charts.accountsBalance.update();
+        return;
+    }
+    
+    const periodTransactions = getTransactionsByPeriod('accountsBalance');
+    const periodMonths = period === 999 ? 12 : period;
+    
+    for (let i = periodMonths - 1; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        months.push(monthKey);
+        
+        // Calcular saldo total de cuentas en ese mes
+        let totalBalance = 0;
+        filteredAccounts.forEach(account => {
+            // Saldo inicial de la cuenta
+            let accountBalance = account.balance || 0;
+            
+            // Sumar transacciones hasta esa fecha
+            const accountTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate <= date && t.account_id === account._id;
+            });
+            
+            accountTransactions.forEach(t => {
+                if (t.type === 'income') {
+                    accountBalance += t.amount;
+                } else if (t.type === 'expense') {
+                    accountBalance -= Math.abs(t.amount);
+                }
+            });
+            
+            totalBalance += accountBalance;
+        });
+        
+        balanceData.push(totalBalance);
+    }
+    
+    charts.accountsBalance.data.labels = months;
+    charts.accountsBalance.data.datasets = [{
+        label: 'Saldo Total',
+        data: balanceData,
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4,
+        fill: true
+    }];
+    charts.accountsBalance.update();
+}
+
+// Modal de gráfico detallado - FUNCIÓN SIMPLE Y DIRECTA
+let chartModalChart = null;
+
+function openChartModal(chartType, title) {
+    const modal = document.getElementById('chartModal');
+    const modalTitle = document.getElementById('chartModalTitle');
+    const modalContent = document.getElementById('chartModalControls');
+    const modalCanvasContainer = document.querySelector('.chart-modal-canvas-container');
+    
+    if (!modal || !modalTitle) return;
+    
+    // Obtener el gráfico original
+    const originalChart = charts[chartType];
+    if (!originalChart || !originalChart.data) {
+        console.error('Gráfico no encontrado:', chartType);
+        return;
+    }
+    
+    // Establecer título y abrir modal
+    currentChartType = chartType;
+    modalTitle.textContent = title;
+    modal.style.display = 'flex';
+    
+    // Limpiar gráfico anterior
+    if (chartModalChart) {
+        chartModalChart.destroy();
+        chartModalChart = null;
+    }
+    
+    // Crear controles en el modal
+    if (modalContent) {
+        modalContent.innerHTML = '';
+        
+        // Obtener el período actual del gráfico original
+        const originalPeriodSelect = document.querySelector(`.chart-period-select[data-chart="${chartType}"]`);
+        const currentPeriod = originalPeriodSelect ? originalPeriodSelect.value : '6';
+        
+        // Crear selector de período
+        const periodDiv = document.createElement('div');
+        periodDiv.style.display = 'flex';
+        periodDiv.style.flexDirection = 'column';
+        periodDiv.style.gap = '8px';
+        
+        const periodLabel = document.createElement('label');
+        const lang = localStorage.getItem('veedor_language') || 'es';
+        periodLabel.textContent = getTranslation('help.period', lang);
+        periodLabel.style.fontWeight = '600';
+        periodLabel.style.fontSize = '14px';
+        periodLabel.style.color = 'var(--text-primary)';
+        
+        const periodSelect = document.createElement('select');
+        periodSelect.id = 'modalChartPeriod';
+        periodSelect.className = 'chart-period-select';
+        periodSelect.style.padding = '8px 12px';
+        periodSelect.style.border = '1.5px solid var(--border-color)';
+        periodSelect.style.borderRadius = '8px';
+        periodSelect.style.fontSize = '14px';
+        periodSelect.style.background = 'var(--bg-primary)';
+        periodSelect.style.color = 'var(--text-primary)';
+        periodSelect.style.cursor = 'pointer';
+        
+        const periodOptions = [
+            { value: '1', text: '1 mes' },
+            { value: '3', text: '3 meses' },
+            { value: '6', text: '6 meses' },
+            { value: '12', text: '12 meses' },
+            { value: 'all', text: 'Todo' }
+        ];
+        
+        periodOptions.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.text;
+            if (opt.value === currentPeriod) option.selected = true;
+            periodSelect.appendChild(option);
+        });
+        
+        periodDiv.appendChild(periodLabel);
+        periodDiv.appendChild(periodSelect);
+        modalContent.appendChild(periodDiv);
+        
+        // Crear selector de categoría si el gráfico lo soporta
+        const categoryCharts = ['incomeEvolution', 'expensesEvolution'];
+        if (categoryCharts.includes(chartType)) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.style.display = 'flex';
+            categoryDiv.style.flexDirection = 'column';
+            categoryDiv.style.gap = '8px';
+            
+            const categoryLabel = document.createElement('label');
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            categoryLabel.textContent = getTranslation('help.category', lang);
+            categoryLabel.style.fontWeight = '600';
+            categoryLabel.style.fontSize = '14px';
+            categoryLabel.style.color = 'var(--text-primary)';
+            
+            const categorySelect = document.createElement('select');
+            categorySelect.id = 'modalChartCategoryFilter';
+            categorySelect.className = 'chart-category-filter';
+            categorySelect.style.padding = '8px 12px';
+            categorySelect.style.border = '1.5px solid var(--border-color)';
+            categorySelect.style.borderRadius = '8px';
+            categorySelect.style.fontSize = '14px';
+            categorySelect.style.background = 'var(--bg-primary)';
+            categorySelect.style.color = 'var(--text-primary)';
+            categorySelect.style.cursor = 'pointer';
+            
+            // Obtener categorías según el tipo de gráfico
+            const isIncome = chartType === 'incomeEvolution';
+            const chartCategories = isIncome ? categories.income : categories.expense;
+            
+            const allOption = document.createElement('option');
+            allOption.value = 'all';
+            allOption.textContent = getTranslation('help.allCategories', lang);
+            categorySelect.appendChild(allOption);
+            
+            chartCategories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categorySelect.appendChild(option);
+            });
+            
+            // Obtener el valor actual del gráfico original
+            const originalCategorySelect = document.querySelector(`.chart-category-filter[data-chart="${chartType}"]`);
+            if (originalCategorySelect) {
+                categorySelect.value = originalCategorySelect.value || 'all';
+            }
+            
+            categoryDiv.appendChild(categoryLabel);
+            categoryDiv.appendChild(categorySelect);
+            modalContent.appendChild(categoryDiv);
+            
+            // Event listener para categoría
+            categorySelect.addEventListener('change', () => {
+                updateModalChart(chartType);
+            });
+        }
+        
+        // Event listener para período
+        periodSelect.addEventListener('change', () => {
+            updateModalChart(chartType);
+        });
+    }
+    
+    // Asegurar que el contenedor del canvas exista y tenga dimensiones
+    if (modalCanvasContainer) {
+        modalCanvasContainer.style.width = '100%';
+    }
+    
+    const modalCanvas = document.getElementById('chartModalCanvas');
+    if (!modalCanvas) {
+        console.error('Canvas no encontrado');
+        return;
+    }
+    
+    // Crear gráfico inicial
+    updateModalChart(chartType);
+}
+
+// Función para actualizar el gráfico del modal
+function updateModalChart(chartType) {
+    const modalCanvas = document.getElementById('chartModalCanvas');
+    if (!modalCanvas) return;
+    
+    // Obtener valores de los controles del modal
+    const modalPeriodSelect = document.getElementById('modalChartPeriod');
+    const modalCategorySelect = document.getElementById('modalChartCategoryFilter');
+    
+    if (!modalPeriodSelect) return;
+    
+    // Obtener período seleccionado en el modal
+    const modalPeriod = modalPeriodSelect.value === 'all' ? 999 : parseInt(modalPeriodSelect.value) || 6;
+    const modalCategory = modalCategorySelect ? modalCategorySelect.value : 'all';
+    
+    // Obtener transacciones filtradas según el período del modal
+    const now = new Date();
+    let periodTransactions = [];
+    
+    if (modalPeriod === 999) {
+        periodTransactions = [...transactions];
+    } else {
+        const startDate = new Date(now.getFullYear(), now.getMonth() - modalPeriod, 1);
+        periodTransactions = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate >= startDate;
+        });
+    }
+    
+    // Filtrar por categoría si está seleccionada
+    if (modalCategory !== 'all' && (chartType === 'incomeEvolution' || chartType === 'expensesEvolution')) {
+        periodTransactions = periodTransactions.filter(t => t.categoryGeneral === modalCategory);
+    }
+    
+    // Obtener el gráfico original para copiar su estructura
+    const originalChart = charts[chartType];
+    if (!originalChart) return;
+    
+    // Destruir gráfico del modal anterior
+    if (chartModalChart) {
+        chartModalChart.destroy();
+        chartModalChart = null;
+    }
+    
+    // Generar datos según el tipo de gráfico
+    let chartData = { labels: [], datasets: [] };
+    let chartOptions = JSON.parse(JSON.stringify(originalChart.options || {}));
+    
+    // Llamar a función específica para generar datos según el tipo
+    if (chartType === 'incomeEvolution' || chartType === 'expensesEvolution') {
+        chartData = generateEvolutionChartData(chartType, periodTransactions, modalPeriod);
+    } else {
+        // Para otros tipos de gráficos, usar la lógica existente pero con datos filtrados
+        // Por ahora, clonar los datos del original y actualizar con los filtros
+        chartData = JSON.parse(JSON.stringify(originalChart.data));
+    }
+    
+    // Crear nuevo gráfico en el modal
+    setTimeout(() => {
+        try {
+            chartModalChart = new Chart(modalCanvas, {
+                type: originalChart.config.type,
+                data: chartData,
+                options: {
+                    ...chartOptions,
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { size: 14 },
+                                padding: 15
+                            }
+                        }
+                    },
+                    scales: chartOptions.scales ? {
+                        ...chartOptions.scales,
+                        x: chartOptions.scales.x ? {
+                            ...chartOptions.scales.x,
+                            ticks: {
+                                ...chartOptions.scales.x.ticks,
+                                maxRotation: 45,
+                                minRotation: 0
+                            }
+                        } : undefined,
+                        y: chartOptions.scales.y ? {
+                            ...chartOptions.scales.y
+                        } : undefined
+                    } : undefined
+                }
+            });
+        } catch (error) {
+            console.error('Error al crear gráfico:', error);
+        }
+    }, 100);
+}
+
+// Función auxiliar para generar datos de gráficos de evolución
+function generateEvolutionChartData(chartType, periodTransactions, period) {
+    const isIncome = chartType === 'incomeEvolution';
+    const now = new Date();
+    const months = [];
+    
+    if (periodTransactions.length === 0) {
+        return { labels: [], datasets: [] };
+    }
+    
+    // Generar meses
+    if (period === 999) {
+        const firstDate = new Date(Math.min(...periodTransactions.map(t => new Date(t.date))));
+        let currentMonth = firstDate.getMonth();
+        let currentYear = firstDate.getFullYear();
+        const endMonth = now.getMonth();
+        const endYear = now.getFullYear();
+        
+        while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+            const date = new Date(currentYear, currentMonth, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+    } else {
+        for (let i = period - 1; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+            months.push(monthKey);
+        }
+    }
+    
+    // Obtener todas las categorías únicas
+    const chartCategories = {};
+    periodTransactions.filter(t => t.type === (isIncome ? 'income' : 'expense')).forEach(t => {
+        let catName;
+        const catList = isIncome ? categories.income : categories.expense;
+        const cat = catList.find(c => c.id === t.categoryGeneral);
+        if (cat) {
+            catName = cat.name;
+        } else {
+            catName = t.categoryGeneral;
+        }
+        if (!chartCategories[catName]) {
+            chartCategories[catName] = [];
+        }
+    });
+    
+    // Agrupar transacciones por mes y categoría
+    months.forEach(monthKey => {
+        const [monthName, year] = monthKey.split(' ');
+        const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+        const yearNum = parseInt(year);
+        
+        Object.keys(chartCategories).forEach(catName => {
+            const monthTotal = periodTransactions
+                .filter(t => {
+                    const tDate = new Date(t.date);
+                    return tDate.getMonth() === monthIndex &&
+                           tDate.getFullYear() === yearNum &&
+                           t.type === (isIncome ? 'income' : 'expense') &&
+                           (() => {
+                               const catList = isIncome ? categories.income : categories.expense;
+                               const cat = catList.find(c => c.id === t.categoryGeneral);
+                               const name = cat ? cat.name : t.categoryGeneral;
+                               return name === catName;
+                           })();
+                })
+                .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            
+            chartCategories[catName].push(monthTotal);
+        });
+    });
+    
+    // Crear datasets
+    const datasets = Object.keys(chartCategories).map((catName, index) => {
+        const colors = [
+            'rgba(59, 130, 246, 0.8)',     // Azul
+            'rgba(16, 185, 129, 0.8)',     // Verde
+            'rgba(245, 158, 11, 0.8)',     // Amarillo
+            'rgba(239, 68, 68, 0.8)',      // Rojo
+            'rgba(139, 92, 246, 0.8)',     // Púrpura
+            'rgba(6, 182, 212, 0.8)',      // Cyan
+            'rgba(132, 204, 22, 0.8)',     // Verde lima
+            'rgba(249, 115, 22, 0.8)'      // Naranja
+        ];
+        
+        return {
+            label: catName,
+            data: chartCategories[catName],
+            borderColor: colors[index % colors.length],
+            backgroundColor: colors[index % colors.length].replace('0.8', '0.2'),
+            borderWidth: 2,
+            fill: true
+        };
+    });
+    
+    return {
+        labels: months,
+        datasets: datasets
+    };
+}
+
+function closeChartModal() {
+    const modal = document.getElementById('chartModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    if (chartModalChart) {
+        chartModalChart.destroy();
+        chartModalChart = null;
+    }
+    currentChartType = null;
+}
+
+// Exponer funciones globalmente INMEDIATAMENTE después de definir openChartModal
+// Esto es crítico para que el stub pueda encontrar la función real
+// Usar IIFE para ejecutar inmediatamente
+(function() {
+    try {
+        if (typeof openChartModal === 'function') {
+            window._openChartModalReal = openChartModal;
+            window.openChartModal = openChartModal;
+            console.log('✅ openChartModal expuesta INMEDIATAMENTE después de su definición');
+        } else {
+            console.error('❌ openChartModal no está definida como función');
+        }
+        if (typeof closeChartModal === 'function') {
+            window.closeChartModal = closeChartModal;
+        }
+    } catch (error) {
+        console.error('❌ Error al exponer openChartModal:', error);
+    }
+})();
+
+
+// Actualizar análisis del mes seleccionado
+function updateMonthDashboard() {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const dashboardMonthInput = document.getElementById('dashboardMonth');
+    const monthDashboard = document.getElementById('monthDashboard');
+    const monthAnalysisSelector = document.getElementById('monthAnalysisSelector');
+    
+    if (!dashboardMonthInput || !monthDashboard) return;
+    
+    const selectedMonth = dashboardMonthInput.value;
+    if (!selectedMonth) {
+        monthDashboard.style.display = 'none';
+        if (monthAnalysisSelector) {
+            monthAnalysisSelector.style.display = 'none';
+        }
+        return;
+    }
+    
+    monthDashboard.style.display = 'block';
+    if (monthAnalysisSelector) {
+        monthAnalysisSelector.style.display = 'block';
+    }
+    
+    const [year, month] = selectedMonth.split('-').map(Number);
+    const monthIndex = month - 1;
+    
+    // Filtrar transacciones del mes seleccionado
+    const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === monthIndex && tDate.getFullYear() === year;
+    });
+    
+    const monthExpenses = monthTransactions.filter(t => t.type === 'expense');
+    const monthIncome = monthTransactions.filter(t => t.type === 'income');
+    
+    // Gastos por categoría
+    const expensesByCategory = {};
+    monthExpenses.forEach(t => {
+        const catId = t.categoryGeneral;
+        if (!expensesByCategory[catId]) {
+            expensesByCategory[catId] = { amount: 0, transactions: [] };
+        }
+        expensesByCategory[catId].amount += Math.abs(t.amount);
+        expensesByCategory[catId].transactions.push(t);
+    });
+    
+    const expensesContainer = document.getElementById('monthExpensesByCategory');
+    if (expensesContainer) {
+        expensesContainer.innerHTML = '';
+        
+        if (Object.keys(expensesByCategory).length === 0) {
+            expensesContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos registrados para este mes</div>';
+        } else {
+            Object.entries(expensesByCategory).forEach(([catId, data]) => {
+                const category = categories.expense.find(c => c.id === catId);
+                const categoryName = category ? category.name : catId;
+                
+                // Buscar presupuesto para esta categoría en este mes
+                const budget = budgets.find(b => b.period_type === 'monthly' && b.period_value === selectedMonth && b.category_id === catId);
+                const budgetAmount = budget ? budget.amount : 0;
+                const percentage = budgetAmount > 0 ? (data.amount / budgetAmount) * 100 : 0;
+                
+                let progressColor = '#10b981'; // Verde
+                if (percentage > 80 && percentage <= 100) {
+                    progressColor = '#fbbf24'; // Amarillo
+                } else if (percentage > 100) {
+                    progressColor = '#ef4444'; // Rojo
+                }
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); cursor: pointer; transition: all 0.2s; color: var(--text-primary);';
+                card.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                    this.style.borderColor = 'var(--primary)';
+                };
+                card.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                    this.style.borderColor = 'var(--border-color)';
+                };
+                card.onclick = () => showCategoryDetails(categoryName, data.transactions, 'expense', selectedMonth, catId, budgetAmount);
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <div>
+                            <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--text-primary);">${categoryName}</h5>
+                            <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">${data.transactions.length} ${data.transactions.length !== 1 ? 'transacciones' : 'transacción'}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="font-size: 20px; font-weight: 700; margin: 0; color: var(--danger-color);">${formatCurrency(data.amount)}</p>
+                            ${budgetAmount > 0 ? `<small style="color: var(--text-tertiary);">de ${formatCurrency(budgetAmount)}</small>` : ''}
+                        </div>
+                    </div>
+                    ${budgetAmount > 0 ? `
+                        <div style="margin-top: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <small style="font-size: 12px; color: var(--text-secondary);">${getTranslation('common.progress', lang)}</small>
+                                <small style="font-size: 12px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                <small style="font-size: 11px; color: var(--text-tertiary);">${getTranslation('envelope.remaining', lang)}: ${formatCurrency(Math.max(0, budgetAmount - data.amount))}</small>
+                                ${percentage > 100 ? `<small style="font-size: 11px; color: var(--danger-color); font-weight: 600;">Excedido</small>` : ''}
+                            </div>
+                        </div>
+                    ` : '<small style="color: var(--text-tertiary);">Sin presupuesto establecido</small>'}
+                `;
+                expensesContainer.appendChild(card);
+            });
+        }
+    }
+    
+    // Ingresos por categoría
+    const incomeByCategory = {};
+    monthIncome.forEach(t => {
+        const catId = t.categoryGeneral;
+        if (!incomeByCategory[catId]) {
+            incomeByCategory[catId] = { amount: 0, transactions: [] };
+        }
+        incomeByCategory[catId].amount += t.amount;
+        incomeByCategory[catId].transactions.push(t);
+    });
+    
+    const incomeContainer = document.getElementById('monthIncomeByCategory');
+    if (incomeContainer) {
+        incomeContainer.innerHTML = '';
+        
+        if (Object.keys(incomeByCategory).length === 0) {
+            incomeContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay ingresos registrados para este mes</div>';
+        } else {
+            Object.entries(incomeByCategory).forEach(([catId, data]) => {
+                const category = categories.income.find(c => c.id === catId);
+                const categoryName = category ? category.name : catId;
+                
+                // Buscar presupuesto para esta categoría en este mes
+                const budget = budgets.find(b => b.period_type === 'monthly' && b.period_value === selectedMonth && b.category_id === catId);
+                const budgetAmount = budget ? budget.amount : 0;
+                const percentage = budgetAmount > 0 ? (data.amount / budgetAmount) * 100 : 0;
+                
+                let progressColor = '#10b981'; // Verde
+                if (percentage < 80) {
+                    progressColor = '#fbbf24'; // Amarillo
+                } else if (percentage < 100) {
+                    progressColor = '#10b981'; // Verde
+                }
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); cursor: pointer; transition: all 0.2s; color: var(--text-primary);';
+                card.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                    this.style.borderColor = 'var(--primary)';
+                };
+                card.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                    this.style.borderColor = 'var(--border-color)';
+                };
+                card.onclick = () => showCategoryDetails(categoryName, data.transactions, 'income', selectedMonth, catId, budgetAmount);
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <div>
+                            <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 4px 0; color: var(--text-primary);">${categoryName}</h5>
+                            <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">${data.transactions.length} ${data.transactions.length !== 1 ? 'transacciones' : 'transacción'}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="font-size: 20px; font-weight: 700; margin: 0; color: var(--success);">${formatCurrency(data.amount)}</p>
+                            ${budgetAmount > 0 ? `<small style="color: var(--text-tertiary);">de ${formatCurrency(budgetAmount)}</small>` : ''}
+                        </div>
+                    </div>
+                    ${budgetAmount > 0 ? `
+                        <div style="margin-top: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <small style="font-size: 12px; color: var(--text-secondary);">Progreso del presupuesto</small>
+                                <small style="font-size: 12px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                <small style="font-size: 11px; color: var(--text-tertiary);">Diferencia: ${formatCurrency(data.amount - budgetAmount)}</small>
+                                ${percentage < 100 ? `<small style="font-size: 11px; color: var(--warning); font-weight: 600; background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--warning);">Por debajo del presupuesto</small>` : ''}
+                            </div>
+                            </div>
+                    ` : '<small style="color: var(--text-tertiary);">Sin presupuesto establecido</small>'}
+                `;
+                incomeContainer.appendChild(card);
+            });
+        }
+    }
+    
+    // Estado de presupuestos del mes (ingresos y gastos)
+    const monthBudgets = budgets.filter(b => b.period_type === 'monthly' && b.period_value === selectedMonth);
+    const budgetsStatusContainer = document.getElementById('monthBudgetsStatus');
+    if (budgetsStatusContainer) {
+        budgetsStatusContainer.innerHTML = '';
+        
+        if (monthBudgets.length === 0) {
+            budgetsStatusContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay presupuestos establecidos para este mes</div>';
+        } else {
+            // Separar presupuestos de ingresos y gastos
+            const incomeBudgets = [];
+            const expenseBudgets = [];
+            
+            monthBudgets.forEach(budget => {
+                // Determinar si es ingreso o gasto
+                let category = categories.expense.find(c => c.id === budget.category_id);
+                if (category) {
+                    expenseBudgets.push({ budget, category, isIncome: false });
+                } else {
+                    category = categories.income.find(c => c.id === budget.category_id);
+                    if (category) {
+                        incomeBudgets.push({ budget, category, isIncome: true });
+                    }
+                }
+            });
+            
+            // Mostrar resumen general primero
+            const totalIncomeBudget = incomeBudgets.reduce((sum, b) => sum + b.budget.amount, 0);
+            const totalExpenseBudget = expenseBudgets.reduce((sum, b) => sum + b.budget.amount, 0);
+            const totalIncomeActual = monthIncome.reduce((sum, t) => sum + t.amount, 0);
+            const totalExpenseActual = monthExpenses.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            
+            if (totalIncomeBudget > 0 || totalExpenseBudget > 0) {
+                const summaryCard = document.createElement('div');
+                summaryCard.className = 'rainbow-bg';
+                summaryCard.style.cssText = 'padding: 24px; border-radius: var(--radius); border: none; box-shadow: var(--shadow-light); color: #0F172A; grid-column: 1/-1; cursor: pointer; transition: all 0.2s;';
+                summaryCard.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.15)';
+                };
+                summaryCard.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                };
+                summaryCard.onclick = () => switchToTab('envelopes', true);
+                summaryCard.innerHTML = `
+                    <h5 style="font-size: 18px; font-weight: 700; margin: 0 0 20px 0; color: #0F172A;">Resumen del Mes</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div>
+                            <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">${getTranslation('envelope.budgetIncome', lang)}</div>
+                            <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalIncomeBudget)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">${getTranslation('common.real', lang)}: ${formatCurrency(totalIncomeActual)}</div>
+                            <div style="font-size: 12px; margin-top: 4px; color: #0F172A; opacity: 0.9;">
+                                ${totalIncomeBudget > 0 ? ((totalIncomeActual / totalIncomeBudget) * 100).toFixed(1) + '%' : '-'}
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">${getTranslation('envelope.budgetExpenses', lang)}</div>
+                            <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalExpenseBudget)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">${getTranslation('common.real', lang)}: ${formatCurrency(totalExpenseActual)}</div>
+                            <div style="font-size: 12px; margin-top: 4px; color: #0F172A; opacity: 0.9;">
+                                ${totalExpenseBudget > 0 ? ((totalExpenseActual / totalExpenseBudget) * 100).toFixed(1) + '%' : '-'}
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; opacity: 0.85; margin-bottom: 6px; color: #0F172A;">Ahorro Previsto</div>
+                            <div style="font-size: 24px; font-weight: 700; color: #0F172A;">${formatCurrency(totalIncomeBudget - totalExpenseBudget)}</div>
+                            <div style="font-size: 14px; margin-top: 4px; opacity: 0.8; color: #0F172A;">${getTranslation('common.real', lang)}: ${formatCurrency(totalIncomeActual - totalExpenseActual)}</div>
+                        </div>
+                    </div>
+                `;
+                budgetsStatusContainer.appendChild(summaryCard);
+            }
+            
+            // Mostrar presupuestos de ingresos
+            incomeBudgets.forEach(({ budget, category, isIncome }) => {
+                const categoryIncome = monthIncome.filter(t => t.categoryGeneral === budget.category_id);
+                const actual = categoryIncome.reduce((sum, t) => sum + t.amount, 0);
+                const difference = actual - budget.amount;
+                const percentage = budget.amount > 0 ? (actual / budget.amount) * 100 : 0;
+                const isUnderBudget = actual < budget.amount;
+                
+                let progressColor = '#10b981';
+                if (percentage < 80) {
+                    progressColor = '#fbbf24';
+                } else if (percentage < 100) {
+                    progressColor = '#10b981';
+                }
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); border-left: 4px solid var(--success); color: var(--text-primary); cursor: pointer; transition: all 0.2s;';
+                card.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                    this.style.borderColor = 'var(--primary)';
+                };
+                card.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                    this.style.borderColor = 'var(--border-color)';
+                };
+                card.onclick = () => showCategoryDetails(category.name, categoryIncome, 'income', selectedMonth, budget.category_id, budget.amount);
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                const budgetDisplayName = category ? category.name : (budget.category_id || getTranslation('budgets.noCategory', lang));
+                const transCount = categoryIncome.length;
+                const transText = transCount === 1 ? getTranslation('budgets.transaction', lang) : getTranslation('budgets.transactions', lang);
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; gap: 12px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
+                        <h5 style="font-size: clamp(16px, 4vw, 20px) !important; font-weight: 700 !important; margin: 0 !important; padding: 0 !important; color: var(--text-primary) !important; flex: 1 1 auto !important; min-width: 60% !important; max-width: 100% !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important;">${budgetDisplayName || 'Sin nombre'}</h5>
+                        <span style="font-size: 11px; padding: 4px 8px; background: var(--success-light); border-radius: var(--radius); color: var(--success-dark); font-weight: 600; flex-shrink: 0; white-space: nowrap; margin-top: 2px;">${getTranslation('budgets.income', lang)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.budget', lang)}:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--gray-900);">${formatCurrency(budget.amount)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.received', lang)}:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--success);">${formatCurrency(actual)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 14px; color: var(--gray-600);">${getTranslation('budgets.difference', lang)}:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: ${difference >= 0 ? 'var(--success)' : 'var(--warning)'};">${formatCurrency(Math.abs(difference))}</span>
+                    </div>
+                    <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
+                        <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <small style="font-size: 11px; color: var(--gray-500);">${transCount} ${transText}</small>
+                        <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</small>
+                    </div>
+                    ${isUnderBudget ? `<div style="margin-top: 8px; padding: 6px; background: var(--bg-secondary); border: 1px solid var(--warning); border-radius: var(--radius); color: var(--warning); font-size: 11px; font-weight: 600;">${getTranslation('budgets.underBudget', lang)}</div>` : ''}
+                `;
+                budgetsStatusContainer.appendChild(card);
+            });
+            
+            // Mostrar presupuestos de gastos
+            expenseBudgets.forEach(({ budget, category, isIncome }) => {
+                const categoryExpenses = monthExpenses.filter(t => t.categoryGeneral === budget.category_id);
+                const spent = categoryExpenses.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                const remaining = budget.amount - spent;
+                const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
+                const isOverBudget = spent > budget.amount;
+                
+                let progressColor = '#10b981';
+                if (percentage > 80 && percentage <= 100) {
+                    progressColor = '#fbbf24';
+                } else if (percentage > 100) {
+                    progressColor = '#ef4444';
+                }
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); border-left: 4px solid ' + (isOverBudget ? 'var(--danger)' : progressColor) + '; color: var(--text-primary); cursor: pointer; transition: all 0.2s;';
+                card.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                    this.style.borderColor = 'var(--primary)';
+                };
+                card.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                    this.style.borderColor = 'var(--border-color)';
+                };
+                card.onclick = () => showCategoryDetails(category.name, categoryExpenses, 'expense', selectedMonth, budget.category_id, budget.amount);
+                const lang = localStorage.getItem('veedor_language') || 'es';
+                const budgetDisplayName = category ? category.name : (budget.category_id || getTranslation('budgets.noCategory', lang));
+                const transCount = categoryExpenses.length;
+                const transText = transCount === 1 ? getTranslation('budgets.transaction', lang) : getTranslation('budgets.transactions', lang);
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; gap: 12px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
+                        <h5 style="font-size: clamp(20px, 4.5vw, 26px) !important; font-weight: 800 !important; margin: 0 !important; padding: 0 !important; color: #FFFFFF !important; flex: 1 1 auto !important; min-width: 60% !important; max-width: 100% !important; word-wrap: break-word !important; overflow-wrap: break-word !important; line-height: 1.4 !important; display: block !important; visibility: visible !important; opacity: 1 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; z-index: 10 !important; position: relative !important; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;">${budgetDisplayName || 'Sin nombre'}</h5>
+                        <span style="font-size: 13px; padding: 6px 10px; background: var(--gray-100); border-radius: var(--radius); color: var(--text-primary); font-weight: 700; flex-shrink: 0; white-space: nowrap; margin-top: 2px;">${getTranslation('budgets.expense', lang)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="font-size: 16px; font-weight: 600; color: var(--text-primary);">${getTranslation('budgets.budget', lang)}:</span>
+                        <span style="font-size: 18px; font-weight: 700; color: var(--text-primary);">${formatCurrency(budget.amount)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="font-size: 16px; font-weight: 600; color: var(--text-primary);">${getTranslation('budgets.spent', lang)}:</span>
+                        <span style="font-size: 18px; font-weight: 700; color: var(--danger);">${formatCurrency(spent)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 16px; font-weight: 600; color: var(--text-primary);">${getTranslation('budgets.remaining', lang)}:</span>
+                        <span style="font-size: 18px; font-weight: 700; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(remaining)}</span>
+                    </div>
+                    <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
+                        <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <small style="font-size: 11px; color: var(--gray-500);">${transCount} ${transText}</small>
+                        <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}% ${getTranslation('budgets.used', lang)}</small>
+                    </div>
+                    ${isOverBudget ? `
+                        <div style="margin-top: 10px; padding: 10px 12px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.15) 100%); border: 1.5px solid rgba(239, 68, 68, 0.3); border-left: 3px solid var(--danger); border-radius: 8px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.1);">
+                            <span style="font-size: 16px; line-height: 1;">⚠️</span>
+                            <span style="color: var(--danger); font-size: 12px; font-weight: 700;">${getTranslation('budgets.overBudget', lang)}</span>
+                        </div>
+                    ` : ''}
+                `;
+                budgetsStatusContainer.appendChild(card);
+            });
+        }
+    }
+    
+    // Estado de sobres del mes
+    const envelopesStatusContainer = document.getElementById('monthEnvelopesStatus');
+    if (envelopesStatusContainer) {
+        envelopesStatusContainer.innerHTML = '';
+        
+        if (envelopes.length === 0) {
+            envelopesStatusContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">No hay sobres creados</div>';
+        } else {
+            envelopes.forEach(envelope => {
+                const envelopeTransactions = monthTransactions.filter(t => t.envelope === envelope.name);
+                const spent = envelopeTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                const remaining = envelope.budget - spent;
+                const percentage = (spent / envelope.budget) * 100;
+                
+                let progressColor = '#10b981';
+                if (percentage > 80 && percentage <= 100) {
+                    progressColor = '#fbbf24';
+                } else if (percentage > 100) {
+                    progressColor = '#ef4444';
+                }
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: var(--bg-primary); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: var(--shadow-light); color: var(--text-primary); cursor: pointer; transition: all 0.2s;';
+                card.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                    this.style.borderColor = 'var(--primary)';
+                };
+                card.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'var(--shadow-light)';
+                    this.style.borderColor = 'var(--border-color)';
+                };
+                // Abrir modal de detalles del sobre
+                card.onclick = () => showEnvelopeDetails(envelope.name, envelopeTransactions, selectedMonth, envelope.budget);
+                card.innerHTML = `
+                    <h5 style="font-size: 16px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-primary);">${envelope.name}</h5>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: var(--text-secondary);">${getTranslation('budgets.budget', lang)}:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${formatCurrency(envelope.budget)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: var(--text-secondary);">${getTranslation('envelope.spent', lang)}:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: var(--danger-color);">${formatCurrency(spent)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 14px; color: var(--text-secondary);">${getTranslation('envelope.remaining', lang)}:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: ${remaining >= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">${formatCurrency(remaining)}</span>
+                    </div>
+                    <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 4px;">
+                        <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <small style="font-size: 11px; color: var(--text-tertiary);">${envelopeTransactions.length} transacciones</small>
+                        <small style="font-size: 11px; font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}% usado</small>
+                    </div>
+                `;
+                envelopesStatusContainer.appendChild(card);
+            });
+        }
+    }
+}
+
+// ==================== MODAL DE DETALLES DE SOBRE ====================
+function showEnvelopeDetails(envelopeName, transactions, month, budgetAmount) {
+    const modal = document.getElementById('categoryDetailsModal');
+    const modalTitle = document.getElementById('categoryDetailsModalTitle');
+    const modalContent = document.getElementById('categoryDetailsContent');
+    
+    if (!modal || !modalTitle || !modalContent) {
+        console.error('Modal elements not found');
+        return;
+    }
+    
+    const [year, monthNum] = month.split('-');
+    const monthName = new Date(year, parseInt(monthNum) - 1, 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+    
+    modalTitle.textContent = `${envelopeName} - ${monthName}`;
+    
+    const total = transactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const remaining = budgetAmount - total;
+    const percentage = budgetAmount > 0 ? (total / budgetAmount) * 100 : 0;
+    
+    let progressColor = '#10b981';
+    if (percentage > 80 && percentage <= 100) {
+        progressColor = '#fbbf24';
+    } else if (percentage > 100) {
+        progressColor = '#ef4444';
+    }
+    
+    let content = `
+        <div style="margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                <div style="background: var(--danger); padding: 16px; border-radius: 10px; color: white;">
+                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">${getTranslation('envelope.totalSpent', lang)}</div>
+                    <div style="font-size: 22px; font-weight: 700;">${formatCurrency(total)}</div>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">${getTranslation('common.transactions', lang)}</div>
+                    <div style="font-size: 22px; font-weight: 700; color: var(--text-primary);">${transactions.length}</div>
+                </div>
+                <div style="background: var(--primary-light); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 12px; color: var(--primary); margin-bottom: 6px;">${getTranslation('common.budget', lang)}</div>
+                    <div style="font-size: 22px; font-weight: 700; color: var(--primary-dark);">${formatCurrency(budgetAmount)}</div>
+                </div>
+                <div style="background: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}; padding: 16px; border-radius: 10px; color: white;">
+                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">${getTranslation('envelope.remaining', lang)}</div>
+                    <div style="font-size: 22px; font-weight: 700;">${formatCurrency(remaining)}</div>
+                </div>
+            </div>
+            ${budgetAmount > 0 ? `
+                <div style="background: var(--gray-200); border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 8px;">
+                    <div style="background: ${progressColor}; height: 100%; width: ${Math.min(percentage, 100)}%; transition: width 0.3s;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary);">
+                    <span>Progreso del presupuesto</span>
+                    <span style="font-weight: 600; color: ${progressColor};">${percentage.toFixed(1)}%</span>
+                </div>
+            ` : ''}
+        </div>
+        
+        <div>
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">Transacciones</h3>
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: var(--bg-tertiary); border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Fecha</th>
+                            <th style="padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Descripción</th>
+                            <th style="padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Categoría</th>
+                            <th style="padding: 10px 12px; text-align: right; font-weight: 600; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    
+    const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (sortedTransactions.length === 0) {
+        content += '<tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--text-tertiary); font-size: 14px;">No hay transacciones</td></tr>';
+    } else {
+        sortedTransactions.forEach(t => {
+            const date = new Date(t.date);
+            const amount = Math.abs(t.amount);
+            content += `
+                <tr style="border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 10px 12px; color: var(--text-secondary); font-size: 13px;">${formatDate(date)}</td>
+                    <td style="padding: 10px 12px; color: var(--text-secondary); font-size: 13px;">${t.description || '-'}</td>
+                    <td style="padding: 10px 12px; color: var(--text-secondary); font-size: 13px;">${t.categorySpecific || t.categoryGeneral || '-'}</td>
+                    <td style="padding: 10px 12px; text-align: right; font-weight: 600; font-size: 13px; color: var(--danger);">${formatCurrency(amount)}</td>
+                </tr>
+            `;
+        });
+    }
+    
+    content += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    modalContent.innerHTML = content;
+    modal.style.display = 'flex';
+}
+
+// ==================== MODAL DE DETALLES DE CATEGORÍA ====================
+function showCategoryDetails(categoryName, transactions, type, month, categoryId, budgetAmount) {
+    const modal = document.getElementById('categoryDetailsModal');
+    const modalTitle = document.getElementById('categoryDetailsModalTitle');
+    const modalContent = document.getElementById('categoryDetailsContent');
+    
+    if (!modal || !modalTitle || !modalContent) {
+        console.error('Modal elements not found');
+        return;
+    }
+    
+    const [year, monthNum] = month.split('-');
+    const monthName = new Date(year, parseInt(monthNum) - 1, 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+    
+    modalTitle.textContent = `${categoryName} - ${monthName}`;
+    
+    const total = transactions.reduce((sum, t) => sum + (type === 'expense' ? Math.abs(t.amount) : t.amount), 0);
+    
+    let content = `
+        <div style="margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                <div style="background: ${type === 'expense' ? 'var(--danger)' : 'var(--success)'}; padding: 16px; border-radius: 10px; color: white;">
+                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 6px;">Total ${type === 'expense' ? 'Gastado' : 'Ingresado'}</div>
+                    <div style="font-size: 22px; font-weight: 700;">${formatCurrency(total)}</div>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">Transacciones</div>
+                    <div style="font-size: 22px; font-weight: 700; color: var(--text-primary);">${transactions.length}</div>
+                </div>
+                ${budgetAmount > 0 ? `
+                    <div style="background: var(--primary-light); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                        <div style="font-size: 12px; color: var(--primary); margin-bottom: 6px;">Presupuesto</div>
+                        <div style="font-size: 22px; font-weight: 700; color: var(--primary-dark);">${formatCurrency(budgetAmount)}</div>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+        
+        <div>
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">Transacciones</h3>
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: var(--bg-tertiary); border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Fecha</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Descripción</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Subcategoría</th>
+                            <th style="padding: 12px; text-align: right; font-weight: 600; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    
+    const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (sortedTransactions.length === 0) {
+        content += '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-tertiary);">No hay transacciones</td></tr>';
+    } else {
+        sortedTransactions.forEach(t => {
+            const date = new Date(t.date);
+            const amount = type === 'expense' ? Math.abs(t.amount) : t.amount;
+            content += `
+                <tr style="border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 12px; color: var(--text-secondary);">${formatDate(date)}</td>
+                    <td style="padding: 12px; color: var(--text-secondary);">${t.description || '-'}</td>
+                    <td style="padding: 12px; color: var(--text-secondary);">${t.categorySpecific || '-'}</td>
+                    <td style="padding: 12px; text-align: right; font-weight: 600; color: ${type === 'expense' ? 'var(--danger)' : 'var(--success)'};">${formatCurrency(amount)}</td>
+                </tr>
+            `;
+        });
+    }
+    
+    content += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    modalContent.innerHTML = content;
+    modal.style.display = 'flex';
+}
+
+function closeCategoryDetailsModal() {
+    const modal = document.getElementById('categoryDetailsModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Exponer funciones globales
+window.showCategoryDetails = showCategoryDetails;
+window.showEnvelopeDetails = showEnvelopeDetails;
+window.closeCategoryDetailsModal = closeCategoryDetailsModal;
+
+// Exportar datos
+function exportData() {
+    if (!currentUser) return;
+    
+    const date = new Date().toISOString().split('T')[0];
+    const timestamp = new Date().toISOString();
+    
+    // Crear CSV completo con múltiples secciones
+    let csv = `VEEDOR - EXPORTACIÓN COMPLETA DE DATOS FINANCIEROS\n`;
+    csv += `Usuario: ${currentUser}\n`;
+    csv += `Fecha de exportación: ${new Date().toLocaleDateString('es-ES')}\n`;
+    csv += `\n`;
+    
+    // ========== TRANSACCIONES ==========
+    csv += `\n========== TRANSACCIONES ==========\n`;
+    csv += `Fecha,Tipo,Categoría General,Categoría Específica,Descripción,Sobre,Monto (€)\n`;
+    transactions.forEach(t => {
+        const transDate = new Date(t.date).toLocaleDateString('es-ES');
+        const type = t.type === 'income' ? 'Ingreso' : 'Gasto';
+        const description = (t.description || '').replace(/"/g, '""');
+        csv += `"${transDate}","${type}","${t.categoryGeneral}","${t.categorySpecific}","${description}","${t.envelope || ''}","${t.amount}"\n`;
+    });
+    
+    // ========== PRESUPUESTOS ==========
+    csv += `\n========== PRESUPUESTOS MENSUALES ==========\n`;
+    csv += `Mes,Categoría,Presupuesto (€),Gastado (€),Restante (€),% Usado\n`;
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const monthBudgets = budgets.filter(b => b.month === currentMonth);
+    const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === now.getMonth() && 
+               tDate.getFullYear() === now.getFullYear() &&
+               t.type === 'expense';
+    });
+    const expensesByCategory = {};
+    monthTransactions.forEach(t => {
+        expensesByCategory[t.categoryGeneral] = (expensesByCategory[t.categoryGeneral] || 0) + Math.abs(t.amount);
+    });
+    
+    monthBudgets.forEach(budget => {
+        const spent = expensesByCategory[budget.category] || 0;
+        const remaining = budget.amount - spent;
+        const percentage = budget.amount > 0 ? ((spent / budget.amount) * 100) : 0;
+        const category = categories.expense.find(c => c.id === budget.category);
+        const categoryName = category ? category.name : budget.category;
+        csv += `"${budget.month}","${categoryName}","${budget.amount}","${spent}","${remaining}","${percentage.toFixed(2)}"\n`;
+    });
+    
+    // ========== SOBRES ==========
+    csv += `\n========== SOBRES (PRESUPUESTOS FLEXIBLES) ==========\n`;
+    csv += `Nombre,Presupuesto Mensual (€),Gastado Este Mes (€),Restante (€)\n`;
+    envelopes.forEach(envelope => {
+        const monthExpenses = monthTransactions.filter(t => t.envelope === envelope.name);
+        const spent = monthExpenses.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+        const remaining = envelope.budget - spent;
+        csv += `"${envelope.name}","${envelope.budget}","${spent}","${remaining}"\n`;
+    });
+    
+    // ========== PRÉSTAMOS ==========
+    csv += `\n========== PRÉSTAMOS E HIPOTECAS ==========\n`;
+    csv += `Nombre,Tipo,Principal (€),Interés Anual (%),TAE (%),Pago Mensual (€),Capital Restante (€),Total Pagado (€),Meses Restantes\n`;
+    loans.forEach(loan => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        const startDate = new Date(loan.start_date);
+        const endDate = new Date(loan.end_date);
+        const today = new Date();
+        const monthsRemaining = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24 * 30.44)));
+        const totalPaid = (loan.total_paid || 0) + (loan.early_payments || []).reduce((sum, ep) => sum + ep.amount + (ep.commission || 0), 0);
+        
+        csv += `"${loan.name}","${loan.type === 'debt' ? 'Deuda' : 'Crédito'}","${loan.principal}","${loan.interest_rate}","${loan.tae || ''}","${loan.monthly_payment}","${amortization.finalBalance.toFixed(2)}","${totalPaid.toFixed(2)}","${monthsRemaining}"\n`;
+    });
+    
+    // ========== INVERSIONES ==========
+    csv += `\n========== INVERSIONES ==========\n`;
+    csv += `Nombre,Tipo,Monto Invertido (€),Valor Actual (€),Ganancia/Pérdida (€),Rentabilidad (%),Fecha Inversión\n`;
+    investments.forEach(investment => {
+        const profit = investment.current_value - investment.amount;
+        const returnPercent = investment.amount > 0 ? ((profit / investment.amount) * 100) : 0;
+        const typeNames = {
+            stocks: 'Acciones',
+            bonds: 'Bonos',
+            crypto: 'Criptomonedas',
+            funds: 'Fondos',
+            real_estate: 'Inmuebles',
+            other: 'Otros'
+        };
+        const invDate = new Date(investment.date).toLocaleDateString('es-ES');
+        csv += `"${investment.name}","${typeNames[investment.type] || investment.type}","${investment.amount}","${investment.current_value}","${profit.toFixed(2)}","${returnPercent.toFixed(2)}","${invDate}"\n`;
+    });
+    
+    // ========== RESUMEN ==========
+    csv += `\n========== RESUMEN FINANCIERO ==========\n`;
+    const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const totalExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    const totalSavings = totalIncome - totalExpenses;
+    const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
+    const totalInvestmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const totalInvestmentsProfit = totalInvestmentsValue - totalInvested;
+    
+    csv += `Concepto,Valor (€)\n`;
+    csv += `"Total Ingresos","${totalIncome.toFixed(2)}"\n`;
+    csv += `"Total Gastos","${totalExpenses.toFixed(2)}"\n`;
+    csv += `"Ahorro Total","${totalSavings.toFixed(2)}"\n`;
+    csv += `"Total Invertido","${totalInvested.toFixed(2)}"\n`;
+    csv += `"Valor Actual Inversiones","${totalInvestmentsValue.toFixed(2)}"\n`;
+    csv += `"Ganancia/Pérdida Inversiones","${totalInvestmentsProfit.toFixed(2)}"\n`;
+    
+    // Calcular balance total
+    const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    const calculatedBalance = transactionsBalance + totalInvestmentsValue + loansCredit - loansDebt;
+    
+    csv += `"Balance Total","${calculatedBalance.toFixed(2)}"\n`;
+    
+    // Descargar CSV
+    const csvBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const csvLink = document.createElement('a');
+    const csvUrl = URL.createObjectURL(csvBlob);
+    csvLink.setAttribute('href', csvUrl);
+    csvLink.setAttribute('download', `veedor_${currentUser}_${date}.csv`);
+    csvLink.style.visibility = 'hidden';
+    document.body.appendChild(csvLink);
+    csvLink.click();
+    document.body.removeChild(csvLink);
+    URL.revokeObjectURL(csvUrl);
+    
+    alert(`✅ Exportación completada\n\nEl archivo incluye:\n- ${transactions.length} transacciones\n- ${monthBudgets.length} presupuestos\n- ${envelopes.length} sobres\n- ${loans.length} préstamos\n- ${investments.length} inversiones\n- Resumen financiero completo`);
+}
+
+
+// Utilidades
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-ES', {
+        style: 'currency',
+        currency: 'EUR'
+    }).format(amount);
+}
+
+function formatDate(date) {
+    if (!date) return '-';
+    // Si es string, convertir a Date
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    // Verificar que sea una fecha válida
+    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+        return '-';
+    }
+    return dateObj.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+}
+
+// Actualizar métricas de salud financiera
+function updateFinancialHealthMetrics() {
+    const container = document.getElementById('financialHealthMetrics');
+    if (!container) {
+        // El contenedor puede no existir si no estamos en el tab de análisis
+        return;
+    }
+    
+    console.log('📊 Actualizando métricas de salud financiera...');
+    container.innerHTML = '';
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Calcular ingresos y gastos del último mes para ratios mensuales
+    const lastMonthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+    });
+    
+    const lastMonthIncome = lastMonthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const lastMonthExpenses = Math.abs(lastMonthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    const lastMonthSavings = lastMonthIncome - lastMonthExpenses;
+    
+    // Calcular promedio de últimos 12 meses para proyecciones anuales
+    const last12MonthsTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        const monthsDiff = (currentYear - tDate.getFullYear()) * 12 + (currentMonth - tDate.getMonth());
+        return monthsDiff >= 0 && monthsDiff < 12;
+    });
+    
+    const last12MonthsIncome = last12MonthsTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const last12MonthsExpenses = Math.abs(last12MonthsTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    
+    // Promedio mensual de últimos 12 meses
+    const avgMonthlyIncome = last12MonthsIncome / 12;
+    const avgMonthlyExpenses = last12MonthsExpenses / 12;
+    
+    // Proyectar a anual
+    const annualIncome = avgMonthlyIncome * 12;
+    const annualExpenses = avgMonthlyExpenses * 12;
+    const annualSavings = annualIncome - annualExpenses;
+    
+    // Activos totales (histórico acumulado)
+    const totalTransactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    
+    // Calcular valor de activos (bienes/patrimonio)
+    const patrimonioValue = patrimonio.reduce((sum, prop) => sum + (prop.current_value || 0), 0);
+    
+    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit + patrimonioValue;
+    
+    // Calcular deudas totales (histórico)
+    // Verificar préstamos activos (que aún no han terminado)
+    const activeDebtLoans = loans.filter(l => {
+        if (l.type !== 'debt') return false;
+        const endDate = new Date(l.end_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return endDate >= today; // Préstamo aún activo
+    });
+    
+    // Calcular deuda total, pero considerar el valor de propiedades asociadas
+    let loansDebt = 0;
+    let propertyValueOffset = 0; // Valor de propiedades que compensan la deuda
+    
+    activeDebtLoans.forEach(loan => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            loan.total_paid || 0,
+            loan.early_payments || []
+        );
+        const loanDebt = amortization.finalBalance;
+        loansDebt += loanDebt;
+        
+        // Buscar si hay transacciones asociadas a este préstamo que también estén asociadas a una propiedad
+        const loanTransactions = transactions.filter(t => t.loan_id === (loan._id || loan.id));
+        const propertyTransactions = loanTransactions.filter(t => t.property_id);
+        
+        if (propertyTransactions.length > 0) {
+            // Obtener la propiedad asociada (puede haber múltiples, tomar la primera única)
+            const propertyIds = [...new Set(propertyTransactions.map(t => t.property_id))];
+            propertyIds.forEach(propertyId => {
+                const property = properties.find(p => (p._id || p.id) === propertyId);
+                if (property && property.current_value) {
+                    // Sumar el valor de la propiedad como compensación (solo una vez por propiedad)
+                    propertyValueOffset += property.current_value;
+                }
+            });
+        }
+    });
+    
+    // Ajustar la deuda neta restando el valor de las propiedades asociadas
+    // La deuda neta es la deuda menos el valor de las propiedades que la respaldan
+    const netDebt = Math.max(0, loansDebt - propertyValueOffset);
+    
+    // También verificar si hay préstamos activos aunque el capital restante sea bajo
+    const hasActiveDebts = activeDebtLoans.length > 0;
+    
+    // 1. Porcentaje de Deuda Pendiente (usando deuda neta después de considerar propiedades)
+    const debtPercentage = totalAssets > 0 ? (netDebt / totalAssets) * 100 : (netDebt > 0 ? 100 : 0);
+    const debtStatus = debtPercentage < 30 ? 'excellent' : debtPercentage < 50 ? 'good' : debtPercentage < 70 ? 'warning' : 'danger';
+    
+    // 2. Ratio de Endeudamiento (Cuotas mensuales de préstamos / Ingresos mensuales promedio)
+    const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
+    const debtToIncomeRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : (monthlyLoanPayments > 0 ? 999 : 0);
+    const debtRatioStatus = avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'danger' : (debtToIncomeRatio >= 40 ? 'danger' : debtToIncomeRatio >= 30 ? 'warning' : debtToIncomeRatio >= 20 ? 'good' : 'excellent');
+    
+    // 3. Ratio de Salud Financiera (Activos / Deudas netas)
+    const healthRatio = netDebt > 0 ? (totalAssets / netDebt) : (totalAssets > 0 ? 999 : (totalAssets < 0 ? -999 : 0));
+    // Si no hay deudas activas y hay activos positivos = excelente, si activos negativos = peligro
+    const healthStatus = !hasActiveDebts ? (totalAssets > 0 ? 'excellent' : (totalAssets < 0 ? 'danger' : 'warning')) : (healthRatio > 3 ? 'excellent' : healthRatio > 2 ? 'good' : healthRatio > 1 ? 'warning' : 'danger');
+    
+    // 4. Ratio de Cobertura de Deuda (Ingresos anuales / Deuda neta)
+    const debtCoverageRatio = netDebt > 0 ? (annualIncome / netDebt) : (annualIncome > 0 ? 999 : 0);
+    // Si no hay deudas = excelente, si hay deudas pero no ingresos = peligro
+    const coverageStatus = loansDebt === 0 ? 'excellent' : (debtCoverageRatio > 2 ? 'excellent' : debtCoverageRatio > 1 ? 'good' : debtCoverageRatio > 0.5 ? 'warning' : 'danger');
+    
+    // 5. Ratio de Ahorro (Ahorro del último mes / Ingresos del último mes)
+    const savingsRatio = lastMonthIncome > 0 ? (lastMonthSavings / lastMonthIncome) * 100 : (lastMonthIncome === 0 && lastMonthExpenses > 0 ? -100 : 0);
+    // Lógica corregida: negativo o 0% = bajo/peligro, positivo = bueno
+    // Si no hay ingresos y hay gastos = peligro, si no hay ingresos ni gastos = moderado
+    const savingsStatus = lastMonthIncome === 0 && lastMonthExpenses === 0 ? 'warning' : (savingsRatio >= 20 ? 'excellent' : savingsRatio >= 10 ? 'good' : savingsRatio > 0 ? 'warning' : 'danger');
+    
+    // 6. Ratio de Liquidez (Activos líquidos / Gastos mensuales promedio)
+    const liquidityRatio = avgMonthlyExpenses > 0 ? (totalTransactionsBalance / avgMonthlyExpenses) : (totalTransactionsBalance > 0 ? 999 : (totalTransactionsBalance < 0 ? -999 : 0));
+    // Si balance negativo = peligro, si no hay gastos y hay balance positivo = excelente
+    const liquidityStatus = totalTransactionsBalance < 0 ? 'danger' : (avgMonthlyExpenses === 0 && totalTransactionsBalance > 0 ? 'excellent' : (liquidityRatio >= 6 ? 'excellent' : liquidityRatio >= 3 ? 'good' : liquidityRatio >= 1 ? 'warning' : 'danger'));
+    
+    // 7. Ratio de Inversión (Inversiones / Activos totales)
+    const investmentRatio = totalAssets > 0 ? (investmentsValue / totalAssets) * 100 : (totalAssets < 0 ? 0 : 0);
+    // Si activos negativos o 0% = bajo, si positivo según porcentaje
+    const investmentStatus = totalAssets <= 0 ? 'danger' : (investmentRatio > 20 ? 'excellent' : investmentRatio > 10 ? 'good' : investmentRatio > 5 ? 'warning' : 'danger');
+    
+    // Nota: Servicio de Deuda eliminado porque es duplicado del Ratio de Endeudamiento
+    // Ambos calculan lo mismo: Cuotas mensuales / Ingresos mensuales
+    
+    const metrics = [
+        {
+            title: 'Deuda Pendiente',
+            value: debtPercentage.toFixed(1) + '%',
+            description: `Deuda neta sobre activos totales${propertyValueOffset > 0 ? ' (considerando propiedades asociadas)' : ''}`,
+            status: debtStatus,
+            icon: '',
+            detail: formatCurrency(netDebt) + ' de ' + formatCurrency(totalAssets) + (propertyValueOffset > 0 ? ` (Deuda bruta: ${formatCurrency(loansDebt)}, Valor propiedades: ${formatCurrency(propertyValueOffset)})` : '')
+        },
+        {
+            title: 'Ratio de Endeudamiento',
+            value: debtToIncomeRatio >= 999 ? '∞%' : debtToIncomeRatio.toFixed(1) + '%',
+            description: `Cuotas mensuales de préstamos / Ingresos mensuales`,
+            status: debtRatioStatus,
+            icon: '',
+            detail: avgMonthlyIncome === 0 && monthlyLoanPayments > 0 ? 'Sin ingresos pero hay cuotas' : (debtToIncomeRatio >= 40 ? 'Alto (≥40%)' : debtToIncomeRatio >= 30 ? 'Moderado (30-40%)' : debtToIncomeRatio >= 20 ? 'Bueno (20-30%)' : 'Excelente (<20%)') + ` | Cuotas: ${formatCurrency(monthlyLoanPayments)} / Ingresos promedio: ${formatCurrency(avgMonthlyIncome)}`
+        },
+        {
+            title: 'Salud Financiera',
+            value: healthRatio > 999 ? '∞' : healthRatio < -999 ? '-∞' : healthRatio.toFixed(2),
+            description: `Cuántas veces tus activos cubren tus deudas (mayor es mejor)`,
+            status: healthStatus,
+            icon: '',
+            detail: !hasActiveDebts ? (totalAssets > 0 ? 'Sin deudas activas, activos positivos' : (totalAssets < 0 ? 'Sin deudas activas, pero activos negativos' : 'Sin deudas activas ni activos')) : `Activos: ${formatCurrency(totalAssets)} | Deudas: ${formatCurrency(netDebt)} | ${healthRatio > 3 ? 'Excelente (≥3x)' : healthRatio > 2 ? 'Buena (2-3x)' : healthRatio > 1 ? 'Moderada (1-2x)' : 'Baja (<1x)'}`
+        },
+        {
+            title: 'Cobertura de Deuda',
+            value: debtCoverageRatio > 999 ? '∞' : debtCoverageRatio.toFixed(2),
+            description: `Ingresos anuales / Deuda`,
+            status: coverageStatus,
+            icon: '',
+            detail: !hasActiveDebts ? 'Sin deudas activas' : (debtCoverageRatio > 2 ? 'Excelente' : debtCoverageRatio > 1 ? 'Buena' : debtCoverageRatio > 0.5 ? 'Moderada' : 'Baja')
+        },
+        {
+            title: 'Ratio de Ahorro',
+            value: savingsRatio.toFixed(1) + '%',
+            description: `Ahorro del último mes / Ingresos del último mes`,
+            status: savingsStatus,
+            icon: '',
+            detail: formatCurrency(lastMonthSavings) + ' de ' + formatCurrency(lastMonthIncome) + (lastMonthIncome === 0 ? ' (sin ingresos)' : ' (último mes)')
+        },
+        {
+            title: 'Liquidez',
+            value: liquidityRatio > 999 ? '∞' : liquidityRatio < 0 ? '0.0 meses' : liquidityRatio.toFixed(1) + ' meses',
+            description: `Cuántos meses puedes cubrir tus gastos con el dinero disponible en cuentas`,
+            status: liquidityStatus,
+            icon: '',
+            detail: totalTransactionsBalance < 0 ? 'Balance negativo - No puedes cubrir gastos' : (avgMonthlyExpenses === 0 && totalTransactionsBalance > 0 ? 'Sin gastos, balance positivo' : `Balance: ${formatCurrency(totalTransactionsBalance)} | Gastos mensuales: ${formatCurrency(avgMonthlyExpenses)} | ${liquidityRatio >= 6 ? 'Excelente (≥6 meses)' : liquidityRatio >= 3 ? 'Buena (3-6 meses)' : liquidityRatio >= 1 ? 'Moderada (1-3 meses)' : 'Baja (<1 mes)'}`)
+        },
+        {
+            title: 'Ratio de Inversión',
+            value: investmentRatio.toFixed(1) + '%',
+            description: `Inversiones / Activos totales`,
+            status: investmentStatus,
+            icon: '',
+            detail: totalAssets <= 0 ? 'Sin activos o activos negativos' : (formatCurrency(investmentsValue) + ' de ' + formatCurrency(totalAssets))
+        },
+    ];
+    
+    metrics.forEach((metric, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.borderLeft = `4px solid ${
+            metric.status === 'excellent' ? 'var(--success)' :
+            metric.status === 'good' ? '#10b981' :
+            metric.status === 'warning' ? 'var(--warning)' :
+            'var(--danger)'
+        }`;
+        card.style.cursor = 'default';
+        card.style.transition = 'none';
+        // Eliminado onclick y efectos hover - los indicadores no son clickeables
+        
+        // Colores de status adaptados al modo oscuro
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        const statusColors = {
+            excellent: { 
+                bg: isDarkMode ? 'rgba(16, 185, 129, 0.2)' : '#D1FAE5', 
+                text: isDarkMode ? '#10b981' : '#065F46' 
+            },
+            good: { 
+                bg: isDarkMode ? 'rgba(34, 197, 94, 0.2)' : '#DCFCE7', 
+                text: isDarkMode ? '#22c55e' : '#166534' 
+            },
+            warning: { 
+                bg: isDarkMode ? 'rgba(251, 191, 36, 0.2)' : '#FEF3C7', 
+                text: isDarkMode ? '#fbbf24' : '#92400E' 
+            },
+            danger: { 
+                bg: isDarkMode ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2', 
+                text: isDarkMode ? '#ef4444' : '#991B1B' 
+            }
+        };
+        
+        const statusStyle = statusColors[metric.status] || statusColors.warning;
+        
+        card.innerHTML = `
+            <div style="display: flex; align-items: start; justify-content: space-between; margin-bottom: 12px;">
+                <div>
+                    <div style="margin-bottom: 4px;">
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-primary);">${metric.title}</h3>
+                    </div>
+                    <p style="margin: 0; font-size: 12px; color: var(--text-secondary);">${metric.description}</p>
+                </div>
+                <span style="padding: 4px 10px; background: ${statusStyle.bg}; color: ${statusStyle.text}; border-radius: var(--radius-full); font-size: 11px; font-weight: 600;">
+                    ${metric.status === 'excellent' ? 'Excelente' : metric.status === 'good' ? 'Bueno' : metric.status === 'warning' ? 'Moderado' : 'Bajo'}
+                </span>
+            </div>
+            <div style="margin-top: 16px;">
+                <div style="font-size: 28px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+                    ${metric.value}
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary);">
+                    ${metric.detail}
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// ==================== ESCENARIOS DE AHORRO ====================
+
+// Categorización inteligente de gastos: esenciales vs no esenciales
+function categorizeExpense(transaction) {
+    const categoryId = transaction.categoryGeneral;
+    const subcategory = transaction.categorySpecific || '';
+    const subcategoryLower = subcategory.toLowerCase();
+    
+    // Categorías completamente esenciales
+    const essentialCategories = [
+        'housing',      // Vivienda (alquiler, hipoteca, servicios básicos)
+        'debt',         // Deudas y préstamos (pagos obligatorios) - TODAS las subcategorías son esenciales
+        'taxes',        // Impuestos (obligatorios)
+        'insurance',    // Seguros básicos
+        'fines',        // Multas (obligatorias)
+        'investment'    // Inversiones (aportes y compras de activos) - NO son prescindibles
+    ];
+    
+    // Categorías completamente no esenciales
+    const nonEssentialCategories = [
+        'entertainment',   // Entretenimiento
+        'subscriptions',   // Suscripciones (pueden optimizarse)
+        'charity'          // Donaciones (opcionales)
+    ];
+    
+    // Categorías parcialmente esenciales (depende de la subcategoría)
+    const partiallyEssentialCategories = {
+        'food': {
+            essential: ['supermercado', 'mercado local', 'tienda de conveniencia', 'agua', 'zumos'],
+            nonEssential: ['restaurantes', 'delivery', 'café', 'comida rápida', 'catering', 'almuerzo de trabajo', 'bebidas alcohólicas', 'snacks']
+        },
+        'transport': {
+            essential: ['gasolina', 'transporte público', 'tren', 'autobús', 'metro', 'tranvía', 'seguro de coche', 'itv', 'impuesto de circulación', 'mantenimiento', 'reparaciones'],
+            nonEssential: ['taxi/uber', 'parking', 'peaje', 'vuelos', 'barco', 'ferry', 'alquiler de coche', 'bicicleta', 'scooter']
+        },
+        'health': {
+            essential: ['médico', 'farmacia', 'seguro médico', 'dentista', 'óptica', 'medicinas', 'análisis', 'especialistas', 'urgencias', 'hospital', 'ambulancia', 'prótesis', 'ortodoncia', 'cirugía', 'rehabilitación'],
+            nonEssential: ['gimnasio', 'fisioterapia', 'psicólogo', 'nutricionista', 'terapias alternativas']
+        },
+        'bills': {
+            essential: ['luz', 'agua', 'gas', 'calefacción', 'internet', 'teléfono', 'teléfono fijo', 'basura', 'reciclaje', 'seguros', 'banco'],
+            nonEssential: ['tv/cable', 'streaming servicios', 'suscripciones', 'servicios de nube', 'hosting', 'dominio', 'software', 'licencias', 'datos móviles']
+        },
+        'shopping': {
+            essential: ['herramientas', 'bricolaje', 'electrodomésticos', 'muebles'],
+            nonEssential: ['ropa', 'zapatos', 'accesorios', 'joyería', 'cosméticos', 'regalos', 'libros', 'música', 'películas', 'juguetes', 'deportes', 'fotografía', 'arte', 'antigüedades', 'hogar', 'jardín', 'mascotas']
+        },
+        'education': {
+            essential: ['matrícula', 'universidad', 'máster', 'material escolar', 'uniforme', 'becas', 'tutorías', 'certificaciones', 'exámenes'],
+            nonEssential: ['cursos', 'libros', 'materiales', 'idiomas', 'formación online', 'seminarios', 'conferencias', 'clases particulares', 'biblioteca', 'software educativo']
+        },
+        'personal': {
+            essential: ['cuidado personal', 'gafas', 'lentes de contacto'],
+            nonEssential: ['peluquería', 'estética', 'spa', 'masajes', 'cosméticos', 'perfumes', 'cumpleaños', 'aniversarios', 'bodas', 'manicura', 'pedicura', 'depilación', 'tatuajes', 'piercings', 'ropa', 'regalos']
+        },
+        'children': {
+            essential: ['guardería', 'colegio', 'medicinas', 'vacunas', 'cuidados'],
+            nonEssential: ['actividades extraescolares', 'juguetes', 'ropa', 'material escolar', 'cumpleaños', 'regalos', 'deportes', 'música', 'arte']
+        },
+        'pets': {
+            essential: ['veterinario', 'comida', 'medicinas', 'vacunas', 'seguro de mascota'],
+            nonEssential: ['juguetes', 'accesorios', 'peluquería', 'guardería', 'adiestramiento', 'pensión', 'cuidados especiales']
+        },
+        'housing': {
+            essential: ['alquiler/hipoteca', 'servicios', 'luz', 'agua', 'gas', 'calefacción', 'aire acondicionado', 'internet', 'teléfono fijo', 'basura', 'reciclaje', 'seguro del hogar', 'comunidad', 'ibi/impuestos', 'mantenimiento', 'reparaciones'],
+            nonEssential: ['decoración', 'limpieza', 'jardinería', 'mejoras', 'muebles', 'electrodomésticos']
+        }
+    };
+    
+    // Si es completamente esencial
+    if (essentialCategories.includes(categoryId)) {
+        return { type: 'essential', percentage: 1.0 };
+    }
+    
+    // Si es completamente no esencial
+    if (nonEssentialCategories.includes(categoryId)) {
+        return { type: 'nonEssential', percentage: 1.0 };
+    }
+    
+    // Si es parcialmente esencial, verificar subcategoría
+    if (partiallyEssentialCategories[categoryId]) {
+        const rules = partiallyEssentialCategories[categoryId];
+        const isEssential = rules.essential.some(ess => subcategoryLower.includes(ess.toLowerCase()));
+        const isNonEssential = rules.nonEssential.some(nonEss => subcategoryLower.includes(nonEss.toLowerCase()));
+        
+        if (isEssential) {
+            return { type: 'essential', percentage: 1.0 };
+        } else if (isNonEssential) {
+            return { type: 'nonEssential', percentage: 1.0 };
+        } else {
+            // Si no coincide con ninguna, considerar 50% esencial (conservador)
+            return { type: 'mixed', percentage: 0.5 };
+        }
+    }
+    
+    // Para 'other', considerar como parcialmente optimizable (pero no completamente prescindible)
+    if (categoryId === 'other') {
+        // Verificar si es una emergencia o imprevisto real (esencial) vs gasto discrecional
+        const otherEssential = ['emergencias', 'reparaciones varias', 'imprevistos'];
+        const isEssentialOther = otherEssential.some(ess => subcategoryLower.includes(ess.toLowerCase()));
+        if (isEssentialOther) {
+            return { type: 'essential', percentage: 1.0 };
+        }
+        return { type: 'nonEssential', percentage: 0.7 };
+    }
+    
+    // Por defecto, considerar como no esencial (optimizable)
+    return { type: 'nonEssential', percentage: 0.7 };
+}
+
+// Calcular escenarios de ahorro
+function calculateSavingsScenarios(months = 6) {
+    const now = new Date();
+    const cutoffDate = new Date(now.getFullYear(), now.getMonth() - months, 1);
+    
+    // Filtrar transacciones del período
+    const periodTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate >= cutoffDate && t.type === 'expense';
+    });
+    
+    // Clasificar transacciones individuales
+    const classifiedTransactions = periodTransactions.map(t => {
+        const classification = categorizeExpense(t);
+        return {
+            ...t,
+            classification,
+            isNonEssential: classification.type === 'nonEssential' || (classification.type === 'mixed' && classification.percentage < 0.5)
+        };
+    });
+    
+    // Calcular ingresos promedio
+    const periodIncome = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate >= cutoffDate && t.type === 'income';
+    });
+    const avgMonthlyIncome = periodIncome.length > 0 
+        ? Math.abs(periodIncome.reduce((sum, t) => sum + t.amount, 0)) / months 
+        : 0;
+    
+    // Calcular gastos por categoría y clasificación
+    const expensesByCategory = {};
+    let totalEssential = 0;
+    let totalNonEssential = 0;
+    
+    periodTransactions.forEach(t => {
+        const amount = Math.abs(t.amount);
+        const categoryId = t.categoryGeneral || 'other';
+        const categoryName = categories.expense.find(c => c.id === categoryId)?.name || 'Otros';
+        const classification = categorizeExpense(t);
+        
+        if (!expensesByCategory[categoryId]) {
+            expensesByCategory[categoryId] = {
+                name: categoryName,
+                total: 0,
+                essential: 0,
+                nonEssential: 0,
+                count: 0
+            };
+        }
+        
+        expensesByCategory[categoryId].total += amount;
+        expensesByCategory[categoryId].count += 1;
+        
+        if (classification.type === 'essential') {
+            expensesByCategory[categoryId].essential += amount;
+            totalEssential += amount;
+        } else if (classification.type === 'nonEssential') {
+            expensesByCategory[categoryId].nonEssential += amount;
+            totalNonEssential += amount;
+        } else {
+            // Mixed: distribuir proporcionalmente
+            const essentialPart = amount * classification.percentage;
+            const nonEssentialPart = amount * (1 - classification.percentage);
+            expensesByCategory[categoryId].essential += essentialPart;
+            expensesByCategory[categoryId].nonEssential += nonEssentialPart;
+            totalEssential += essentialPart;
+            totalNonEssential += nonEssentialPart;
+        }
+    });
+    
+    // Calcular promedios mensuales
+    const avgMonthlyEssential = totalEssential / months;
+    const avgMonthlyNonEssential = totalNonEssential / months;
+    const avgMonthlyExpenses = (totalEssential + totalNonEssential) / months;
+    
+    // Definir escenarios de ahorro (solo 2)
+    const scenarios = {
+        normal: {
+            name: 'Ahorro Equilibrado',
+            description: 'Elimina gastos prescindibles manteniendo calidad de vida',
+            monthlySavings: 0,
+            annualSavings: 0,
+            reductionPercentage: 0,
+            recommendations: []
+        },
+        smart: {
+            name: 'Ahorro Inteligente',
+            description: 'Optimización estratégica: elimina solo lo que realmente no necesitas',
+            monthlySavings: 0,
+            annualSavings: 0,
+            reductionPercentage: 0,
+            recommendations: []
+        }
+    };
+    
+    // Los ahorros se calcularán basándose en las propuestas concretas (eliminaciones completas)
+    // No usamos porcentajes, solo eliminaciones reales
+    
+    // Agrupar transacciones no esenciales por categoría para cada escenario
+    const nonEssentialTransactions = classifiedTransactions.filter(t => t.isNonEssential);
+    
+    // ========== ANÁLISIS DE GASTOS RECURRENTES Y SUSCRIPCIONES ==========
+    // Identificar suscripciones y gastos recurrentes (mismo monto, misma descripción, cada mes)
+    const recurringExpenses = {};
+    const subscriptionPatterns = {};
+    
+    nonEssentialTransactions.forEach(t => {
+        const desc = (t.description || '').toLowerCase().trim();
+        const amount = Math.abs(t.amount);
+        const categoryId = t.categoryGeneral || 'other';
+        const subcategory = (t.categorySpecific || '').toLowerCase();
+        
+        // Detectar suscripciones por descripción o subcategoría
+        const isSubscription = subcategory.includes('suscripción') || 
+                              subcategory.includes('subscription') ||
+                              subcategory.includes('streaming') ||
+                              categoryId === 'subscriptions' ||
+                              desc.includes('netflix') ||
+                              desc.includes('spotify') ||
+                              desc.includes('amazon prime') ||
+                              desc.includes('disney') ||
+                              desc.includes('hbo') ||
+                              desc.includes('youtube premium') ||
+                              desc.includes('apple music') ||
+                              desc.includes('adobe') ||
+                              desc.includes('microsoft 365') ||
+                              desc.includes('cursor') ||
+                              desc.includes('chatgpt');
+        
+        if (isSubscription) {
+            const key = desc || subcategory || 'Suscripción sin nombre';
+            if (!subscriptionPatterns[key]) {
+                subscriptionPatterns[key] = {
+                    name: t.description || subcategory || 'Suscripción',
+                    amounts: [],
+                    dates: [],
+                    category: categoryId,
+                    subcategory: t.categorySpecific || subcategory,
+                    transactions: []
+                };
+            }
+            subscriptionPatterns[key].amounts.push(amount);
+            subscriptionPatterns[key].dates.push(new Date(t.date));
+            subscriptionPatterns[key].transactions.push(t);
+        }
+        
+        // Detectar gastos recurrentes (mismo monto aparece múltiples veces)
+        const recurringKey = `${categoryId}_${amount.toFixed(2)}`;
+        if (!recurringExpenses[recurringKey]) {
+            recurringExpenses[recurringKey] = {
+                categoryId,
+                categoryName: categories.expense.find(c => c.id === categoryId)?.name || 'Otros',
+                amount,
+                count: 0,
+                transactions: []
+            };
+        }
+        recurringExpenses[recurringKey].count++;
+        recurringExpenses[recurringKey].transactions.push(t);
+    });
+    
+    // Identificar suscripciones reales (aparecen regularmente)
+    const identifiedSubscriptions = Object.values(subscriptionPatterns)
+        .filter(sub => {
+            // Si aparece 2+ veces o el monto es consistente, es probablemente una suscripción
+            if (sub.amounts.length >= 2) {
+                const avgAmount = sub.amounts.reduce((a, b) => a + b, 0) / sub.amounts.length;
+                const variance = sub.amounts.every(amt => Math.abs(amt - avgAmount) < avgAmount * 0.1);
+                return variance; // Montos similares = suscripción
+            }
+            return false;
+        })
+        .map(sub => {
+            const avgAmount = sub.amounts.reduce((a, b) => a + b, 0) / sub.amounts.length;
+            const monthlyAmount = avgAmount;
+            const annualAmount = monthlyAmount * 12;
+            return {
+                name: sub.name,
+                monthlyAmount,
+                annualAmount,
+                count: sub.amounts.length,
+                category: sub.category,
+                subcategory: sub.subcategory,
+                transactions: sub.transactions,
+                action: 'cancel', // Acción: cancelar completamente
+                savings: monthlyAmount,
+                annualSavings: annualAmount
+            };
+        })
+        .sort((a, b) => b.monthlyAmount - a.monthlyAmount);
+    
+    // Identificar gastos recurrentes que se pueden reducir
+    const recurringToReduce = Object.values(recurringExpenses)
+        .filter(rec => rec.count >= 3) // Aparece 3+ veces
+        .map(rec => {
+            const avgMonthly = (rec.amount * rec.count) / months;
+            return {
+                category: rec.categoryName,
+                amount: rec.amount,
+                frequency: rec.count,
+                avgMonthly,
+                transactions: rec.transactions,
+                suggestion: `Reduce este gasto recurrente de ${formatCurrency(rec.amount)} a ${formatCurrency(rec.amount * 0.7)}`,
+                savings: rec.amount * 0.3, // Reducir 30%
+                monthlySavings: avgMonthly * 0.3
+            };
+        })
+        .sort((a, b) => b.monthlySavings - a.monthlySavings);
+    
+    // ========== ANÁLISIS DE GASTOS POR CATEGORÍA PARA OPTIMIZACIÓN ==========
+    // Agrupar por categoría para sugerir reducciones realistas
+    const categoryAnalysis = {};
+    nonEssentialTransactions.forEach(t => {
+        const categoryId = t.categoryGeneral || 'other';
+        const categoryName = categories.expense.find(c => c.id === categoryId)?.name || 'Otros';
+        const amount = Math.abs(t.amount);
+        
+        if (!categoryAnalysis[categoryId]) {
+            categoryAnalysis[categoryId] = {
+                name: categoryName,
+                transactions: [],
+                total: 0,
+                count: 0,
+                avgAmount: 0
+            };
+        }
+        
+        categoryAnalysis[categoryId].transactions.push(t);
+        categoryAnalysis[categoryId].total += amount;
+        categoryAnalysis[categoryId].count++;
+    });
+    
+    // Calcular promedios y sugerir reducciones realistas
+    Object.keys(categoryAnalysis).forEach(catId => {
+        const cat = categoryAnalysis[catId];
+        cat.avgAmount = cat.total / cat.count;
+        cat.avgMonthly = cat.total / months;
+        
+        // Sugerencias concretas según el tipo de gasto
+        if (cat.name === 'Entretenimiento' || cat.name === 'Suscripciones') {
+            cat.suggestion = `Reduce gastos en ${cat.name} de ${formatCurrency(cat.avgMonthly)}/mes a ${formatCurrency(cat.avgMonthly * 0.7)}/mes`;
+            cat.monthlySavings = cat.avgMonthly * 0.3;
+        } else if (cat.name === 'Compras' || cat.name === 'Personal') {
+            cat.suggestion = `Reduce compras discrecionales en ${cat.name} de ${formatCurrency(cat.avgMonthly)}/mes a ${formatCurrency(cat.avgMonthly * 0.8)}/mes`;
+            cat.monthlySavings = cat.avgMonthly * 0.2;
+        } else {
+            cat.suggestion = `Optimiza gastos en ${cat.name} reduciendo de ${formatCurrency(cat.avgMonthly)}/mes a ${formatCurrency(cat.avgMonthly * 0.85)}/mes`;
+            cat.monthlySavings = cat.avgMonthly * 0.15;
+        }
+    });
+    
+    // Agregar propuestas concretas a cada escenario
+    Object.keys(scenarios).forEach(key => {
+        const scenario = scenarios[key];
+        
+        // Propuestas concretas basadas en el escenario
+        scenario.concreteProposals = [];
+        
+        // 1. Suscripciones a cancelar COMPLETAMENTE (para ambos escenarios)
+        if (key === 'normal') {
+            // Normal: Cancela las suscripciones más caras que no uses frecuentemente
+            const subscriptionsToCancel = identifiedSubscriptions
+                .sort((a, b) => b.monthlyAmount - a.monthlyAmount)
+                .slice(0, 3); // Top 3 más caras
+            
+            subscriptionsToCancel.forEach(sub => {
+                scenario.concreteProposals.push({
+                    type: 'cancel_subscription',
+                    title: `Elimina suscripción: ${sub.name}`,
+                    description: `Esta suscripción cuesta ${formatCurrency(sub.monthlyAmount)}/mes (${formatCurrency(sub.annualAmount)}/año). Puedes cancelarla completamente.`,
+                    action: `Cancela "${sub.name}"`,
+                    savings: sub.monthlyAmount,
+                    annualSavings: sub.annualAmount,
+                    transactions: sub.transactions.slice(0, 3)
+                });
+            });
+        } else if (key === 'smart') {
+            // Smart: Solo cancela suscripciones duplicadas o que claramente no usas
+            const subscriptionsToCancel = identifiedSubscriptions
+                .filter(sub => sub.count <= 2) // Solo las que aparecen 2 veces o menos (probablemente no las usas)
+                .sort((a, b) => b.monthlyAmount - a.monthlyAmount)
+                .slice(0, 2); // Máximo 2
+            
+            subscriptionsToCancel.forEach(sub => {
+                scenario.concreteProposals.push({
+                    type: 'cancel_subscription',
+                    title: `Elimina suscripción no utilizada: ${sub.name}`,
+                    description: `Esta suscripción cuesta ${formatCurrency(sub.monthlyAmount)}/mes pero solo aparece ${sub.count} vez(es) en ${months} meses. Probablemente no la uses.`,
+                    action: `Cancela "${sub.name}"`,
+                    savings: sub.monthlyAmount,
+                    annualSavings: sub.annualAmount,
+                    transactions: sub.transactions.slice(0, 3)
+                });
+            });
+        }
+        
+        // 2. Gastos específicos que se pueden ELIMINAR COMPLETAMENTE (no reducir porcentajes)
+        // Identificar gastos individuales grandes que se pueden eliminar
+        const largeDiscretionaryExpenses = nonEssentialTransactions
+            .filter(t => {
+                const amount = Math.abs(t.amount);
+                // Gastos mayores a 50€ que son claramente prescindibles
+                return amount >= 50 && (
+                    t.categorySpecific?.toLowerCase().includes('restaurante') ||
+                    t.categorySpecific?.toLowerCase().includes('ocio') ||
+                    t.categorySpecific?.toLowerCase().includes('compras') ||
+                    t.description?.toLowerCase().includes('restaurante') ||
+                    t.description?.toLowerCase().includes('compras')
+                );
+            })
+            .map(t => ({
+                ...t,
+                amount: Math.abs(t.amount)
+            }))
+            .sort((a, b) => b.amount - a.amount);
+        
+        if (key === 'normal') {
+            // Normal: Elimina los gastos individuales más grandes y prescindibles
+            const expensesToEliminate = largeDiscretionaryExpenses.slice(0, 5);
+            expensesToEliminate.forEach(exp => {
+                const date = new Date(exp.date);
+                const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+                const categoryName = categories.expense.find(c => c.id === exp.categoryGeneral)?.name || 'Otros';
+                
+                scenario.concreteProposals.push({
+                    type: 'eliminate_expense',
+                    title: `Elimina este gasto: ${exp.description || 'Sin descripción'}`,
+                    description: `Gasto de ${formatCurrency(exp.amount)} el ${dateStr} en ${categoryName}. Es un gasto prescindible que puedes evitar.`,
+                    action: `Evita este tipo de gastos`,
+                    savings: exp.amount / months, // Promedio mensual si se repite
+                    annualSavings: (exp.amount / months) * 12,
+                    transactions: [exp]
+                });
+            });
+        } else if (key === 'smart') {
+            // Smart: Solo elimina gastos muy grandes y claramente innecesarios
+            const expensesToEliminate = largeDiscretionaryExpenses
+                .filter(exp => exp.amount >= 100) // Solo gastos de 100€ o más
+                .slice(0, 3);
+            
+            expensesToEliminate.forEach(exp => {
+                const date = new Date(exp.date);
+                const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+                const categoryName = categories.expense.find(c => c.id === exp.categoryGeneral)?.name || 'Otros';
+                
+                scenario.concreteProposals.push({
+                    type: 'eliminate_expense',
+                    title: `Elimina gasto grande: ${exp.description || 'Sin descripción'}`,
+                    description: `Gasto de ${formatCurrency(exp.amount)} el ${dateStr} en ${categoryName}. Es un gasto grande y prescindible.`,
+                    action: `Evita este tipo de gastos grandes`,
+                    savings: exp.amount / months,
+                    annualSavings: (exp.amount / months) * 12,
+                    transactions: [exp]
+                });
+            });
+        }
+        
+        // Calcular ahorro total de propuestas concretas
+        scenario.concreteTotalSavings = scenario.concreteProposals.reduce((sum, p) => sum + p.savings, 0);
+        scenario.concreteAnnualSavings = scenario.concreteTotalSavings * 12;
+        
+        // Mantener datos detallados para mostrar
+        scenario.detailedCategories = Object.values(categoryAnalysis)
+            .sort((a, b) => b.monthlySavings - a.monthlySavings)
+            .slice(0, 10);
+        
+        scenario.topTransactions = nonEssentialTransactions
+            .map(t => ({
+                ...t,
+                amount: Math.abs(t.amount)
+            }))
+            .sort((a, b) => b.amount - a.amount)
+            .slice(0, 20);
+    });
+    
+    return {
+        avgMonthlyIncome,
+        avgMonthlyExpenses,
+        avgMonthlyEssential,
+        avgMonthlyNonEssential,
+        scenarios,
+        period: months,
+        classifiedTransactions,
+        nonEssentialTransactions
+    };
+}
+
+// Actualizar UI de escenarios de ahorro
+function updateSavingsScenarios() {
+    const container = document.getElementById('savingsScenariosContainer');
+    if (!container) return;
+    
+    const data = calculateSavingsScenarios(6); // Últimos 6 meses
+    
+    if (!data || data.avgMonthlyExpenses === 0) {
+        container.innerHTML = `
+            <div style="padding: 24px; text-align: center; color: var(--text-secondary);">
+                <p>No hay suficientes datos históricos para calcular escenarios de ahorro.</p>
+                <p style="font-size: 13px; margin-top: 8px;">Necesitas al menos algunos meses de transacciones.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div style="margin-bottom: 24px; padding: 16px; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
+            <h4 style="margin: 0 0 8px 0; color: var(--text-primary); font-size: 15px; font-weight: 600;">Resumen de Análisis (Últimos ${data.period} meses)</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 12px;">
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Ingresos Promedio</small>
+                    <div style="color: var(--success); font-weight: 600; font-size: 16px;">${formatCurrency(data.avgMonthlyIncome)}</div>
+                </div>
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Gastos Promedio</small>
+                    <div style="color: var(--danger); font-weight: 600; font-size: 16px;">${formatCurrency(data.avgMonthlyExpenses)}</div>
+                </div>
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Gastos No Esenciales</small>
+                    <div style="color: var(--text-primary); font-weight: 600; font-size: 16px;">${formatCurrency(data.avgMonthlyNonEssential)}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+    `;
+    
+    // Mostrar cada escenario (solo 2)
+    Object.keys(data.scenarios).forEach(key => {
+        const scenario = data.scenarios[key];
+        // Mostrar solo si tiene propuestas concretas
+        if (!scenario.concreteProposals || scenario.concreteProposals.length === 0) return;
+        
+        const totalSavings = scenario.concreteTotalSavings || 0;
+        const savingsColor = totalSavings > 0 ? 'var(--success)' : 'var(--text-secondary)';
+        
+        // Calcular tiempo para alcanzar meta si hay una
+        const savingsGoal = window.savingsGoal || 0;
+        const monthsToGoal = savingsGoal > 0 && totalSavings > 0 ? Math.ceil(savingsGoal / totalSavings) : null;
+        const monthsToGoalText = monthsToGoal 
+            ? `<div style="margin-top: 8px; padding: 8px; background: var(--primary-light); border-radius: 6px; font-size: 12px; color: var(--text-primary);">
+                🎯 Con este ahorro alcanzarías tu meta en <strong>${monthsToGoal} meses</strong>
+               </div>`
+            : '';
+        
+        html += `
+            <div class="card" style="padding: 20px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); cursor: pointer; transition: all 0.2s;" onclick="showSavingsScenarioDetails('${key}')" onmouseover="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <div>
+                        <h4 style="margin: 0 0 4px 0; color: var(--text-primary); font-size: 16px; font-weight: 700;">${scenario.name}</h4>
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 12px; line-height: 1.4;">${scenario.description}</p>
+                    </div>
+                    <span style="color: var(--primary); font-size: 12px; font-weight: 600;">Ver detalles →</span>
+                </div>
+                
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-secondary); font-size: 13px;">Ahorro Mensual Real:</span>
+                        <strong style="color: ${savingsColor}; font-size: 18px;">${formatCurrency(scenario.concreteTotalSavings || scenario.monthlySavings)}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-secondary); font-size: 13px;">Ahorro Anual Real:</span>
+                        <strong style="color: ${savingsColor}; font-size: 16px;">${formatCurrency(scenario.concreteAnnualSavings || scenario.annualSavings)}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-secondary); font-size: 13px;">Propuestas:</span>
+                        <strong style="color: var(--text-primary); font-size: 14px;">${scenario.concreteProposals?.length || 0} acciones</strong>
+                    </div>
+                </div>
+                
+                ${monthsToGoalText}
+                
+                ${scenario.concreteProposals && scenario.concreteProposals.length > 0 ? `
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                        <strong style="color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Ejemplos de propuestas:</strong>
+                        <ul style="margin: 8px 0 0 0; padding-left: 20px; font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+                            ${scenario.concreteProposals.slice(0, 2).map(prop => `<li>${prop.title} - Ahorro: ${formatCurrency(prop.savings)}/mes</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+// Mostrar detalles específicos de un escenario de ahorro
+function showSavingsScenarioDetails(scenarioKey) {
+    const data = calculateSavingsScenarios(6);
+    const scenario = data.scenarios[scenarioKey];
+    
+    if (!scenario) return;
+    
+    const modal = document.getElementById('summaryDetailsModal');
+    const titleEl = document.getElementById('summaryDetailsTitle');
+    const contentEl = document.getElementById('summaryDetailsContent');
+    
+    if (!modal || !titleEl || !contentEl) return;
+    
+    titleEl.textContent = `Propuestas Concretas: ${scenario.name}`;
+    
+    // Usar ahorro de propuestas concretas si está disponible
+    const totalSavings = scenario.concreteTotalSavings || scenario.monthlySavings;
+    const totalAnnualSavings = scenario.concreteAnnualSavings || scenario.annualSavings;
+    
+    let content = `
+        <div style="margin-bottom: 24px; padding: 16px; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Ahorro Mensual Real</small>
+                    <div style="color: var(--success); font-weight: 700; font-size: 20px;">${formatCurrency(totalSavings)}</div>
+                </div>
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Ahorro Anual Real</small>
+                    <div style="color: var(--success); font-weight: 700; font-size: 20px;">${formatCurrency(totalAnnualSavings)}</div>
+                </div>
+                <div>
+                    <small style="color: var(--text-secondary); font-size: 11px;">Propuestas</small>
+                    <div style="color: var(--text-primary); font-weight: 700; font-size: 20px;">${scenario.concreteProposals?.length || 0}</div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Mostrar propuestas concretas
+    if (scenario.concreteProposals && scenario.concreteProposals.length > 0) {
+        content += `
+            <div style="margin-bottom: 24px;">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">🎯 Propuestas Concretas y Accionables</h3>
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+        `;
+        
+        scenario.concreteProposals.forEach((proposal, index) => {
+            const icon = proposal.type === 'cancel_subscription' ? '❌' : proposal.type === 'reduce_recurring' ? '📉' : '⚙️';
+            
+            content += `
+                <div style="padding: 20px; background: var(--bg-primary); border: 2px solid var(--border-color); border-radius: 12px; border-left: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <span style="font-size: 24px;">${icon}</span>
+                                <h4 style="margin: 0; color: var(--text-primary); font-size: 16px; font-weight: 700;">${proposal.title}</h4>
+                            </div>
+                            <p style="margin: 0 0 12px 0; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">${proposal.description}</p>
+                            <div style="padding: 12px; background: var(--success-light, rgba(16, 185, 129, 0.1)); border-radius: 8px; margin-top: 12px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong style="color: var(--success); font-size: 18px;">Ahorro: ${formatCurrency(proposal.savings)}/mes</strong>
+                                        <div style="color: var(--text-secondary); font-size: 12px; margin-top: 4px;">${formatCurrency(proposal.annualSavings)}/año</div>
+                                    </div>
+                                    <div style="padding: 8px 16px; background: var(--primary); color: white; border-radius: 6px; font-size: 13px; font-weight: 600;">
+                                        ${proposal.action}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${proposal.transactions && proposal.transactions.length > 0 ? `
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                            <strong style="color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Gastos relacionados:</strong>
+                            <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
+                                ${proposal.transactions.map(t => {
+                                    const date = new Date(t.date);
+                                    const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+                                    return `
+                                        <div style="display: flex; justify-content: space-between; padding: 8px; background: var(--bg-secondary); border-radius: 6px; font-size: 12px;">
+                                            <span style="color: var(--text-secondary);">${dateStr}</span>
+                                            <span style="color: var(--text-primary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.description || 'Sin descripción'}">${t.description || 'Sin descripción'}</span>
+                                            <strong style="color: var(--danger);">${formatCurrency(Math.abs(t.amount))}</strong>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+        
+        content += `
+                </div>
+            </div>
+        `;
+    } else {
+        content += `
+            <div style="padding: 24px; text-align: center; color: var(--text-secondary);">
+                <p>No se encontraron propuestas concretas para este escenario.</p>
+                <p style="font-size: 13px; margin-top: 8px;">Se necesitan más datos históricos para generar propuestas específicas.</p>
+            </div>
+        `;
+    }
+    
+    // Mostrar resumen de todas las transacciones relacionadas (opcional, al final)
+    if (scenario.topTransactions && scenario.topTransactions.length > 0 && scenario.concreteProposals.length < 5) {
+        content += `
+            <div style="margin-bottom: 24px;">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">Gastos Más Grandes a Considerar</h3>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table style="width: 100%; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="text-align: left; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Fecha</th>
+                                <th style="text-align: left; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Categoría</th>
+                                <th style="text-align: left; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Descripción</th>
+                                <th style="text-align: right; padding: 10px 0; color: var(--text-secondary); font-weight: 600;">Gasto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        `;
+        
+        scenario.topTransactions.slice(0, 10).forEach(t => {
+            const date = new Date(t.date);
+            const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+            const categoryName = categories.expense.find(c => c.id === t.categoryGeneral)?.name || 'Otros';
+            
+            content += `
+                <tr style="border-bottom: 1px solid var(--border-color-light); cursor: pointer;" onclick="closeSummaryDetails(); switchToTab('transactions', true);" onmouseover="this.style.background='var(--bg-secondary)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 10px 0; color: var(--text-secondary);">${dateStr}</td>
+                    <td style="padding: 10px 0; color: var(--text-primary);">${categoryName}</td>
+                    <td style="padding: 10px 0; color: var(--text-primary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${t.description || 'Sin descripción'}">${t.description || 'Sin descripción'}</td>
+                    <td style="padding: 10px 0; color: var(--danger); text-align: right; font-weight: 600;">${formatCurrency(t.amount)}</td>
+                </tr>
+            `;
+        });
+        
+        content += `
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+    
+    contentEl.innerHTML = content;
+    modal.style.display = 'flex';
+}
+
+// Exponer función globalmente
+window.showSavingsScenarioDetails = showSavingsScenarioDetails;
+
+// ==================== SISTEMA DE RECOMENDACIONES ECONÓMICAS ====================
+
+// Generar recomendaciones personalizadas basadas en los datos del usuario
+function generateRecommendations() {
+    const recommendations = [];
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Obtener transacciones del mes actual
+    const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+    });
+    
+    const monthIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const monthExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    const monthSavings = monthIncome - monthExpenses;
+    const savingsRate = monthIncome > 0 ? (monthSavings / monthIncome) * 100 : 0;
+    
+    // Calcular balances y ratios
+    const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const patrimonioValue = patrimonio.reduce((sum, prop) => sum + (prop.current_value || 0), 0);
+    
+    const activeDebtLoans = loans.filter(l => l.type === 'debt' && new Date(l.end_date) >= now);
+    const monthlyLoanPayments = activeDebtLoans.reduce((sum, loan) => sum + loan.monthly_payment, 0);
+    const avgMonthlyIncome = monthIncome;
+    const debtToIncomeRatio = avgMonthlyIncome > 0 ? (monthlyLoanPayments / avgMonthlyIncome) * 100 : 0;
+    
+    const avgMonthlyExpenses = monthExpenses;
+    const liquidityRatio = avgMonthlyExpenses > 0 ? (transactionsBalance / avgMonthlyExpenses) : (transactionsBalance > 0 ? 999 : 0);
+    
+    // 1. RECOMENDACIONES DE AMORTIZACIÓN DE PRÉSTAMOS
+    activeDebtLoans.forEach(loan => {
+        const interestRate = loan.interest_rate || 0;
+        const principal = loan.principal || 0;
+        const monthlyPayment = loan.monthly_payment || 0;
+        const remainingMonths = Math.ceil((new Date(loan.end_date) - now) / (1000 * 60 * 60 * 24 * 30));
+        
+        // Calcular ahorro potencial por amortización
+        if (interestRate > 5 && principal > 1000 && remainingMonths > 6) {
+            // Calcular balance actual aproximado
+            const amortization = calculateAmortizationTable(
+                principal,
+                interestRate,
+                monthlyPayment,
+                loan.start_date,
+                loan.total_paid || 0,
+                loan.early_payments || []
+            );
+            const currentBalance = amortization.finalBalance;
+            
+            // Recomendar amortizar 10% del balance actual o 5000€ máximo
+            const recommendedAmount = Math.min(currentBalance * 0.1, 5000);
+            
+            // Calcular ahorro aproximado: intereses que no se pagarían
+            const monthlyInterest = currentBalance * (interestRate / 100 / 12);
+            const monthsSaved = Math.floor(recommendedAmount / monthlyPayment);
+            const interestSaved = monthlyInterest * monthsSaved * 0.7; // 70% del interés estimado
+            
+            if (interestSaved > 50 && recommendedAmount > 500) {
+                recommendations.push({
+                    type: 'loan_amortization',
+                    priority: interestRate > 8 ? 'high' : 'medium',
+                    icon: '',
+                    title: `Amortizar préstamo "${loan.name}"`,
+                    description: `Si ahorras ${formatCurrency(recommendedAmount)} durante ${Math.ceil(recommendedAmount / (monthSavings || 500))} meses y lo amortizas anticipadamente, podrías ahorrar aproximadamente ${formatCurrency(interestSaved)} en intereses y reducir el plazo en ${monthsSaved} meses.`,
+                    impact: `Ahorro estimado: ${formatCurrency(interestSaved)}`,
+                    action: {
+                        type: 'edit_loan',
+                        loanId: loan._id || loan.id,
+                        text: 'Ver préstamo'
+                    },
+                    category: 'Optimización de Deuda'
+                });
+            }
+        }
+        
+        // Recomendación de refinanciación para préstamos con alta tasa
+        if (interestRate > 7) {
+            recommendations.push({
+                type: 'loan_refinance',
+                priority: 'medium',
+                icon: '',
+                title: `Considera refinanciar "${loan.name}"`,
+                description: `Tu préstamo tiene una tasa del ${interestRate}%. Si encuentras una tasa menor al ${(interestRate * 0.7).toFixed(1)}%, podrías ahorrar significativamente en intereses.`,
+                impact: `Tasa actual: ${interestRate}%`,
+                action: {
+                    type: 'edit_loan',
+                    loanId: loan._id || loan.id,
+                    text: 'Ver préstamo'
+                },
+                category: 'Optimización de Deuda'
+            });
+        }
+    });
+    
+    // 2. ANÁLISIS DE GASTOS RECURRENTES/SUSCRIPCIONES
+    const recurringExpenses = {};
+    monthTransactions.filter(t => t.type === 'expense').forEach(t => {
+        const key = t.description?.toLowerCase() || t.categorySpecific?.toLowerCase() || '';
+        if (key.includes('netflix') || key.includes('spotify') || key.includes('amazon') || 
+            key.includes('gym') || key.includes('suscripción') || key.includes('subscription') ||
+            key.includes('premium') || key.includes('pro')) {
+            const category = t.categorySpecific || 'Suscripciones';
+            recurringExpenses[category] = (recurringExpenses[category] || 0) + Math.abs(t.amount);
+        }
+    });
+    
+    const totalSubscriptions = Object.values(recurringExpenses).reduce((sum, val) => sum + val, 0);
+    const subscriptionCount = Object.keys(recurringExpenses).length;
+    
+    if (subscriptionCount >= 3 && totalSubscriptions > 30) {
+        recommendations.push({
+            type: 'subscriptions_review',
+            priority: 'medium',
+            icon: '',
+            title: 'Revisa tus suscripciones',
+            description: `Detectamos ${subscriptionCount} suscripciones que suman ${formatCurrency(totalSubscriptions)}/mes. Si cancelas 1-2 que no uses frecuentemente, ahorrarías ${formatCurrency(totalSubscriptions * 0.3)}/mes (${formatCurrency(totalSubscriptions * 0.3 * 12)}/año).`,
+            impact: `Ahorro potencial: ${formatCurrency(totalSubscriptions * 0.3 * 12)}/año`,
+            action: {
+                type: 'view_transactions',
+                filter: 'subscriptions',
+                text: 'Ver suscripciones'
+            },
+            category: 'Optimización de Gastos'
+        });
+    }
+    
+    // 3. RECOMENDACIONES DE AHORRO
+    if (savingsGoal && savingsGoal > 0) {
+        const currentSavings = transactionsBalance;
+        const remaining = savingsGoal - currentSavings;
+        const monthsToGoal = savingsRate > 0 ? Math.ceil(remaining / (monthSavings || 1)) : 999;
+        
+        if (remaining > 0) {
+            if (savingsRate < 10 && monthIncome > 0) {
+                const targetRate = 20;
+                const targetSavings = monthIncome * (targetRate / 100);
+                const monthsWithTarget = Math.ceil(remaining / targetSavings);
+                
+                recommendations.push({
+                    type: 'savings_increase',
+                    priority: 'medium',
+                    icon: '',
+                    title: 'Aumenta tu tasa de ahorro',
+                    description: `Con tu tasa actual (${savingsRate.toFixed(1)}%), alcanzarías tu meta en ${monthsToGoal} meses. Si aumentas al ${targetRate}%, lo lograrías en ${monthsWithTarget} meses.`,
+                    impact: `Ahorro adicional: ${formatCurrency(targetSavings - monthSavings)}/mes`,
+                    action: {
+                        type: 'view_summary',
+                        text: 'Ver resumen'
+                    },
+                    category: 'Ahorro'
+                });
+            }
+        }
+    }
+    
+    // Recomendación de fondo de emergencia
+    if (liquidityRatio < 3 && transactionsBalance > 0) {
+        const targetEmergencyFund = avgMonthlyExpenses * 6;
+        const missing = targetEmergencyFund - transactionsBalance;
+        
+        if (missing > 0) {
+            recommendations.push({
+                type: 'emergency_fund',
+                priority: liquidityRatio < 1 ? 'high' : 'medium',
+                icon: '',
+                title: 'Construye tu fondo de emergencia',
+                description: `Tu liquidez es de ${liquidityRatio.toFixed(1)} meses. Lo ideal es 3-6 meses. Te faltan ${formatCurrency(missing)} para alcanzar 6 meses de gastos (${formatCurrency(targetEmergencyFund)}).`,
+                impact: `Meta: ${formatCurrency(targetEmergencyFund)}`,
+                action: {
+                    type: 'view_summary',
+                    text: 'Ver resumen'
+                },
+                category: 'Ahorro'
+            });
+        }
+    }
+    
+    // 4. OPTIMIZACIÓN DE DEUDA
+    if (debtToIncomeRatio > 30) {
+        const targetRatio = 20;
+        const neededReduction = (debtToIncomeRatio - targetRatio) / 100 * avgMonthlyIncome;
+        
+        recommendations.push({
+            type: 'debt_optimization',
+            priority: debtToIncomeRatio > 40 ? 'high' : 'medium',
+            icon: '',
+            title: 'Reduce tu ratio de endeudamiento',
+            description: `Tu ratio es ${debtToIncomeRatio.toFixed(1)}% (ideal: <20%). Para alcanzarlo, necesitas reducir ${formatCurrency(neededReduction)}/mes en cuotas o aumentar tus ingresos.`,
+            impact: `Reducción necesaria: ${formatCurrency(neededReduction)}/mes`,
+            action: {
+                type: 'view_loans',
+                text: 'Ver préstamos'
+            },
+            category: 'Optimización de Deuda'
+        });
+    }
+    
+    // 5. ALERTAS DE PRESUPUESTO
+    budgets.forEach(budget => {
+        const budgetTransactions = monthTransactions.filter(t => 
+            t.categoryGeneral === budget.category_id || t.categorySpecific === budget.category_id
+        );
+        const spent = Math.abs(budgetTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const daysPassed = now.getDate();
+        const expectedSpending = (budget.amount / daysInMonth) * daysPassed;
+        
+        if (percentage > 90 && spent > expectedSpending * 1.1) {
+            recommendations.push({
+                type: 'budget_alert',
+                priority: percentage > 100 ? 'high' : 'medium',
+                icon: '',
+                title: `Presupuesto "${budget.category_id}" casi agotado`,
+                description: `Has gastado ${percentage.toFixed(1)}% del presupuesto (${formatCurrency(spent)} de ${formatCurrency(budget.amount)}) y aún quedan ${daysInMonth - daysPassed} días del mes.`,
+                impact: `Exceso: ${formatCurrency(Math.max(0, spent - budget.amount))}`,
+                action: {
+                    type: 'view_budgets',
+                    text: 'Ver presupuestos'
+                },
+                category: 'Presupuesto'
+            });
+        }
+    });
+    
+    // 6. RECOMENDACIONES DE INVERSIÓN
+    if (transactionsBalance > avgMonthlyExpenses * 6 && investmentsValue < transactionsBalance * 0.3) {
+        const excessCash = transactionsBalance - (avgMonthlyExpenses * 6);
+        const recommendedInvestment = excessCash * 0.5;
+        
+        recommendations.push({
+            type: 'investment_opportunity',
+            priority: 'low',
+            icon: '',
+            title: 'Considera invertir el exceso de efectivo',
+            description: `Tienes ${formatCurrency(excessCash)} más de lo necesario para tu fondo de emergencia. Considera invertir ${formatCurrency(recommendedInvestment)} para hacer crecer tu patrimonio.`,
+            impact: `Oportunidad: ${formatCurrency(recommendedInvestment)}`,
+            action: {
+                type: 'view_investments',
+                text: 'Ver inversiones'
+            },
+            category: 'Inversión'
+        });
+    }
+    
+    // 7. ANÁLISIS DE CATEGORÍAS DE GASTOS
+    const categoryExpenses = {};
+    monthTransactions.filter(t => t.type === 'expense').forEach(t => {
+        const cat = t.categorySpecific || t.categoryGeneral || 'Otros';
+        categoryExpenses[cat] = (categoryExpenses[cat] || 0) + Math.abs(t.amount);
+    });
+    
+    const totalExpenses = Object.values(categoryExpenses).reduce((sum, val) => sum + val, 0);
+    Object.entries(categoryExpenses).forEach(([category, amount]) => {
+        const percentage = totalExpenses > 0 ? (amount / totalExpenses) * 100 : 0;
+        
+        if (percentage > 25 && amount > 200) {
+            recommendations.push({
+                type: 'category_review',
+                priority: 'low',
+                icon: '',
+                title: `Revisa gastos en "${category}"`,
+                description: `Esta categoría representa el ${percentage.toFixed(1)}% de tus gastos (${formatCurrency(amount)}/mes). Considera si todos estos gastos son necesarios.`,
+                impact: `Gasto mensual: ${formatCurrency(amount)}`,
+                action: {
+                    type: 'view_transactions',
+                    filter: category,
+                    text: 'Ver transacciones'
+                },
+                category: 'Optimización de Gastos'
+            });
+        }
+    });
+    
+    // 8. RECOMENDACIONES DE PATRIMONIO
+    patrimonio.forEach(prop => {
+        const purchaseDate = prop.purchase_date ? new Date(prop.purchase_date) : null;
+        if (purchaseDate) {
+            const monthsSincePurchase = (now - purchaseDate) / (1000 * 60 * 60 * 24 * 30);
+            if (monthsSincePurchase > 12 && prop.value_history && prop.value_history.length < 3) {
+                recommendations.push({
+                    type: 'patrimonio_update',
+                    priority: 'low',
+                    icon: '',
+                    title: `Actualiza el valor de "${prop.name}"`,
+                    description: `Han pasado ${Math.floor(monthsSincePurchase)} meses desde la última actualización. Considera actualizar el valor actual para tener un seguimiento preciso.`,
+                    impact: 'Mejor seguimiento',
+                    action: {
+                        type: 'edit_patrimonio',
+                        patrimonioId: prop._id || prop.id,
+                        text: 'Actualizar valor'
+                    },
+                    category: 'Patrimonio'
+                });
+            }
+        }
+    });
+    
+    // ==================== NUEVAS FUNCIONALIDADES ====================
+    
+    // 9. ANÁLISIS TEMPORAL Y TENDENCIAS
+    const last3Months = [];
+    for (let i = 1; i <= 3; i++) {
+        const monthDate = new Date(currentYear, currentMonth - i, 1);
+        const monthTrans = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === monthDate.getMonth() && tDate.getFullYear() === monthDate.getFullYear();
+        });
+        const monthInc = monthTrans.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        const monthExp = Math.abs(monthTrans.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        last3Months.push({ income: monthInc, expenses: monthExp, savings: monthInc - monthExp });
+    }
+    
+    if (last3Months.length >= 2) {
+        const avgExpenses3Months = last3Months.reduce((sum, m) => sum + m.expenses, 0) / last3Months.length;
+        const expenseIncrease = ((monthExpenses - avgExpenses3Months) / avgExpenses3Months) * 100;
+        
+        if (expenseIncrease > 20 && monthExpenses > 500) {
+            recommendations.push({
+                type: 'expense_trend',
+                priority: expenseIncrease > 40 ? 'high' : 'medium',
+                icon: '',
+                title: 'Aumento significativo en gastos',
+                description: `Tus gastos han aumentado un ${expenseIncrease.toFixed(1)}% comparado con el promedio de los últimos 3 meses (${formatCurrency(monthExpenses)} vs ${formatCurrency(avgExpenses3Months)}). Revisa qué categorías han aumentado más.`,
+                impact: `Aumento: ${formatCurrency(monthExpenses - avgExpenses3Months)}/mes`,
+                action: {
+                    type: 'view_transactions',
+                    filter: 'expenses',
+                    text: 'Ver gastos'
+                },
+                category: 'Análisis de Tendencias'
+            });
+        }
+        
+        const avgSavings3Months = last3Months.reduce((sum, m) => sum + m.savings, 0) / last3Months.length;
+        if (monthSavings < avgSavings3Months * 0.5 && monthSavings > 0) {
+            recommendations.push({
+                type: 'savings_decline',
+                priority: 'medium',
+                icon: '',
+                title: 'Tasa de ahorro en declive',
+                description: `Tu ahorro este mes (${formatCurrency(monthSavings)}) es significativamente menor que el promedio de los últimos 3 meses (${formatCurrency(avgSavings3Months)}). Considera revisar tus gastos.`,
+                impact: `Diferencia: ${formatCurrency(avgSavings3Months - monthSavings)}`,
+                action: {
+                    type: 'view_summary',
+                    text: 'Ver resumen'
+                },
+                category: 'Análisis de Tendencias'
+            });
+        }
+    }
+    
+    // 10. DETECCIÓN MEJORADA DE PATRONES - GASTOS RECURRENTES AUTOMÁTICOS
+    const recurringPatterns = {};
+    const last6Months = [];
+    for (let i = 0; i < 6; i++) {
+        const monthDate = new Date(currentYear, currentMonth - i, 1);
+        const monthTrans = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getMonth() === monthDate.getMonth() && tDate.getFullYear() === monthDate.getFullYear();
+        });
+        last6Months.push(monthTrans.filter(t => t.type === 'expense'));
+    }
+    
+    // Detectar gastos recurrentes (mismo monto aproximado, misma fecha aproximada)
+    const expenseMap = {};
+    last6Months.flat().forEach(t => {
+        const key = `${t.description?.toLowerCase() || ''}_${Math.round(Math.abs(t.amount) / 10) * 10}`;
+        if (!expenseMap[key]) {
+            expenseMap[key] = { count: 0, total: 0, dates: [], category: t.categorySpecific || t.categoryGeneral };
+        }
+        expenseMap[key].count++;
+        expenseMap[key].total += Math.abs(t.amount);
+        expenseMap[key].dates.push(new Date(t.date));
+    });
+    
+    Object.entries(expenseMap).forEach(([key, data]) => {
+        if (data.count >= 3 && data.total / data.count > 10) {
+            const avgAmount = data.total / data.count;
+            const isMonthly = data.count >= 4;
+            const lastDate = new Date(Math.max(...data.dates));
+            const daysSinceLast = (now - lastDate) / (1000 * 60 * 60 * 24);
+            
+            if (isMonthly && daysSinceLast > 45) {
+                recommendations.push({
+                    type: 'missing_recurring',
+                    priority: 'low',
+                    icon: '',
+                    title: `Posible gasto recurrente faltante`,
+                    description: `Detectamos un gasto recurrente de aproximadamente ${formatCurrency(avgAmount)} en "${data.category}" que normalmente aparece mensualmente, pero no se ha registrado en los últimos ${Math.floor(daysSinceLast)} días.`,
+                    impact: `Monto esperado: ${formatCurrency(avgAmount)}`,
+                    action: {
+                        type: 'view_transactions',
+                        filter: data.category,
+                        text: 'Ver transacciones'
+                    },
+                    category: 'Detección de Patrones'
+                });
+            }
+        }
+    });
+    
+    // Detectar duplicados potenciales
+    const recentTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        const daysDiff = (now - tDate) / (1000 * 60 * 60 * 24);
+        return daysDiff <= 7;
+    });
+    
+    const duplicateCheck = {};
+    recentTransactions.forEach(t => {
+        const key = `${t.description?.toLowerCase() || ''}_${Math.abs(t.amount).toFixed(2)}`;
+        if (!duplicateCheck[key]) {
+            duplicateCheck[key] = [];
+        }
+        duplicateCheck[key].push(t);
+    });
+    
+    Object.entries(duplicateCheck).forEach(([key, dups]) => {
+        if (dups.length > 1 && Math.abs(dups[0].amount) > 20) {
+            recommendations.push({
+                type: 'possible_duplicate',
+                priority: 'medium',
+                icon: '',
+                title: 'Posibles transacciones duplicadas',
+                description: `Detectamos ${dups.length} transacciones similares de ${formatCurrency(Math.abs(dups[0].amount))} con la misma descripción en los últimos 7 días. Verifica si son duplicados.`,
+                impact: `Monto total: ${formatCurrency(dups.reduce((sum, t) => sum + Math.abs(t.amount), 0))}`,
+                action: {
+                    type: 'view_transactions',
+                    filter: 'recent',
+                    text: 'Ver transacciones recientes'
+                },
+                category: 'Detección de Patrones'
+            });
+        }
+    });
+    
+    // 11. COMPARACIÓN CON BENCHMARKS
+    const benchmarkSavingsRate = 20; // 20% es un buen estándar
+    if (savingsRate < benchmarkSavingsRate && monthIncome > 1000) {
+        const benchmarkSavings = monthIncome * (benchmarkSavingsRate / 100);
+        recommendations.push({
+            type: 'benchmark_savings',
+            priority: 'low',
+            icon: '',
+            title: 'Tasa de ahorro por debajo del estándar',
+            description: `Tu tasa de ahorro es del ${savingsRate.toFixed(1)}%, mientras que el estándar recomendado es del ${benchmarkSavingsRate}%. Si ahorraras ${formatCurrency(benchmarkSavings)}/mes en lugar de ${formatCurrency(monthSavings)}, tendrías ${formatCurrency((benchmarkSavings - monthSavings) * 12)} más al año.`,
+            impact: `Diferencia anual: ${formatCurrency((benchmarkSavings - monthSavings) * 12)}`,
+            action: {
+                type: 'view_summary',
+                text: 'Ver resumen'
+            },
+            category: 'Comparación con Estándares'
+        });
+    }
+    
+    const benchmarkDebtRatio = 20; // 20% es el estándar
+    if (debtToIncomeRatio > benchmarkDebtRatio && debtToIncomeRatio < 30) {
+        recommendations.push({
+            type: 'benchmark_debt',
+            priority: 'medium',
+            icon: '',
+            title: 'Ratio de endeudamiento por encima del estándar',
+            description: `Tu ratio de endeudamiento es del ${debtToIncomeRatio.toFixed(1)}%, mientras que el estándar recomendado es del ${benchmarkDebtRatio}% o menos. Estás ${(debtToIncomeRatio - benchmarkDebtRatio).toFixed(1)} puntos porcentuales por encima.`,
+            impact: `Reducción necesaria: ${formatCurrency((debtToIncomeRatio - benchmarkDebtRatio) / 100 * avgMonthlyIncome)}/mes`,
+            action: {
+                type: 'view_loans',
+                text: 'Ver préstamos'
+            },
+            category: 'Comparación con Estándares'
+        });
+    }
+    
+    // 12. RECOMENDACIONES DE INGRESOS
+    if (monthIncome > 0 && monthSavings < monthIncome * 0.1) {
+        const potentialIncomeIncrease = monthIncome * 0.1;
+        recommendations.push({
+            type: 'income_opportunity',
+            priority: 'low',
+            icon: '',
+            title: 'Considera aumentar tus ingresos',
+            description: `Con una tasa de ahorro del ${savingsRate.toFixed(1)}%, podrías beneficiarte de aumentar tus ingresos. Un aumento del 10% (${formatCurrency(potentialIncomeIncrease)}/mes) te daría más margen para ahorrar e invertir. Considera negociar un aumento, buscar ingresos pasivos o monetizar habilidades.`,
+            impact: `Ingreso adicional potencial: ${formatCurrency(potentialIncomeIncrease)}/mes`,
+            action: {
+                type: 'view_summary',
+                text: 'Ver resumen'
+            },
+            category: 'Optimización de Ingresos'
+        });
+    }
+    
+    // 13. OPTIMIZACIÓN FISCAL
+    const currentMonthNum = currentMonth + 1;
+    if (currentMonthNum === 11 || currentMonthNum === 12) {
+        const totalYearIncome = transactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getFullYear() === currentYear && t.type === 'income';
+        }).reduce((sum, t) => sum + t.amount, 0);
+        
+        if (totalYearIncome > 12000) {
+            recommendations.push({
+                type: 'tax_optimization',
+                priority: 'medium',
+                icon: '',
+                title: 'Optimización fiscal de fin de año',
+                description: `Estamos cerca del fin del año fiscal. Considera maximizar deducciones fiscales: aportaciones a planes de pensiones, donaciones, gastos deducibles. Tu ingreso anual es de ${formatCurrency(totalYearIncome)}.`,
+                impact: 'Ahorro fiscal potencial',
+                action: {
+                    type: 'view_summary',
+                    text: 'Ver resumen'
+                },
+                category: 'Optimización Fiscal'
+            });
+        }
+    }
+    
+    // 14. DIVERSIFICACIÓN DE INVERSIONES
+    if (investments.length > 0) {
+        const investmentTypes = {};
+        investments.forEach(inv => {
+            const type = inv.type || 'other';
+            investmentTypes[type] = (investmentTypes[type] || 0) + inv.current_value;
+        });
+        
+        const totalInvValue = Object.values(investmentTypes).reduce((sum, val) => sum + val, 0);
+        const dominantType = Object.entries(investmentTypes).sort((a, b) => b[1] - a[1])[0];
+        const dominantPercentage = (dominantType[1] / totalInvValue) * 100;
+        
+        if (dominantPercentage > 70 && investments.length > 1) {
+            recommendations.push({
+                type: 'investment_diversification',
+                priority: 'low',
+                icon: '',
+                title: 'Considera diversificar tus inversiones',
+                description: `El ${dominantPercentage.toFixed(1)}% de tu cartera está concentrado en ${dominantType[0]}. Para reducir el riesgo, considera diversificar en otros tipos de inversión (acciones, bonos, fondos, inmuebles).`,
+                impact: `Concentración actual: ${dominantPercentage.toFixed(1)}%`,
+                action: {
+                    type: 'view_investments',
+                    text: 'Ver inversiones'
+                },
+                category: 'Diversificación'
+            });
+        }
+    }
+    
+    // 15. GASTOS INNECESARIOS AVANZADOS
+    // Detectar servicios similares/duplicados
+    const serviceCategories = ['Streaming', 'Gym', 'Suscripciones', 'Premium', 'Pro'];
+    const serviceExpenses = {};
+    monthTransactions.filter(t => t.type === 'expense').forEach(t => {
+        const cat = t.categorySpecific || t.categoryGeneral || '';
+        const desc = t.description?.toLowerCase() || '';
+        serviceCategories.forEach(service => {
+            if (cat.includes(service) || desc.includes(service.toLowerCase())) {
+                if (!serviceExpenses[service]) {
+                    serviceExpenses[service] = [];
+                }
+                serviceExpenses[service].push(t);
+            }
+        });
+    });
+    
+    Object.entries(serviceExpenses).forEach(([service, exps]) => {
+        if (exps.length > 2) {
+            const total = exps.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            recommendations.push({
+                type: 'duplicate_services',
+                priority: 'medium',
+                icon: '',
+                title: `Múltiples servicios de ${service}`,
+                description: `Tienes ${exps.length} servicios diferentes de ${service} que suman ${formatCurrency(total)}/mes. Considera consolidar o cancelar los que uses menos.`,
+                impact: `Gasto mensual: ${formatCurrency(total)}`,
+                action: {
+                    type: 'view_transactions',
+                    filter: service,
+                    text: 'Ver servicios'
+                },
+                category: 'Optimización de Gastos'
+            });
+        }
+    });
+    
+    // 16. OBJETIVOS PERSONALIZADOS MÚLTIPLES
+    // (Esto requeriría una estructura de datos adicional, por ahora usamos savingsGoal)
+    if (savingsGoal && savingsGoal > 0) {
+        const progress = (transactionsBalance / savingsGoal) * 100;
+        if (progress > 50 && progress < 80) {
+            recommendations.push({
+                type: 'goal_progress',
+                priority: 'low',
+                icon: '',
+                title: 'Buen progreso hacia tu meta',
+                description: `Has alcanzado el ${progress.toFixed(1)}% de tu meta de ahorro (${formatCurrency(transactionsBalance)} de ${formatCurrency(savingsGoal)}). ¡Sigue así!`,
+                impact: `Faltan: ${formatCurrency(savingsGoal - transactionsBalance)}`,
+                action: {
+                    type: 'view_summary',
+                    text: 'Ver resumen'
+                },
+                category: 'Objetivos'
+            });
+        }
+    }
+    
+    // 17. ALERTAS PROACTIVAS - VENCIMIENTOS
+    activeDebtLoans.forEach(loan => {
+        const endDate = new Date(loan.end_date);
+        const daysUntilEnd = (endDate - now) / (1000 * 60 * 60 * 24);
+        
+        if (daysUntilEnd <= 90 && daysUntilEnd > 0) {
+            recommendations.push({
+                type: 'loan_ending',
+                priority: daysUntilEnd <= 30 ? 'high' : 'medium',
+                icon: '',
+                title: `Préstamo "${loan.name}" finaliza pronto`,
+                description: `Tu préstamo finaliza en ${Math.floor(daysUntilEnd)} días. Asegúrate de tener el capital restante disponible o considera refinanciar si es necesario.`,
+                impact: `Días restantes: ${Math.floor(daysUntilEnd)}`,
+                action: {
+                    type: 'edit_loan',
+                    loanId: loan._id || loan.id,
+                    text: 'Ver préstamo'
+                },
+                category: 'Alertas Proactivas'
+            });
+        }
+    });
+    
+    // 18. ANÁLISIS DE CUENTAS BANCARIAS
+    if (accounts.length > 3) {
+        recommendations.push({
+            type: 'account_consolidation',
+            priority: 'low',
+            icon: '',
+            title: 'Considera consolidar cuentas bancarias',
+            description: `Tienes ${accounts.length} cuentas bancarias. Consolidar algunas podría simplificar tu gestión financiera y reducir comisiones. Considera mantener solo las cuentas que realmente uses.`,
+            impact: `Número de cuentas: ${accounts.length}`,
+            action: {
+                type: 'view_summary',
+                text: 'Ver cuentas'
+            },
+            category: 'Optimización de Cuentas'
+        });
+    }
+    
+    const totalAccountBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
+    if (totalAccountBalance > 50000 && investmentsValue < totalAccountBalance * 0.2) {
+        recommendations.push({
+            type: 'excess_cash',
+            priority: 'low',
+            icon: '',
+            title: 'Exceso de efectivo en cuentas',
+            description: `Tienes ${formatCurrency(totalAccountBalance)} en cuentas bancarias pero solo ${formatCurrency(investmentsValue)} invertido. Considera mover parte del exceso a cuentas de ahorro con mejor interés o inversiones.`,
+            impact: `Efectivo disponible: ${formatCurrency(totalAccountBalance)}`,
+            action: {
+                type: 'view_investments',
+                text: 'Ver inversiones'
+            },
+            category: 'Optimización de Cuentas'
+        });
+    }
+    
+    // 19. ANÁLISIS AVANZADO DE PRÉSTAMOS
+    if (activeDebtLoans.length > 1) {
+        // Estrategia: pagar primero el préstamo con mayor tasa
+        const sortedLoans = [...activeDebtLoans].sort((a, b) => (b.interest_rate || 0) - (a.interest_rate || 0));
+        const highestRateLoan = sortedLoans[0];
+        const secondHighestRate = sortedLoans[1]?.interest_rate || 0;
+        
+        if (highestRateLoan.interest_rate > secondHighestRate + 2) {
+            recommendations.push({
+                type: 'loan_strategy',
+                priority: 'medium',
+                icon: '',
+                title: `Prioriza pagar "${highestRateLoan.name}"`,
+                description: `Este préstamo tiene la tasa más alta (${highestRateLoan.interest_rate}%) de tus ${activeDebtLoans.length} préstamos. Pagarlo primero te ahorrará más en intereses. Considera la estrategia de "avalancha de deuda".`,
+                impact: `Tasa: ${highestRateLoan.interest_rate}%`,
+                action: {
+                    type: 'edit_loan',
+                    loanId: highestRateLoan._id || highestRateLoan.id,
+                    text: 'Ver préstamo'
+                },
+                category: 'Estrategia de Deuda'
+            });
+        }
+    }
+    
+    // 20. ANÁLISIS AVANZADO DE PATRIMONIO
+    patrimonio.forEach(prop => {
+        const purchaseValue = prop.purchase_value || prop.initial_value || 0;
+        const currentValue = prop.current_value || 0;
+        if (purchaseValue > 0 && currentValue > 0) {
+            const appreciation = ((currentValue - purchaseValue) / purchaseValue) * 100;
+            const purchaseDate = prop.purchase_date ? new Date(prop.purchase_date) : null;
+            
+            if (purchaseDate) {
+                const yearsOwned = (now - purchaseDate) / (1000 * 60 * 60 * 24 * 365);
+                const annualAppreciation = appreciation / yearsOwned;
+                
+                if (annualAppreciation < -5 && yearsOwned > 1) {
+                    recommendations.push({
+                        type: 'patrimonio_depreciation',
+                        priority: 'medium',
+                        icon: '',
+                        title: `Depreciación significativa en "${prop.name}"`,
+                        description: `El valor de "${prop.name}" ha disminuido un ${Math.abs(appreciation).toFixed(1)}% desde la compra (${Math.abs(annualAppreciation).toFixed(1)}%/año). Considera revisar el valor o evaluar si es el momento de vender.`,
+                        impact: `Depreciación: ${Math.abs(appreciation).toFixed(1)}%`,
+                        action: {
+                            type: 'edit_patrimonio',
+                            patrimonioId: prop._id || prop.id,
+                            text: 'Ver patrimonio'
+                        },
+                        category: 'Análisis de Patrimonio'
+                    });
+                } else if (annualAppreciation > 10 && yearsOwned > 2) {
+                    recommendations.push({
+                        type: 'patrimonio_appreciation',
+                        priority: 'low',
+                        icon: '',
+                        title: `Buena apreciación en "${prop.name}"`,
+                        description: `El valor de "${prop.name}" ha aumentado un ${appreciation.toFixed(1)}% desde la compra (${annualAppreciation.toFixed(1)}%/año). Considera si es momento de realizar ganancias o mantener para más crecimiento.`,
+                        impact: `Apreciación: ${appreciation.toFixed(1)}%`,
+                        action: {
+                            type: 'edit_patrimonio',
+                            patrimonioId: prop._id || prop.id,
+                            text: 'Ver patrimonio'
+                        },
+                        category: 'Análisis de Patrimonio'
+                    });
+                }
+            }
+        }
+    });
+    
+    // 21. EFICIENCIA ENERGÉTICA
+    const utilityCategories = ['Luz', 'Agua', 'Gas', 'Calefacción', 'Internet', 'Teléfono'];
+    const utilityExpenses = {};
+    monthTransactions.filter(t => t.type === 'expense').forEach(t => {
+        const cat = t.categorySpecific || t.categoryGeneral || '';
+        utilityCategories.forEach(util => {
+            if (cat.includes(util)) {
+                if (!utilityExpenses[util]) {
+                    utilityExpenses[util] = { amount: 0, count: 0 };
+                }
+                utilityExpenses[util].amount += Math.abs(t.amount);
+                utilityExpenses[util].count++;
+            }
+        });
+    });
+    
+    Object.entries(utilityExpenses).forEach(([util, data]) => {
+        const avgMonthly = data.amount / Math.max(data.count, 1);
+        // Benchmarks aproximados (ajustar según región)
+        const benchmarks = {
+            'Luz': 80,
+            'Agua': 40,
+            'Gas': 60,
+            'Calefacción': 100,
+            'Internet': 50,
+            'Teléfono': 30
+        };
+        
+        const benchmark = benchmarks[util];
+        if (benchmark && avgMonthly > benchmark * 1.5) {
+            recommendations.push({
+                type: 'utility_optimization',
+                priority: 'medium',
+                icon: '',
+                title: `Gasto alto en ${util}`,
+                description: `Tu gasto promedio en ${util} es de ${formatCurrency(avgMonthly)}/mes, significativamente por encima del promedio (${formatCurrency(benchmark)}). Considera revisar tu consumo, cambiar de proveedor o mejorar la eficiencia energética.`,
+                impact: `Ahorro potencial: ${formatCurrency(avgMonthly - benchmark)}/mes`,
+                action: {
+                    type: 'view_transactions',
+                    filter: util,
+                    text: 'Ver gastos'
+                },
+                category: 'Eficiencia Energética'
+            });
+        }
+    });
+    
+    // 22. PLANIFICACIÓN DE RETIRO
+    // Usar edad estimada basada en datos financieros o default 35
+    const userAge = 35; // TODO: Obtener del perfil del usuario cuando esté disponible
+    const retirementAge = 65;
+    const yearsToRetirement = retirementAge - userAge;
+    const estimatedMonthlyNeeds = avgMonthlyExpenses * 0.8; // 80% de gastos actuales
+    const totalNeeded = estimatedMonthlyNeeds * 12 * 20; // 20 años de retiro
+    const currentNetWorth = transactionsBalance + investmentsValue + patrimonioValue - 
+        activeDebtLoans.reduce((sum, l) => {
+            const amort = calculateAmortizationTable(l.principal, l.interest_rate, l.monthly_payment, l.start_date, l.total_paid || 0, l.early_payments || []);
+            return sum + amort.finalBalance;
+        }, 0);
+    
+    if (yearsToRetirement > 0 && yearsToRetirement <= 30) {
+        const monthlySavingsNeeded = (totalNeeded - currentNetWorth) / (yearsToRetirement * 12);
+        const currentMonthlySavings = monthSavings;
+        
+        if (monthlySavingsNeeded > currentMonthlySavings * 1.2) {
+            recommendations.push({
+                type: 'retirement_planning',
+                priority: 'low',
+                icon: '',
+                title: 'Planificación para el retiro',
+                description: `Para mantener tu nivel de vida en el retiro, necesitarías ahorrar aproximadamente ${formatCurrency(monthlySavingsNeeded)}/mes. Actualmente ahorras ${formatCurrency(currentMonthlySavings)}/mes. Considera aumentar tu ahorro o revisar tus expectativas de retiro.`,
+                impact: `Diferencia: ${formatCurrency(monthlySavingsNeeded - currentMonthlySavings)}/mes`,
+                action: {
+                    type: 'view_summary',
+                    text: 'Ver resumen'
+                },
+                category: 'Planificación de Retiro'
+            });
+        }
+    }
+    
+    // 23. SISTEMA DE SEGUIMIENTO (esto se implementará en la UI)
+    // Por ahora solo generamos las recomendaciones
+    
+    // Ordenar por prioridad (high > medium > low)
+    const priorityOrder = { high: 3, medium: 2, low: 1 };
+    recommendations.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+    
+    return recommendations.slice(0, 15); // Aumentar límite a 15 recomendaciones
+}
+
+// Mostrar recomendaciones en la interfaz
+function updateRecommendations() {
+    const container = document.getElementById('recommendationsContainer');
+    if (!container) return;
+    
+    const recommendations = generateRecommendations();
+    
+    container.innerHTML = '';
+    
+    if (recommendations.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column: 1/-1; padding: 40px; text-align: center; background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color);">
+                <h3 style="margin: 0 0 8px 0; color: var(--text-primary); font-size: 18px;">¡Todo está en orden!</h3>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">No hay recomendaciones específicas en este momento. Sigue así.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    recommendations.forEach((rec, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.padding = 'clamp(16px, 4vw, 20px)';
+        card.style.borderLeft = `4px solid ${
+            rec.priority === 'high' ? 'var(--danger)' :
+            rec.priority === 'medium' ? 'var(--warning)' :
+            'var(--primary)'
+        }`;
+        card.style.position = 'relative';
+        card.style.transition = 'transform 0.2s, box-shadow 0.2s';
+        card.style.cursor = 'default';
+        card.style.width = '100%';
+        card.style.boxSizing = 'border-box';
+        
+        card.onmouseenter = () => {
+            card.style.transform = 'translateY(-2px)';
+            card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+        };
+        card.onmouseleave = () => {
+            card.style.transform = 'translateY(0)';
+            card.style.boxShadow = 'none';
+        };
+        
+        const priorityBadge = {
+            high: { text: 'Alta', color: 'var(--danger)', bg: 'rgba(239, 68, 68, 0.1)' },
+            medium: { text: 'Media', color: 'var(--warning)', bg: 'rgba(251, 191, 36, 0.1)' },
+            low: { text: 'Baja', color: 'var(--primary)', bg: 'rgba(59, 130, 246, 0.1)' }
+        }[rec.priority];
+        
+        // Sistema de seguimiento de recomendaciones
+        const recId = `${rec.type}_${rec.title.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        const recStatus = localStorage.getItem(`rec_status_${recId}`) || 'pending';
+        const isApplied = recStatus === 'applied';
+        const isDismissed = recStatus === 'dismissed';
+        
+        // Si está descartada, no mostrar
+        if (isDismissed) return;
+        
+        let actionButton = '';
+        if (rec.action && !isApplied) {
+            let onclickHandler = '';
+            const actionId = `rec_action_${index}`;
+            
+            switch(rec.action.type) {
+                case 'edit_loan':
+                    onclickHandler = `handleRecommendationAction('edit_loan', '${String(rec.action.loanId).replace(/'/g, "\\'")}')`;
+                    break;
+                case 'edit_patrimonio':
+                    onclickHandler = `handleRecommendationAction('edit_patrimonio', '${String(rec.action.patrimonioId).replace(/'/g, "\\'")}')`;
+                    break;
+                case 'view_loans':
+                    onclickHandler = `handleRecommendationAction('view_loans')`;
+                    break;
+                case 'view_investments':
+                    onclickHandler = `handleRecommendationAction('view_investments')`;
+                    break;
+                case 'view_budgets':
+                    onclickHandler = `handleRecommendationAction('view_budgets')`;
+                    break;
+                case 'view_transactions':
+                    onclickHandler = `handleRecommendationAction('view_transactions')`;
+                    break;
+                case 'view_summary':
+                    onclickHandler = `handleRecommendationAction('view_summary')`;
+                    break;
+            }
+            
+            if (onclickHandler) {
+                const escapedHandler = onclickHandler.replace(/"/g, '&quot;');
+                actionButton = `
+                    <button onclick="${escapedHandler}" 
+                        style="padding: clamp(6px, 1.5vw, 8px) clamp(12px, 3vw, 16px); background: var(--primary); color: white; border: none; border-radius: 6px; font-size: clamp(11px, 2.5vw, 13px); font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; width: 100%; max-width: 200px;"
+                        onmouseover="this.style.background='var(--primary-dark)'"
+                        onmouseout="this.style.background='var(--primary)'">
+                        ${rec.action.text}
+                    </button>
+                `;
+            }
+        }
+        
+        // Botones de seguimiento
+        let trackingButtons = '';
+        if (!isApplied) {
+            trackingButtons = `
+                <div style="display: flex; gap: clamp(6px, 1.5vw, 8px); margin-top: 12px; flex-wrap: wrap;">
+                    <button onclick="markRecommendationAsApplied('${recId}')" 
+                        style="flex: 1; min-width: 120px; padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 12px); background: var(--success); color: white; border: none; border-radius: 6px; font-size: clamp(11px, 2.5vw, 12px); font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.background='var(--success-dark)'"
+                        onmouseout="this.style.background='var(--success)'">
+                        Aplicada
+                    </button>
+                    <button onclick="dismissRecommendation('${recId}')" 
+                        style="flex: 1; min-width: 120px; padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 12px); background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: 6px; font-size: clamp(11px, 2.5vw, 12px); font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.background='var(--bg-secondary)'"
+                        onmouseout="this.style.background='var(--bg-tertiary)'">
+                        Descartar
+                    </button>
+                </div>
+            `;
+        } else {
+            trackingButtons = `
+                <div style="margin-top: 12px; padding: clamp(6px, 1.5vw, 8px); background: rgba(16, 185, 129, 0.1); border-radius: 6px; border: 1px solid var(--success);">
+                    <span style="font-size: clamp(11px, 2.5vw, 12px); color: var(--success); font-weight: 600;">Recomendación aplicada</span>
+                </div>
+            `;
+        }
+        
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                    ${rec.icon ? `<span style="font-size: clamp(20px, 5vw, 24px); flex-shrink: 0;">${rec.icon}</span>` : ''}
+                    <h3 style="margin: 0; font-size: clamp(14px, 3.5vw, 16px); font-weight: 700; color: var(--text-primary); word-wrap: break-word; flex: 1; min-width: 0;">${rec.title}</h3>
+                </div>
+                <span style="padding: 4px 10px; background: ${priorityBadge.bg}; color: ${priorityBadge.color}; border-radius: 12px; font-size: clamp(10px, 2.5vw, 11px); font-weight: 600; white-space: nowrap; flex-shrink: 0;">
+                    ${priorityBadge.text}
+                </span>
+            </div>
+            <p style="margin: 0 0 12px 0; color: var(--text-secondary); font-size: clamp(13px, 3vw, 14px); line-height: 1.6; word-wrap: break-word;">
+                ${rec.description}
+            </p>
+            <div style="padding: clamp(8px, 2vw, 10px); background: var(--bg-secondary); border-radius: 8px; margin-bottom: 12px;">
+                <div style="font-size: clamp(11px, 2.5vw, 12px); color: var(--text-tertiary); margin-bottom: 4px;">Impacto</div>
+                <div style="font-size: clamp(13px, 3.5vw, 15px); font-weight: 700; color: var(--primary); word-wrap: break-word;">${rec.impact}</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                <span style="font-size: clamp(10px, 2.5vw, 11px); color: var(--text-tertiary); padding: 4px 8px; background: var(--bg-secondary); border-radius: 6px; white-space: nowrap;">
+                    ${rec.category}
+                </span>
+                <div style="flex: 1; min-width: 0; display: flex; justify-content: flex-end;">
+                    ${actionButton}
+                </div>
+            </div>
+            ${trackingButtons}
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// Manejar acciones de recomendaciones
+function handleRecommendationAction(actionType, id = null) {
+    if (typeof closeSummaryDetails === 'function') {
+        closeSummaryDetails();
+    }
+    
+    switch(actionType) {
+        case 'edit_loan':
+            if (id && typeof editLoan === 'function') {
+                editLoan(id);
+            }
+            break;
+        case 'edit_patrimonio':
+            if (id && typeof editPatrimonio === 'function') {
+                editPatrimonio(id);
+            }
+            break;
+        case 'view_loans':
+            if (typeof switchToTab === 'function') {
+                switchToTab('loans', true);
+            }
+            break;
+        case 'view_investments':
+            if (typeof switchToTab === 'function') {
+                switchToTab('investments', true);
+            }
+            break;
+        case 'view_budgets':
+            if (typeof switchToTab === 'function') {
+                switchToTab('budgets', true);
+            }
+            break;
+        case 'view_transactions':
+            if (typeof switchToTab === 'function') {
+                switchToTab('transactions', true);
+            }
+            break;
+        case 'view_summary':
+            if (typeof switchToTab === 'function') {
+                switchToTab('summary', true);
+            }
+            break;
+    }
+}
+
+// Funciones de seguimiento de recomendaciones
+function markRecommendationAsApplied(recId) {
+    localStorage.setItem(`rec_status_${recId}`, 'applied');
+    localStorage.setItem(`rec_applied_date_${recId}`, new Date().toISOString());
+    updateRecommendations();
+    showToast('Recomendación marcada como aplicada', 'success');
+}
+
+function dismissRecommendation(recId) {
+    localStorage.setItem(`rec_status_${recId}`, 'dismissed');
+    updateRecommendations();
+    showToast('Recomendación descartada', 'info');
+}
+
+// Exponer funciones globalmente
+window.updateRecommendations = updateRecommendations;
+window.handleRecommendationAction = handleRecommendationAction;
+window.markRecommendationAsApplied = markRecommendationAsApplied;
+window.dismissRecommendation = dismissRecommendation;
+
+// Actualizar tablas de análisis
+function updateAnalysisTables() {
+    console.log('📊 Actualizando tablas de análisis...');
+    const periodTransactions = getTransactionsByPeriod();
+    const expenses = periodTransactions.filter(t => t.type === 'expense');
+    const income = periodTransactions.filter(t => t.type === 'income');
+    
+    // Top Gastos - Limitar a 10 registros
+    const topExpenses = [...expenses]
+        .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount))
+        .slice(0, 10);
+    
+    const topExpensesBody = document.getElementById('topExpensesBody');
+    if (topExpensesBody) {
+        topExpensesBody.innerHTML = '';
+        if (topExpenses.length === 0) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            topExpensesBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--gray-500);">${getTranslation('empty.noExpenses', lang)}</td></tr>`;
+        } else {
+            topExpenses.forEach(t => {
+                const row = document.createElement('tr');
+                const category = categories.expense.find(c => c.id === t.categoryGeneral);
+                const categoryName = category ? category.name : t.categoryGeneral;
+                row.innerHTML = `
+                    <td>${formatDate(new Date(t.date))}</td>
+                    <td>${categoryName}</td>
+                    <td>${t.description || '-'}</td>
+                    <td style="color: var(--danger); font-weight: 600;">${formatCurrency(Math.abs(t.amount))}</td>
+                `;
+                topExpensesBody.appendChild(row);
+            });
+        }
+    }
+    
+    // Gastos Recurrentes
+    const categoryTotals = {};
+    const categoryCounts = {};
+    expenses.forEach(t => {
+        const catId = t.categoryGeneral;
+        if (!categoryTotals[catId]) {
+            categoryTotals[catId] = 0;
+            categoryCounts[catId] = 0;
+        }
+        categoryTotals[catId] += Math.abs(t.amount);
+        categoryCounts[catId]++;
+    });
+    
+    const recurringExpensesBody = document.getElementById('recurringExpensesBody');
+    if (recurringExpensesBody) {
+        recurringExpensesBody.innerHTML = '';
+        const recurring = Object.entries(categoryTotals)
+            .map(([catId, total]) => {
+                const category = categories.expense.find(c => c.id === catId);
+                const categoryName = category ? category.name : catId;
+                const count = categoryCounts[catId];
+                const months = getMonthsInPeriod();
+                const avgMonthly = months > 0 ? total / months : total;
+                return { categoryName, count, avgMonthly, total };
+            })
+            .sort((a, b) => b.total - a.total)
+            .slice(0, 10);
+        
+        if (recurring.length === 0) {
+            recurringExpensesBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--gray-500);">No hay gastos recurrentes</td></tr>';
+        } else {
+            recurring.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.categoryName}</td>
+                    <td>${item.count} transacciones</td>
+                    <td>${formatCurrency(item.avgMonthly)}</td>
+                    <td style="font-weight: 600;">${formatCurrency(item.total)}</td>
+                `;
+                recurringExpensesBody.appendChild(row);
+            });
+        }
+    }
+    
+    // Comparativa Mensual
+    const monthlyData = {};
+    periodTransactions.forEach(t => {
+        const date = new Date(t.date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        if (!monthlyData[monthKey]) {
+            monthlyData[monthKey] = { income: 0, expenses: 0 };
+        }
+        if (t.type === 'income') {
+            monthlyData[monthKey].income += t.amount;
+        } else {
+            monthlyData[monthKey].expenses += Math.abs(t.amount);
+        }
+    });
+    
+    const monthlyComparisonBody = document.getElementById('monthlyComparisonBody');
+    if (monthlyComparisonBody) {
+        monthlyComparisonBody.innerHTML = '';
+        const sortedMonths = Object.entries(monthlyData)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .reverse();
+        
+        if (sortedMonths.length === 0) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            monthlyComparisonBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray-500);">${getTranslation('empty.noData', lang)}</td></tr>`;
+        } else {
+            sortedMonths.forEach(([monthKey, data]) => {
+                const [year, month] = monthKey.split('-');
+                const monthName = new Date(year, month - 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                const savings = data.income - data.expenses;
+                const savingsPercent = data.income > 0 ? (savings / data.income) * 100 : 0;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight: 600;">${monthName}</td>
+                    <td style="color: var(--success);">${formatCurrency(data.income)}</td>
+                    <td style="color: var(--danger);">${formatCurrency(data.expenses)}</td>
+                    <td style="color: ${savings >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 600;">${formatCurrency(savings)}</td>
+                    <td style="color: ${savingsPercent >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 600;">${savingsPercent.toFixed(1)}%</td>
+                `;
+                monthlyComparisonBody.appendChild(row);
+            });
+        }
+    }
+    
+    // Análisis por Categoría
+    const categoryAnalysis = {};
+    expenses.forEach(t => {
+        const catId = t.categoryGeneral;
+        if (!categoryAnalysis[catId]) {
+            categoryAnalysis[catId] = { total: 0, count: 0 };
+        }
+        categoryAnalysis[catId].total += Math.abs(t.amount);
+        categoryAnalysis[catId].count++;
+    });
+    
+    const totalExpenses = expenses.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    const months = getMonthsInPeriod();
+    
+    const categoryAnalysisBody = document.getElementById('categoryAnalysisBody');
+    if (categoryAnalysisBody) {
+        categoryAnalysisBody.innerHTML = '';
+        const sorted = Object.entries(categoryAnalysis)
+            .map(([catId, data]) => {
+                const category = categories.expense.find(c => c.id === catId);
+                const categoryName = category ? category.name : catId;
+                const percent = totalExpenses > 0 ? (data.total / totalExpenses) * 100 : 0;
+                const avgMonthly = months > 0 ? data.total / months : data.total;
+                return { categoryName, total: data.total, percent, avgMonthly, count: data.count };
+            })
+            .sort((a, b) => b.total - a.total);
+        
+        if (sorted.length === 0) {
+            const lang = localStorage.getItem('veedor_language') || 'es';
+            categoryAnalysisBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--gray-500);">${getTranslation('empty.noCategoryExpenses', lang)}</td></tr>`;
+        } else {
+            sorted.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight: 600;">${item.categoryName}</td>
+                    <td>${formatCurrency(item.total)}</td>
+                    <td>${item.percent.toFixed(1)}%</td>
+                    <td>${formatCurrency(item.avgMonthly)}</td>
+                    <td>${item.count}</td>
+                `;
+                categoryAnalysisBody.appendChild(row);
+            });
+        }
+    }
+}
+
+// Obtener número de meses en el período
+function getMonthsInPeriod() {
+    const chartPeriod = document.getElementById('chartPeriod')?.value || '6';
+    if (chartPeriod === 'all') {
+        const dates = transactions.map(t => new Date(t.date));
+        if (dates.length === 0) return 1;
+        const minDate = new Date(Math.min(...dates));
+        const maxDate = new Date(Math.max(...dates));
+        const diffTime = Math.abs(maxDate - minDate);
+        const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44));
+        return Math.max(1, diffMonths);
+    }
+    return parseInt(chartPeriod);
+}
+
+// Cargar contenido de políticas desde archivos
+async function loadPolicyContent(file, contentId) {
+    try {
+        const response = await fetch(`/${file}`);
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const content = doc.querySelector('.policy-container');
+        if (content) {
+            // Remover el título y el back link
+            const title = content.querySelector('h1');
+            const backLink = content.querySelector('.back-link');
+            if (title) title.remove();
+            if (backLink) backLink.remove();
+            document.getElementById(contentId).innerHTML = content.innerHTML;
+        }
+    } catch (error) {
+        console.error(`Error cargando ${file}:`, error);
+        document.getElementById(contentId).innerHTML = '<p>Error al cargar el contenido.</p>';
+    }
+}
+
+// Mostrar modales de políticas
+function showPrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    if (modal) {
+        loadPolicyContent('privacy.html', 'privacyContent');
+        modal.style.display = 'flex';
+    }
+}
+
+function closePrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function showCookiesModal() {
+    const modal = document.getElementById('cookiesModal');
+    if (modal) {
+        loadPolicyContent('cookies.html', 'cookiesContent');
+        modal.style.display = 'flex';
+    }
+}
+
+function closeCookiesModal() {
+    const modal = document.getElementById('cookiesModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function showTermsModal() {
+    const modal = document.getElementById('termsModal');
+    if (modal) {
+        loadPolicyContent('terms.html', 'termsContent');
+        modal.style.display = 'flex';
+    }
+}
+
+function closeTermsModal() {
+    const modal = document.getElementById('termsModal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Cerrar modales al hacer clic fuera
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        const modalsToClose = [
+            'privacyModal',
+            'cookiesModal', 
+            'termsModal', 
+            'summaryDetailsModal',
+            'categoryDetailsModal',
+            'savingsGoalModal',
+            'baseFundModal',
+            'addMoneyInvestmentModal',
+            'updateInvestmentValueModal',
+            'updateAccountBalanceModal',
+            'updateAssetValueModal',
+            'userProfileModal',
+            'chartModal',
+            'amortizationModal',
+            'earlyPaymentModal'
+        ];
+        
+        modalsToClose.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        if (modalId === 'privacyModal') closePrivacyModal();
+                        else if (modalId === 'cookiesModal') closeCookiesModal();
+                        else if (modalId === 'termsModal') closeTermsModal();
+                        else if (modalId === 'summaryDetailsModal') closeSummaryDetails();
+                        else if (modalId === 'categoryDetailsModal') closeCategoryDetailsModal();
+                        else if (modalId === 'savingsGoalModal') closeSavingsGoalModal();
+                        else if (modalId === 'baseFundModal') closeBaseFundModal();
+                        else if (modalId === 'addMoneyInvestmentModal') closeAddMoneyInvestmentModal();
+                        else if (modalId === 'updateInvestmentValueModal') closeUpdateInvestmentValueModal();
+                        else if (modalId === 'updateAccountBalanceModal') closeUpdateAccountBalanceModal();
+                        else if (modalId === 'updateAssetValueModal') {
+                            const updateAssetModal = document.getElementById('updateAssetValueModal');
+                            if (updateAssetModal) updateAssetModal.style.display = 'none';
+                        }
+                        else if (modalId === 'userProfileModal') closeUserProfile();
+                        else if (modalId === 'chartModal') closeChartModal();
+                        else if (modalId === 'amortizationModal') closeAmortizationModal();
+                        else if (modalId === 'earlyPaymentModal') closeEarlyPaymentModal();
+                        else modal.style.display = 'none';
+                    }
+                });
+            }
+        });
+    });
+}
+
+// Asegurar que las funciones de políticas estén disponibles globalmente ANTES de exponerlas
+// (ya están definidas arriba, solo las exponemos)
+
+// Mostrar modal de perfil de usuario
+function showUserProfile() {
+    const modal = document.getElementById('userProfileModal');
+    if (!modal) {
+        console.error('Modal de perfil no encontrado');
+        return;
+    }
+    
+    // Cargar datos del perfil
+    const emailInput = document.getElementById('profileEmail');
+    const usernameInput = document.getElementById('profileUsername');
+    const firstNameInput = document.getElementById('profileFirstName');
+    const lastNameInput = document.getElementById('profileLastName');
+    const ageInput = document.getElementById('profileAge');
+    const phoneInput = document.getElementById('profilePhone');
+    const addressInput = document.getElementById('profileAddress');
+    const cityInput = document.getElementById('profileCity');
+    const countryInput = document.getElementById('profileCountry');
+    const birthDateInput = document.getElementById('profileBirthDate');
+    const notesInput = document.getElementById('profileNotes');
+    
+    if (emailInput) emailInput.value = currentUserEmail || '';
+    if (usernameInput) usernameInput.value = currentUser || '';
+    if (firstNameInput) firstNameInput.value = userProfile.firstName || '';
+    if (lastNameInput) lastNameInput.value = userProfile.lastName || '';
+    if (ageInput) ageInput.value = userProfile.age || '';
+    if (phoneInput) phoneInput.value = userProfile.phone || '';
+    if (addressInput) addressInput.value = userProfile.address || '';
+    if (cityInput) cityInput.value = userProfile.city || '';
+    if (countryInput) countryInput.value = userProfile.country || '';
+    if (birthDateInput) birthDateInput.value = userProfile.birthDate || '';
+    if (notesInput) notesInput.value = userProfile.notes || '';
+    
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de perfil
+function closeUserProfile() {
+    const modal = document.getElementById('userProfileModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Guardar perfil de usuario
+async function saveUserProfile() {
+    const firstName = document.getElementById('profileFirstName')?.value.trim() || '';
+    const lastName = document.getElementById('profileLastName')?.value.trim() || '';
+    const age = document.getElementById('profileAge')?.value ? parseInt(document.getElementById('profileAge').value) : null;
+    const phone = document.getElementById('profilePhone')?.value.trim() || '';
+    const address = document.getElementById('profileAddress')?.value.trim() || '';
+    const city = document.getElementById('profileCity')?.value.trim() || '';
+    const country = document.getElementById('profileCountry')?.value.trim() || '';
+    const birthDate = document.getElementById('profileBirthDate')?.value || null;
+    const notes = document.getElementById('profileNotes')?.value.trim() || '';
+    
+    try {
+        const data = await apiRequest('/user/profile', {
+            method: 'PUT',
+            body: JSON.stringify({
+                firstName,
+                lastName,
+                age,
+                phone,
+                address,
+                city,
+                country,
+                birthDate,
+                notes
+            })
+        });
+        
+        // Actualizar datos locales
+        userProfile = {
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
+            age: data.age || null,
+            phone: data.phone || '',
+            address: data.address || '',
+            city: data.city || '',
+            country: data.country || '',
+            birthDate: data.birthDate || null,
+            notes: data.notes || ''
+        };
+        
+        updateUserInfo();
+        closeUserProfile();
+        alert('✅ Perfil actualizado exitosamente');
+    } catch (error) {
+        alert('Error al actualizar perfil: ' + error.message);
+    }
+}
+
+// Eliminar cuenta de usuario
+async function deleteUserAccount() {
+    const confirmed = confirm('⚠️ ¿Estás seguro de que quieres eliminar tu cuenta?\n\nEsta acción eliminará:\n- Todas tus transacciones\n- Todas tus cuentas bancarias\n- Todos tus sobres y presupuestos\n- Todos tus préstamos\n- Todas tus inversiones\n- Todas tus propiedades\n- Todos tus bienes\n\nEsta acción NO se puede deshacer.\n\n¿Deseas continuar?');
+    
+    if (!confirmed) return;
+    
+    const doubleConfirm = confirm('⚠️ ÚLTIMA CONFIRMACIÓN\n\nEstás a punto de eliminar permanentemente tu cuenta y todos tus datos.\n\n¿Estás completamente seguro?');
+    
+    if (!doubleConfirm) return;
+    
+    try {
+        await apiRequest('/user', {
+            method: 'DELETE'
+        });
+        
+        showToast('Tu cuenta ha sido eliminada exitosamente. Serás redirigido a la página de inicio.', 'success', 5000);
+        
+        // Limpiar datos locales
+        localStorage.removeItem('veedor_token');
+        localStorage.removeItem('veedor_user');
+        
+        // Redirigir a la página de inicio
+        window.location.href = '/';
+    } catch (error) {
+        showToast('Error al eliminar cuenta: ' + error.message, 'error');
+    }
+}
+
+// Mostrar detalles de resumen
+function showSummaryDetails(type) {
+    const modal = document.getElementById('summaryDetailsModal');
+    const titleEl = document.getElementById('summaryDetailsTitle');
+    const contentEl = document.getElementById('summaryDetailsContent');
+    
+    if (!modal || !titleEl || !contentEl) return;
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const summaryYearInput = document.getElementById('summaryYear');
+    let selectedYear = currentYear;
+    if (summaryYearInput && summaryPeriod === 'year-select') {
+        selectedYear = parseInt(summaryYearInput.value) || currentYear;
+    }
+    
+    let title = '';
+    let content = '';
+    
+    if (type === 'balance') {
+        title = 'Detalles del Balance Total';
+        const transactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+        const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+        const loansDebt = loans.filter(l => l.type === 'debt').reduce((sum, loan) => {
+            const amortization = calculateAmortizationTable(
+                loan.principal,
+                loan.interest_rate,
+                loan.monthly_payment,
+                loan.start_date,
+                loan.total_paid || 0,
+                loan.early_payments || []
+            );
+            return sum + amortization.finalBalance;
+        }, 0);
+        const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
+            const amortization = calculateAmortizationTable(
+                loan.principal,
+                loan.interest_rate,
+                loan.monthly_payment,
+                loan.start_date,
+                loan.total_paid || 0,
+                loan.early_payments || []
+            );
+            return sum + amortization.finalBalance;
+        }, 0);
+        const patrimonioValue = patrimonio.reduce((sum, prop) => sum + (prop.current_value || 0), 0);
+        const totalBalance = transactionsBalance + investmentsValue + loansCredit - loansDebt + patrimonioValue;
+        
+        content = `
+            <div style="display: grid; gap: 16px;">
+                <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--text-primary);">Balance Total: ${formatCurrency(totalBalance)}</h3>
+                    <div style="display: grid; gap: 8px; margin-top: 12px;">
+                        <div style="display: flex; justify-content: space-between; padding: 8px; background: var(--bg-primary); border-radius: 4px; cursor: pointer;" onclick="closeSummaryDetails(); switchToTab('transactions', true);">
+                            <span style="color: var(--text-secondary);">Transacciones:</span>
+                            <strong style="color: var(--text-primary);">${formatCurrency(transactionsBalance)}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px; background: var(--bg-primary); border-radius: 4px; cursor: pointer;" onclick="closeSummaryDetails(); switchToTab('investments', true);">
+                            <span style="color: var(--text-secondary);">Inversiones:</span>
+                            <strong style="color: var(--success);">${formatCurrency(investmentsValue)}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px; background: var(--bg-primary); border-radius: 4px; cursor: pointer;" onclick="closeSummaryDetails(); switchToTab('loans', true);">
+                            <span style="color: var(--text-secondary);">Préstamos (Créditos - Deudas):</span>
+                            <strong style="color: ${loansCredit - loansDebt >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(loansCredit - loansDebt)}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px; background: var(--bg-primary); border-radius: 4px; cursor: pointer;" onclick="closeSummaryDetails(); switchToTab('assets', true);">
+                            <span style="color: var(--text-secondary);">Patrimonio:</span>
+                            <strong style="color: var(--text-primary);">${formatCurrency(assetsValue)}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Balance Total: ${formatCurrency(totalBalance)}</h3>
+                </div>
+                <div style="display: grid; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Saldo de Transacciones:</strong></span>
+                        <span style="color: ${transactionsBalance >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(transactionsBalance)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Valor de Inversiones:</strong></span>
+                        <span style="color: #10b981">${formatCurrency(investmentsValue)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Valor de Patrimonio:</strong></span>
+                        <span style="color: #10b981">${formatCurrency(assetsValue)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Préstamos a Favor:</strong></span>
+                        <span style="color: #10b981">${formatCurrency(loansCredit)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Deudas Pendientes:</strong></span>
+                        <span style="color: #ef4444">-${formatCurrency(loansDebt)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (type === 'accounts') {
+        title = 'Detalles de Cuentas Bancarias';
+        const totalAccountsBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+        content = `
+            <div style="display: grid; gap: 14px;">
+                <div style="background: var(--bg-secondary); padding: 14px; border-radius: var(--radius); border-left: 4px solid var(--success);">
+                    <h3 style="margin: 0 0 10px 0; color: var(--text-primary); font-size: 16px; font-weight: 700;">Saldo Total: ${formatCurrency(totalAccountsBalance)}</h3>
+                </div>
+                ${accounts.length === 0 ? '<p style="text-align: center; color: var(--text-tertiary); padding: 16px; font-size: 14px;">No hay cuentas registradas</p>' : ''}
+                ${accounts.map(acc => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-primary); border-radius: var(--radius); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; font-size: 13px;" onclick="closeSummaryDetails(); switchToTab('accounts', true);" onmouseover="this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-primary)'; this.style.borderColor='var(--border-color)';">
+                        <div>
+                            <strong style="color: var(--text-primary); font-size: 14px;">${acc.name}</strong>
+                            <br><small style="color: var(--text-secondary); font-size: 12px;">${acc.type || 'Cuenta bancaria'}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong style="color: ${acc.balance >= 0 ? 'var(--success)' : 'var(--danger)'}; font-size: 14px;">${formatCurrency(acc.balance)}</strong>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } else if (type === 'income') {
+        title = 'Detalles de Ingresos';
+        let periodTransactions = [];
+        if (summaryPeriod === 'month') {
+            periodTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'income';
+            });
+        } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+            periodTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getFullYear() === selectedYear && t.type === 'income';
+            });
+        } else {
+            periodTransactions = transactions.filter(t => t.type === 'income');
+        }
+        const totalIncome = periodTransactions.reduce((sum, t) => sum + t.amount, 0);
+        content = `
+            <div style="display: grid; gap: 16px;">
+                <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--success);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--text-primary);">Total Ingresos: ${formatCurrency(totalIncome)}</h3>
+                    <button class="btn-primary" onclick="closeSummaryDetails(); switchToTab('transactions', true);" style="margin-top: 8px; padding: 8px 16px; font-size: 13px;">Ver todas las transacciones</button>
+                </div>
+                ${periodTransactions.length === 0 ? '<p style="text-align: center; color: var(--text-tertiary); padding: 20px;">No hay ingresos registrados</p>' : ''}
+                ${periodTransactions.slice(0, 20).map(t => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-primary); border-radius: var(--radius); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;" onclick="closeSummaryDetails(); switchToTab('transactions', true);" onmouseover="this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-primary)'; this.style.borderColor='var(--border-color)';">
+                        <div>
+                            <strong style="color: var(--text-primary);">${t.category_specific || t.category_general}</strong>
+                            <br><small style="color: var(--text-secondary);">${new Date(t.date).toLocaleDateString('es-ES')}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong style="color: var(--success)">${formatCurrency(t.amount)}</strong>
+                        </div>
+                    </div>
+                `).join('')}
+                ${periodTransactions.length > 20 ? `<p style="text-align: center; color: var(--text-tertiary);">Y ${periodTransactions.length - 20} ingresos más...</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'expenses') {
+        title = 'Detalles de Gastos';
+        let periodTransactions = [];
+        if (summaryPeriod === 'month') {
+            periodTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear && t.type === 'expense';
+            });
+        } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+            periodTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getFullYear() === selectedYear && t.type === 'expense';
+            });
+        } else {
+            periodTransactions = transactions.filter(t => t.type === 'expense');
+        }
+        const totalExpenses = Math.abs(periodTransactions.reduce((sum, t) => sum + t.amount, 0));
+        content = `
+            <div style="display: grid; gap: 16px;">
+                <div style="background: var(--bg-secondary); padding: 16px; border-radius: var(--radius); border-left: 4px solid var(--danger);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--text-primary);">Total Gastos: ${formatCurrency(totalExpenses)}</h3>
+                    <button class="btn-primary" onclick="closeSummaryDetails(); switchToTab('transactions', true);" style="margin-top: 8px; padding: 8px 16px; font-size: 13px;">Ver todas las transacciones</button>
+                </div>
+                ${periodTransactions.length === 0 ? '<p style="text-align: center; color: var(--text-tertiary); padding: 20px;">No hay gastos registrados</p>' : ''}
+                ${periodTransactions.slice(0, 20).map(t => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-primary); border-radius: var(--radius); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;" onclick="closeSummaryDetails(); switchToTab('transactions', true);" onmouseover="this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='var(--bg-primary)'; this.style.borderColor='var(--border-color)';">
+                        <div>
+                            <strong style="color: var(--text-primary);">${t.category_specific || t.category_general}</strong>
+                            <br><small style="color: var(--text-secondary);">${new Date(t.date).toLocaleDateString('es-ES')}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong style="color: var(--danger)">${formatCurrency(Math.abs(t.amount))}</strong>
+                        </div>
+                    </div>
+                `).join('')}
+                ${periodTransactions.length > 20 ? `<p style="text-align: center; color: var(--text-tertiary);">Y ${periodTransactions.length - 20} gastos más...</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'savings') {
+        title = 'Detalles de Ahorro';
+        let periodIncome = 0, periodExpenses = 0;
+        if (summaryPeriod === 'month') {
+            const monthTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+            });
+            periodIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            periodExpenses = Math.abs(monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        } else if (summaryPeriod === 'year' || summaryPeriod === 'year-select') {
+            const yearTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getFullYear() === selectedYear;
+            });
+            periodIncome = yearTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            periodExpenses = Math.abs(yearTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        } else {
+            periodIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            periodExpenses = Math.abs(transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+        }
+        const periodSavings = periodIncome - periodExpenses;
+        content = `
+            <div style="display: grid; gap: 16px;">
+                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); border-left: 4px solid ${periodSavings >= 0 ? '#10b981' : '#ef4444'};">
+                    <h3 style="margin: 0 0 12px 0; color: var(--gray-900);">Ahorro Total: ${formatCurrency(periodSavings)}</h3>
+                </div>
+                <div style="display: grid; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Ingresos:</strong></span>
+                        <span style="color: #10b981">${formatCurrency(periodIncome)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Gastos:</strong></span>
+                        <span style="color: #ef4444">${formatCurrency(periodExpenses)}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                        <span><strong>Ahorro:</strong></span>
+                        <span style="color: ${periodSavings >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(periodSavings)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    titleEl.textContent = title;
+    contentEl.innerHTML = content;
+    modal.style.display = 'flex';
+}
+
+// Cerrar modal de detalles de resumen
+function closeSummaryDetails() {
+    const modal = document.getElementById('summaryDetailsModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Funciones para modal de meta de ahorro
+function showSavingsGoalModal() {
+    const modal = document.getElementById('savingsGoalModal');
+    const input = document.getElementById('savingsGoalInput');
+    if (modal && input) {
+        input.value = savingsGoal || '';
+        modal.style.display = 'flex';
+    }
+}
+
+function closeSavingsGoalModal() {
+    const modal = document.getElementById('savingsGoalModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function deleteSavingsGoal() {
+    try {
+        savingsGoal = null;
+        await apiRequest('/user/profile', {
+            method: 'PUT',
+            body: JSON.stringify({ savingsGoal: null })
+        });
+        updateSummary();
+        closeSavingsGoalModal();
+    } catch (error) {
+        alert('Error al eliminar el fondo de emergencia: ' + error.message);
+    }
+}
+
+// Funciones para modal de fondo base
+function showBaseFundModal() {
+    const modal = document.getElementById('baseFundModal');
+    const input = document.getElementById('baseFundInput');
+    if (modal && input) {
+        input.value = baseFund || '';
+        modal.style.display = 'flex';
+    }
+}
+
+function closeBaseFundModal() {
+    const modal = document.getElementById('baseFundModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function deleteBaseFund() {
+    try {
+        baseFund = null;
+        await apiRequest('/user/profile', {
+            method: 'PUT',
+            body: JSON.stringify({ baseFund: null })
+        });
+        updateSummary(); // Actualizar la card del fondo base
+        closeBaseFundModal();
+        showToast('Fondo base eliminado correctamente');
+    } catch (error) {
+        alert('Error al eliminar el fondo base: ' + error.message);
+    }
+}
+
+// Exponer funciones globales
+window.showUserProfile = showUserProfile;
+window.closeUserProfile = closeUserProfile;
+window.deleteUserAccount = deleteUserAccount;
+window.showSummaryDetails = showSummaryDetails;
+window.closeSummaryDetails = closeSummaryDetails;
+window.showPrivacyModal = showPrivacyModal;
+window.closePrivacyModal = closePrivacyModal;
+window.showCookiesModal = showCookiesModal;
+window.closeCookiesModal = closeCookiesModal;
+window.showTermsModal = showTermsModal;
+window.closeTermsModal = closeTermsModal;
+window.showSavingsGoalModal = showSavingsGoalModal;
+window.closeSavingsGoalModal = closeSavingsGoalModal;
+window.deleteSavingsGoal = deleteSavingsGoal;
+window.showBaseFundModal = showBaseFundModal;
+window.closeBaseFundModal = closeBaseFundModal;
+window.deleteBaseFund = deleteBaseFund;
+window.showFinancialHealthDetail = showFinancialHealthDetail;
+window.showAddMoneyInvestmentModal = showAddMoneyInvestmentModal;
+window.closeAddMoneyInvestmentModal = closeAddMoneyInvestmentModal;
+window.showUpdateInvestmentValueModal = showUpdateInvestmentValueModal;
+window.closeUpdateInvestmentValueModal = closeUpdateInvestmentValueModal;
+window.addMoneyToInvestment = addMoneyToInvestment;
+window.updateInvestmentValue = updateInvestmentValue;
+
+// Mostrar detalles de métrica de salud financiera
+function showFinancialHealthDetail(metric, index) {
+    const lang = localStorage.getItem('veedor_language') || 'es';
+    const modal = document.getElementById('summaryDetailsModal');
+    const titleEl = document.getElementById('summaryDetailsTitle');
+    const contentEl = document.getElementById('summaryDetailsContent');
+    
+    if (!modal || !titleEl || !contentEl) return;
+    
+    titleEl.textContent = metric.title;
+    
+    // Obtener datos detallados según la métrica
+    const periodTransactions = getTransactionsByPeriod();
+    const period = getSelectedPeriod();
+    const now = new Date();
+    
+    let monthsInPeriod = 1;
+    if (period === 999) {
+        const dates = periodTransactions.map(t => new Date(t.date));
+        if (dates.length > 0) {
+            const minDate = new Date(Math.min(...dates));
+            const maxDate = new Date(Math.max(...dates));
+            const diffTime = Math.abs(maxDate - minDate);
+            monthsInPeriod = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44)));
+        }
+    } else {
+        monthsInPeriod = period;
+    }
+    
+    const totalTransactionsBalance = transactions.reduce((sum, t) => sum + t.amount, 0);
+    const investmentsValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+    const loansCredit = loans.filter(l => l.type === 'credit').reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    // Calcular valor de activos (bienes/patrimonio)
+    const patrimonioValue = patrimonio.reduce((sum, prop) => sum + (prop.current_value || 0), 0);
+    
+    const totalAssets = totalTransactionsBalance + investmentsValue + loansCredit + patrimonioValue;
+    
+    // Verificar préstamos activos (que aún no han terminado)
+    const activeDebtLoans = loans.filter(l => {
+        if (l.type !== 'debt') return false;
+        const endDate = new Date(l.end_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return endDate >= today; // Préstamo aún activo
+    });
+    
+    const loansDebt = activeDebtLoans.reduce((sum, loan) => {
+        const amortization = calculateAmortizationTable(
+            loan.principal,
+            loan.interest_rate,
+            loan.monthly_payment,
+            loan.start_date,
+            0, // No usar total_paid, calcular desde el inicio hasta hoy
+            loan.early_payments || []
+        );
+        return sum + amortization.finalBalance;
+    }, 0);
+    
+    const hasActiveDebts = activeDebtLoans.length > 0;
+    const periodIncome = periodTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const periodExpenses = Math.abs(periodTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0));
+    const periodSavings = periodIncome - periodExpenses;
+    const avgMonthlyIncome = monthsInPeriod > 0 ? periodIncome / monthsInPeriod : 0;
+    const avgMonthlyExpenses = monthsInPeriod > 0 ? periodExpenses / monthsInPeriod : periodExpenses;
+    const monthlyLoanPayments = loans.filter(l => l.type === 'debt').reduce((sum, loan) => sum + loan.monthly_payment, 0);
+    
+    // Generar gráfico según la métrica
+    if (index === 0 || index === 1) { // Deuda vs Activos
+        chartHTML = '<div style="margin: 16px 0; display: flex; justify-content: center;"><canvas id="metricChart" style="max-height: 200px; max-width: 250px;"></canvas></div>';
+        chartData = {
+            type: 'doughnut',
+            data: {
+                labels: ['Deuda', 'Activos'],
+                datasets: [{
+                    data: [loansDebt, Math.max(0, totalAssets - loansDebt)],
+                    backgroundColor: ['#EF4444', '#3B82F6']
+                }]
+            }
+        };
+    } else if (index === 4) { // Ratio de Ahorro - Ingresos vs Gastos
+        chartHTML = '<div style="margin: 16px 0; display: flex; justify-content: center;"><canvas id="metricChart" style="max-height: 200px; max-width: 300px;"></canvas></div>';
+        chartData = {
+            type: 'bar',
+            data: {
+                labels: ['Ingresos', 'Gastos', 'Ahorro'],
+                datasets: [{
+                    label: 'Euros',
+                    data: [periodIncome, periodExpenses, Math.max(0, periodSavings)],
+                    backgroundColor: ['#3B82F6', '#EF4444', '#10B981']
+                }]
+            },
+            options: {
+                scales: { y: { beginAtZero: true } }
+            }
+        };
+    } else if (index === 5) { // Liquidez - Evolución temporal
+        const months = [];
+        const balances = [];
+        let runningBalance = totalTransactionsBalance;
+        for (let i = monthsInPeriod - 1; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            months.push(date.toLocaleDateString('es-ES', { month: 'short' }));
+            const monthTransactions = periodTransactions.filter(t => {
+                const tDate = new Date(t.date);
+                return tDate.getMonth() === date.getMonth() && tDate.getFullYear() === date.getFullYear();
+            });
+            runningBalance += monthTransactions.reduce((sum, t) => sum + t.amount, 0);
+            balances.push(runningBalance);
+        }
+        chartHTML = '<div style="margin: 16px 0; display: flex; justify-content: center;"><canvas id="metricChart" style="max-height: 200px; max-width: 400px;"></canvas></div>';
+        chartData = {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Balance',
+                    data: balances,
+                    borderColor: '#d4af37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.15)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            }
+        };
+    } else if (index === 6) { // Ratio de Inversión
+        chartHTML = '<div style="margin: 16px 0; display: flex; justify-content: center;"><canvas id="metricChart" style="max-height: 200px; max-width: 250px;"></canvas></div>';
+        chartData = {
+            type: 'doughnut',
+            data: {
+                labels: ['Inversiones', 'Otros Activos'],
+                datasets: [{
+                    data: [investmentsValue, Math.max(0, totalAssets - investmentsValue)],
+                    backgroundColor: ['#3B82F6', '#8B5CF6']
+                }]
+            }
+        };
+    }
+    
+    let detailContent = `
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: var(--bg-secondary); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                <h3 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: var(--text-primary);">Valor Actual</h3>
+                <div style="font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 6px;">
+                    ${metric.value}
+                </div>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.5;">${metric.description}</p>
+            </div>
+            
+            ${chartHTML}
+            
+            <div>
+                <h3 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: var(--text-primary);">${getTranslation('financial.calculationDetails', lang)}</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+    `;
+    
+    // Agregar detalles específicos según la métrica
+    if (index === 0) { // Deuda Pendiente
+        detailContent += `
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'}; color: var(--text-primary); border: 1px solid var(--border-color);">
+                <strong>Préstamos Activos:</strong> ${activeDebtLoans.length} ${hasActiveDebts ? '(Hay deudas activas)' : '(Sin deudas activas)'}
+            </div>
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
+                <strong>Capital Restante Total:</strong> ${formatCurrency(loansDebt)}
+            </div>
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
+                <strong>Activos Totales:</strong> ${formatCurrency(totalAssets)}
+            </div>
+        `;
+    } else if (index === 1) { // Ratio de Endeudamiento
+        detailContent += `
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'}; color: var(--text-primary); border: 1px solid var(--border-color);">
+                <strong>Préstamos Activos:</strong> ${activeDebtLoans.length} ${hasActiveDebts ? '(Hay deudas activas)' : '(Sin deudas activas)'}
+            </div>
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
+                <strong>Capital Restante Total:</strong> ${formatCurrency(loansDebt)}
+            </div>
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
+                <strong>Activos Totales:</strong> ${formatCurrency(totalAssets)}
+            </div>
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--primary); border: 1px solid var(--border-color); color: var(--text-primary);">
+                <strong>${getTranslation('financial.ratio', lang)}:</strong> ${(loansDebt / (totalAssets || 1) * 100).toFixed(2)}%
+            </div>
+        `;
+    } else if (index === 2) { // Salud Financiera
+        detailContent += `
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid ${hasActiveDebts ? 'var(--danger)' : 'var(--success)'}; color: var(--text-primary); border: 1px solid var(--border-color);">
+                <strong>Préstamos Activos:</strong> ${activeDebtLoans.length} ${hasActiveDebts ? '(Hay deudas activas)' : '(Sin deudas activas)'}
+            </div>
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
+                <strong>Capital Restante Total:</strong> ${formatCurrency(loansDebt)}
+            </div>
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
+                <strong>Activos Totales:</strong> ${formatCurrency(totalAssets)}
+            </div>
+        `;
+    } else if (index === 4) { // Ratio de Ahorro
+        detailContent += `
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--success); border: 1px solid var(--border-color); color: var(--text-primary);">
+                <strong>${getTranslation('financial.periodIncome', lang)}:</strong> ${formatCurrency(periodIncome)}
+            </div>
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--danger); border: 1px solid var(--border-color); color: var(--text-primary);">
+                <strong>${getTranslation('financial.periodExpenses', lang)}:</strong> ${formatCurrency(periodExpenses)}
+            </div>
+            <div style="padding: 12px; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--primary); border: 1px solid var(--border-color); color: var(--text-primary);">
+                <strong>${getTranslation('financial.periodSavings', lang)}:</strong> ${formatCurrency(periodSavings)}
+            </div>
+        `;
+    
+    detailContent += `
+                </div>
+            </div>
+            
+            <div style="padding: 14px; background: var(--primary-light); border-radius: 10px; border: 1px solid var(--primary);">
+                <p style="margin: 0; color: var(--text-primary); font-size: 13px; line-height: 1.5;">
+                    <strong>${getTranslation('common.interpretation', lang)}:</strong> ${metric.detail}
+                </p>
+            </div>
+        </div>
+    `;
+    
+    contentEl.innerHTML = detailContent;
+    modal.style.display = 'flex';
+    
+    // Crear gráfico si hay datos
+    if (chartData) {
+        setTimeout(() => {
+            const canvas = document.getElementById('metricChart');
+            if (canvas && typeof Chart !== 'undefined') {
+                // Destruir gráfico anterior si existe
+                if (window.metricChartInstance) {
+                    window.metricChartInstance.destroy();
+                }
+                window.metricChartInstance = new Chart(canvas, {
+                    type: chartData.type,
+                    data: chartData.data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        aspectRatio: chartData.type === 'doughnut' ? 1 : 2,
+                        plugins: {
+                            legend: { 
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    font: { size: 12 },
+                                    padding: 10
+                                }
+                            }
+                        },
+                        ...chartData.options
+                    }
+                });
+            }
+        }, 100);
+    }
+}
+
+// ==================== SISTEMA DE TRADUCCIÓN ====================
+
+// Función para actualizar todas las traducciones
+function updateTranslations() {
+    // Usar funciones globales directamente
+    const tFunc = window.t || (typeof t !== 'undefined' ? t : null);
+    const getLangFunc = window.getLanguage || (typeof getLanguage !== 'undefined' ? getLanguage : null);
+    
+    // Si no están disponibles, intentar obtener idioma desde localStorage
+    let lang = 'es';
+    if (getLangFunc && typeof getLangFunc === 'function') {
+        try {
+            lang = getLangFunc();
+        } catch (e) {
+            console.warn('Error obteniendo idioma:', e);
+            lang = localStorage.getItem('veedor_language') || 'es';
+        }
+    } else {
+        lang = localStorage.getItem('veedor_language') || 'es';
+    }
+    
+    console.log('🔄 Actualizando traducciones para:', lang);
+    console.log('📦 Funciones disponibles:', { t: !!tFunc, getLanguage: !!getLangFunc, translations: !!window.translations });
+    
+    if (!tFunc && window.translations && window.translations[lang]) {
+        // Fallback: usar traducciones directamente
+        console.log('⚠️ Usando traducciones directamente desde window.translations');
+        const trans = window.translations[lang];
+        
+        // Función t simple
+        const simpleT = (key) => {
+            const keys = key.split('.');
+            let value = trans;
+            for (const k of keys) {
+                value = value?.[k];
+                if (!value) {
+                    // Fallback a español
+                    value = window.translations['es'];
+                    for (const k2 of keys) {
+                        value = value?.[k2];
+                    }
+                    break;
+                }
+            }
+            return value || key;
+        };
+        
+        // Actualizar elementos
+        document.querySelectorAll('[data-translate]').forEach(el => {
+            const key = el.getAttribute('data-translate');
+            if (key) {
+                try {
+                    const translation = simpleT(key);
+                    if (translation && translation !== key) {
+                        el.textContent = translation;
+                    }
+                } catch (e) {
+                    console.warn('Error traduciendo:', key, e);
+                }
+            }
+        });
+        
+        // Actualizar placeholders
+        document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-translate-placeholder');
+            if (key) {
+                try {
+                    const translation = simpleT(key);
+                    if (translation && translation !== key) {
+                        el.placeholder = translation;
+                    }
+                } catch (e) {
+                    console.warn('Error traduciendo placeholder:', key, e);
+                }
+            }
+        });
+        
+        // Actualizar banderas
+        const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
+        const flagEl = document.getElementById('currentLanguageFlag');
+        if (flagEl) flagEl.textContent = flags[lang] || flags['es'];
+        const authFlagEl = document.getElementById('authCurrentLanguageFlag');
+        if (authFlagEl) authFlagEl.textContent = flags[lang] || flags['es'];
+        document.documentElement.lang = lang;
+        return;
+    }
+    
+    if (!tFunc) {
+        console.warn('⚠️ Función t no disponible. Esperando a que translations.js se cargue...');
+        return;
+    }
+    
+    // Actualizar elementos con data-translate (incluyendo elementos dinámicos)
+    const elementsToTranslate = document.querySelectorAll('[data-translate]');
+    console.log(`📝 Encontrados ${elementsToTranslate.length} elementos para traducir`);
+    elementsToTranslate.forEach(el => {
+        const key = el.getAttribute('data-translate');
+        if (key && tFunc) {
+            try {
+                const translation = tFunc(key, lang);
+                if (translation && translation !== key) {
+                    el.textContent = translation;
+                    console.log(`✅ Traducido: ${key} -> ${translation}`);
+                } else {
+                    console.warn(`⚠️ No se encontró traducción para: ${key}`);
+                }
+            } catch (e) {
+                console.warn('Error traduciendo:', key, e);
+            }
+        }
+    });
+    
+    // Actualizar placeholders
+    document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-translate-placeholder');
+        if (key && tFunc) {
+            try {
+                const translation = tFunc(key, lang);
+                if (translation && translation !== key) {
+                    el.placeholder = translation;
+                }
+            } catch (e) {
+                console.warn('Error traduciendo placeholder:', key, e);
+            }
+        }
+    });
+    
+    // Actualizar títulos
+    document.querySelectorAll('[data-translate-title]').forEach(el => {
+        const key = el.getAttribute('data-translate-title');
+        if (key && tFunc) {
+            try {
+                const translation = tFunc(key, lang);
+                if (translation && translation !== key) {
+                    el.title = translation;
+                }
+            } catch (e) {
+                console.warn('Error traduciendo title:', key, e);
+            }
+        }
+    });
+    
+    // Actualizar bandera del idioma actual (header)
+    const flags = { es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷' };
+    const flagEl = document.getElementById('currentLanguageFlag');
+    if (flagEl) {
+        flagEl.textContent = flags[lang] || flags['es'];
+    }
+    
+    // Actualizar bandera del idioma actual (auth page)
+    const authFlagEl = document.getElementById('authCurrentLanguageFlag');
+    if (authFlagEl) {
+        authFlagEl.textContent = flags[lang] || flags['es'];
+    }
+    
+    // Actualizar selección en dropdown de idioma (header)
+    document.querySelectorAll('#languageDropdown .nav-dropdown-item').forEach(item => {
+        const itemLang = item.getAttribute('data-lang');
+        if (itemLang === lang) {
+            item.style.background = 'var(--primary-light)';
+            item.style.color = 'var(--primary)';
+            item.style.fontWeight = '600';
+        } else {
+            item.style.background = 'transparent';
+            item.style.color = 'var(--gray-900)';
+            item.style.fontWeight = '400';
+        }
+    });
+    
+    // Actualizar selección en dropdown de idioma (auth page)
+    document.querySelectorAll('#authLanguageDropdown .nav-dropdown-item').forEach(item => {
+        const itemLang = item.getAttribute('data-lang');
+        if (itemLang === lang) {
+            item.style.background = 'var(--primary-light)';
+            item.style.color = 'var(--primary)';
+            item.style.fontWeight = '600';
+        } else {
+            item.style.background = 'transparent';
+            item.style.color = 'var(--gray-900)';
+            item.style.fontWeight = '400';
+        }
+    });
+    
+    // Actualizar atributo lang del HTML
+    document.documentElement.lang = lang;
+    
+    // Forzar actualización de elementos dinámicos que puedan tener texto hardcodeado
+    // Esto se ejecutará después de que se actualicen los elementos estáticos
+    setTimeout(() => {
+        // Actualizar tabs activos usando tFunc
+        const tFuncForDynamic = window.t || (typeof t !== 'undefined' ? t : null);
+        if (tFuncForDynamic) {
+            const activeTab = document.querySelector('.tab-btn.active');
+            if (activeTab) {
+                const tabKey = activeTab.getAttribute('data-translate');
+                if (tabKey) {
+                    try {
+                        const translation = tFuncForDynamic(tabKey, lang);
+                        if (translation && translation !== tabKey) {
+                            const span = activeTab.querySelector('span[data-translate]');
+                            if (span) span.textContent = translation;
+                        }
+                    } catch (e) {}
+                }
+            }
+            
+            // Actualizar navegación
+            document.querySelectorAll('.nav-dropdown-item span[data-translate]').forEach(span => {
+                const key = span.getAttribute('data-translate');
+                if (key) {
+                    try {
+                        const translation = tFuncForDynamic(key, lang);
+                        if (translation && translation !== key) {
+                            span.textContent = translation;
+                        }
+                    } catch (e) {}
+                }
+            });
+        }
+    }, 100);
+}
+
+// Función para cambiar idioma
+function changeLanguage(lang) {
+    console.log('🌐 Cambiando idioma a:', lang);
+    
+    // Guardar idioma
+    const setLangFunc = window.setLanguage || (typeof setLanguage !== 'undefined' ? setLanguage : null);
+    if (setLangFunc && typeof setLangFunc === 'function') {
+        try {
+            setLangFunc(lang);
+        } catch (e) {
+            console.warn('Error en setLanguage:', e);
+            localStorage.setItem('veedor_language', lang);
+        }
+    } else {
+        // Fallback: guardar en localStorage directamente
+        localStorage.setItem('veedor_language', lang);
+        // Actualizar variable global si existe
+        if (typeof window !== 'undefined') {
+            window.currentLanguage = lang;
+        }
+    }
+    
+    console.log('💾 Idioma guardado:', localStorage.getItem('veedor_language'));
+    
+    // Forzar actualización inmediata
+    const forceUpdate = () => {
+        console.log('🔄 Forzando actualización de traducciones...');
+        updateTranslations();
+        
+        // Actualizar elementos dinámicos manualmente
+        const tFunc = window.t || (typeof t !== 'undefined' ? t : null);
+        if (tFunc) {
+            // Actualizar navegación
+            document.querySelectorAll('#mainNavDropdown .nav-dropdown-item span[data-translate]').forEach(span => {
+                const key = span.getAttribute('data-translate');
+                if (key) {
+                    try {
+                        const translation = tFunc(key, lang);
+                        if (translation && translation !== key) {
+                            span.textContent = translation;
+                        }
+                    } catch (e) {}
+                }
+            });
+            
+            // Actualizar tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const span = btn.querySelector('span[data-translate]');
+                if (span) {
+                    const key = span.getAttribute('data-translate');
+                    if (key) {
+                        try {
+                            const translation = tFunc(key, lang);
+                            if (translation && translation !== key) {
+                                span.textContent = translation;
+                            }
+                        } catch (e) {}
+                    }
+                }
+            });
+        }
+    };
+    
+    // Actualizar traducciones múltiples veces para asegurar que funcione
+    forceUpdate();
+    setTimeout(forceUpdate, 50);
+    setTimeout(forceUpdate, 200);
+    setTimeout(forceUpdate, 500);
+    setTimeout(forceUpdate, 1000);
+    
+    // Recargar datos para actualizar formatos (solo si estamos en la app principal)
+    if (typeof updateDisplay === 'function' && document.getElementById('mainApp') && document.getElementById('mainApp').style.display !== 'none') {
+        setTimeout(() => {
+            updateDisplay();
+        }, 300);
+    }
+    
+    // Forzar actualización de todos los elementos dinámicos
+    if (typeof updateCharts === 'function') {
+        setTimeout(() => {
+            updateCharts();
+        }, 400);
+    }
+    
+    // Actualizar contenido dinámico de presupuestos y otros elementos
+    if (typeof updateMonthDashboard === 'function' && document.getElementById('monthDashboard')) {
+        setTimeout(() => {
+            updateMonthDashboard();
+        }, 350);
+    }
+    
+    if (typeof updateBudgets === 'function') {
+        setTimeout(() => {
+            updateBudgets();
+        }, 350);
+    }
+    
+    // Actualizar mensaje de bienvenida si existe
+    if (typeof showWelcomeMessage === 'function') {
+        setTimeout(() => {
+            showWelcomeMessage();
+        }, 200);
+    }
+}
+
+// Función para toggle del dropdown de idioma (header)
+// Exponer inmediatamente para evitar errores
+if (typeof window !== 'undefined') {
+    window.toggleLanguageDropdown = function() {
+        const dropdown = document.getElementById('languageDropdown');
+        const mainNavDropdown = document.getElementById('mainNavDropdown');
+        const settingsDropdown = document.getElementById('settingsDropdown');
+        
+        if (dropdown) {
+            const isVisible = dropdown.style.display !== 'none' && dropdown.style.display !== '';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+            
+            // Agregar animación suave
+            if (!isVisible) {
+                dropdown.style.opacity = '0';
+                dropdown.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    dropdown.style.transition = 'all 0.3s ease';
+                    dropdown.style.opacity = '1';
+                    dropdown.style.transform = 'translateY(0)';
+                }, 10);
+            }
+        }
+        
+        // Cerrar otros dropdowns
+        if (mainNavDropdown && mainNavDropdown.style.display === 'block') {
+            mainNavDropdown.style.display = 'none';
+        }
+        if (settingsDropdown && settingsDropdown.style.display === 'block') {
+            settingsDropdown.style.display = 'none';
+        }
+    };
+}
+
+function toggleLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    const mainNavDropdown = document.getElementById('mainNavDropdown');
+    const settingsDropdown = document.getElementById('settingsDropdown');
+    
+    if (dropdown) {
+        const isVisible = dropdown.style.display !== 'none' && dropdown.style.display !== '';
+        dropdown.style.display = isVisible ? 'none' : 'block';
+        
+        // Agregar animación suave
+        if (!isVisible) {
+            dropdown.style.opacity = '0';
+            dropdown.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                dropdown.style.transition = 'all 0.3s ease';
+                dropdown.style.opacity = '1';
+                dropdown.style.transform = 'translateY(0)';
+            }, 10);
+        }
+    }
+    
+    // Cerrar otros dropdowns
+    if (mainNavDropdown && mainNavDropdown.style.display === 'block') {
+        mainNavDropdown.style.display = 'none';
+    }
+    if (settingsDropdown && settingsDropdown.style.display === 'block') {
+        settingsDropdown.style.display = 'none';
+    }
+}
+
+// Función para toggle del dropdown de idioma (auth page)
+function toggleAuthLanguageDropdown() {
+    const dropdown = document.getElementById('authLanguageDropdown');
+    const mainNavDropdown = document.getElementById('mainNavDropdown');
+    const settingsDropdown = document.getElementById('settingsDropdown');
+    
+    if (dropdown) {
+        const isVisible = dropdown.style.display !== 'none' && dropdown.style.display !== '';
+        dropdown.style.display = isVisible ? 'none' : 'block';
+        
+        // Agregar animación suave
+        if (!isVisible) {
+            dropdown.style.opacity = '0';
+            dropdown.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                dropdown.style.transition = 'all 0.3s ease';
+                dropdown.style.opacity = '1';
+                dropdown.style.transform = 'translateY(0)';
+            }, 10);
+        }
+    }
+    
+    // Cerrar otros dropdowns
+    if (mainNavDropdown && mainNavDropdown.style.display === 'block') {
+        mainNavDropdown.style.display = 'none';
+    }
+    if (settingsDropdown && settingsDropdown.style.display === 'block') {
+        settingsDropdown.style.display = 'none';
+    }
+}
+
+// Exponer funciones globalmente ANTES de que se carguen los botones
+window.toggleAuthLanguageDropdown = toggleAuthLanguageDropdown;
+window.toggleLanguageDropdown = toggleLanguageDropdown;
+window.updateTranslations = updateTranslations;
+// Reemplazar la función stub inicial con la versión completa
+// IMPORTANTE: Usar la función completa directamente, sin wrapper que cause recursión
+window.changeLanguage = changeLanguage;
+
+// Actualizar visibilidad del botón de filtros al cargar y al redimensionar
+if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateFiltersButtonVisibility);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(updateFiltersButtonVisibility, 200);
+        });
+    } else {
+        setTimeout(updateFiltersButtonVisibility, 200);
+    }
+}
+
+// Inicializar traducciones cuando se carga la app
+function initializeTranslationsOnLoad() {
+    // Establecer español como idioma por defecto si no hay idioma guardado
+    if (!localStorage.getItem('veedor_language')) {
+        localStorage.setItem('veedor_language', 'es');
+        console.log('🌐 Idioma por defecto establecido: Español');
+    }
+    
+    // Esperar a que translations.js se cargue completamente
+    const checkAndInit = () => {
+        const getLangFunc = window.getLanguage || (typeof getLanguage !== 'undefined' ? getLanguage : null);
+        const savedLang = localStorage.getItem('veedor_language') || 'es';
+        
+        if (window.translations) {
+            console.log('✅ translations.js cargado');
+            
+            // Establecer idioma si la función está disponible
+            if (getLangFunc && typeof getLangFunc === 'function') {
+                try {
+                    const currentLang = getLangFunc();
+                    if (currentLang !== savedLang && window.setLanguage) {
+                        window.setLanguage(savedLang);
+                    }
+                } catch (e) {
+                    console.warn('Error obteniendo idioma:', e);
+                }
+            } else if (window.setLanguage && typeof window.setLanguage === 'function') {
+                try {
+                    window.setLanguage(savedLang);
+                } catch (e) {
+                    console.warn('Error estableciendo idioma:', e);
+                }
+            }
+            
+            document.documentElement.lang = savedLang;
+            
+            // Actualizar traducciones después de un delay
+            setTimeout(() => {
+                if (typeof updateTranslations === 'function') {
+                    console.log('🔄 Inicializando traducciones al cargar...');
+                    updateTranslations();
+                }
+            }, 200);
+        } else {
+            console.log('⏳ Esperando a que translations.js se cargue...');
+            setTimeout(checkAndInit, 100);
+        }
+    };
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkAndInit);
+    } else {
+        checkAndInit();
+    }
+}
+
+// Inicializar traducciones
+initializeTranslationsOnLoad();
+
+// ==================== LAZY LOADING DE GRÁFICOS ====================
+let chartsInitialized = false;
+
+function initializeChartsLazy() {
+    if (chartsInitialized) return;
+    
+    const chartsTab = document.getElementById('charts-tab');
+    if (!chartsTab) return;
+    
+    // Observar cuando la pestaña de gráficos es visible
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !chartsInitialized) {
+                chartsInitialized = true;
+                initializeCharts();
+                setTimeout(() => updateCharts(), 200);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    observer.observe(chartsTab);
+}
+
+// Modificar switchToTab para inicializar gráficos lazy
+const originalSwitchToTab = switchToTab;
+switchToTab = function(tabName, doScroll) {
+    if (originalSwitchToTab) {
+        originalSwitchToTab(tabName, doScroll);
+    }
+    
+    if (tabName === 'charts' && !chartsInitialized) {
+        initializeChartsLazy();
+    }
+};
+
+// Exponer función global
+window.switchToTab = switchToTab;
+
+// ==================== DEBOUNCE UTILITY ====================
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ==================== SKELETON LOADERS ====================
+function showSkeletonLoader(containerId, count = 3) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = Array(count).fill(0).map(() => `
+        <div class="skeleton-card" style="background: var(--bg-primary); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border-color);">
+            <div class="skeleton-line" style="height: 20px; background: var(--bg-tertiary); border-radius: 4px; margin-bottom: 12px; animation: skeleton-pulse 1.5s ease-in-out infinite;"></div>
+            <div class="skeleton-line" style="height: 16px; background: var(--bg-tertiary); border-radius: 4px; width: 60%; margin-bottom: 8px; animation: skeleton-pulse 1.5s ease-in-out infinite;"></div>
+            <div class="skeleton-line" style="height: 16px; background: var(--bg-tertiary); border-radius: 4px; width: 40%; animation: skeleton-pulse 1.5s ease-in-out infinite;"></div>
+        </div>
+    `).join('');
+}
+
+// Asegurar que openChartModal esté expuesta ANTES de cerrar el bloque
+// Esto es crítico porque el stub puede ejecutarse antes de que el script termine
+try {
+    if (typeof openChartModal === 'function') {
+        window._openChartModalReal = openChartModal;
+        window.openChartModal = openChartModal;
+        console.log('✅ openChartModal expuesta correctamente al final del script');
+    } else {
+        console.error('❌ openChartModal no está definida al final del script');
+        console.log('Tipo de openChartModal:', typeof openChartModal);
+        console.log('openChartModal disponible en window:', typeof window.openChartModal);
+        console.log('_openChartModalReal disponible en window:', typeof window._openChartModalReal);
+    }
+} catch (error) {
+    console.error('❌ Error al exponer openChartModal al final:', error);
+}
+
+// Cerrar el bloque de protección contra carga múltiple
+} // Cierre del else de window.VEEDOR_LOADED (línea 5)
+} // Cierre del if de window.VEEDOR_LOADED (línea 3)

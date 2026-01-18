@@ -1,0 +1,9 @@
+node_modules/
+veedor.db
+.env
+*.log
+.DS_Store
+nul
+*.bat
+package-lock.json
+

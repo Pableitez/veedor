@@ -1,0 +1,5817 @@
+/* ============================================
+   VEEDOR - Diseño Premium Tipo Revolut
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Colores principales - Azul Profesional estilo Revolut */
+    --primary: #3B82F6;
+    --primary-dark: #1E3A8A;
+    --primary-light: #DBEAFE;
+    --secondary: #00D4AA;
+    --success: #00D4AA;
+    --danger: #FF3B30;
+    --warning: #FF9500;
+    
+    /* Grises modernos */
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-300: #D1D5DB;
+    --gray-400: #9CA3AF;
+    --gray-500: #6B7280;
+    --gray-600: #4B5563;
+    --gray-700: #374151;
+    --gray-800: #1F2937;
+    --gray-900: #111827;
+    
+    /* Tipografía */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    
+    /* Sombras sutiles mejoradas */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 6px 12px -2px rgba(0, 0, 0, 0.06);
+    --shadow-xl: 0 24px 48px -8px rgba(0, 0, 0, 0.15), 0 12px 24px -4px rgba(0, 0, 0, 0.08);
+    --shadow-primary: 0 8px 24px -4px rgba(30, 58, 138, 0.25), 0 4px 12px -2px rgba(59, 130, 246, 0.15);
+    
+    /* Bordes */
+    --radius-sm: 6px;
+    --radius: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+}
+
+:root {
+    /* Colores de fondo y texto base (modo claro) - Tono profesional suave con transparencia para gradiente */
+    --bg-primary: rgba(255, 255, 255, 0.85);
+    --bg-secondary: rgba(249, 250, 251, 0.75);
+    --bg-tertiary: rgba(243, 244, 246, 0.65);
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-tertiary: #6B7280;
+    --border-color: #E5E7EB;
+}
+
+/* Modo oscuro - Aplicar también a html para evitar flash - Estilo Revolut */
+html.dark-mode,
+body.dark-mode {
+    --bg-primary: rgba(10, 22, 40, 0.9);
+    --bg-secondary: rgba(13, 27, 42, 0.85);
+    --bg-tertiary: rgba(15, 30, 53, 0.8);
+    --text-primary: #F9FAFB;
+    --text-secondary: #E5E7EB;
+    --text-tertiary: #9CA3AF;
+    --border-color: rgba(55, 65, 81, 0.5);
+    
+    --gray-50: #1F2937;
+    --gray-100: #111827;
+    --gray-200: #374151;
+    --gray-300: #4B5563;
+    --gray-400: #6B7280;
+    --gray-500: #9CA3AF;
+    --gray-600: #D1D5DB;
+    --gray-700: #E5E7EB;
+    --gray-800: #F3F4F6;
+    --gray-900: #F9FAFB;
+    
+    --primary-light: #1E3A8A;
+}
+
+/* ============================================
+   SISTEMA DE FONDO LIMPIO - DESDE CERO
+   ============================================ */
+
+html {
+    width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    margin: 0 !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh;
+}
+
+/* Modo claro - fondo base */
+html:not(.dark-mode) {
+    background-color: #F8FAFC;
+    background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+/* Modo oscuro - fondo base con destello estilo Stranger Things en la parte inferior */
+html.dark-mode {
+    margin: 0 !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+    background-color: #050510;
+    background-image: 
+        radial-gradient(ellipse 80% 50% at 50% 80%, rgba(30, 58, 138, 0.4) 0%, rgba(30, 58, 138, 0.2) 20%, rgba(30, 58, 138, 0.1) 40%, transparent 60%),
+        linear-gradient(180deg, #050510 0%, #050510 40%, #060612 50%, #070714 60%, #0A0A1A 70%, #0D0D22 80%, #10102A 85%, #141432 90%, #18183A 95%, #0F0F1F 100%);
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    min-height: 100vh;
+}
+
+html.dark-mode body {
+    background-color: transparent;
+    background-image: none;
+    color: #F9FAFB;
+    min-height: 100vh;
+}
+
+/* Móvil - degradado radial para modo oscuro */
+@media (max-width: 768px) {
+    /* Modo claro móvil */
+    html:not(.dark-mode) {
+        background-color: #F8FAFC;
+        background-image: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 30%, #E0E7FF 70%, #DBEAFE 100%);
+        background-attachment: scroll;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+    
+    body:not(.dark-mode) {
+        background-color: transparent;
+        background-image: none;
+    }
+    
+    /* Modo oscuro móvil - degradado radial desviado a la derecha con destello Stranger Things en la parte inferior */
+    html.dark-mode {
+        margin: 0 !important;
+        margin-top: 0 !important;
+        padding: 0 !important;
+        background-color: #050510;
+        background-image: 
+            radial-gradient(ellipse 100% 60% at 50% 85%, rgba(30, 58, 138, 0.5) 0%, rgba(30, 58, 138, 0.3) 25%, rgba(30, 58, 138, 0.15) 50%, transparent 70%),
+            radial-gradient(ellipse 140% 90% at 50% 0%, #050510 0%, #050510 40%, #060612 50%, #070714 60%, #0A0A1A 70%, #0D0D22 80%, #10102A 85%, #141432 90%, #18183A 95%, #0F0F1F 100%),
+            linear-gradient(180deg, #050510 0%, #050510 40%, #060612 50%, #070714 60%, #0A0A1A 70%, #0D0D22 80%, #10102A 85%, #141432 90%, #18183A 95%, #0F0F1F 100%);
+        background-attachment: scroll;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+    
+    html.dark-mode body {
+        background-color: transparent;
+        background-image: none;
+    }
+    
+    body.dark-mode {
+        background-color: transparent;
+        background-image: none;
+    }
+    
+    /* Header y mainApp transparentes en móvil */
+    header,
+    .main-header {
+        background: transparent !important;
+    }
+    
+    #mainApp {
+        background: transparent !important;
+    }
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: transparent;
+    background-image: none;
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: color 0.3s ease;
+    margin: 0 !important;
+    margin-top: 0 !important;
+    padding: 0;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    position: relative;
+    min-height: 100vh;
+}
+
+body.dark-mode {
+    background-color: transparent;
+    background-image: none;
+}
+
+/* Asegurar que el contenido respete safe-area en iOS */
+#mainApp {
+    padding-top: env(safe-area-inset-top);
+}
+
+/* Header con safe-area para iOS */
+header,
+.main-header {
+    padding-top: max(16px, env(safe-area-inset-top));
+    background: transparent;
+}
+
+/* Viewport fix para iOS - evitar barra blanca arriba */
+@supports (padding: max(0px)) {
+    body {
+        padding-top: max(0px, env(safe-area-inset-top));
+    }
+    
+    #mainApp {
+        padding-top: max(0px, env(safe-area-inset-top));
+    }
+    
+    header,
+    .main-header {
+        padding-top: max(16px, env(safe-area-inset-top));
+    }
+}
+
+/* Patrón de puntos sutil para modo claro - sobre gradiente */
+body:not(.dark-mode)::before {
+    display: none;
+}
+
+/* Patrón de puntos para modo oscuro - DESACTIVADO */
+body.dark-mode::before {
+    display: none;
+}
+
+/* Animaciones mejoradas */
+@keyframes skeleton-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Transiciones suaves para elementos */
+.card, .envelope-card, .chart-card {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.3s ease,
+                border-color 0.3s ease;
+}
+
+.btn-primary, .btn-secondary, .btn-danger {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-content {
+    animation: modalFadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Selectores de idioma ahora están visibles y funcionales */
+
+/* ============================================
+   ASEGURAR QUE EL BOTÓN DE CONFIGURACIÓN SEA VISIBLE
+   ============================================ */
+#settingsDropdownBtn {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 6px 10px !important;
+    margin: 0 !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    background: rgba(255,255,255,0.1) !important;
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    font-size: 16px !important;
+    line-height: normal !important;
+}
+
+#settingsDropdownBtn svg {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 18px !important;
+    height: 18px !important;
+}
+
+#mainApp {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+#mainApp > header {
+    width: 100%;
+    margin: 0;
+    left: 0;
+    right: 0;
+}
+
+/* ============================================
+   PANTALLA DE AUTENTICACIÓN
+   ============================================ */
+
+.auth-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: transparent;
+    background-image: none;
+    position: relative;
+    overflow: hidden;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+/* Patrón de puntos para página de inicio - modo claro */
+.auth-screen:not(.dark-mode)::before,
+body:not(.dark-mode) .auth-screen::before {
+    display: none;
+}
+
+/* Patrón de puntos para página de inicio - modo oscuro */
+body.dark-mode .auth-screen::before {
+    display: none;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(50px, 50px);
+    }
+}
+
+.auth-container {
+    background: var(--bg-primary);
+    border-radius: clamp(16px, 2.5vw, 28px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: clamp(16px, 2.5vh, 32px) clamp(20px, 3vw, 40px);
+    max-width: min(650px, calc(100vw - 40px));
+    width: 100%;
+    max-height: calc(100vh - clamp(20px, 3vh, 40px));
+    overflow: hidden;
+    overflow-x: hidden; /* Eliminar scroll horizontal */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    margin: clamp(10px, 2vh, 20px) auto;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ajustar dinámicamente según altura de viewport */
+@media (max-height: 900px) {
+    .auth-container {
+        padding: 24px 32px !important;
+        max-height: calc(100vh - 20px) !important;
+    }
+    
+    .auth-header {
+        margin-bottom: 16px !important;
+    }
+    
+    .auth-header svg {
+        width: 64px !important;
+        height: 64px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-header h1 {
+        font-size: 30px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .auth-header p {
+        font-size: 14px !important;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 18px !important;
+    }
+    
+    .auth-tab-btn {
+        padding: 10px 14px !important;
+        font-size: 14px !important;
+    }
+    
+    .auth-form .form-group {
+        margin-bottom: 14px !important;
+    }
+    
+    .auth-form .form-group label {
+        font-size: 13px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .auth-form .form-group input {
+        padding: 10px 14px !important;
+        font-size: 14px !important;
+    }
+    
+    .auth-form .form-group small {
+        font-size: 11px !important;
+        margin-top: 4px !important;
+    }
+    
+    .btn-full {
+        padding: 12px 20px !important;
+        font-size: 14px !important;
+        margin-top: 6px !important;
+    }
+}
+
+@media (max-height: 800px) {
+    .auth-container {
+        padding: 20px 28px !important;
+        max-height: calc(100vh - 15px) !important;
+    }
+    
+    .auth-header {
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-header svg {
+        width: 56px !important;
+        height: 56px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .auth-header h1 {
+        font-size: 26px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .auth-header p {
+        font-size: 13px !important;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 16px !important;
+    }
+    
+    .auth-tab-btn {
+        padding: 9px 12px !important;
+        font-size: 13px !important;
+    }
+    
+    .auth-form .form-group {
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-form .form-group label {
+        font-size: 12px !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .auth-form .form-group input {
+        padding: 9px 12px !important;
+        font-size: 13px !important;
+    }
+    
+    .auth-form .form-group small {
+        font-size: 10px !important;
+        margin-top: 3px !important;
+    }
+    
+    .btn-full {
+        padding: 10px 18px !important;
+        font-size: 13px !important;
+        margin-top: 4px !important;
+    }
+    
+    .auth-form p {
+        margin-top: 12px !important;
+        font-size: 12px !important;
+    }
+}
+
+@media (max-height: 700px) {
+    .auth-container {
+        padding: 16px 24px !important;
+        max-height: calc(100vh - 10px) !important;
+    }
+    
+    .auth-header {
+        margin-bottom: 10px !important;
+    }
+    
+    .auth-header svg {
+        width: 48px !important;
+        height: 48px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .auth-header h1 {
+        font-size: 22px !important;
+        margin-bottom: 4px !important;
+    }
+    
+    .auth-header p {
+        font-size: 12px !important;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-tab-btn {
+        padding: 8px 10px !important;
+        font-size: 12px !important;
+    }
+    
+    .auth-form .form-group {
+        margin-bottom: 10px !important;
+    }
+    
+    .auth-form .form-group label {
+        font-size: 11px !important;
+        margin-bottom: 4px !important;
+    }
+    
+    .auth-form .form-group input {
+        padding: 8px 10px !important;
+        font-size: 12px !important;
+    }
+    
+    .auth-form .form-group small {
+        font-size: 9px !important;
+        margin-top: 2px !important;
+    }
+    
+    .btn-full {
+        padding: 9px 16px !important;
+        font-size: 12px !important;
+        margin-top: 2px !important;
+    }
+    
+    .auth-form p {
+        margin-top: 10px !important;
+        font-size: 11px !important;
+    }
+    
+    .auth-form p a {
+        font-size: 11px !important;
+    }
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: clamp(12px, 2vh, 20px);
+    flex-shrink: 0;
+}
+
+.auth-header svg {
+    transition: all 0.3s ease;
+    width: clamp(48px, 8vw, 80px);
+    height: clamp(48px, 8vw, 80px);
+    margin: 0 auto clamp(12px, 2vh, 24px);
+}
+
+.auth-header h1 {
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 800;
+    margin-bottom: clamp(6px, 1vh, 12px);
+    letter-spacing: -1px;
+    transition: all 0.3s ease;
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 20s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.auth-header p {
+    color: #1F2937;
+    font-size: clamp(12px, 1.8vw, 16px);
+    font-weight: 500;
+    margin: 0;
+    transition: all 0.3s ease;
+}
+
+body.dark-mode .auth-header p {
+    color: #FFFFFF;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: clamp(16px, 2.5vh, 24px);
+    border-bottom: 2px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.auth-tab-btn {
+    flex: 1;
+    padding: clamp(8px, 1.2vh, 12px) clamp(10px, 1.5vw, 16px);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #1F2937;
+    font-size: clamp(12px, 1.8vw, 15px);
+}
+
+body.dark-mode .auth-tab-btn {
+    color: #FFFFFF;
+}
+
+.auth-tab-btn {
+    font-weight: 500;
+    color: var(--text-tertiary);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    margin-bottom: -2px;
+}
+
+.auth-tab-btn:hover {
+    color: #374151;
+}
+
+body.dark-mode .auth-tab-btn:hover {
+    color: #E5E7EB;
+}
+
+.auth-tab-btn.active {
+    color: #1F2937;
+    border-bottom: 2px solid;
+    border-image: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%) 1;
+    font-weight: 600;
+}
+
+body.dark-mode .auth-tab-btn.active {
+    color: #FFFFFF;
+}
+
+.auth-form {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.auth-form.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-form form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.auth-form .form-group {
+    margin-bottom: clamp(10px, 1.5vh, 16px);
+    flex-shrink: 0;
+}
+
+.auth-form .form-group label {
+    font-size: clamp(11px, 1.5vw, 14px);
+    margin-bottom: clamp(4px, 0.8vh, 8px);
+    font-weight: 500;
+    color: #1F2937;
+}
+
+body.dark-mode .auth-form .form-group label {
+    color: #FFFFFF;
+}
+
+.auth-form .form-group input {
+    padding: clamp(8px, 1.2vh, 12px) clamp(10px, 1.5vw, 14px);
+    font-size: clamp(12px, 1.8vw, 16px);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+.auth-form .form-group input:focus {
+    outline: none;
+    border-color: #4ECDC4;
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.3), 0 0 0 4px rgba(78, 205, 196, 0.1);
+}
+
+.auth-form .form-group small {
+    font-size: clamp(10px, 1.2vw, 12px);
+    color: var(--text-tertiary);
+    margin-top: clamp(2px, 0.5vh, 4px);
+    display: block;
+}
+
+.btn-full {
+    padding: clamp(10px, 1.5vh, 14px) clamp(16px, 2.5vw, 24px);
+    font-size: clamp(13px, 1.8vw, 16px);
+    margin-top: clamp(4px, 1vh, 8px);
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius);
+    font-weight: 600;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.auth-form p {
+    margin-top: clamp(10px, 1.5vh, 16px);
+    font-size: clamp(11px, 1.5vw, 14px);
+    text-align: center;
+}
+
+.auth-form p a {
+    font-size: clamp(11px, 1.5vw, 14px);
+}
+
+.auth-form .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.auth-form .form-group input {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 15px;
+    transition: all 0.2s;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    box-sizing: border-box;
+}
+
+.auth-form .form-group input::placeholder {
+    color: var(--text-tertiary);
+    opacity: 0.7;
+}
+
+.auth-form .form-group input:focus {
+    outline: none;
+    border-color: #4ECDC4;
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.3), 0 0 0 4px rgba(78, 205, 196, 0.1);
+}
+
+.auth-form .form-group small {
+    display: block;
+    margin-top: 6px;
+    color: var(--text-tertiary);
+    font-size: 13px;
+}
+
+.btn-full {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.error-message {
+    color: var(--danger);
+    font-size: 14px;
+    margin-top: 12px;
+    text-align: center;
+    min-height: 20px;
+    font-weight: 500;
+}
+
+.success-message {
+    font-size: 14px;
+    margin-top: 12px;
+    text-align: left;
+    min-height: 20px;
+    font-weight: 500;
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL
+   ============================================ */
+
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    background: transparent;
+    min-height: 100vh;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+header {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom: none;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+}
+
+/* Ajustar colores del header en modo claro */
+body:not(.dark-mode) header,
+body:not(.dark-mode) .main-header {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.95);
+    border-bottom: none;
+}
+
+body:not(.dark-mode) header h1,
+body:not(.dark-mode) .main-header h1 {
+    color: white;
+}
+
+body:not(.dark-mode) header button,
+body:not(.dark-mode) .main-header button,
+body:not(.dark-mode) #mainNavDropdownBtn,
+body:not(.dark-mode) #settingsDropdownBtn {
+    color: rgba(30, 58, 138, 1) !important;
+    border-color: rgba(30, 58, 138, 0.4) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 4px !important;
+    border-width: 1.5px !important;
+    padding: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
+}
+
+body:not(.dark-mode) header button:hover,
+body:not(.dark-mode) .main-header button:hover,
+body:not(.dark-mode) #mainNavDropdownBtn:hover,
+body:not(.dark-mode) #settingsDropdownBtn:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    border-color: rgba(30, 58, 138, 0.6) !important;
+    color: rgba(30, 58, 138, 1) !important;
+}
+
+body:not(.dark-mode) header button span,
+body:not(.dark-mode) .main-header button span {
+    color: rgba(30, 58, 138, 1) !important;
+    opacity: 1 !important;
+}
+
+body:not(.dark-mode) header svg,
+body:not(.dark-mode) .main-header svg {
+    filter: none;
+    opacity: 1;
+}
+
+/* Logo del header - círculos y paths visibles en modo claro (igual que modo oscuro) */
+body:not(.dark-mode) #headerLogo .logo-outer-circle {
+    fill: url(#headerLogoGradient) !important;
+}
+
+body:not(.dark-mode) #headerLogo .logo-middle-circle {
+    fill: url(#headerLogoGradientInner) !important;
+    opacity: 0.9 !important;
+}
+
+body:not(.dark-mode) #headerLogo .logo-inner-circle {
+    fill: rgba(255, 255, 255, 0.95) !important;
+}
+
+body:not(.dark-mode) #headerLogo .logo-center {
+    fill: url(#headerLogoGradient) !important;
+}
+
+body:not(.dark-mode) #headerLogo .logo-path {
+    stroke: rgba(255, 255, 255, 1) !important;
+    opacity: 0.8 !important;
+}
+
+/* SVG dentro de botones - asegurar visibilidad */
+body:not(.dark-mode) header button svg,
+body:not(.dark-mode) .main-header button svg,
+body:not(.dark-mode) #mainNavDropdownBtn svg,
+body:not(.dark-mode) #settingsDropdownBtn svg {
+    color: rgba(30, 58, 138, 1) !important;
+}
+
+body:not(.dark-mode) header button svg circle,
+body:not(.dark-mode) .main-header button svg circle,
+body:not(.dark-mode) #mainNavDropdownBtn svg circle,
+body:not(.dark-mode) #settingsDropdownBtn svg circle {
+    stroke: rgba(30, 58, 138, 1) !important;
+    fill: none !important;
+}
+
+body:not(.dark-mode) header button svg path,
+body:not(.dark-mode) .main-header button svg path,
+body:not(.dark-mode) #mainNavDropdownBtn svg path,
+body:not(.dark-mode) #settingsDropdownBtn svg path {
+    stroke: rgba(30, 58, 138, 1) !important;
+    fill: none !important;
+}
+
+/* Estilos unificados para botones del header en modo oscuro */
+body.dark-mode header button,
+body.dark-mode .main-header button,
+body.dark-mode #mainNavDropdownBtn,
+body.dark-mode #settingsDropdownBtn {
+    color: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px !important;
+    border-width: 1.5px !important;
+    padding: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
+}
+
+body.dark-mode header button:hover,
+body.dark-mode .main-header button:hover,
+body.dark-mode #mainNavDropdownBtn:hover,
+body.dark-mode #settingsDropdownBtn:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: rgba(255, 255, 255, 1) !important;
+}
+
+body.dark-mode header button span,
+body.dark-mode .main-header button span {
+    color: rgba(255, 255, 255, 0.95) !important;
+    opacity: 1 !important;
+}
+
+body.dark-mode header button svg,
+body.dark-mode .main-header button svg,
+body.dark-mode #mainNavDropdownBtn svg,
+body.dark-mode #settingsDropdownBtn svg {
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+body.dark-mode header button svg circle,
+body.dark-mode .main-header button svg circle,
+body.dark-mode #mainNavDropdownBtn svg circle,
+body.dark-mode #settingsDropdownBtn svg circle {
+    stroke: rgba(255, 255, 255, 0.95) !important;
+    fill: none !important;
+}
+
+body.dark-mode header button svg path,
+body.dark-mode .main-header button svg path,
+body.dark-mode #mainNavDropdownBtn svg path,
+body.dark-mode #settingsDropdownBtn svg path {
+    stroke: rgba(255, 255, 255, 0.95) !important;
+    fill: none !important;
+}
+
+/* Footer en modo claro - transparente con texto oscuro */
+body:not(.dark-mode) footer,
+body:not(.dark-mode) .main-footer {
+    background: transparent !important;
+    color: rgba(30, 58, 138, 1) !important;
+    border-top: none !important;
+}
+
+body:not(.dark-mode) footer h3,
+body:not(.dark-mode) footer h4,
+body:not(.dark-mode) .main-footer h3,
+body:not(.dark-mode) .main-footer h4 {
+    color: rgba(30, 58, 138, 1) !important;
+}
+
+body:not(.dark-mode) footer p,
+body:not(.dark-mode) footer a,
+body:not(.dark-mode) .main-footer p,
+body:not(.dark-mode) .main-footer a {
+    color: rgba(30, 58, 138, 0.9) !important;
+}
+
+body:not(.dark-mode) footer a:hover,
+body:not(.dark-mode) .main-footer a:hover {
+    color: rgba(30, 58, 138, 1) !important;
+}
+
+body:not(.dark-mode) .footer-copyright,
+body:not(.dark-mode) .footer-copyright strong {
+    color: rgba(30, 58, 138, 0.8) !important;
+}
+
+body.dark-mode .footer-copyright,
+body.dark-mode .footer-copyright strong {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Texto "Veedor" en footer - efecto arcoíris sublime */
+.footer-veedor-text {
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    animation: rainbow-flow 20s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+body:not(.dark-mode) .footer-veedor-text {
+    background: linear-gradient(90deg, #EF4444 0%, #10B981 12%, #3B82F6 24%, #8B5CF6 36%, #F59E0B 48%, #EC4899 60%, #06B6D4 72%, #84CC16 84%, #F97316 96%, #EF4444 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 20s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+body.dark-mode .footer-veedor-text {
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 20s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Enlaces del footer */
+.footer-link {
+    color: inherit;
+}
+
+.footer-separator {
+    color: inherit;
+}
+
+header h1 {
+    font-size: 36px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: -1px;
+    margin: 0;
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 15%, #45B7D1 30%, #96CEB4 45%, #FFEAA7 60%, #FDCB6E 75%, #E17055 90%, #FF6B6B 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 20s ease-in-out infinite;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+@keyframes rainbow-flow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+header svg#headerLogo,
+.main-header svg#headerLogo {
+    width: 52px;
+    height: 52px;
+}
+
+/* Efecto arcoíris sublime en modo claro */
+body:not(.dark-mode) header h1 {
+    background: linear-gradient(90deg, #EF4444 0%, #10B981 12%, #3B82F6 24%, #8B5CF6 36%, #F59E0B 48%, #EC4899 60%, #06B6D4 72%, #84CC16 84%, #F97316 96%, #EF4444 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 20s ease-in-out infinite;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.user-info {
+    color: var(--gray-700);
+    font-weight: 500;
+    font-size: 14px;
+    padding: 8px 16px;
+    background: var(--gray-100);
+    border-radius: var(--radius-full);
+}
+
+/* ============================================
+   DASHBOARD - CARDS MODERNOS
+   ============================================ */
+
+.dashboard {
+    padding: 32px 48px;
+    padding-top: 24px;
+    background: transparent;
+    transition: background-color 0.3s;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    min-height: calc(100vh - 80px);
+    border-radius: 8px;
+    margin-top: 64px;
+    margin-bottom: 24px;
+}
+
+/* Contenedor para las cards del dashboard */
+.dashboard > div:first-child {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+/* Sección tipo Revolut para Saldo y Fondo de Emergencia */
+.revolut-section {
+    margin-bottom: 32px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.revolut-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Card específica para Fondo de Emergencia - Replica exacta de saldo en cuentas */
+.savings-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+}
+
+.savings-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+.savings-card:active {
+    transform: translateY(-2px);
+}
+
+body:not(.dark-mode) .savings-card {
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.25);
+}
+
+body:not(.dark-mode) .savings-card:hover {
+    box-shadow: 0 12px 32px rgba(30, 58, 138, 0.35) !important;
+}
+
+body.dark-mode .savings-card {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .savings-card:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Asegurar que las revolut-cards tengan la misma altura que las summary-cards */
+.revolut-section > div {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    align-items: stretch;
+}
+
+.revolut-section > div > .revolut-card {
+    height: 100%;
+    min-height: 100px;
+    padding: 14px 16px;
+}
+
+/* Asegurar que las revolut-cards tengan la misma altura que las summary-cards en el grid */
+.revolut-section > div {
+    align-items: stretch;
+}
+
+.revolut-section > div > .revolut-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.revolut-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+.revolut-card:active {
+    transform: translateY(-2px);
+}
+
+/* Ajustes para modo claro */
+body:not(.dark-mode) .revolut-card {
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.25);
+    color: #111827 !important;
+}
+
+body:not(.dark-mode) .revolut-card h3 {
+    color: #374151 !important;
+}
+
+body:not(.dark-mode) .revolut-card .amount {
+    color: #111827 !important;
+}
+
+/* Sin destello en el saldo */
+body.dark-mode #totalAccountsBalance,
+body.dark-mode .revolut-card .amount {
+    text-shadow: none;
+}
+
+body:not(.dark-mode) .revolut-card small {
+    color: #6B7280 !important;
+}
+
+body:not(.dark-mode) .revolut-card:hover {
+    box-shadow: none !important;
+}
+
+/* Ajustes para modo oscuro - completamente transparente */
+body.dark-mode .revolut-card {
+    box-shadow: none !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+body.dark-mode .revolut-card:hover {
+    box-shadow: none !important;
+}
+
+/* ============================================
+   EFECTOS NEÓN DISCRETOS ESTILO STRANGER THINGS
+   ============================================ */
+
+/* Texto con glow muy sutil en cards revolut */
+body.dark-mode .revolut-card .amount {
+    text-shadow: 0 0 4px rgba(59, 130, 246, 0.3),
+                 0 0 8px rgba(59, 130, 246, 0.15);
+    transition: text-shadow 0.3s ease;
+}
+
+body.dark-mode .revolut-card:hover .amount {
+    text-shadow: 0 0 6px rgba(59, 130, 246, 0.4),
+                 0 0 12px rgba(59, 130, 246, 0.2);
+}
+
+body.dark-mode .revolut-card h3,
+body.dark-mode .revolut-card small {
+    text-shadow: 0 0 3px rgba(59, 130, 246, 0.25),
+                 0 0 6px rgba(59, 130, 246, 0.15);
+    transition: text-shadow 0.3s ease;
+}
+
+body.dark-mode .revolut-card:hover h3,
+body.dark-mode .revolut-card:hover small {
+    text-shadow: 0 0 4px rgba(59, 130, 246, 0.35),
+                 0 0 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Efecto neón muy discreto para botones primarios */
+body.dark-mode .btn-primary {
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.2),
+                 0 0 6px rgba(59, 130, 246, 0.15);
+    transition: text-shadow 0.3s ease;
+}
+
+body.dark-mode .btn-primary:hover {
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.3),
+                 0 0 8px rgba(59, 130, 246, 0.25);
+}
+
+/* Efecto neón muy discreto para cards con gradiente azul (presupuestos) */
+body.dark-mode .card[style*="background: linear-gradient"] h3,
+body.dark-mode .card[style*="background: linear-gradient"] .amount,
+body.dark-mode .card[style*="background: linear-gradient"] small,
+body.dark-mode .card[style*="background: linear-gradient"] p,
+body.dark-mode .card[style*="background: linear-gradient"] h5,
+body.dark-mode .card[style*="background: linear-gradient"] div {
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.25),
+                 0 0 8px rgba(59, 130, 246, 0.15);
+    transition: text-shadow 0.3s ease;
+}
+
+body.dark-mode .card[style*="background: linear-gradient"]:hover h3,
+body.dark-mode .card[style*="background: linear-gradient"]:hover .amount,
+body.dark-mode .card[style*="background: linear-gradient"]:hover small,
+body.dark-mode .card[style*="background: linear-gradient"]:hover p,
+body.dark-mode .card[style*="background: linear-gradient"]:hover h5,
+body.dark-mode .card[style*="background: linear-gradient"]:hover div {
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.35),
+                 0 0 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Efecto neón muy discreto para envelope-cards con gradiente azul */
+body.dark-mode .envelope-card[style*="background: linear-gradient"] h3,
+body.dark-mode .envelope-card[style*="background: linear-gradient"] .amount,
+body.dark-mode .envelope-card[style*="background: linear-gradient"] small,
+body.dark-mode .envelope-card[style*="background: linear-gradient"] p,
+body.dark-mode .envelope-card[style*="background: linear-gradient"] h5,
+body.dark-mode .envelope-card[style*="background: linear-gradient"] div {
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.25),
+                 0 0 8px rgba(59, 130, 246, 0.15);
+    transition: text-shadow 0.3s ease;
+}
+
+body.dark-mode .envelope-card[style*="background: linear-gradient"]:hover h3,
+body.dark-mode .envelope-card[style*="background: linear-gradient"]:hover .amount,
+body.dark-mode .envelope-card[style*="background: linear-gradient"]:hover small,
+body.dark-mode .envelope-card[style*="background: linear-gradient"]:hover p,
+body.dark-mode .envelope-card[style*="background: linear-gradient"]:hover h5,
+body.dark-mode .envelope-card[style*="background: linear-gradient"]:hover div {
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.35),
+                 0 0 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Efecto neón muy discreto para envelope-cards */
+body.dark-mode .envelope-card .envelope-budget {
+    text-shadow: 0 0 4px rgba(59, 130, 246, 0.25),
+                 0 0 8px rgba(59, 130, 246, 0.15);
+    transition: text-shadow 0.3s ease;
+}
+
+body.dark-mode .envelope-card:hover .envelope-budget {
+    text-shadow: 0 0 6px rgba(59, 130, 246, 0.35),
+                 0 0 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Mensaje de bienvenida personalizado */
+#welcomeMessage {
+    padding: 6px 24px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: none;
+    background: transparent;
+    margin: 0;
+    margin-top: -8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Efecto arcoíris para el texto del mensaje - Modo oscuro (más vibrante) */
+body.dark-mode #welcomeMessageText {
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 40s ease-in-out infinite;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+    font-weight: 600;
+}
+
+/* Efecto arcoíris para el texto del mensaje - Modo claro (tonos pasteles suaves) */
+body:not(.dark-mode) #welcomeMessageText {
+    background: linear-gradient(90deg, #FF8A95 0%, #7DD3C0 12%, #6BC5E0 24%, #A8D5BA 36%, #FFE5A0 48%, #FDD89A 60%, #E88A7A 72%, #FF8A95 84%, #7DD3C0 96%, #FF8A95 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 40s ease-in-out infinite;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+    font-weight: 600;
+}
+
+/* Efecto arcoíris estático para fondos de modales */
+.rainbow-bg {
+    background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+}
+
+/* Borde arcoíris para elementos seleccionados/focus - usando box-shadow */
+@keyframes rainbow-border {
+    0% { box-shadow: 0 0 0 2px #FF6B6B, 0 0 0 4px rgba(255, 107, 107, 0.2); }
+    25% { box-shadow: 0 0 0 2px #4ECDC4, 0 0 0 4px rgba(78, 205, 196, 0.2); }
+    50% { box-shadow: 0 0 0 2px #45B7D1, 0 0 0 4px rgba(69, 183, 209, 0.2); }
+    75% { box-shadow: 0 0 0 2px #FFEAA7, 0 0 0 4px rgba(255, 234, 167, 0.2); }
+    100% { box-shadow: 0 0 0 2px #FF6B6B, 0 0 0 4px rgba(255, 107, 107, 0.2); }
+}
+
+body:not(.dark-mode) .rainbow-bg {
+    background: linear-gradient(135deg, #FF8A95 0%, #7DD3C0 12%, #6BC5E0 24%, #A8D5BA 36%, #FFE5A0 48%, #FDD89A 60%, #E88A7A 72%, #FF8A95 84%, #7DD3C0 96%, #FF8A95 100%);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+}
+
+/* Texto gris oscuro dentro de tarjetas con fondo arcoíris - Mejor contraste y más neutro */
+.rainbow-bg,
+.rainbow-bg * {
+    color: #1F2937 !important;
+}
+
+/* Asegurar que el fondo arcoíris se vea bien en modo oscuro */
+body.dark-mode .rainbow-bg {
+    background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%) !important;
+    background-size: 200% 200% !important;
+    background-position: 0% 50% !important;
+}
+
+/* En modo oscuro, el texto debe ser blanco en rainbow-bg */
+body.dark-mode .rainbow-bg,
+body.dark-mode .rainbow-bg * {
+    color: #FFFFFF !important;
+}
+
+/* Botón de cerrar modal en rainbow-bg */
+.rainbow-bg .modal-close-btn {
+    color: #1F2937 !important;
+}
+
+body.dark-mode .rainbow-bg .modal-close-btn {
+    color: #FFFFFF !important;
+    background: rgba(255,255,255,0.2) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+}
+
+body.dark-mode .rainbow-bg .modal-close-btn:hover {
+    background: rgba(255,255,255,0.3) !important;
+}
+
+@media (max-width: 768px) {
+    #welcomeMessage {
+        padding: 4px 16px;
+        font-size: 14px;
+        margin-top: -6px;
+    }
+}
+
+/* Card específica para Fondo de Emergencia - Replica exacta de saldo en cuentas */
+.savings-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+}
+
+.savings-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+.savings-card:active {
+    transform: translateY(-2px);
+}
+
+body:not(.dark-mode) .savings-card {
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.25);
+}
+
+body:not(.dark-mode) .savings-card:hover {
+    box-shadow: 0 12px 32px rgba(30, 58, 138, 0.35) !important;
+}
+
+body.dark-mode .savings-card {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .savings-card:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+.revolut-section > div > .savings-card {
+    height: 100%;
+    min-height: 100px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+@media (max-width: 1024px) {
+    .revolut-section > div {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .revolut-card {
+        min-height: 130px;
+        padding: 14px 16px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+    }
+    
+    .revolut-card h3 {
+        font-size: 11px !important;
+        margin-bottom: 8px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+    }
+    
+    .revolut-card .amount {
+        font-size: 42px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+    }
+    
+    .revolut-card small {
+        font-size: 10px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+        line-height: 1.2 !important;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    background: var(--bg-primary);
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: visible;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    color: var(--text-primary);
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary);
+}
+
+@media (max-width: 768px) {
+    .card:hover,
+    .envelope-card:hover {
+        transform: none;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+}
+
+.card:hover::before {
+    background: var(--primary);
+}
+
+.card h3 {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+}
+
+.card .amount {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    letter-spacing: -0.3px;
+    line-height: 1.1;
+}
+
+.card .amount.positive {
+    color: var(--success);
+}
+
+.card .amount.negative {
+    color: var(--danger);
+}
+
+.card small {
+    display: block;
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    margin-top: 0;
+    line-height: 1.2;
+    opacity: 0.8;
+}
+
+/* Card especial - Meta de Ahorro */
+.card[style*="background: linear-gradient"] {
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    border: none;
+    color: white;
+}
+
+.card[style*="background: linear-gradient"]::before {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.card[style*="background: linear-gradient"] h3,
+.card[style*="background: linear-gradient"] .amount,
+.card[style*="background: linear-gradient"] small {
+    color: white;
+}
+
+.card[style*="background: linear-gradient"] .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    margin-top: 12px;
+}
+
+.card[style*="background: linear-gradient"] .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   CONTENIDO PRINCIPAL
+   ============================================ */
+
+.main-content {
+    padding: 40px;
+    padding-top: 24px;
+    background: transparent;
+    transition: background-color 0.3s;
+    max-width: 1400px;
+    margin: 0 auto;
+    margin-top: 64px;
+    margin-bottom: 24px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    border-radius: 8px;
+}
+
+/* ============================================
+   TABS
+   ============================================ */
+
+.tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 32px;
+    border-bottom: 2px solid var(--gray-200);
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    justify-content: center;
+    align-items: center;
+}
+
+.tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--gray-600);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 0 0 auto;
+}
+
+.tab-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+.tab-text {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+/* Estilos para desktop - centrar iconos y texto */
+@media (min-width: 1201px) {
+    .tab-btn {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 10px 16px;
+    }
+    
+    .tab-icon {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .tab-text {
+        display: block !important;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.2;
+    }
+}
+
+/* Estilos para el menú desplegable "Más" */
+.more-tabs-dropdown {
+    display: none;
+}
+
+.more-tab-item {
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+}
+
+.more-tab-item:hover {
+    background: var(--gray-50);
+}
+
+body.dark-mode .more-tab-item:hover {
+    background: var(--gray-800);
+}
+
+.more-tab-item svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    flex-shrink: 0;
+}
+
+/* Ocultar tabs en móvil (ya están en menú hamburguesa) - DEBE IR AL FINAL PARA SOBRESCRIBIR TODO */
+@media (max-width: 768px) {
+    .tabs {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+    
+    /* Barra de secciones fija en la parte inferior para móvil */
+    .mobile-bottom-tabs {
+        display: flex !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: var(--bg-primary) !important;
+        border-top: 2px solid var(--border-color) !important;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1) !important;
+        z-index: 1000 !important;
+        padding-top: 12px !important;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        min-height: calc(60px + env(safe-area-inset-bottom)) !important;
+    }
+    
+    /* Barra de secciones en modo oscuro con color base gris claro */
+    html.dark-mode .mobile-bottom-tabs {
+        background: rgba(107, 114, 128, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+    }
+    
+    .mobile-bottom-tabs .tab-btn {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        padding: 8px 4px 12px 4px !important;
+        min-width: 60px !important;
+        max-width: 80px !important;
+        flex: 1 !important;
+        background: transparent !important;
+        border: none !important;
+        border-bottom: none !important;
+        border-radius: 8px !important;
+        color: var(--text-secondary) !important;
+        font-size: 10px !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        position: relative !important;
+        margin-bottom: 0 !important;
+    }
+    
+    .mobile-bottom-tabs .tab-btn .tab-icon {
+        width: 22px !important;
+        height: 22px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .mobile-bottom-tabs .tab-btn .tab-icon svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+    
+    .mobile-bottom-tabs .tab-btn .tab-text {
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 100% !important;
+    }
+    
+    .mobile-bottom-tabs .tab-btn.active {
+        color: var(--text-primary) !important;
+        background: rgba(107, 114, 128, 0.15) !important;
+    }
+    
+    .mobile-bottom-tabs .tab-btn:active {
+        transform: scale(0.95) !important;
+        background: rgba(107, 114, 128, 0.2) !important;
+    }
+    
+    /* Añadir padding inferior al contenido principal para que no quede oculto por la barra */
+    .main-content {
+        padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+    }
+    
+    /* Ocultar botones "Nueva X" en móvil (ya están disponibles en el botón flotante +) */
+    #toggleTransactionFormBtn,
+    #toggleAccountFormBtn,
+    #toggleLoanFormBtn,
+    #toggleInvestmentFormBtn,
+    #togglePatrimonioFormBtn,
+    #toggleBudgetFormBtn,
+    #toggleEnvelopeFormBtn {
+        display: none !important;
+    }
+    
+    /* Ocultar todos los divs con texto descriptivo en móvil - todas las secciones */
+    #transactions-tab .form-section > div:nth-child(2),
+    #accounts-tab .form-section > div:nth-child(2),
+    #loans-tab .form-section > div:nth-child(2),
+    #investments-tab .form-section > div:nth-child(2),
+    #assets-tab .form-section > div:nth-child(2) {
+        display: none !important;
+    }
+    
+    /* Ocultar texto descriptivo en presupuestos - estructura diferente */
+    #envelopes-tab .form-section > div > div > div > p,
+    #envelopes-tab .form-section > div > div > div[style*="background: var(--bg-primary)"] > p {
+        display: none !important;
+    }
+    
+    /* Ocultar título "Sobre (Presupuesto Flexible)" en presupuestos */
+    #envelopes-tab h3 {
+        display: none !important;
+    }
+    
+    /* Ocultar cualquier div con texto descriptivo que tenga padding y background - regla general */
+    .form-section > div[style*="background: var(--bg-primary)"][style*="padding: 24px"] {
+        display: none !important;
+    }
+    
+    /* Ocultar párrafos descriptivos dentro de divs con background */
+    .form-section div[style*="background: var(--bg-primary)"] p {
+        display: none !important;
+    }
+    
+    /* Permitir que el formulario se muestre cuando se abre desde el botón flotante */
+    #transactionForm[style*="display: block"],
+    #transactionForm[style*="display:flex"] {
+        display: block !important;
+    }
+    
+    /* Mostrar solo 4 columnas en la tabla de transacciones en móvil: Fecha, Categoría, Monto, Acciones */
+    /* En móvil, ocultar columnas adicionales incluyendo Descripción */
+    #transactionsTable thead th:nth-child(2),
+    #transactionsTable thead th:nth-child(4),
+    #transactionsTable thead th:nth-child(5),
+    #transactionsTable thead th:nth-child(6),
+    #transactionsTable thead th:nth-child(7),
+    #transactionsTable tbody td:nth-child(2),
+    #transactionsTable tbody td:nth-child(4),
+    #transactionsTable tbody td:nth-child(5),
+    #transactionsTable tbody td:nth-child(6),
+    #transactionsTable tbody td:nth-child(7) {
+        display: none !important;
+    }
+    
+    /* Ajustar columna de acciones en móvil */
+    #transactionsTable thead th:nth-child(9),
+    #transactionsTable tbody td:nth-child(9) {
+        display: table-cell !important;
+        min-width: 80px !important;
+        padding: 8px 2px !important;
+        vertical-align: middle !important;
+    }
+    
+    /* Hacer botones de acciones más integrados en móvil - iconos compactos */
+    /* Ajustar ancho de las columnas visibles con scroll horizontal para ver el importe */
+    #transactionsTable {
+        font-size: 12px !important;
+        min-width: 100% !important;
+    }
+    
+    /* Estilo uniforme para todos los headers en móvil */
+    #transactionsTable thead th {
+        font-weight: 600 !important;
+        font-size: 11px !important;
+        color: var(--text-secondary) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        padding: 8px 6px !important;
+        text-align: left !important;
+        background: var(--bg-tertiary) !important;
+        border-bottom: 2px solid var(--border-color) !important;
+    }
+    
+    #transactionsTable thead th:nth-child(1),
+    #transactionsTable tbody td:nth-child(1) {
+        min-width: 80px !important;
+        padding: 8px 6px !important;
+        word-break: break-word !important;
+    }
+    
+    #transactionsTable thead th:nth-child(3),
+    #transactionsTable tbody td:nth-child(3) {
+        min-width: 100px !important;
+        padding: 8px 6px !important;
+        word-break: break-word !important;
+    }
+    
+    /* Mostrar versión corta de "Categoría" en móvil */
+    #transactionsTable .category-label-full {
+        display: none !important;
+    }
+    
+    #transactionsTable .category-label-short {
+        display: inline !important;
+    }
+    
+    #transactionsTable thead th:nth-child(8),
+    #transactionsTable tbody td:nth-child(8) {
+        min-width: 120px !important;
+        text-align: right !important;
+        padding: 8px 6px !important;
+        white-space: nowrap !important;
+    }
+    
+    /* Header de Monto también con estilo uniforme */
+    #transactionsTable thead th:nth-child(8) {
+        font-weight: 600 !important;
+        font-size: 11px !important;
+        color: var(--text-secondary) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    /* Header de Acciones también con estilo uniforme */
+    #transactionsTable thead th:nth-child(9) {
+        font-weight: 600 !important;
+        font-size: 11px !important;
+        color: var(--text-secondary) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        text-align: center !important;
+    }
+    
+    /* Permitir scroll horizontal para ver el importe */
+    #transactionsTableContainer {
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Ajustar form-row en móvil - apilar verticalmente */
+    #transactionForm .form-row,
+    #editTransactionForm .form-row {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Asegurar que el form-row no se desborde */
+    #transactionForm .form-row,
+    #editTransactionForm .form-row {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Asegurar que el formulario completo no se desborde */
+    #transactionForm,
+    #editTransactionForm {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Todos los form-groups en móvil con ancho completo */
+    #transactionForm .form-group,
+    #editTransactionForm .form-group {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Inputs y selects en formulario de transacciones - usar estilos generales como en préstamos */
+    #transactionForm .form-group input,
+    #transactionForm .form-group select,
+    #editTransactionForm .form-group input,
+    #editTransactionForm .form-group select {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        padding: 12px 14px !important;
+        min-height: 48px !important;
+    }
+    
+    /* Estilos para contenedor de filtros de fecha */
+    .date-filters-container {
+        display: flex !important;
+        gap: 8px !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .date-filter-item {
+        display: flex !important;
+        gap: 8px !important;
+        align-items: center !important;
+        flex: 0 1 auto !important;
+        min-width: 0 !important;
+    }
+    
+    .date-filter-item label {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: var(--text-secondary) !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+    
+    /* Ajustar selectores de fecha en filtros de transacciones - más estrechos */
+    #filterStartDate,
+    #filterEndDate {
+        min-width: 0 !important;
+        width: auto !important;
+        max-width: 140px !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        padding: 8px 8px !important;
+        box-sizing: border-box !important;
+        flex: 0 1 auto !important;
+        border: 1.5px solid var(--border-color) !important;
+        border-radius: var(--radius) !important;
+        background: var(--bg-primary) !important;
+        color: var(--text-primary) !important;
+        min-height: 44px !important;
+    }
+}
+
+/* Ocultar barra móvil en pantallas grandes (web) */
+@media (min-width: 769px) {
+    .mobile-bottom-tabs {
+        display: none !important;
+    }
+    
+    /* Eliminar padding inferior del contenido en web */
+    .main-content {
+        padding-bottom: 16px !important;
+    }
+}
+
+/* Tabs centradas en pantallas medianas pero no móvil */
+@media (min-width: 769px) and (max-width: 1200px) {
+    .tabs {
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+.tab-btn:hover {
+    color: var(--primary);
+}
+
+.tab-btn.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--gray-500);
+    background: rgba(107, 114, 128, 0.1);
+    font-weight: 600;
+}
+
+.tab-content {
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ============================================
+   FORMULARIOS
+   ============================================ */
+
+.form-section {
+    background: transparent;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    border: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+.form-section form {
+    transition: all 0.3s ease;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-section h2 {
+    margin-bottom: 24px;
+    color: var(--text-primary);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select {
+    padding: 14px 18px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* Estilos para inputs de fecha en modo oscuro */
+input[type="month"],
+input[type="date"],
+input[type="datetime-local"] {
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+/* Icono del calendario - visible en modo claro */
+body:not(.dark-mode) input[type="month"]::-webkit-calendar-picker-indicator,
+body:not(.dark-mode) input[type="date"]::-webkit-calendar-picker-indicator,
+body:not(.dark-mode) input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: none;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+/* Icono del calendario - visible en modo oscuro */
+body.dark-mode input[type="month"]::-webkit-calendar-picker-indicator,
+body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator,
+body.dark-mode input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(10);
+    opacity: 1;
+    cursor: pointer;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #4ECDC4;
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.3), 0 0 0 4px rgba(78, 205, 196, 0.1);
+    transform: translateY(-1px);
+    background: var(--bg-primary);
+}
+
+.form-group small {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+/* ============================================
+   BOTONES
+   ============================================ */
+
+.btn-primary {
+    background: linear-gradient(90deg, #FF6B6B 0%, #4ECDC4 12%, #45B7D1 24%, #96CEB4 36%, #FFEAA7 48%, #FDCB6E 60%, #E17055 72%, #FF6B6B 84%, #4ECDC4 96%, #FF6B6B 100%);
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+    color: #1F2937;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    letter-spacing: -0.2px;
+    text-align: center;
+    line-height: 1.5;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow: hidden;
+    min-height: 40px;
+}
+
+.btn-primary:hover {
+    background-position: 100% 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    /* Sin transform para evitar scroll horizontal */
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border-color);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    line-height: 1.5;
+    min-height: 40px;
+}
+
+.btn-secondary:hover {
+    background: var(--gray-50);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+    line-height: 1.5;
+    min-height: 40px;
+}
+
+.btn-danger:hover {
+    background: #E02D21;
+}
+
+/* ============================================
+   TABLAS
+   ============================================ */
+
+.table-section {
+    margin-top: 32px;
+    overflow: visible;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+}
+
+/* Botones de acciones en tabla de transacciones - Desktop (igual que móvil) */
+.transaction-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilos de botones en tabla de transacciones - Web */
+#transactionsTable .transaction-actions {
+    flex-wrap: nowrap;
+    gap: 6px;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 0;
+}
+
+#transactionsTable .transaction-actions .btn-secondary,
+#transactionsTable .transaction-actions .btn-danger {
+    padding: 8px 12px;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
+    min-width: 36px;
+    font-size: 13px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* Alinear columna de acciones correctamente */
+#transactionsTable thead th:nth-child(9) {
+    text-align: center;
+    vertical-align: top;
+    min-width: 140px;
+    width: 140px;
+}
+
+#transactionsTable tbody td:nth-child(9) {
+    text-align: center;
+    vertical-align: top;
+    overflow: visible;
+    white-space: nowrap;
+    padding: 14px 16px;
+    min-width: 140px;
+    width: 140px;
+}
+
+/* Aportes periódicos responsive */
+.periodic-contribution-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 13px;
+}
+
+/* Estilos para filas de aportes periódicos completados */
+.periodic-contribution-completed-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    gap: 16px;
+}
+
+.periodic-contribution-completed-date {
+    font-size: 13px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.periodic-contribution-completed-amount {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--danger);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.periodic-contribution-completed-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.periodic-contribution-checkbox-container {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    overflow: visible !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.periodic-contribution-checkbox {
+    width: 20px !important;
+    height: 20px !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+}
+
+.periodic-contribution-checkbox-label {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    min-width: 0 !important;
+    cursor: pointer !important;
+    user-select: none !important;
+}
+
+@media (max-width: 768px) {
+    /* Contenedor de checkbox de aportes periódicos en formulario */
+    .periodic-contribution-checkbox-container {
+        flex-wrap: nowrap !important;
+        gap: 12px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: visible !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        align-items: flex-start !important;
+        padding: 8px 0 !important;
+    }
+    
+    .periodic-contribution-checkbox,
+    .periodic-contribution-checkbox-container input[type="checkbox"] {
+        width: 24px !important;
+        height: 24px !important;
+        min-width: 24px !important;
+        min-height: 24px !important;
+        flex-shrink: 0 !important;
+        margin-right: 0 !important;
+        margin-top: 2px !important;
+        cursor: pointer !important;
+        -webkit-appearance: checkbox !important;
+        appearance: checkbox !important;
+    }
+    
+    .periodic-contribution-checkbox-label,
+    .periodic-contribution-checkbox-container label {
+        flex: 1 !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+        font-size: 15px !important;
+        line-height: 1.5 !important;
+        padding: 0 !important;
+        cursor: pointer !important;
+        user-select: none !important;
+    }
+    
+    /* Contenedor de aportaciones periódicas */
+    .periodic-contribution-container {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 12px !important;
+        margin: 12px 0 !important;
+    }
+    
+    .periodic-contribution-title {
+        font-size: 12px !important;
+        margin-bottom: 10px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    .periodic-contribution-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .periodic-contribution-label,
+    .periodic-contribution-value {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 0 !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        min-height: 40px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: visible !important;
+        text-align: left !important;
+    }
+    
+    .periodic-contribution-label {
+        color: var(--text-secondary) !important;
+    }
+    
+    .periodic-contribution-value {
+        text-align: right !important;
+        color: var(--text-primary) !important;
+    }
+    
+    .periodic-contribution-label strong {
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        flex-shrink: 0 !important;
+        margin-right: 12px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    .periodic-contribution-value {
+        font-size: 13px !important;
+        flex: 1 !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        min-width: 0 !important;
+    }
+    
+    .periodic-contribution-completed {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    .periodic-contribution-completed-list {
+        overflow-x: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    .periodic-contribution-completed-item {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: visible !important;
+    }
+    
+    .periodic-contribution-empty {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    /* Asegurar que el contenedor padre no corte el contenido */
+    .envelope-card,
+    .card {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Contenedor de aportaciones periódicas */
+    .envelope-card > div,
+    .card > div {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    /* Grid de inversiones en móvil */
+    #investmentsGrid,
+    .investments-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Asegurar que las tarjetas de inversión no corten contenido */
+    #investmentsGrid .envelope-card,
+    .investments-grid .envelope-card {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* Eliminar scroll innecesario en sección de análisis */
+#charts-tab {
+    overflow: visible;
+}
+
+#charts-tab > div {
+    overflow: visible;
+}
+
+.table-section h2 {
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    transition: color 0.3s;
+}
+
+.table-controls {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: var(--bg-secondary, var(--gray-50));
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    align-items: end;
+}
+
+.table-controls input,
+.table-controls select {
+    padding: 12px 16px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 14px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.table-controls > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.table-controls > div label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Selectores de gráficos - usar variables CSS para modo oscuro */
+.chart-period-select,
+.chart-category-select,
+.chart-category-filter,
+.chart-loan-filter,
+.chart-asset-filter,
+.chart-account-filter {
+    padding: 6px 10px !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: var(--radius) !important;
+    font-size: 12px !important;
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chart-period-select:focus,
+.chart-category-select:focus,
+.chart-category-filter:focus,
+.chart-loan-filter:focus,
+.chart-asset-filter:focus,
+.chart-account-filter:focus {
+    outline: none;
+    border-color: #4ECDC4 !important;
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.3), 0 0 0 4px rgba(78, 205, 196, 0.1) !important;
+}
+
+.chart-period-select option,
+.chart-category-select option,
+.chart-category-filter option,
+.chart-loan-filter option,
+.chart-asset-filter option,
+.chart-account-filter option {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Selectores del modal de gráficos ampliados */
+#modalChartPeriod,
+#modalChartCategoryFilter,
+#modalChartLoanFilter,
+#modalChartAssetFilter,
+#modalChartAccountFilter {
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+#modalChartPeriod option,
+#modalChartCategoryFilter option,
+#modalChartLoanFilter option,
+#modalChartAssetFilter option,
+#modalChartAccountFilter option {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+#modalStartDate,
+#modalEndDate {
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+.table-controls input:focus,
+.table-controls select:focus {
+    outline: none;
+    border-color: #4ECDC4;
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.3), 0 0 0 4px rgba(78, 205, 196, 0.1);
+}
+
+.table-container {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) var(--bg-primary);
+}
+
+/* Tablas de análisis detallado sin scroll vertical */
+#charts-tab .table-section .table-container {
+    max-height: none;
+    overflow-y: visible;
+    overflow-x: auto;
+    position: relative;
+}
+
+#charts-tab .table-section .table-container table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-tertiary);
+}
+
+#charts-tab .table-section .table-container table thead th {
+    background: var(--bg-tertiary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+#transactionsTableContainer {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Asegurar que la tabla tenga un ancho mínimo para activar scroll horizontal si es necesario */
+@media (min-width: 769px) {
+    #transactionsTable {
+        min-width: 100%;
+        width: max-content;
+    }
+    
+    #transactionsTableContainer {
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+    }
+}
+
+/* Estilos base para tabla de transacciones - sin cortar */
+#transactionsTable tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+}
+
+/* Las filas de tabla ajustan automáticamente su altura según el contenido */
+
+/* En desktop, permitir scroll vertical */
+@media (min-width: 769px) {
+    #transactionsTableContainer {
+        max-height: 600px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+    
+    /* Categoría y descripción con wrap normal - SIN límite de ancho */
+    #transactionsTable tbody td:nth-child(3),
+    #transactionsTable tbody td:nth-child(4) {
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        max-width: none !important;
+        min-width: 150px;
+    }
+    
+    /* Monto sin wrap para mantener formato */
+    #transactionsTable tbody td:nth-child(8) {
+        white-space: nowrap;
+        text-align: right;
+        vertical-align: top;
+        padding: 14px 16px;
+    }
+    
+    /* Columna de editar/eliminar alineada correctamente en desktop */
+    #transactionsTable thead th:nth-child(9) {
+        text-align: center;
+        vertical-align: top;
+        padding: 12px 16px;
+    }
+    
+    #transactionsTable tbody td:nth-child(9) {
+        white-space: nowrap;
+        text-align: center;
+        vertical-align: top;
+        padding: 14px 16px;
+        min-width: 140px;
+        width: 140px;
+    }
+}
+
+/* Scrollbars globales mejorados */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) var(--bg-primary);
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}
+
+.table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-primary);
+    transition: background-color 0.3s;
+    color: var(--text-primary);
+}
+
+/* Tabla de transacciones - En desktop mostrar todas las columnas con anchos ajustados */
+@media (min-width: 769px) {
+    #transactionsTable {
+        table-layout: auto;
+        width: 100%;
+    }
+    
+    /* En desktop, todas las columnas visibles con anchos automáticos */
+    #transactionsTable thead th,
+    #transactionsTable tbody td {
+        width: auto;
+    }
+    
+    /* Asegurar que las columnas de texto no se corten */
+    #transactionsTable tbody td:nth-child(3),
+    #transactionsTable tbody td:nth-child(4),
+    #transactionsTable tbody td:nth-child(5) {
+        min-width: 200px;
+        max-width: none !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: normal !important;
+    }
+}
+
+/* En desktop, mostrar todas las columnas - no ocultar ninguna */
+
+/* Estilo uniforme para header de tabla de transacciones */
+#transactionsTable thead th {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px;
+    text-align: left;
+    background: var(--bg-tertiary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+#transactionsTable thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+#transactionsTable thead th.sortable:hover {
+    background: var(--bg-secondary);
+}
+
+/* Ajustar texto de categoría y descripción - SIN límite */
+#transactionsTable tbody td:nth-child(3),
+#transactionsTable tbody td:nth-child(4) {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: none !important;
+    min-width: 150px;
+}
+
+/* Estilos específicos para celdas de transacciones */
+#transactionsTable tbody td {
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+/* Monto alineado a la derecha */
+#transactionsTable thead th:nth-child(8),
+#transactionsTable tbody td:nth-child(8) {
+    text-align: right;
+    vertical-align: top;
+    padding: 14px 16px;
+}
+
+thead {
+    background: var(--bg-tertiary);
+    border-bottom: 2px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: border-color 0.3s, color 0.3s;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    vertical-align: top;
+}
+
+tbody tr {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+tbody tr:hover {
+    background: var(--bg-tertiary);
+}
+
+/* Indicadores de ordenamiento */
+.sort-indicator {
+    font-size: 10px;
+    color: var(--primary);
+    margin-left: 4px;
+}
+
+th.sortable:hover {
+    background: var(--bg-secondary);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-income {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-expense {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* ============================================
+   SOBRES / ENVELOPES
+   ============================================ */
+
+.envelopes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.envelope-card {
+    background: transparent;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 28px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    min-height: auto !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
+    position: relative;
+    color: var(--text-primary);
+}
+
+.envelope-card:hover {
+    border-color: #4ECDC4;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(78, 205, 196, 0.2);
+    transform: translateY(-2px);
+}
+
+.envelope-card h3 {
+    margin-bottom: 12px;
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.envelope-card .envelope-budget {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+}
+
+.envelope-card .envelope-spent {
+    font-size: 14px;
+    color: var(--gray-600);
+    margin-bottom: 6px;
+}
+
+.envelope-card .envelope-remaining {
+    font-size: 16px;
+    color: var(--success);
+    font-weight: 600;
+}
+
+.envelope-card .envelope-remaining.negative {
+    color: var(--danger);
+}
+
+.envelope-progress {
+    height: 6px;
+    background: var(--gray-200);
+    border-radius: var(--radius-full);
+    margin-top: 16px;
+    overflow: hidden;
+}
+
+.envelope-progress-bar {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.3s;
+    border-radius: var(--radius-full);
+}
+
+.envelope-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+}
+
+/* ============================================
+   GRÁFICAS
+   ============================================ */
+
+.chart-controls {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.chart-controls label {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--gray-700);
+}
+
+.chart-controls select {
+    padding: 10px 16px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 14px;
+    min-width: 150px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.chart-card {
+    background: var(--bg-primary);
+    padding: 28px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: visible;
+    color: var(--text-primary);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(78, 205, 196, 0.2);
+    border-color: #4ECDC4;
+}
+
+@media (max-width: 768px) {
+    .charts-container {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .chart-card {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .chart-card:hover {
+        transform: none;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+}
+
+.chart-card h3 {
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+.chart-card canvas {
+    max-height: 300px;
+}
+
+/* ============================================
+   GRID DE FORMULARIOS DE PRESUPUESTOS
+   ============================================ */
+
+.budgets-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+.budgets-form-grid > div {
+    overflow: visible;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+    background: transparent;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* ============================================
+   MODAL
+   ============================================ */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    overflow-x: hidden; /* Eliminar scroll horizontal */
+    background-color: rgba(0, 0, 0, 0.65);
+    justify-content: center;
+    align-items: flex-start; /* Cambiado de center a flex-start para móvil */
+    animation: fadeIn 0.2s ease-out;
+    padding: 10px;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+}
+
+.modal-content {
+    background-color: var(--bg-primary);
+    overflow-x: hidden; /* Eliminar scroll horizontal */
+    max-width: 100%;
+    margin: 20px auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 85%;
+    max-width: 800px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    backdrop-filter: blur(20px);
+}
+
+/* Asegurar que el modal de transacciones de cuenta no corte bordes */
+#accountTransactionsModal .modal-content {
+    overflow: visible !important;
+}
+
+#accountTransactionsModal .modal-content > div:last-child {
+    overflow-y: auto !important;
+    overflow-x: visible !important;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+}
+
+#accountTransactionsModal #accountTransactionsModalContent {
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+#accountTransactionsModal #accountTransactionsModalContent > div {
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Mejorar padding y márgenes de contenido de modales */
+.modal-content > div:last-child {
+    padding: 32px;
+}
+
+.modal-content form {
+    padding: 32px;
+}
+
+/* Mejorar padding y márgenes de contenido de modales */
+.modal-content > div:first-child {
+    padding: 28px 32px;
+}
+
+.modal-content > div:last-child:not(form) {
+    padding: 32px;
+}
+
+.modal-content form {
+    padding: 32px;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Spinner para botones */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+.modal-close {
+    color: var(--gray-500);
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    color: var(--danger);
+    text-decoration: none;
+}
+
+.modal h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+    font-size: 22px;
+    font-weight: 700;
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(-20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* ============================================
+   RESPONSIVIDAD MÓVIL COMPLETA - 768px
+   ============================================ */
+/* Grid de formularios de presupuestos responsive */
+@media (max-width: 1024px) {
+    .budgets-form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Layout general */
+    .form-row {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    
+    /* Formulario de gastos recurrentes en móvil */
+    #recurringExpenseForm .form-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    
+    #recurringExpenseForm .form-group {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    #recurringExpenseForm input[type="date"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important;
+        padding: 12px 14px !important;
+        min-height: 48px !important;
+    }
+    
+    /* Contenedor del formulario de gastos recurrentes */
+    #recurringExpenseForm {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        padding: 16px !important;
+    }
+    
+    /* Asegurar que el form-section no corte contenido */
+    #recurring-expenses-tab .form-section {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        padding: 16px !important;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    
+    .charts-container {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .chart-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 20px 16px !important;
+        margin: 0 !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+    
+    .chart-card canvas {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Header mejorado */
+    header {
+        padding: 10px 12px !important;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        align-items: center !important;
+        min-height: 56px !important;
+    }
+    
+    header > div:first-child {
+        flex-shrink: 0;
+        min-width: 0;
+        flex: 0 0 auto;
+    }
+    
+    header > div:first-child svg {
+        width: 24px !important;
+        height: 24px !important;
+        flex-shrink: 0;
+    }
+    
+    header h1 {
+        font-size: 32px !important;
+        margin: 0 !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-shrink: 0;
+    }
+    
+    .header-actions {
+        flex-shrink: 0;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        gap: 4px;
+        min-width: 0;
+        align-items: center;
+    }
+    
+    #mainNavDropdownBtn {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+        font-size: 16px !important;
+    }
+    
+    /* Selectores de idioma visibles en móvil también */
+    #languageDropdownBtn,
+    #authLanguageDropdownBtn {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+    
+    #settingsDropdownBtn {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+    }
+    
+    #mainNavDropdown,
+    #languageDropdown,
+    #settingsDropdown {
+        right: 0 !important;
+        left: auto !important;
+    }
+}
+
+/* Pantallas de 15 pulgadas y laptops (1366x768, 1440x900, etc.) */
+@media (max-width: 1440px) and (max-height: 900px) {
+    .auth-container {
+        padding: 24px 32px !important;
+        max-height: calc(100vh - 25px) !important;
+        max-width: 600px !important;
+        margin: 12px auto !important;
+    }
+    
+    .auth-header {
+        margin-bottom: 14px !important;
+    }
+    
+    .auth-header svg {
+        width: 64px !important;
+        height: 64px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .auth-header h1 {
+        font-size: 28px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .auth-header p {
+        font-size: 13px !important;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 18px !important;
+    }
+    
+    .auth-tab-btn {
+        padding: 10px 14px !important;
+        font-size: 14px !important;
+    }
+    
+    .auth-form .form-group {
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-form .form-group label {
+        font-size: 12px !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .auth-form .form-group input {
+        padding: 10px 14px !important;
+        font-size: 13px !important;
+    }
+    
+    .auth-form .form-group small {
+        font-size: 11px !important;
+        margin-top: 3px !important;
+    }
+    
+    .btn-full {
+        padding: 11px 20px !important;
+        font-size: 14px !important;
+        margin-top: 4px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 24px 20px !important;
+        max-height: calc(100vh - 20px) !important;
+        overflow: hidden !important;
+        width: calc(100% - 20px) !important;
+        max-width: calc(100% - 20px) !important;
+        margin: 10px auto !important;
+    }
+    
+    /* Botón de modo oscuro en móvil */
+    #authDarkModeToggle {
+        top: 12px !important;
+        right: 12px !important;
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 18px !important;
+        padding: 8px !important;
+    }
+    
+    .auth-header svg {
+        width: 56px !important;
+        height: 56px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-header h1 {
+        font-size: 24px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .auth-header p {
+        font-size: 13px !important;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 16px !important;
+    }
+    
+    .auth-tab-btn {
+        padding: 9px 12px !important;
+        font-size: 13px !important;
+    }
+    
+    .auth-form .form-group {
+        margin-bottom: 12px !important;
+    }
+    
+    .auth-form .form-group label {
+        font-size: 12px !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .auth-form .form-group input {
+        padding: 10px 14px !important;
+        font-size: 14px !important;
+    }
+    
+    .auth-form .form-group small {
+        font-size: 11px !important;
+        margin-top: 3px !important;
+    }
+    
+    .btn-full {
+        padding: 11px 20px !important;
+        font-size: 14px !important;
+        margin-top: 4px !important;
+    }
+    
+    .auth-header {
+        margin-bottom: 24px !important;
+    }
+    
+    .auth-header svg {
+        width: 60px !important;
+        height: 60px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    .auth-header h1 {
+        font-size: 28px !important;
+    }
+    
+    .auth-header p {
+        font-size: 14px !important;
+    }
+    
+    .auth-form .form-group input {
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 48px !important;
+        padding: 14px 16px !important;
+    }
+    
+    .auth-form .form-group label {
+        font-size: 14px !important;
+    }
+    
+    .auth-form .form-group small {
+        font-size: 12px !important;
+    }
+    
+    .auth-tabs {
+        margin-bottom: 24px !important;
+    }
+    
+    .auth-tab-btn {
+        font-size: 14px !important;
+        padding: 10px 12px !important;
+    }
+    
+    .header-actions .user-info {
+        font-size: 11px;
+        padding: 6px 10px;
+        max-width: 100px;
+        min-width: 40px;
+    }
+    
+    .header-actions .user-info span {
+        display: none;
+    }
+    
+    .header-actions .user-info svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+    
+    .header-actions .btn-secondary {
+        font-size: 10px;
+        padding: 6px 10px;
+        white-space: nowrap;
+    }
+    
+    .dashboard {
+        padding: 16px 12px !important;
+        padding-top: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        border-radius: 12px !important;
+        margin-top: 56px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    /* Contenedor de cards del dashboard */
+    .dashboard > div:first-child {
+        margin-bottom: 16px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+    
+    .dashboard > div:first-child > div {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+    
+    /* Cards del dashboard en móvil */
+    .summary-cards {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+    
+    /* Asegurar que las cards no se corten */
+    .summary-cards .card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        overflow: visible !important;
+    }
+    
+    .main-content {
+        padding: 16px 12px !important;
+        padding-top: 16px !important;
+        padding-bottom: 16px !important; /* Sin espacio para tabs ya que están ocultas */
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        margin: 56px auto 16px auto !important;
+        border-radius: 12px !important;
+    }
+    
+    .tabs {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+    
+    .form-section {
+        padding: 20px 16px !important;
+        padding-top: 20px !important;
+        margin-top: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        overflow-x: hidden !important;
+        border-radius: 16px !important;
+    }
+    
+    .table-controls {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        margin-bottom: 16px !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        opacity: 0 !important;
+        transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease !important;
+        padding: 0 !important;
+    }
+    
+    .table-controls.expanded {
+        max-height: 2000px !important;
+        opacity: 1 !important;
+        padding: 16px !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius) !important;
+        background: var(--bg-secondary, var(--gray-50)) !important;
+        margin-bottom: 16px !important;
+    }
+    
+    #toggleFiltersBtn {
+        display: flex !important;
+    }
+    
+    .table-controls input,
+    .table-controls select {
+        width: 100% !important;
+        min-width: 100% !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+    }
+    
+    .table-controls > div {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .table-controls > div label {
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        color: var(--text-secondary) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        white-space: normal !important;
+        width: 100% !important;
+        margin-bottom: 0 !important;
+        display: block !important;
+    }
+    
+    /* Campos de fecha en móvil */
+    .table-controls input[type="date"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+        box-sizing: border-box !important;
+        padding: 12px 14px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    /* Contenedor de filtros de fecha en móvil */
+    .date-filters-container {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 12px !important;
+    }
+    
+    .date-filter-item {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        align-items: flex-start !important;
+    }
+    
+    .date-filter-item label {
+        width: 100% !important;
+        display: block !important;
+        margin-bottom: 4px !important;
+        font-size: 13px !important;
+    }
+    
+    .date-filter-item input[type="date"] {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: 140px !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+        box-sizing: border-box !important;
+        padding: 8px 8px !important;
+    }
+    
+    /* Asegurar que el modal de edición también tenga estilos correctos - más estrecho */
+    #editTransactionModal .form-group input[type="date"] {
+        width: 100% !important;
+        max-width: 160px !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important;
+        padding: 8px 10px !important;
+        min-height: 48px !important;
+    }
+    
+    /* Selectores de fecha en formulario de transacciones - más estrechos */
+    #transactionForm .form-group input[type="date"],
+    #editTransactionForm .form-group input[type="date"] {
+        max-width: 160px !important;
+        padding: 8px 10px !important;
+    }
+    
+    /* Selectores de fecha en modales de préstamos y amortización - asegurar que no se salgan */
+    #earlyPaymentModal input[type="date"],
+    #editEarlyPaymentModal input[type="date"],
+    #editLoanModal input[type="date"],
+    #loanForm input[type="date"],
+    .modal input[type="date"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important;
+        padding: 10px 12px !important;
+        min-height: 44px !important;
+    }
+    
+    /* Asegurar que los form-group en modales no se salgan */
+    .modal .form-group {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+    
+    .modal .form-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+    
+    .modal .form-row .form-group {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+    
+    .table-container {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    table {
+        font-size: 12px;
+        min-width: 600px;
+        width: 100%;
+    }
+    
+    th, td {
+        padding: 10px 8px;
+    }
+    
+    /* Botones dentro de cards en móvil */
+    .envelope-actions,
+    .envelope-card .envelope-actions,
+    .card .envelope-actions {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .envelope-actions button,
+    .envelope-card .envelope-actions button,
+    .card .envelope-actions button {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        min-height: 44px !important; /* Tamaño mínimo táctil */
+        font-size: 14px !important;
+        padding: 12px 16px !important;
+        touch-action: manipulation; /* Mejora respuesta táctil */
+    }
+    
+    /* Botón de Establecer Fondo Base en móvil */
+    #setBaseFundBtn {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        min-height: 44px !important;
+        font-size: 14px !important;
+        padding: 10px 16px !important;
+        justify-content: center !important;
+        touch-action: manipulation !important;
+        margin-top: 12px !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+    }
+    
+    #setBaseFundBtn span {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        text-align: center !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* Desplegables en móvil */
+    #mainNavDropdown,
+    #settingsDropdown {
+        min-width: 200px !important;
+        max-width: calc(100vw - 24px) !important;
+        right: 0 !important;
+        left: auto !important;
+        position: absolute !important;
+        margin-top: 8px !important;
+        z-index: 10000 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        background: var(--bg-primary) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 12px !important;
+    }
+    
+    #mainNavDropdown .nav-dropdown-item,
+    #settingsDropdown .nav-dropdown-item {
+        color: var(--text-primary) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+    
+    #mainNavDropdown .nav-dropdown-item:hover,
+    #settingsDropdown .nav-dropdown-item:hover {
+        background: var(--bg-secondary) !important;
+    }
+    
+    /* Asegurar que los desplegables sean visibles cuando están abiertos */
+    #mainNavDropdown[style*="display: block"],
+    #settingsDropdown[style*="display: block"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Menú móvil mejorado */
+    .mobile-nav-menu[style*="display: block"] {
+        display: block !important;
+    }
+    
+    .mobile-nav-item {
+        min-height: 56px !important;
+        touch-action: manipulation !important;
+    }
+    
+    /* Cards en móvil */
+    .envelope-card,
+    .card {
+        padding: 16px !important;
+        margin-bottom: 12px !important;
+        overflow: visible !important; /* No cortar contenido */
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        min-height: auto !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+    
+    /* Títulos de presupuestos en móvil */
+    .envelope-card h3,
+    .envelope-card h5,
+    #monthBudgetsStatus h5,
+    #monthBudgetsStatus h3,
+    #budgetsGrid h3 {
+        font-size: clamp(16px, 4vw, 20px) !important;
+        color: #111827 !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        line-height: 1.4 !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* En modo oscuro, usar color claro */
+    body.dark-mode #budgetsGrid h3,
+    body.dark-mode .envelope-card h3,
+    body.dark-mode .envelope-card h5 {
+        color: #F9FAFB !important;
+    }
+    
+    /* En modo oscuro, usar color claro y más grande */
+    body.dark-mode #monthBudgetsStatus h5,
+    body.dark-mode #monthBudgetsStatus h3 {
+        color: #FFFFFF !important;
+        font-weight: 800 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* Asegurar visibilidad en modo oscuro para nombres de presupuestos en móvil */
+    @media (max-width: 768px) {
+        body.dark-mode .envelope-card h3,
+        body.dark-mode .envelope-card h5,
+        body.dark-mode #budgetsGrid h3,
+        body.dark-mode #monthBudgetsStatus h3,
+        body.dark-mode #monthBudgetsStatus h5 {
+            color: #F9FAFB !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        }
+    }
+    
+    /* Contenedores de cards en monthBudgetsStatus */
+    #monthBudgetsStatus > div {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Divs internos de las cards en monthBudgetsStatus */
+    #monthBudgetsStatus > div > div {
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .envelopes-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    
+    /* Grid de formularios de presupuestos en móvil */
+    .budgets-form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+    
+    .budgets-form-grid > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    /* Texto dentro de cards en móvil */
+    .card h3,
+    .card .amount,
+    .card small,
+    .envelope-card h3,
+    .envelope-card .envelope-budget,
+    .envelope-card .envelope-spent,
+    .envelope-card .envelope-remaining {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+    
+    /* Asegurar que los botones dentro de cards sean visibles */
+    .card button,
+    .card .btn,
+    .envelope-card button,
+    .envelope-card .btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow: visible !important;
+        margin-top: 8px !important;
+    }
+    
+    
+    .chart-controls {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 12px !important;
+        gap: 12px !important;
+    }
+    
+    .chart-controls > div {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .chart-controls label {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+    
+    .chart-controls select {
+        width: 100% !important;
+        min-width: 100% !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+    }
+    
+    .chart-controls input[type="date"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+    }
+    
+    .chart-controls button {
+        width: 100%;
+        margin-left: 0 !important;
+    }
+    
+    /* Tablas de análisis detallado en móvil */
+    .table-section {
+        margin-bottom: 24px !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+    
+    .table-section h2 {
+        font-size: 18px !important;
+        margin-bottom: 16px !important;
+        padding: 0 4px !important;
+    }
+    
+    .table-section h3 {
+        font-size: 16px !important;
+        margin-bottom: 12px !important;
+        padding: 0 4px !important;
+    }
+    
+    .table-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 8px !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Tablas de análisis detallado sin scroll vertical en móvil */
+    #charts-tab .table-section .table-container {
+        max-height: none !important;
+        overflow-y: visible !important;
+    }
+    
+    .table-container table {
+        min-width: 600px;
+        font-size: 12px !important;
+        table-layout: auto;
+    }
+    
+    /* Asegurar que las fechas tengan espacio suficiente */
+    .table-container table td:first-child {
+        min-width: 110px !important;
+        white-space: nowrap !important;
+        padding: 12px 10px !important;
+    }
+    
+    .table-container th,
+    .table-container td {
+        padding: 12px 10px !important;
+        font-size: 12px !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal !important;
+        min-width: 80px;
+    }
+    
+    .table-container th {
+        font-size: 11px !important;
+        white-space: normal !important;
+        padding: 10px 8px !important;
+        word-wrap: break-word;
+    }
+    
+    /* Asegurar que las fechas no se corten */
+    .table-container td:first-child {
+        min-width: 100px !important;
+        white-space: nowrap !important;
+        padding: 12px 10px !important;
+    }
+    
+    /* Contenedor del análisis detallado */
+    #charts-tab > div:last-child {
+        padding: 0 4px !important;
+    }
+    
+    /* Eliminar scroll innecesario en contenedores de análisis */
+    #charts-tab {
+        overflow: visible !important;
+    }
+    
+    #charts-tab > div {
+        overflow: visible !important;
+    }
+    
+    footer,
+    .main-footer {
+        padding: 16px 12px !important;
+    }
+    
+    footer > div,
+    .main-footer > div {
+        padding: 0 12px !important;
+    }
+    
+    footer > div > div:first-child,
+    .main-footer > div > div:first-child {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    footer > div > div:first-child > div:last-child,
+    .main-footer > div > div:first-child > div:last-child {
+        align-items: flex-start !important;
+        text-align: left !important;
+    }
+    
+    footer > div > div:first-child > div:last-child > div,
+    .main-footer > div > div:first-child > div:last-child > div {
+        align-items: flex-start !important;
+    }
+    
+    footer h4,
+    .main-footer h4 {
+        text-align: left !important;
+    }
+    
+    /* Badges de App Store y Google Play en móvil */
+    footer img[alt*="App Store"],
+    footer img[alt*="Google Play"],
+    .main-footer img[alt*="App Store"],
+    .main-footer img[alt*="Google Play"] {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block !important;
+    }
+    
+    /* Mejorar visualización de badges en móvil */
+    footer > div > div:last-child > div:first-child,
+    .main-footer > div > div:last-child > div:first-child {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: clamp(12px, 3vw, 16px) !important;
+    }
+    
+    /* Modales generales en móvil */
+    .modal {
+        padding: 5px !important;
+        align-items: flex-start !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    .modal-content {
+        width: 98% !important;
+        max-width: 98% !important;
+        margin: 10px auto !important;
+        max-height: 95vh !important;
+        border-radius: 12px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    .modal-content > div:first-child {
+        padding: 20px 16px !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
+    }
+    
+    .modal-content > div:last-child,
+    .modal-content form {
+        padding: 20px 16px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        max-height: calc(95vh - 120px) !important;
+    }
+    
+    /* Asegurar que el modal de editar transacciones tenga scroll adecuado en móvil */
+    #editTransactionModal .modal-content {
+        max-height: 95vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    #editTransactionModal .modal-content > div:first-child {
+        flex-shrink: 0 !important;
+    }
+    
+    #editTransactionModal #editTransactionForm {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        max-height: calc(95vh - 140px) !important;
+        padding: 20px 16px !important;
+    }
+    
+    /* Modal de transacciones de cuenta en móvil */
+    #accountTransactionsModal .modal-content {
+        max-height: 95vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+    }
+    
+    #accountTransactionsModal .modal-content > div:first-child {
+        flex-shrink: 0 !important;
+        padding: 20px 16px !important;
+    }
+    
+    #accountTransactionsModal .modal-content > div:last-child {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        overflow-x: visible !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 0 16px 20px 16px !important;
+        min-height: 0 !important;
+    }
+    
+    #accountTransactionsModal #accountTransactionsModalContent {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        overflow: visible !important;
+    }
+    
+    #accountTransactionsModal #accountTransactionsModalContent > div {
+        margin: 0 0 12px 0 !important;
+        padding: 16px !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    #accountTransactionsModal #accountTransactionsModalContent > div > div {
+        flex-wrap: wrap !important;
+        gap: 12px !important;
+    }
+    
+    #accountTransactionsModal #accountTransactionsModalContent > div > div > div:last-child {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+    
+    #accountTransactionsModal #accountTransactionsModalContent button {
+        width: 100% !important;
+        min-width: auto !important;
+        padding: 12px 16px !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        white-space: normal !important;
+    }
+    
+    .modal-content h2 {
+        font-size: 20px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    .modal-close {
+        top: 10px !important;
+        right: 10px !important;
+        font-size: 24px !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+    }
+    
+    /* Auth container en móvil */
+    .auth-container {
+        padding: 32px 20px !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: 95vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-radius: 16px !important;
+        margin: 10px auto !important;
+    }
+    
+    /* Modales de cookies y términos en móvil */
+    #cookiesModal .modal-content,
+    #termsModal .modal-content,
+    #privacyModal .modal-content {
+        width: 98% !important;
+        max-width: 98% !important;
+        max-height: 95vh !important;
+        margin: 10px auto !important;
+        border-radius: 12px !important;
+    }
+    
+    .modal-policy-title {
+        font-size: 18px !important;
+    }
+    
+    .modal-policy-content {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    .modal-policy-content h3 {
+        font-size: 16px !important;
+        margin-top: 20px !important;
+        margin-bottom: 12px !important;
+        font-weight: 600 !important;
+    }
+    
+    .modal-policy-content p {
+        font-size: 14px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .modal-policy-content ul,
+    .modal-policy-content ol {
+        font-size: 14px !important;
+        padding-left: 20px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .modal-policy-content li {
+        margin-bottom: 8px !important;
+        line-height: 1.6 !important;
+    }
+    
+    #cookiesModal .modal-content > div:first-child,
+    #termsModal .modal-content > div:first-child,
+    #privacyModal .modal-content > div:first-child {
+        padding: 16px !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
+    }
+    
+    #cookiesModal .modal-content > div:first-child h2,
+    #termsModal .modal-content > div:first-child h2,
+    #privacyModal .modal-content > div:first-child h2 {
+        font-size: 18px !important;
+    }
+    
+    #cookiesContent,
+    #termsContent,
+    #privacyContent {
+        padding: 20px 16px !important;
+        max-height: calc(95vh - 100px) !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    #cookiesContent h3,
+    #termsContent h3,
+    #privacyContent h3 {
+        font-size: 16px !important;
+        margin-top: 18px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    #cookiesContent p,
+    #termsContent p,
+    #privacyContent p {
+        font-size: 14px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    #cookiesContent ul,
+    #termsContent ul,
+    #privacyContent ul {
+        font-size: 14px !important;
+        padding-left: 20px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    #cookiesContent li,
+    #termsContent li,
+    #privacyContent li {
+        margin-bottom: 6px !important;
+    }
+    
+    .card {
+        padding: 12px;
+    }
+    
+    .card .amount {
+        font-size: 22px;
+    }
+    
+    footer {
+        padding: 20px 12px !important;
+        margin-top: 30px !important;
+    }
+    
+    footer > div > div:first-child {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        margin-bottom: 16px !important;
+    }
+}
+
+/* ============================================
+   BOTÓN FLOTANTE DE AÑADIR TRANSACCIÓN
+   ============================================ */
+
+/* Botón flotante en móvil */
+.quick-add-btn-mobile {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .quick-add-btn-mobile {
+        display: flex !important;
+    }
+    
+    .quick-add-btn-desktop {
+        display: none !important;
+    }
+    
+    /* Ajustar posición del botón flotante en móvil - subirlo más para que no choque con la barra */
+    .quick-add-btn-mobile {
+        bottom: calc(100px + env(safe-area-inset-bottom)) !important;
+        right: 24px !important;
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 28px !important;
+        font-weight: 400 !important;
+        background: var(--bg-primary) !important;
+        border: 2px solid var(--border-color) !important;
+        color: var(--text-primary) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        z-index: 1001 !important;
+    }
+    
+    /* Botón + en modo oscuro con mismo estilo que barra de secciones */
+    html.dark-mode .quick-add-btn-mobile {
+        background: rgba(107, 114, 128, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+    }
+    
+    .quick-add-btn-mobile:hover,
+    .quick-add-btn-mobile:active {
+        transform: scale(1.05) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15) !important;
+    }
+}
+
+/* Ajustes para el botón en modo claro */
+body:not(.dark-mode) .quick-add-btn-desktop {
+    color: rgba(30, 58, 138, 1) !important;
+    border-color: rgba(30, 58, 138, 0.4) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+}
+
+body:not(.dark-mode) .quick-add-btn-desktop:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    border-color: rgba(30, 58, 138, 0.6) !important;
+}
+
+body:not(.dark-mode) .quick-add-tooltip {
+    background: rgba(30, 58, 138, 0.95) !important;
+}
+
+/* ============================================
+   RESPONSIVIDAD MÓVIL PEQUEÑO - 480px
+   ============================================ */
+@media (max-width: 480px) {
+    .container {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+    }
+    
+    /* Header más compacto */
+    header {
+        padding: 10px 12px !important;
+        min-height: 52px !important;
+    }
+    
+    header h1 {
+        font-size: 28px !important;
+        max-width: calc(100vw - 180px) !important;
+    }
+    
+    header svg#headerLogo,
+    .main-header svg#headerLogo {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    #mainNavDropdownBtn,
+    #settingsDropdownBtn {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+    }
+    
+    /* Cards más compactos */
+    .revolut-section {
+        margin-bottom: 24px !important;
+    }
+    
+    .revolut-section > div {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    .revolut-card {
+        min-height: 130px !important;
+        padding: 16px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+    }
+    
+    .revolut-card .amount {
+        font-size: 48px !important;
+    }
+    
+    .savings-card {
+        min-height: auto !important;
+        padding: 14px 16px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-sizing: border-box !important;
+    }
+    
+    .savings-card .amount {
+        font-size: 26px !important;
+    }
+    
+    .savings-card h3 {
+        font-size: 11px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .savings-card small {
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+    
+    .summary-cards .card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+    }
+    
+    .card,
+    .envelope-card {
+        padding: 14px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .card .amount {
+        font-size: 22px !important;
+    }
+    
+    .card h3 {
+        font-size: 12px !important;
+    }
+    
+    /* Modales más grandes en móvil pequeño */
+    .modal {
+        padding: 5px !important;
+        align-items: flex-start !important;
+    }
+    
+    .modal-content {
+        width: 98% !important;
+        max-width: 98% !important;
+        margin: 5px auto !important;
+        max-height: 95vh !important;
+        border-radius: 12px !important;
+    }
+    
+    .modal-content > div:first-child {
+        padding: 16px !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
+    }
+    
+    .modal-content > div:last-child,
+    .modal-content form {
+        padding: 16px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    .modal-content h2 {
+        font-size: 18px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .modal-close {
+        top: 8px !important;
+        right: 8px !important;
+        font-size: 22px !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+    }
+    
+    /* Auth container en móvil pequeño */
+    .auth-container {
+        padding: 24px 16px !important;
+        border-radius: 12px !important;
+        margin: 5px auto !important;
+        width: calc(100% - 10px) !important;
+        max-width: calc(100% - 10px) !important;
+    }
+    
+    .auth-header h1 {
+        font-size: 24px !important;
+    }
+    
+    .auth-header p {
+        font-size: 13px !important;
+    }
+    
+    .auth-form .form-group input {
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 48px !important;
+    }
+    
+    .auth-tab-btn {
+        font-size: 13px !important;
+        padding: 8px 10px !important;
+    }
+    
+    /* Modales de cookies en móvil pequeño */
+    #cookiesModal .modal-content,
+    #termsModal .modal-content,
+    #privacyModal .modal-content {
+        width: 98% !important;
+        max-width: 98% !important;
+        margin: 5px auto !important;
+    }
+    
+    #cookiesContent,
+    #termsContent,
+    #privacyContent {
+        padding: 16px !important;
+        max-height: calc(95vh - 80px) !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* Estilos específicos para contenido de modales de políticas en móvil */
+    #cookiesContent h3,
+    #termsContent h3,
+    #privacyContent h3 {
+        font-size: 16px !important;
+        margin-top: 20px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    #cookiesContent p,
+    #termsContent p,
+    #privacyContent p {
+        font-size: 14px !important;
+        margin-bottom: 12px !important;
+        line-height: 1.6 !important;
+    }
+    
+    #cookiesContent ul,
+    #termsContent ul,
+    #privacyContent ul {
+        font-size: 14px !important;
+        padding-left: 20px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    #cookiesContent li,
+    #termsContent li,
+    #privacyContent li {
+        margin-bottom: 8px !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* Modal de gráfico en móvil */
+    #chartModal .modal-content {
+        width: 98% !important;
+        max-width: 98% !important;
+        max-height: 95vh !important;
+        margin: 5px auto !important;
+    }
+    
+    #chartModal .chart-modal-header {
+        padding: 16px !important;
+    }
+    
+    #chartModal .chart-modal-title {
+        font-size: 18px !important;
+    }
+    
+    #chartModal .chart-modal-close {
+        padding: 6px 10px !important;
+        font-size: 16px !important;
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    #chartModal .chart-modal-body {
+        padding: 16px !important;
+    }
+    
+    #chartModal .chart-modal-controls {
+        padding: 12px !important;
+        gap: 12px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    #chartModal .chart-modal-controls label {
+        font-size: 13px !important;
+    }
+    
+    #chartModal .chart-modal-controls select {
+        padding: 6px 10px !important;
+        font-size: 13px !important;
+        min-width: 120px !important;
+    }
+    
+    #chartModal .chart-modal-canvas-container {
+        height: 300px !important;
+    }
+    
+    /* Tablas más compactas */
+    .table-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: auto !important;
+    }
+    
+    table {
+        font-size: 11px !important;
+        min-width: 500px !important;
+        width: 100%;
+    }
+    
+    th, td {
+        padding: 10px 8px !important;
+        font-size: 11px !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal !important;
+        min-width: 70px;
+    }
+    
+    th {
+        font-size: 10px !important;
+        padding: 8px 6px !important;
+        word-wrap: break-word;
+        white-space: normal !important;
+    }
+    
+    /* Asegurar que las fechas no se corten en móvil pequeño */
+    td:first-child {
+        min-width: 90px !important;
+        white-space: nowrap !important;
+        padding: 10px 8px !important;
+    }
+    
+    /* Análisis detallado en móvil pequeño */
+    .table-section h2 {
+        font-size: 16px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .table-section h3 {
+        font-size: 14px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    /* Contenedor del análisis detallado */
+    #charts-tab > div:last-child {
+        padding: 0 4px !important;
+    }
+    
+    /* Botones más pequeños pero táctiles */
+    .btn,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        padding: 8px 16px !important;
+        font-size: 14px !important;
+        min-height: 36px !important;
+    }
+    
+    /* Formularios */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 12px 14px !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 48px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Gráficas del dashboard en móvil pequeño */
+    .dashboard .charts-container,
+    .charts-container {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .dashboard .chart-card,
+    .chart-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        padding: 20px 16px !important;
+        margin: 0 !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+    
+    .dashboard .chart-card canvas,
+    .chart-card canvas {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Contenedor de gráficas del dashboard */
+    .dashboard > div > div:has(.charts-container) {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Selectores de gráficos en móvil pequeño */
+    .chart-card > div:first-child {
+        flex-direction: column !important;
+        gap: 10px !important;
+        align-items: stretch !important;
+    }
+    
+    .chart-card > div:first-child > div {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .chart-card .chart-period-select,
+    .chart-card .chart-category-select,
+    .chart-card input[type="date"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+        margin-bottom: 8px !important;
+        padding: 10px 12px !important;
+    }
+    
+    .chart-card > div:first-child label {
+        font-size: 13px !important;
+        white-space: normal !important;
+    }
+    
+    /* Tabs más compactos */
+    /* Tabs ocultas en móvil - no aplicar estilos */
+    
+    /* Footer más compacto */
+    footer {
+        padding: 16px 10px !important;
+    }
+    
+    footer h3,
+    footer h4 {
+        font-size: 13px !important;
+    }
+    
+    footer p,
+    footer a,
+    footer li {
+        font-size: 11px !important;
+    }
+    
+    /* Dashboard y contenido */
+    .dashboard,
+    .main-content {
+        padding: 12px 10px !important;
+        padding-top: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        margin: 48px auto 12px auto !important;
+        border-radius: 10px !important;
+    }
+    
+    .form-section {
+        padding: 16px 12px !important;
+        padding-top: 16px !important;
+        margin-top: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        overflow-x: hidden !important;
+        border-radius: 16px !important;
+    }
+    
+    /* Selector de mes en análisis - centrado en móvil */
+    #monthAnalysisSelector {
+        padding: 16px 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    #monthAnalysisSelector > div {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    #dashboardMonth {
+        text-align: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important;
+        min-height: 44px !important;
+        padding: 12px 14px !important;
+        overflow: visible !important;
+        position: relative !important;
+    }
+    
+    #monthAnalysisSelector > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+    
+    /* Campos de mes y año específicos en móvil */
+    #summaryMonth,
+    #summaryYear {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        font-size: 16px !important; /* Evitar zoom en iOS */
+        min-height: 44px !important;
+        box-sizing: border-box !important;
+        padding: 12px 14px !important;
+        margin-top: 12px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-bottom: 0 !important;
+        overflow: visible !important;
+        position: relative !important;
+    }
+    
+    /* Asegurar que estén ocultos cuando no se usan */
+    #summaryMonth[style*="display: none"],
+    #summaryYear[style*="display: none"],
+    #summaryMonth:not([style*="display: block"]),
+    #summaryYear:not([style*="display: block"]) {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        border: none !important;
+    }
+    
+    /* Cuando están visibles, mostrarlos correctamente */
+    #summaryMonth[style*="display: block"],
+    #summaryYear[style*="display: block"] {
+        display: block !important;
+        visibility: visible !important;
+        height: auto !important;
+        margin-top: 12px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 12px 14px !important;
+        border: 1.5px solid var(--border-color) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        position: relative !important;
+    }
+    
+    /* Contenedor del selector de período en móvil */
+    .dashboard > div > div:first-child {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+    
+    /* Contenedor del selector de período en móvil - forzar ancho completo */
+    .summary-period-container {
+        max-width: 100% !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .dashboard > div > div:first-child > h3 {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+    
+    .dashboard > div > div:first-child > div:last-child {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        flex: 1 1 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        position: relative !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .dashboard > div > div:first-child > div:last-child > select,
+    .dashboard > div > div:first-child > div:last-child > input {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Asegurar que el input type="month" no se corte en móvil */
+    .dashboard > div > div:first-child > div:last-child > input[type="month"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        position: relative !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+    
+    /* Selector de período en móvil */
+    #summaryPeriod {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important;
+        min-height: 44px !important;
+        padding: 12px 14px !important;
+    }
+    
+    /* Centrar selectores en formularios de transacciones y otros */
+    .form-group select {
+        text-align: left !important;
+        text-align-last: left !important;
+        appearance: auto !important;
+        -webkit-appearance: menulist !important;
+        -moz-appearance: menulist !important;
+    }
+    
+    /* Asegurar que los selectores estén bien alineados */
+    #transactionType,
+    #categoryGeneral,
+    #categorySpecific,
+    #editTransactionType,
+    #editTransactionCategoryGeneral,
+    #editTransactionCategorySpecific {
+        text-align: left !important;
+        text-align-last: left !important;
+        padding-left: 14px !important;
+    }
+    
+    /* Asegurar que los labels estén bien alineados */
+    .form-group label {
+        text-align: left !important;
+    }
+    
+    .tab-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+}
+
+/* ============================================
+   OCULTAR BOTONES DE IDIOMA TEMPORALMENTE
+   ============================================ */
+/* Selectores de idioma ahora están habilitados */
+    border: none !important;
+    background: transparent !important;
+    overflow: hidden !important;
+}
+
+/* ============================================
+   MENÚ DESPLEGABLE DE NAVEGACIÓN
+   ============================================ */
+
+.nav-dropdown-item {
+    display: block;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.nav-dropdown-item:hover {
+    background: var(--bg-secondary);
+}
+
+.nav-dropdown-item[data-tab] {
+    cursor: pointer;
+}
+
+/* ============================================
+   MENÚ HAMBURGUESA MÓVIL MEJORADO
+   ============================================ */
+
+.mobile-nav-menu {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 9998 !important;
+}
+
+.mobile-nav-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(320px, 85vw);
+    height: 100%;
+    background: var(--bg-primary);
+    box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-overflow-scrolling: touch;
+}
+
+.mobile-nav-menu[style*="display: block"] .mobile-nav-content {
+    transform: translateX(0);
+}
+
+.mobile-nav-item {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 3vw, 16px);
+    padding: clamp(14px, 3.5vw, 18px);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: 12px;
+    margin-bottom: clamp(8px, 2vw, 12px);
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid var(--border-color);
+    font-size: clamp(15px, 3.75vw, 16px);
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+}
+
+.mobile-nav-item:active {
+    transform: scale(0.98);
+    background: var(--bg-tertiary);
+}
+
+.mobile-nav-item:hover {
+    background: var(--bg-tertiary);
+    transform: translateX(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.mobile-nav-item svg {
+    flex-shrink: 0;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.hamburger-menu-btn {
+    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+}
+
+/* Mejoras específicas para Android */
+@media (max-width: 768px) {
+    .mobile-nav-content {
+        width: min(300px, 90vw);
+    }
+    
+    .mobile-nav-item {
+        min-height: 56px;
+        touch-action: manipulation;
+    }
+    
+    /* Mejorar scroll en Android */
+    .mobile-nav-content {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+    
+    /* Mejoras específicas para Android */
+    @supports (-webkit-appearance: none) {
+        .mobile-nav-item {
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .hamburger-menu-btn {
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+    
+    /* Mejorar renderizado en Android */
+    .mobile-nav-content,
+    .mobile-nav-item {
+        will-change: transform;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+    }
+    
+    /* Footer badges en Android */
+    footer img[alt*="App Store"],
+    footer img[alt*="Google Play"],
+    .main-footer img[alt*="App Store"],
+    .main-footer img[alt*="Google Play"] {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Mejoras para Android */
+@media (max-width: 768px) {
+    .mobile-nav-content {
+        width: min(300px, 90vw);
+    }
+    
+    .mobile-nav-item {
+        min-height: 56px;
+        touch-action: manipulation;
+    }
+    
+    /* Mejorar scroll en Android */
+    .mobile-nav-content {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+}
+
+/* ============================================
+   BÚSQUEDA GLOBAL - MEJORAR VISIBILIDAD
+   ============================================ */
+#globalSearch {
+    color: white !important;
+    font-weight: 500 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+}
+
+#globalSearch::placeholder {
+    color: rgba(255,255,255,0.85) !important;
+    font-weight: 400 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15) !important;
+    opacity: 1 !important;
+}
+
+#globalSearch:focus::placeholder {
+    color: rgba(255,255,255,0.7) !important;
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+
+.text-center {
+    text-align: center;
+}
+
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+

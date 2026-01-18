@@ -1,0 +1,49 @@
+╔══════════════════════════════════════════════════════════════╗
+║     ⚠️  CONFIGURACIÓN DEL FIREWALL - PERMISOS REQUERIDOS     ║
+╚══════════════════════════════════════════════════════════════╝
+
+El script necesita permisos de administrador para configurar el firewall.
+
+📋 INSTRUCCIONES:
+
+1. Busca el archivo: configurar_firewall.bat
+   (Está en la carpeta: C:\Users\pable\Desktop\Veedor)
+
+2. Haz clic DERECHO sobre el archivo
+
+3. Selecciona: "Ejecutar como administrador"
+
+4. Si Windows pregunta, haz clic en "Sí"
+
+5. En la ventana que se abre, presiona cualquier tecla cuando se te pida
+
+6. ¡Listo! El firewall estará configurado
+
+═══════════════════════════════════════════════════════════════
+
+🔧 ALTERNATIVA MANUAL (si prefieres hacerlo tú mismo):
+
+1. Presiona Windows + R
+2. Escribe: wf.msc
+3. Presiona Enter
+4. Clic en "Reglas de entrada" (izquierda)
+5. Clic en "Nueva regla..." (derecha)
+6. Selecciona "Puerto" > Siguiente
+7. Selecciona "TCP" y escribe: 3000 > Siguiente
+8. Selecciona "Permitir la conexión" > Siguiente
+9. Marca todas las casillas > Siguiente
+10. Nombre: "Veedor - Puerto 3000" > Finalizar
+
+═══════════════════════════════════════════════════════════════
+
+✅ DESPUÉS DE CONFIGURAR EL FIREWALL:
+
+Tu aplicación será accesible desde otros dispositivos usando:
+   http://192.168.1.134:3000
+
+¡Asegúrate de que todos los dispositivos estén en la misma WiFi!
+
+
+
+
+
